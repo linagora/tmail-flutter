@@ -8,7 +8,6 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/text_selection_mixin.dart';
-import 'package:tmail_ui_user/features/composer/presentation/utils/composer_code_view_sanitizer.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/signature_tooltip_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/web_editor_script_plan.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -85,7 +84,6 @@ class WebEditorWidget extends StatefulWidget {
 class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
 
   static const double _defaultHtmlEditorHeight = 550;
-  static const ComposerCodeViewSanitizer _codeViewSanitizer = ComposerCodeViewSanitizer();
 
   late HtmlEditorController _editorController;
   bool _editorListenerRegistered = false;
@@ -216,7 +214,7 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
         onUnFocus: widget.onUnFocus,
         onMouseDown:widget.onMouseDown,
         onChangeSelection: widget.onEditorSettings,
-        onChangeCodeview: _onChangeCodeview,
+        onChangeCodeview: widget.onChangeContent,
         onTextFontSizeChanged: widget.onEditorTextSizeChanged,
         onPaste: () => _editorController.evaluateJavascriptWeb(
           HtmlUtils.removeLineHeight1px.name
@@ -248,12 +246,6 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
   /// Syncs draft content after a Drive card is removed, bypassing
   /// Summernote's `onChangeContent` pipeline (which triggers
   /// html_editor_enhanced's scroll-to-top `ensureVisible()`).
-  // The cached body feeds send, drafts, print and the editor rebuilt after
-  // minimize, so raw code view HTML must never reach it.
-  void _onChangeCodeview(String? html) {
-    widget.onChangeContent?.call(html == null ? null : _codeViewSanitizer.sanitize(html));
-  }
-
   Future<void> _syncContentAfterDriveCardDeleted() async {
     final text = await _editorController.getText();
     widget.onChangeContent?.call(text);
