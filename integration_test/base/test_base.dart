@@ -19,6 +19,11 @@ class TestBase {
 
   TestBase._internal();
 
+  static TestTags get _currentPlatformTag {
+    if (kIsWeb) return TestTags.web;
+    return defaultTargetPlatform == TargetPlatform.android ? TestTags.android : TestTags.ios;
+  }
+
   void runPatrolTest({
     required String description,
     required BaseScenario Function(PatrolIntegrationTester $, RobotFactory robots) scenarioBuilder,
@@ -40,6 +45,8 @@ class TestBase {
         printLogs: true,
       ),
       tags: tags.map((t) => t.name).toList(),
+      // Skipped tests skip setUp/tearDown, so a page stops replaying every earlier bundle test.
+      skip: !tags.contains(_currentPlatformTag),
       platformAutomatorConfig: PlatformAutomatorConfig.fromOptions(
         findTimeout: const Duration(seconds: 30),
       ),
