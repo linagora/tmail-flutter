@@ -521,6 +521,9 @@ void main() {
     );
   });
 
+  // setUp builds a new dashboard for each test, so one a test put must not stay registered.
+  tearDown(() => Get.delete<MailboxDashBoardController>(force: true));
+
   group('PaywallLauncher navigation', () {
     const urlLauncherChannel = MethodChannel('plugins.flutter.io/url_launcher');
     late List<String> launchedUrls;
@@ -1372,9 +1375,6 @@ void main() {
       );
     });
 
-    // Get.put in a later group would keep this dashboard registered.
-    tearDown(() => Get.delete<MailboxDashBoardController>(force: true));
-
     test('should select the Inbox when the selected label is removed', () {
       mailboxDashboardController.selectedMailbox.value = workMailbox;
 
@@ -1422,9 +1422,6 @@ void main() {
       mailboxDashboardController.sessionCurrent = testSession;
       mailboxDashboardController.accountId.value = null;
     });
-
-    // Get.put in a later group would keep this dashboard registered.
-    tearDown(() => Get.delete<MailboxDashBoardController>(force: true));
 
     test('loads the folders of my account once, when a new dashboard applies its session', () {
       final session = DelegationFixtures.session();
@@ -1594,6 +1591,12 @@ void main() {
   });
 
   group('session setup:', () {
+    setUp(() {
+      when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
+      when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
+      when(labelController.isLabelSettingEnabled).thenReturn(RxBool(false));
+    });
+
     test('a new dashboard shows my account of the session it sets up', () {
       ActiveAccountSourceFixtures.put(DelegationFixtures.session(username: 'someone@else.tld'));
 
@@ -1609,23 +1612,19 @@ void main() {
         shownAccountId: DelegationFixtures.bobAccountId,
       );
 
-      mailboxDashboardController.onInit();
+      Get.put(mailboxDashboardController);
 
       expect(source.activeAccount, isNull);
     });
 
     testWidgets('a new dashboard started while its route builds does not modify a provider during the build',
         (tester) async {
-      when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
-      when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
-      when(labelController.isLabelSettingEnabled).thenReturn(RxBool(false));
       final container = ActiveAccountSourceFixtures.newContainer();
       ActiveAccountSourceFixtures.put(
         DelegationFixtures.session(),
         shownAccountId: DelegationFixtures.bobAccountId,
         container: container,
       );
-      addTearDown(() => Get.delete<MailboxDashBoardController>(force: true));
 
       await tester.pumpWidget(UncontrolledProviderScope(
         container: container,
@@ -1643,15 +1642,11 @@ void main() {
     });
 
     test('a reader put by the bindings of a new dashboard never loads the account shown before', () {
-      when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
-      when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
-      when(labelController.isLabelSettingEnabled).thenReturn(RxBool(false));
       clearInteractions(getAllMailboxInteractor);
       when(getAllMailboxInteractor.execute(any, any)).thenAnswer((_) => const Stream.empty());
       // MailboxDashBoardBindings registers the dashboard, then MailboxController, whose field
       // initializer finds the dashboard and so runs its onInit first.
       Get.lazyPut(() => mailboxDashboardController);
-      addTearDown(() => Get.delete<MailboxDashBoardController>(force: true));
       mailboxDashboardController.sessionCurrent = DelegationFixtures.session();
       final source = ActiveAccountSourceFixtures.put(
         DelegationFixtures.session(),
