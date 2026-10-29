@@ -88,6 +88,12 @@ final List<_StaleArrival> _staleArrivals = [
   ),
 ];
 
+/// Like an interactor: a first result, then the result of a request still running.
+Stream<Either<Failure, Success>> _loadAwaiting(Future<Success> request) async* {
+  yield Right(_Loaded());
+  yield Right(await request);
+}
+
 String _staleOutcome(List<Object> urgentErrors) => urgentErrors.isEmpty ? 'is dropped' : 'still ends the session';
 
 void main() {
@@ -223,6 +229,24 @@ void main() {
         await pumpEventQueue();
 
         expect(reader.results, isEmpty);
+        expect(reader.errors, isEmpty);
+        expect(reader.urgentErrors, urgentErrors);
+      });
+    }
+
+    for (final (lateError, urgentErrors) in [
+      (StateError('late failure'), <Object>[]),
+      (_badCredentials, [_badCredentials]),
+    ]) {
+      test('a request that fails with $lateError once the reader closed ${_staleOutcome(urgentErrors)}', () async {
+        final request = Completer<Success>();
+        reader.consumeShownAccountState(_loadAwaiting(request.future));
+        await pumpEventQueue();
+
+        reader.onClose();
+        request.completeError(lateError);
+        await pumpEventQueue();
+
         expect(reader.errors, isEmpty);
         expect(reader.urgentErrors, urgentErrors);
       });
