@@ -148,6 +148,7 @@ import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attac
 import 'package:tmail_ui_user/features/composer/presentation/manager/drive_oversize_attachment_recovery.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/concurrency_gate.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_transfer_runner.dart';
+import 'package:tmail_ui_user/features/composer/presentation/utils/composer_web_body_cache.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
@@ -276,7 +277,7 @@ class ComposerController extends BaseController
   final ScrollController scrollControllerIdentities = ScrollController();
 
   List<Attachment> initialAttachments = <Attachment>[];
-  String? _textEditorWeb;
+  final ComposerWebBodyCache _webBodyCache = ComposerWebBodyCache();
   double? maxWithEditor;
   EmailId? emailIdEditing;
   bool isAttachmentCollapsed = false;
@@ -388,7 +389,7 @@ class ComposerController extends BaseController
   @override
   void onClose() {
     _reloadCacheAction = null;
-    _textEditorWeb = null;
+    _webBodyCache.setTrusted(null);
     savedActionType = null;
     _savedEmailDraftHash = null;
     currentEmailActionType = null;
@@ -963,7 +964,7 @@ class ComposerController extends BaseController
   Future<String> getContentInEditor() async {
     try {
       final htmlTextEditor = PlatformInfo.isWeb
-        ? _textEditorWeb
+        ? textEditorWeb
         : await htmlEditorApi?.getText();
       return htmlTextEditor?.isNotEmpty == true
         ? htmlTextEditor!.removeEditorStartTag()
@@ -2217,14 +2218,14 @@ class ComposerController extends BaseController
 
   bool get isNetworkConnectionAvailable => networkConnectionController.isNetworkConnectionAvailable();
 
-  String? get textEditorWeb => _textEditorWeb;
+  String? get textEditorWeb => _webBodyCache.read();
 
-  void setTextEditorWeb(String value) => _textEditorWeb = value;
+  void setTextEditorWeb(String value) => _webBodyCache.setTrusted(value);
 
   HtmlEditorApi? get htmlEditorApi => richTextMobileTabletController?.htmlEditorApi;
 
   void onChangeTextEditorWeb(String? text) {
-    _textEditorWeb = text;
+    _webBodyCache.onEditorChange(text, inCodeView: richTextWebController?.codeViewEnabled ?? false);
 
     if (restoringSignatureButton ||
         (_isNewComposition && !synchronizeInitDraftHash)) {
