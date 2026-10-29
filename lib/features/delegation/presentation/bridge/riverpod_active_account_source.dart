@@ -23,8 +23,9 @@ class RiverpodActiveAccountSource implements ActiveAccountSource, ActiveAccountW
     _container.read(activeAccountProvider.notifier).applySession(session);
   }
 
+  /// Invalidates rather than sets the state: the dashboard clears in onInit, inside the route build, where Riverpod forbids notifying.
   @override
-  void clear() => _container.read(activeAccountProvider.notifier).clear();
+  void clear() => _container.invalidate(activeAccountProvider);
 
   @override
   CancelShownAccountWatch watchShown(OnShownAccount onShown) {
