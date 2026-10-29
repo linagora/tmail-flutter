@@ -15,6 +15,10 @@ class ActiveHtmlContentStripper {
       'script,iframe,frame,frameset,object,embed,applet,meta,base,link,'
       'form,input,button,textarea,select,noscript,template,portal';
 
+  static const _svgAnimationElements = {
+    'animate', 'animatemotion', 'animatetransform', 'set',
+  };
+
   static const _urlAttributes = {
     'href', 'src', 'xlink:href', 'action', 'formaction', 'background',
     'poster', 'data', 'codebase', 'cite', 'longdesc', 'usemap', 'lowsrc',
@@ -35,6 +39,8 @@ class ActiveHtmlContentStripper {
         element.remove();
       }
 
+      _removeSvgAnimations(fragment);
+
       for (final element in fragment.querySelectorAll('*')) {
         _stripAttributes(element);
       }
@@ -44,6 +50,15 @@ class ActiveHtmlContentStripper {
       logWarning('ActiveHtmlContentStripper::strip: Exception = $e');
       return html;
     }
+  }
+
+  // SMIL can animate an href to a javascript: URL, which attribute checks miss.
+  static void _removeSvgAnimations(DocumentFragment fragment) {
+    fragment
+        .querySelectorAll('*')
+        .where((element) => _svgAnimationElements.contains(element.localName?.toLowerCase()))
+        .toList()
+        .forEach((element) => element.remove());
   }
 
   static void _stripAttributes(Element element) {

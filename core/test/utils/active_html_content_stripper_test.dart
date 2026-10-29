@@ -72,6 +72,20 @@ void main() {
       expect(out, contains('<div class="x">Hi</div>'));
     });
 
+    test('SHOULD remove SVG animation elements', () {
+      final out = strip('<svg><a href="#"><text>x</text>'
+          '<animate attributeName="href" values="javascript:alert(1)"/>'
+          '<set attributeName="href" to="javascript:alert(1)"/>'
+          '<animateTransform attributeName="transform"/>'
+          '<animateMotion path="M0,0"/></a></svg>');
+
+      expect(out, contains('x'));
+      expect(out.toLowerCase(), isNot(contains('javascript')));
+      for (final tag in ['<animate', '<set', '<animatemotion', '<animatetransform']) {
+        expect(out.toLowerCase(), isNot(contains(tag)));
+      }
+    });
+
     test('SHOULD keep benign HTML unchanged', () {
       const html = '<div style="color: red"><b>Hi</b> <a href="https://example.com">x</a></div>';
 
