@@ -16,6 +16,12 @@ abstract class AbstractComposerCodeViewRobot {
   /// Minimizes the composer, then shows it again (rebuilds the editor).
   Future<void> minimizeAndRestoreComposer();
 
+  /// Reads the editor HTML and writes it back, as Fullscreen does.
+  Future<void> writeBackEditorHtml();
+
   /// Checks both that nothing ran and that the editor holds no active markup.
   Future<void> expectActiveContentDidNotRun();
+
+  /// Checks the composer's cached body, read by send, drafts and print.
+  Future<void> expectCachedBodyHasNoActiveContent();
 }
