@@ -11,5 +11,6 @@ final class WebEditorBootstrapScriptGroup
   @override
   List<WebEditorScriptDescriptor> build() => [
     adapter.fromHtmlUtils(HtmlUtils.removeLineHeight1px),
+    adapter.fromHtmlUtils(HtmlUtils.sanitizeInsertHtml, runOnInit: true),
   ];
 }

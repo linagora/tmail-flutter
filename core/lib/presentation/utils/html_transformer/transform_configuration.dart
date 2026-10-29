@@ -50,16 +50,27 @@ class TransformConfiguration {
     List<TextTransformer> textTransformers
   ) => TransformConfiguration([], textTransformers);
 
+  /// Quoted content already loaded for display: the preview pipeline
+  /// sanitized it, and sanitizing again would drop the `cid:` ids and webp
+  /// sources added by [ImageTransformer].
   factory TransformConfiguration.forReplyForwardEmail() => TransformConfiguration.fromDomTransformers([
+    const RemoveScriptTransformer(),
     const SignatureTransformer(),
     const RemoveCollapsedSignatureButtonTransformer(),
     const NormalizeLineHeightInStyleTransformer(),
   ]);
 
-  factory TransformConfiguration.forReplyForwardEmptyEmail() => TransformConfiguration.fromDomTransformers([
-    ...TransformConfiguration.forReplyForwardEmail().domTransformers,
-    const ImageTransformer(),
-  ]);
+  /// Raw server HTML (email body not loaded yet, e.g. a collapsed message in
+  /// a thread) inserted into the same-origin composer editor: sanitize it.
+  factory TransformConfiguration.forReplyForwardEmptyEmail() => TransformConfiguration(
+    [
+      ...TransformConfiguration.forReplyForwardEmail().domTransformers,
+      const ImageTransformer(),
+    ],
+    const [
+      StandardizeHtmlSanitizingTransformers(allowAttributes: ['contenteditable']),
+    ],
+  );
 
   factory TransformConfiguration.forDraftsEmail() => TransformConfiguration.create(
     customDomTransformers: [
@@ -114,7 +125,11 @@ class TransformConfiguration {
     ],
   );
 
+  /// Input is the displayed content, already sanitized by the preview
+  /// pipeline; sanitizing again would drop the `lazy`/`data-src` attributes
+  /// [RemoveLazyLoadingForBackgroundImageTransformer] restores.
   factory TransformConfiguration.forPrintEmail() => TransformConfiguration.fromDomTransformers([
+    const RemoveScriptTransformer(),
     const RemoveLazyLoadingForBackgroundImageTransformer(),
     const RemoveLazyLoadingImageTransformer(),
     const RemoveCollapsedSignatureButtonTransformer(),
@@ -136,11 +151,14 @@ class TransformConfiguration {
   /// Signature HTML inserted into the composer editor. Kept minimal — only
   /// degenerate `line-height` values are stripped — because the inserted
   /// signature becomes part of the email that is sent and must not be
-  /// rewritten by display-only transformers.
+  /// rewritten by display-only transformers. It is still sanitized: identity
+  /// signatures are stored raw on the server (other clients, provisioning)
+  /// and the editor iframe is same-origin with the application.
   factory TransformConfiguration.forComposerSignature() =>
-      TransformConfiguration.fromDomTransformers([
-        const NormalizeLineHeightInStyleTransformer(),
-      ]);
+      const TransformConfiguration(
+        [NormalizeLineHeightInStyleTransformer()],
+        [StandardizeHtmlSanitizingTransformers(allowAttributes: ['contenteditable'])],
+      );
 
   factory TransformConfiguration.forPreviewEmailOnPlatform() => PlatformInfo.isWeb
       ? TransformConfiguration.forPreviewEmailOnWeb()

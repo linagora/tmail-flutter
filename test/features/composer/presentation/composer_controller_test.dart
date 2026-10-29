@@ -1445,10 +1445,40 @@ void main() {
         expect(composerController?.restoringSignatureButton, isFalse);
         expect(composerController?.synchronizeInitDraftHash, isFalse);
       });
+
+      test(
+        'Should clear restoringSignatureButton\n'
+        'When the restored nested signature is not inserted',
+      () async {
+        // arrange
+        const contentWithQuotedSignature = '$emailContent'
+            '<blockquote><div class="tmail-signature">quoted signature</div></blockquote>';
+        when(mockTransformHtmlEmailContentInteractor.execute(any, any))
+            .thenAnswer((_) => Stream.value(
+                Left(TransformHtmlEmailContentFailure(Exception()))));
+
+        // act
+        await composerController?.restoreCollapsibleSignatureButton(
+          contentWithQuotedSignature,
+        );
+
+        // assert
+        expect(composerController?.restoringSignatureButton, isFalse);
+      });
     });
 
     group('applySignature test:', () {
       const rawSignature = '<p style="line-height:0.1;">Alice</p>';
+
+      void useMobileEditor() {
+        composerController?.richTextMobileTabletController =
+            mockRichTextMobileTabletController;
+        when(mockRichTextMobileTabletController.htmlEditorApi)
+            .thenReturn(mockHtmlEditorApi);
+      }
+
+      void verifyNoMobileSignatureInserted() => verifyNever(mockHtmlEditorApi
+          .insertSignature(any, allowCollapsed: anyNamed('allowCollapsed')));
 
       test(
         'Should insert the normalized signature into the editor\n'
@@ -1457,10 +1487,7 @@ void main() {
         const transformedDocument =
             '<html><head></head><body><p>Alice</p></body></html>';
         const normalizedSignature = '<p>Alice</p>';
-        composerController?.richTextMobileTabletController =
-            mockRichTextMobileTabletController;
-        when(mockRichTextMobileTabletController.htmlEditorApi)
-            .thenReturn(mockHtmlEditorApi);
+        useMobileEditor();
         when(mockTransformHtmlEmailContentInteractor.execute(any, any))
             .thenAnswer((_) => Stream.value(
                 Right(TransformHtmlEmailContentSuccess(transformedDocument))));
@@ -1493,10 +1520,7 @@ void main() {
             '<body><p class="sig">Alice</p></body></html>';
         const normalizedSignature =
             '<style>.sig{color:#093}</style><p class="sig">Alice</p>';
-        composerController?.richTextMobileTabletController =
-            mockRichTextMobileTabletController;
-        when(mockRichTextMobileTabletController.htmlEditorApi)
-            .thenReturn(mockHtmlEditorApi);
+        useMobileEditor();
         when(mockTransformHtmlEmailContentInteractor.execute(any, any))
             .thenAnswer((_) => Stream.value(
                 Right(TransformHtmlEmailContentSuccess(transformedDocument))));
@@ -1532,101 +1556,113 @@ void main() {
       });
 
       test(
-        'Should insert the original signature into the editor\n'
+        'Should not insert the signature into the editor\n'
         'When TransformHtmlEmailContentInteractor fails',
       () async {
-        composerController?.richTextMobileTabletController =
-            mockRichTextMobileTabletController;
-        when(mockRichTextMobileTabletController.htmlEditorApi)
-            .thenReturn(mockHtmlEditorApi);
+        useMobileEditor();
         when(mockTransformHtmlEmailContentInteractor.execute(any, any))
             .thenAnswer((_) => Stream.value(
                 Left(TransformHtmlEmailContentFailure(Exception()))));
 
         await composerController?.applySignature(rawSignature);
 
-        verify(mockHtmlEditorApi.insertSignature(
-          rawSignature,
-          allowCollapsed: false,
-        )).called(1);
+        verifyNoMobileSignatureInserted();
       });
 
       test(
-        'Should insert the original signature into the editor\n'
+        'Should not insert the signature into the editor\n'
         'When TransformHtmlEmailContentInteractor throws a stream error',
       () async {
-        composerController?.richTextMobileTabletController =
-            mockRichTextMobileTabletController;
-        when(mockRichTextMobileTabletController.htmlEditorApi)
-            .thenReturn(mockHtmlEditorApi);
+        useMobileEditor();
         when(mockTransformHtmlEmailContentInteractor.execute(any, any))
             .thenAnswer((_) => Stream.error(Exception('transform crashed')));
 
         await composerController?.applySignature(rawSignature);
 
-        verify(mockHtmlEditorApi.insertSignature(
-          rawSignature,
-          allowCollapsed: false,
-        )).called(1);
+        verifyNoMobileSignatureInserted();
       });
 
       test(
-        'Should insert the original signature into the editor\n'
+        'Should not insert the signature into the editor\n'
         'When TransformHtmlEmailContentInteractor returns an empty stream',
       () async {
-        composerController?.richTextMobileTabletController =
-            mockRichTextMobileTabletController;
-        when(mockRichTextMobileTabletController.htmlEditorApi)
-            .thenReturn(mockHtmlEditorApi);
+        useMobileEditor();
         when(mockTransformHtmlEmailContentInteractor.execute(any, any))
             .thenAnswer((_) => const Stream.empty());
 
         await composerController?.applySignature(rawSignature);
 
-        verify(mockHtmlEditorApi.insertSignature(
-          rawSignature,
-          allowCollapsed: false,
-        )).called(1);
+        verifyNoMobileSignatureInserted();
       });
 
       test(
-        'Should insert the original signature into the editor\n'
-        'When the transform succeeds but returns blank content',
+        'Should not insert the signature into the editor\n'
+        'When the sanitized signature is blank (only active content)',
       () async {
-        composerController?.richTextMobileTabletController =
-            mockRichTextMobileTabletController;
-        when(mockRichTextMobileTabletController.htmlEditorApi)
-            .thenReturn(mockHtmlEditorApi);
+        useMobileEditor();
         when(mockTransformHtmlEmailContentInteractor.execute(any, any))
             .thenAnswer((_) => Stream.value(
                 Right(TransformHtmlEmailContentSuccess('   '))));
 
         await composerController?.applySignature(rawSignature);
 
-        verify(mockHtmlEditorApi.insertSignature(
-          rawSignature,
-          allowCollapsed: false,
-        )).called(1);
+        verifyNoMobileSignatureInserted();
       });
 
       test(
-        'Should insert the original signature into the editor\n'
+        'Should not insert the signature into the editor\n'
         'When the last emitted state is not TransformHtmlEmailContentSuccess',
       () async {
-        composerController?.richTextMobileTabletController =
-            mockRichTextMobileTabletController;
-        when(mockRichTextMobileTabletController.htmlEditorApi)
-            .thenReturn(mockHtmlEditorApi);
+        useMobileEditor();
         when(mockTransformHtmlEmailContentInteractor.execute(any, any))
             .thenAnswer((_) => Stream.value(
                 Right(TransformHtmlEmailContentLoading())));
 
         await composerController?.applySignature(rawSignature);
 
-        verify(mockHtmlEditorApi.insertSignature(
-          rawSignature,
-          allowCollapsed: false,
-        )).called(1);
+        verifyNoMobileSignatureInserted();
+      });
+
+      test(
+        'Should not insert the signature into the web editor\n'
+        'When the sanitized signature is blank (only active content)',
+      () async {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        composerController?.richTextWebController = mockRichTextWebController;
+        when(mockTransformHtmlEmailContentInteractor.execute(any, any))
+            .thenAnswer((_) => Stream.value(Right(TransformHtmlEmailContentSuccess(
+                '<html><head></head><body></body></html>'))));
+
+        await composerController?.applySignature(
+          '<iframe src="javascript:alert(1)"></iframe>',
+        );
+
+        final editor =
+            mockRichTextWebController.editorController as MockHtmlEditorController;
+        verifyNever(editor.insertSignature(
+          any,
+          allowCollapsed: anyNamed('allowCollapsed'),
+        ));
+      });
+
+      test(
+        'Should log an error forced to the web console\n'
+        'When no signature is inserted because sanitizing left it blank',
+      () async {
+        final logHandler = CapturingLogHandler();
+        AppLoggerRegistry.instance.registerHandler(logHandler);
+        addTearDown(AppLoggerRegistry.instance.resetForTesting);
+        useMobileEditor();
+        when(mockTransformHtmlEmailContentInteractor.execute(any, any))
+            .thenAnswer((_) => Stream.value(
+                Right(TransformHtmlEmailContentSuccess('   '))));
+
+        await composerController?.applySignature(rawSignature);
+
+        verifyNoMobileSignatureInserted();
+        expect(logHandler.errorRecords, isNotEmpty);
+        expect(logHandler.errorRecords.single.webConsoleEnabled, isTrue);
       });
     });
 
@@ -2423,8 +2459,9 @@ void main() {
             mockRichTextWebController.editorController as MockHtmlEditorController;
         clearInteractions(editor);
         when(mockTransformHtmlEmailContentInteractor.execute(any, any))
-            .thenAnswer((_) => Stream.value(
-                Left(TransformHtmlEmailContentFailure(Exception()))));
+            .thenAnswer((invocation) => Stream.value(Right(
+                TransformHtmlEmailContentSuccess(
+                    invocation.positionalArguments.first as String))));
 
         await reopened.setupSelectedIdentity();
 
@@ -3077,13 +3114,13 @@ void main() {
         });
 
         test(
-          'Should set textEditorWeb to body content\n'
+          'Should set textEditorWeb to the body as escaped plain text\n'
           'When $actionType with non-empty body',
         () async {
           PlatformInfo.isTestingForWeb = true;
           try {
             composerController?.currentEmailActionType = actionType;
-            const body = '<p>Hello from mailto body</p>';
+            const body = 'Hello from mailto body\nSecond line';
             final arguments = ComposerArguments(
               emailActionType: actionType,
               displayMode: ScreenDisplayMode.normal,
@@ -3092,7 +3129,32 @@ void main() {
 
             await composerController?.setupEmailContent(arguments);
 
-            expect(composerController?.textEditorWeb, equals(body));
+            expect(
+              composerController?.textEditorWeb,
+              equals('<div>Hello from mailto body<br>Second line</div>'),
+            );
+          } finally {
+            PlatformInfo.isTestingForWeb = false;
+          }
+        });
+
+        test(
+          'Should NOT interpret markup from the mailto body\n'
+          'When $actionType with a body containing HTML',
+        () async {
+          PlatformInfo.isTestingForWeb = true;
+          try {
+            composerController?.currentEmailActionType = actionType;
+            final arguments = ComposerArguments(
+              emailActionType: actionType,
+              displayMode: ScreenDisplayMode.normal,
+              body: '<img src=x onerror="alert(1)">',
+            );
+
+            await composerController?.setupEmailContent(arguments);
+
+            expect(composerController?.textEditorWeb, isNot(contains('<img')));
+            expect(composerController?.textEditorWeb, contains('&lt;img'));
           } finally {
             PlatformInfo.isTestingForWeb = false;
           }

@@ -921,4 +921,23 @@ void main() {
       expect(result, 'Click here for more info');
     });
   });
+
+  group('StringConvert.convertTextContentToHtmlContent', () {
+    test('SHOULD escape markup so untrusted text is never interpreted as HTML', () {
+      final result = StringConvert.convertTextContentToHtmlContent(
+        '<img src=x onerror="alert(1)"><script>alert(2)</script>',
+      );
+
+      expect(result, isNot(contains('<img')));
+      expect(result, isNot(contains('<script')));
+      expect(result, contains('&lt;img'));
+    });
+
+    test('SHOULD convert new lines to <br>', () {
+      expect(
+        StringConvert.convertTextContentToHtmlContent('line1\nline2'),
+        '<div>line1<br>line2</div>',
+      );
+    });
+  });
 }

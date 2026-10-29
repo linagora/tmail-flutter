@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
+import 'package:core/presentation/utils/html_transformer/editor_html_sanitizer.dart';
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/list_nullable_extensions.dart';
 import 'package:core/presentation/state/failure.dart';
@@ -44,6 +45,7 @@ import 'package:tmail_ui_user/features/identity_creator/domain/model/identity_ca
 import 'package:tmail_ui_user/features/identity_creator/domain/usecase/save_identity_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
+import 'package:core/presentation/utils/html_transformer/stored_editor_html.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/utils/identity_creator_constants.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/email_address_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
@@ -110,6 +112,9 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
 
   String? _nameIdentity;
   String? _contentHtmlEditor;
+
+  /// Set when editing an identity that has a signature. See [StoredEditorHtml].
+  StoredEditorHtml? _storedSignature;
   AccountId? accountId;
   Session? session;
   Identity? identity;
@@ -137,7 +142,13 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     if (_contentHtmlEditor != null) {
       return _contentHtmlEditor ?? '';
     } else {
-      return arguments?.identity?.signatureAsString ?? '';
+      // The web editor reads this as its initialText on the first build, before
+      // onReady sanitizes the stored copy. The signature may come from another
+      // client or provisioning, so sanitize the fallback too: the editor iframe
+      // is same origin and evaluates inline handlers and scripts.
+      return EditorHtmlSanitizer.sanitize(
+        arguments?.identity?.signatureAsString ?? '',
+      );
     }
   }
 
@@ -319,9 +330,13 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     errorNameIdentity.value = '';
 
     if (identity?.signatureAsString.isNotEmpty == true) {
-      updateContentHtmlEditor(arguments?.identity?.signatureAsString ?? '');
+      // The stored signature may come from another client or from
+      // provisioning: sanitize it before the editor renders it.
+      final storedSignature = StoredEditorHtml(arguments?.identity?.signatureAsString ?? '');
+      _storedSignature = storedSignature;
+      updateContentHtmlEditor(storedSignature.sanitized);
       if (PlatformInfo.isWeb) {
-        richTextWebController?.editorController.setText(arguments?.identity?.signatureAsString ?? '');
+        richTextWebController?.editorController.setText(storedSignature.sanitized);
       }
     }
     _initPublicAssetController();
@@ -525,9 +540,14 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     Identity identity,
     PublicAssetsInIdentityArguments publicAssetsInIdentityArguments
   })> _generateIdentityAndPublicAssetArguments({bool forCache = false}) async {
-    final signatureHtmlText = PlatformInfo.isWeb
-        ? contentHtmlEditor
-        : await _getSignatureHtmlText();
+    // The signature is inserted into every composed email: store it clean.
+    // An untouched stored signature (e.g. only the name was edited) is kept
+    // as is, so saving does not strip formatting the user never changed;
+    // the composer and the viewers sanitize it anyway.
+    final editorSignature =
+        PlatformInfo.isWeb ? contentHtmlEditor : await _getSignatureHtmlText();
+    final signatureHtmlText = _storedSignature?.resolveForSave(editorSignature)
+        ?? EditorHtmlSanitizer.sanitize(editorSignature);
     final bccAddress = bccOfIdentity.value != null && bccOfIdentity.value != noneEmailAddress
         ? {bccOfIdentity.value!}
         : <EmailAddress>{};

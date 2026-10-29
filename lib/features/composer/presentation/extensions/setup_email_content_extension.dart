@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:core/utils/string_convert.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -37,9 +38,9 @@ extension SetupEmailContentExtension on ComposerController {
     } else if (currentEmailActionType == EmailActionType.editSendingEmail) {
       _loadSendingEmailContent(arguments);
     } else if (currentEmailActionType == EmailActionType.composeFromContentShared) {
-      _loadSimpleEmailContent(arguments.emailContents ?? '');
+      _loadSimpleEmailContent(_plainTextToEditorHtml(arguments.emailContents));
     } else if (_isMailtoContentAction) {
-      _loadSimpleEmailContent(arguments.body ?? '');
+      _loadSimpleEmailContent(_plainTextToEditorHtml(arguments.body));
     } else if (_isReplyForwardContentAction) {
       await _loadReplyForwardEmailContent(arguments);
     } else if (currentEmailActionType == EmailActionType.reopenComposerBrowser) {
@@ -77,6 +78,15 @@ extension SetupEmailContentExtension on ComposerController {
     );
     if (PlatformInfo.isWeb) setTextEditorWeb(htmlContent);
     emailContentsViewState.value = Right(successState);
+  }
+
+  /// Mailto `body` (RFC 6068) and text shared from another app are plain
+  /// text coming from untrusted sources (links in received emails,
+  /// List-Unsubscribe headers, arbitrary web pages). They must never be
+  /// interpreted as markup by the editor.
+  String _plainTextToEditorHtml(String? text) {
+    if (text == null || text.isEmpty) return '';
+    return StringConvert.convertTextContentToHtmlContent(text);
   }
 
   void _loadSimpleEmailContent(String content) {

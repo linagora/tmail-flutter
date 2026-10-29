@@ -1,4 +1,6 @@
 
+import 'dart:collection';
+
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
@@ -505,6 +507,7 @@ class VacationView extends GetWidget<VacationController> {
           cacheHTMLAssetOffline: true,
           initialText: controller.vacationMessageHtmlText,
           spellCheck: true,
+          disableDragAndDrop: true,
           normalizeHtmlTextWhenDropping: true,
           normalizeHtmlTextWhenPasting: true,
           customBodyCssStyle: HtmlUtils.customInlineBodyCssStyleHtmlEditor(
@@ -512,6 +515,12 @@ class VacationView extends GetWidget<VacationController> {
             horizontalPadding: 0,
           ),
           customInternalCSS: HtmlTemplate.webCustomInternalStyleCSS(),
+          webInitialScripts: UnmodifiableListView([
+            html_editor_browser.WebScript(
+              name: HtmlUtils.sanitizeInsertHtml.name,
+              script: HtmlUtils.sanitizeInsertHtml.script,
+            ),
+          ]),
         ),
         htmlToolbarOptions: const html_editor_browser.HtmlToolbarOptions(
           toolbarType: html_editor_browser.ToolbarType.hide,
@@ -519,6 +528,8 @@ class VacationView extends GetWidget<VacationController> {
         ),
         otherOptions: const html_editor_browser.OtherOptions(height: 300),
         callbacks: html_editor_browser.Callbacks(
+          onInit: () => controller.richTextControllerForWeb?.editorController
+              .evaluateJavascriptWeb(HtmlUtils.sanitizeInsertHtml.name),
           onChangeSelection:
               controller.richTextControllerForWeb?.onEditorSettingsChange,
           onChangeContent: controller.updateMessageHtmlText,

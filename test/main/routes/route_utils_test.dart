@@ -210,6 +210,43 @@ void main() {
       expectParsedMailto(result, address: 'test@example.com', subject: 'Hello');
     });
 
+    // RFC 6068: a reserved character inside a header value is percent-encoded
+    // once, and `+` is a literal plus (not a space). The URI must be decoded
+    // once only, otherwise `%2B` becomes a space and `%26` splits the value.
+    test('should keep a percent-encoded plus sign in the body', () {
+      final result = RouteUtils.parseMapMailtoFromUri(
+        'mailto:test@example.com?body=1%2B1%3D2');
+
+      expect(result[RouteUtils.paramBody], '1+1=2');
+    });
+
+    test('should keep a percent-encoded ampersand in the subject and body', () {
+      final result = RouteUtils.parseMapMailtoFromUri(
+        'mailto:test@example.com?subject=Q%26A&body=salt%20%26%20pepper');
+
+      expect(result[RouteUtils.paramSubject], 'Q&A');
+      expect(result[RouteUtils.paramBody], 'salt & pepper');
+    });
+
+    test('should decode an encoded address followed by a query', () {
+      final result = RouteUtils.parseMapMailtoFromUri(
+        'mailto:test%40example.com?subject=Hello');
+
+      expectParsedMailto(result, address: 'test@example.com', subject: 'Hello');
+    });
+
+    // The browser mailto handler (`/mailto/?uri=%s`) percent-encodes the
+    // whole mailto URL once more: header values arrive encoded twice and must
+    // still be decoded once into the value the sender wrote.
+    test('should decode header values once in a mailto URL from the browser handler', () {
+      final result = RouteUtils.parseMapMailtoFromUri(
+        'https://example.com/mailto/?uri=mailto%3Atest%40example.com'
+        '%3Fsubject%3D1%252B1%26body%3Dsalt%2520%2526%2520pepper');
+
+      expectParsedMailto(result, address: 'test@example.com', subject: '1+1');
+      expect(result[RouteUtils.paramBody], 'salt & pepper');
+    });
+
     test('should parse a valid mailto URI encoded', () {
       final result = RouteUtils.parseMapMailtoFromUri(
         'mailto:test%40example.com%3Fsubject=Hello');
@@ -313,6 +350,56 @@ void main() {
 
     test('should handle multi-level tld like co.uk (not fully accurate)', () {
       expect(RouteUtils.getRootDomain(hostname: 'service.example.co.uk'), 'co.uk');
+    });
+  });
+
+  // A mailto link clicked in an email opens the composer through
+  // generateNavigationRouterFromMailtoLink. RFC 6068 percent-encodes
+  // reserved characters in header values exactly once: the composer must
+  // receive them as written by the sender.
+  group('generateNavigationRouterFromMailtoLink header values (RFC 6068)', () {
+    NavigationRouter open(String query) =>
+        RouteUtils.generateNavigationRouterFromMailtoLink('mailto:alice@example.com?$query');
+
+    test('should keep a plus sign in the body', () {
+      expect(open('body=1%2B1%3D2').body, '1+1=2');
+    });
+
+    test('should keep an ampersand in the subject', () {
+      expect(open('subject=Q%26A&body=x').subject, 'Q&A');
+    });
+
+    test('should keep the text after an ampersand in the body', () {
+      expect(open('body=salt%20%26%20pepper').body, 'salt & pepper');
+    });
+
+    test('should keep a percent sign in the body', () {
+      expect(open('body=100%25%20done').body, '100% done');
+    });
+
+    test('should keep an equals sign and a question mark in the body', () {
+      expect(open('body=a%3Db%3Fc').body, 'a=b?c');
+    });
+
+    test('should keep line breaks in the body', () {
+      expect(open('body=line1%0D%0Aline2').body, 'line1\r\nline2');
+    });
+
+    test('should keep the recipient when the body holds an encoded ampersand', () {
+      final router = open('body=a%26to%3Deve%40example.com');
+
+      expect(
+        router.listEmailAddress?.map((address) => address.email),
+        ['alice@example.com'],
+      );
+      expect(router.body, 'a&to=eve@example.com');
+    });
+
+    test('should not add a bcc recipient from an encoded ampersand in the body', () {
+      final router = open('body=hi%26bcc%3Deve%40example.com');
+
+      expect(router.bcc ?? [], isEmpty);
+      expect(router.body, 'hi&bcc=eve@example.com');
     });
   });
 }

@@ -223,5 +223,39 @@ void main() {
       expect(result.bodyValues![PartId(partIdValue)]!.value, plainEmailContent);
       expect(result.attachments, containsAll(emailBodyParts));
     });
+
+    test('generateEmail SHOULD strip active content from the outgoing body', () async {
+      const content = '<p>Hi</p><img src="https://x/a.png" onerror="alert(1)"><script>alert(2)</script>';
+      const partIdValue = 'part-1';
+      when(mockCreateEmailRequest.emailContent).thenReturn(content);
+      when(mockCreateEmailRequest.inlineAttachments).thenReturn({});
+      when(mockCreateEmailRequest.uploadUri).thenReturn(null);
+      when(mockCreateEmailRequest.attachments).thenReturn([]);
+      when(mockCreateEmailRequest.toRecipients).thenReturn({});
+      when(mockCreateEmailRequest.ccRecipients).thenReturn(null);
+      when(mockCreateEmailRequest.bccRecipients).thenReturn(null);
+      when(mockCreateEmailRequest.subject).thenReturn('Test Subject');
+      when(mockCreateEmailRequest.draftsMailboxId).thenReturn(null);
+      when(mockCreateEmailRequest.outboxMailboxId).thenReturn(null);
+      when(mockCreateEmailRequest.emailActionType).thenReturn(EmailActionType.compose);
+      when(mockCreateEmailRequest.hasRequestReadReceipt).thenReturn(false);
+      when(mockCreateEmailRequest.isMarkAsImportant).thenReturn(false);
+      when(mockCreateEmailRequest.templateMailboxId).thenReturn(null);
+      when(mockHtmlDataSource.replaceImageBase64ToImageCID(
+        emailContent: content,
+        inlineAttachments: {},
+        uploadUri: null,
+      )).thenAnswer((_) async => const Tuple2(content, <EmailBodyPart>{}));
+      when(mockHtmlDataSource.removeCollapsedExpandedSignatureEffect(emailContent: content))
+          .thenAnswer((_) async => content);
+      when(mockUuid.v1()).thenReturn(partIdValue);
+
+      final email = await repository.generateEmail(mockCreateEmailRequest);
+
+      final body = email.bodyValues![PartId(partIdValue)]!.value;
+      expect(body, contains('src="https://x/a.png"'));
+      expect(body, isNot(contains('onerror')));
+      expect(body, isNot(contains('<script')));
+    });
   });
 }

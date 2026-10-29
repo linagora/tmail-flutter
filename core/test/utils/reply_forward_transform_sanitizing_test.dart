@@ -1,0 +1,107 @@
+import 'dart:convert';
+
+import 'package:core/data/network/dio_client.dart';
+import 'package:core/presentation/utils/html_transformer/html_transform.dart';
+import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+/// Fixtures have no cid map, so the pipelines never download.
+class _OfflineDioClient extends Fake implements DioClient {}
+
+void main() {
+  late HtmlTransform htmlTransform;
+
+  setUp(() {
+    htmlTransform = HtmlTransform(_OfflineDioClient(), const HtmlEscape());
+  });
+
+  final configurations = <String, TransformConfiguration Function()>{
+    'forReplyForwardEmptyEmail': TransformConfiguration.forReplyForwardEmptyEmail,
+  };
+
+  configurations.forEach((name, create) {
+    group('$name (quoted content inserted into the composer)', () {
+      test('SHOULD include the HTML sanitizer', () {
+        expect(
+          create().textTransformers
+              .whereType<StandardizeHtmlSanitizingTransformers>(),
+          isNotEmpty,
+        );
+      });
+
+      test('SHOULD remove event handler attributes', () async {
+        final out = await htmlTransform.transformToHtml(
+          htmlContent: '<p>Hello</p><img src="https://example.com/a.png" onerror="alert(1)">',
+          transformConfiguration: create(),
+        );
+
+        expect(out, contains('Hello'));
+        expect(out.toLowerCase(), isNot(contains('onerror')));
+      });
+
+      test('SHOULD remove script elements', () async {
+        final out = await htmlTransform.transformToHtml(
+          htmlContent: '<div>Body</div><script>alert(1)</script>',
+          transformConfiguration: create(),
+        );
+
+        expect(out, contains('Body'));
+        expect(out.toLowerCase(), isNot(contains('<script')));
+      });
+
+      test('SHOULD remove javascript: links', () async {
+        final out = await htmlTransform.transformToHtml(
+          htmlContent: '<a href="javascript:alert(1)">link</a>',
+          transformConfiguration: create(),
+        );
+
+        expect(out.toLowerCase(), isNot(contains('javascript:')));
+      });
+
+      test('SHOULD still block the quoted signature', () async {
+        final out = await htmlTransform.transformToHtml(
+          htmlContent: '<div class="tmail-signature">Signature</div>',
+          transformConfiguration: create(),
+        );
+
+        expect(out, contains('tmail-signature-blocked'));
+      });
+    });
+  });
+
+  group('forReplyForwardEmail (loaded content quoted into the composer)', () {
+    test('SHOULD keep the cid id of a displayed inline image', () async {
+      final out = await htmlTransform.transformToHtml(
+        htmlContent: '<img src="data:image/png;base64,iVBORw0KGgo=" id="cid:image001.png@01DA1234.5678ABCD">',
+        transformConfiguration: TransformConfiguration.forReplyForwardEmail(),
+      );
+      expect(out, contains('id="cid:image001.png@01DA1234.5678ABCD"'));
+    });
+
+    test('SHOULD keep a webp data image', () async {
+      final out = await htmlTransform.transformToHtml(
+        htmlContent: '<img src="data:image/webp;base64,UklGRg==">',
+        transformConfiguration: TransformConfiguration.forReplyForwardEmail(),
+      );
+      expect(out, contains('src="data:image/webp;base64,UklGRg=="'));
+    });
+
+    test('SHOULD still remove script elements', () async {
+      final out = await htmlTransform.transformToHtml(
+        htmlContent: '<div>Body</div><script>alert(1)</script>',
+        transformConfiguration: TransformConfiguration.forReplyForwardEmail(),
+      );
+      expect(out, contains('Body'));
+      expect(out.toLowerCase(), isNot(contains('<script')));
+    });
+
+    test('SHOULD still block the quoted signature', () async {
+      final out = await htmlTransform.transformToHtml(
+        htmlContent: '<div class="tmail-signature">Signature</div>',
+        transformConfiguration: TransformConfiguration.forReplyForwardEmail(),
+      );
+      expect(out, contains('tmail-signature-blocked'));
+    });
+  });
+}

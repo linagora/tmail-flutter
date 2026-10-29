@@ -62,9 +62,6 @@ class IdentityListTileBuilder extends StatelessWidget {
       ),
     );
 
-    final signatureContent = mapIdentitySignatures[identity.id!] ??
-        identity.signatureAsString;
-
     final identityContent = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -105,21 +102,8 @@ class IdentityListTileBuilder extends StatelessWidget {
               ),
             ),
           ),
-        if (signatureContent.trim().isNotEmpty)
-          ...[
-            Text(
-              '--',
-              style: ThemeUtils.textStyleBodyBody2(
-                color: Colors.black,
-              ),
-            ),
-            SignatureLoadingWidget(signatureViewState: signatureViewState),
-            SignatureBuilder(
-              value: signatureContent,
-              width: isDesktop ? 280 : double.infinity,
-              scrollController: scrollController,
-            ),
-          ],
+        if (identity.signatureAsString.trim().isNotEmpty)
+          ..._buildSignature(),
       ],
     );
 
@@ -189,5 +173,28 @@ class IdentityListTileBuilder extends StatelessWidget {
         ],
       );
     }
+  }
+
+  /// Only the signature sanitized by forSignatureIdentity is rendered: the
+  /// stored one may come from another client or from provisioning, and the
+  /// web viewer is a same-origin iframe. Until it is ready, only the loading
+  /// indicator shows.
+  List<Widget> _buildSignature() {
+    final sanitizedSignature = mapIdentitySignatures[identity.id!] ?? '';
+    return [
+      Text(
+        '--',
+        style: ThemeUtils.textStyleBodyBody2(
+          color: Colors.black,
+        ),
+      ),
+      SignatureLoadingWidget(signatureViewState: signatureViewState),
+      if (sanitizedSignature.trim().isNotEmpty)
+        SignatureBuilder(
+          value: sanitizedSignature,
+          width: isDesktop ? 280 : double.infinity,
+          scrollController: scrollController,
+        ),
+    ];
   }
 }

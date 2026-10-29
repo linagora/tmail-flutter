@@ -1,6 +1,7 @@
 import 'package:core/presentation/utils/html_transformer/dom/normalize_line_height_in_style_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/dom/remove_negative_margin_float_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/responsive_table_cell_transformer.dart';
+import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -151,7 +152,12 @@ void main() {
         _hasNormalizeLineHeightTransformer(configuration.domTransformers),
         isTrue,
       );
-      expect(configuration.textTransformers, isEmpty);
+      expect(
+        configuration.textTransformers,
+        contains(isA<StandardizeHtmlSanitizingTransformers>()),
+        reason: 'The signature is persisted and reused in every composed '
+            'email, so it must always be sanitized.',
+      );
     });
   });
 }

@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'dart:math';
 
+import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:html/dom.dart';
 
 import '../../../fixtures/html_emails/html_email_corpus_fixture.dart';
@@ -100,6 +103,15 @@ String _withoutLineHeight(Document source) {
   }
   return document.body?.innerHtml ?? '';
 }
+
+/// What the sanitizer of [config] alone keeps of [html]. The composer
+/// signature is sanitized on purpose, so its other transformers are judged
+/// against this rather than against the raw signature.
+String sanitizedSource(TransformConfiguration config, String html) => config
+    .textTransformers
+    .whereType<StandardizeHtmlSanitizingTransformers>()
+    .single
+    .process(html, const HtmlEscape());
 
 /// The output differs from the source in `line-height` declarations only.
 List<String> lineHeightOnlyFailures(Document source, Document out) =>

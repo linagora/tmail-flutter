@@ -68,6 +68,7 @@ void main() {
       scripts.map((script) => script.name),
       orderedEquals([
         HtmlUtils.removeLineHeight1px.name,
+        HtmlUtils.sanitizeInsertHtml.name,
         HtmlUtils.registerDropListener.name,
         HtmlUtils.unregisterDropListener.name,
         selectionChangeScript.name,
@@ -96,6 +97,7 @@ void main() {
     final plan = buildPlan();
 
     expect(plan.initializationScriptNames, orderedEquals([
+      HtmlUtils.sanitizeInsertHtml.name,
       HtmlUtils.registerDropListener.name,
       _selectionScriptName,
       HtmlUtils.registerFileLinkRowEnterKeyHandler(isWebPlatform: true).name,
