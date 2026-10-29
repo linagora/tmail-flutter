@@ -288,8 +288,8 @@ class RichTextWebController extends GetxController {
         editorController.toggleCodeView();
         formattingOptionsState.value = FormattingOptionsState.disabled;
       }
-    } catch (e) {
-      logError('RichTextWebController::toggleCodeView: $e');
+    } catch (e, st) {
+      logError('RichTextWebController::toggleCodeView', exception: e, stackTrace: st);
       _showCodeViewToggleError();
     } finally {
       _codeViewToggleInFlight = false;
