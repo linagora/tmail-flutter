@@ -19,6 +19,13 @@ class ActiveHtmlContentStripper {
     'animate', 'animatemotion', 'animatetransform', 'set',
   };
 
+  // The serializer writes these elements' text unescaped in every namespace.
+  static const _rawTextElements = {
+    'style', 'script', 'xmp', 'iframe', 'noembed', 'noframes', 'noscript', 'plaintext',
+  };
+
+  static const _htmlNamespace = 'http://www.w3.org/1999/xhtml';
+
   static const _urlAttributes = {
     'href', 'src', 'xlink:href', 'action', 'formaction', 'background',
     'poster', 'data', 'codebase', 'cite', 'longdesc', 'usemap', 'lowsrc',
@@ -40,6 +47,7 @@ class ActiveHtmlContentStripper {
       }
 
       _removeSvgAnimations(fragment);
+      _removeForeignRawTextElements(fragment);
 
       for (final element in fragment.querySelectorAll('*')) {
         _stripAttributes(element);
@@ -57,6 +65,17 @@ class ActiveHtmlContentStripper {
     fragment
         .querySelectorAll('*')
         .where((element) => _svgAnimationElements.contains(element.localName?.toLowerCase()))
+        .toList()
+        .forEach((element) => element.remove());
+  }
+
+  // In SVG/MathML their text is entity-decoded, so `&lt;script&gt;` would serialize as a live tag.
+  static void _removeForeignRawTextElements(DocumentFragment fragment) {
+    fragment
+        .querySelectorAll('*')
+        .where((element) =>
+            element.namespaceUri != _htmlNamespace &&
+            _rawTextElements.contains(element.localName?.toLowerCase()))
         .toList()
         .forEach((element) => element.remove());
   }

@@ -86,6 +86,20 @@ void main() {
       }
     });
 
+    test('SHOULD not let SVG or MathML raw-text elements serialize into live markup', () {
+      for (final html in [
+        '<svg><style>&lt;/style&gt;&lt;script&gt;alert(1)&lt;/script&gt;</style></svg>',
+        '<math><style>&lt;/style&gt;&lt;img src=x onerror=alert(1)&gt;</style></math>',
+        '<svg><xmp>&lt;/xmp&gt;&lt;script&gt;alert(1)&lt;/script&gt;</xmp></svg>',
+      ]) {
+        final out = strip('<p>Hi</p>$html');
+
+        expect(out, contains('<p>Hi</p>'));
+        expect(out.toLowerCase(), isNot(contains('<script')));
+        expect(out.toLowerCase(), isNot(contains('onerror')));
+      }
+    });
+
     test('SHOULD keep benign HTML unchanged', () {
       const html = '<div style="color: red"><b>Hi</b> <a href="https://example.com">x</a></div>';
 
