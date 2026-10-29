@@ -59,6 +59,17 @@ void main() {
       expect(source.activeAccount, isNull);
       expect(container.read(activeAccountProvider), isNull);
     });
+
+    test('clear tells the listeners of the shown account even when nothing reads it afterwards', () async {
+      source.applySession(DelegationFixtures.session());
+      final shownAccounts = <ActiveAccount?>[];
+      container.listen<ActiveAccount?>(activeAccountProvider, (_, next) => shownAccounts.add(next));
+
+      source.clear();
+      await container.pump();
+
+      expect(shownAccounts, [null]);
+    });
   });
 
   group('watchShown:', () {
@@ -97,11 +108,12 @@ void main() {
       expect(source.activeAccount!.session.state.value, 'state-2');
     });
 
-    test('does not call back when the shown account is cleared', () {
+    test('does not call back when the shown account is cleared', () async {
       source.applySession(DelegationFixtures.session());
       final shownAccountIds = watchShownAccounts()..clear();
 
       source.clear();
+      await container.pump();
 
       expect(shownAccountIds, isEmpty);
     });
