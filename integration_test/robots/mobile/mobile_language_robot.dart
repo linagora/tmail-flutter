@@ -35,6 +35,12 @@ class MobileLanguageRobot extends LanguageRobot
     }
   }
 
+  @override
+  Future<void> expectLanguageSelected(Locale locale) async {
+    final languageName = locale.getLanguageNameByCurrentLocale(AppLocalizations());
+    await $(#language_drop_down_button).$(languageName).waitUntilVisible();
+  }
+
   String _languageItemText(Locale locale) {
     final appLocalizations = AppLocalizations();
     return '${locale.getLanguageNameByCurrentLocale(appLocalizations)} - '
