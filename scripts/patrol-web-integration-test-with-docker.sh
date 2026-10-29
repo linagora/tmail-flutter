@@ -7,6 +7,16 @@ PATROL_LOG="$CI_LOGS/patrol-console.log"
 BACKEND_READY_FIFO=
 mkdir -p "$CI_LOGS"
 
+# The 2 s splash delay before runApp only slows the per-test page boot; the PR image build uses a git archive, so it is unaffected.
+# Idempotent (a re-run finds it already stripped); fails before any setup when the template drifts.
+if grep -q '}, 2000);' web/index.html; then
+    if [ "$(grep -c '}, 2000);' web/index.html)" != 2 ]; then
+        echo "web/index.html no longer has exactly 2 splash delays to strip" >&2
+        exit 1
+    fi
+    sed -i.bak 's/}, 2000);/}, 0);/' web/index.html && rm -f web/index.html.bak
+fi
+
 timing() {
     echo "[timing $(date -u +%FT%TZ)] +${SECONDS}s $*"
 }
