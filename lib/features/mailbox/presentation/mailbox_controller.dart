@@ -627,15 +627,15 @@ class MailboxController extends BaseMailboxController
   }
 
   Future<void> _handleWebSocketMessage(WebSocketMessage message) async {
-    final stamp = stampShownAccountRequest();
+    // An account switch clears the folder state it leaves, so a message queued before it has nothing to refresh.
+    if (currentMailboxState == null) return;
     try {
-      final refreshViewState = await refreshAllMailboxInteractor!.execute(
+      final refreshViewState = await awaitShownAccountState(refreshAllMailboxInteractor!.execute(
         session!,
         accountId!,
         currentMailboxState!,
         properties: MailboxConstants.propertiesDefault,
-      ).last;
-      if (!stamp.isCurrent) return;
+      ));
 
       final refreshState = refreshViewState
           .foldSuccessWithResult<RefreshChangesAllMailboxSuccess>();
@@ -650,7 +650,6 @@ class MailboxController extends BaseMailboxController
       }
     } catch (e, stackTrace) {
       logWarning('MailboxController::_processMailboxStateQueue:Error processing state: $e');
-      if (!stamp.isCurrent) return;
       onError(e, stackTrace);
     }
     if (currentMailboxState != null) {
