@@ -22,6 +22,9 @@ class UiKeys {
   // Suggestion-overlay chips; compose with the filter name. Distinct from the result-bar keys.
   static const String quickSearchFilterButtonPrefix = 'quick_search_filter_button_';
 
+  // Language & region
+  static const String languageDropDownButton = 'language_drop_down_button';
+
   // Email rules / rules filter creator
   static const String createRuleButton = 'createRuleButton';
   static const String emailRulesSettingMenuItem = 'setting_email_rules';

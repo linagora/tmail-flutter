@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
@@ -79,4 +80,20 @@ class AppConfig {
 
   static bool get isForceEmailQueryEnabled =>
       dotenv.get('FORCE_EMAIL_QUERY', fallback: 'false') == 'true';
+
+  static final RegExp _languageRegionSeparator = RegExp('[-_]');
+
+  /// Language codes from `ALLOWED_LANGUAGES` (e.g. `mn,en`), lowercased and
+  /// without region (`pt-BR` → `pt`). Empty means every language is allowed.
+  /// Web only: the mobile apps always offer every language.
+  static List<String> get allowedLanguageCodes {
+    if (!PlatformInfo.isWeb || !dotenv.isInitialized) return [];
+
+    return dotenv
+        .get('ALLOWED_LANGUAGES', fallback: '')
+        .split(',')
+        .map((code) => code.trim().toLowerCase().split(_languageRegionSeparator).first)
+        .where((code) => code.isNotEmpty)
+        .toList();
+  }
 }

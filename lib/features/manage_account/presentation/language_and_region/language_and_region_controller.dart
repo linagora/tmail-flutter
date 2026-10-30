@@ -46,19 +46,22 @@ class LanguageAndRegionController extends BaseController {
   }
 
   void _setUpSupportedLanguages() {
-    listSupportedLanguages.value = LocalizationService.supportedLocales;
+    listSupportedLanguages.value = LocalizationService.availableLocales;
 
     final currentLocale = Get.locale;
     log('LanguageAndRegionController::_setUpSupportedLanguages():currentLocale: $currentLocale');
     if (currentLocale != null) {
-      languageSelected.value = currentLocale;
+      // Check the listed entry of the current language (fr_CA → fr_FR)
+      languageSelected.value = listSupportedLanguages.firstWhereOrNull(
+        (locale) => locale.languageCode == currentLocale.languageCode,
+      ) ?? currentLocale;
     } else {
-      languageSelected.value = LocalizationService.defaultLocale;
+      languageSelected.value = LocalizationService.availableDefaultLocale;
     }
   }
 
   void selectLanguage(Locale? selectedLocale) {
-    languageSelected.value = selectedLocale ?? LocalizationService.defaultLocale;
+    languageSelected.value = selectedLocale ?? LocalizationService.availableDefaultLocale;
     _saveLanguage(languageSelected.value);
   }
 
