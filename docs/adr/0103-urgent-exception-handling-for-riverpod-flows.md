@@ -1,6 +1,7 @@
 # 103. Urgent-exception handling for Riverpod flows
 
 Date: 2026-07-07
+Updated: 2026-10-30
 
 ## Status
 
@@ -22,6 +23,8 @@ Riverpod notifiers consume interactors directly (`interactor.execute(...).last`)
 Add one shared primitive, `handleUrgentExceptionIfNeeded({Failure? failure, Object? exception})` (`lib/features/base/handle_urgent_exception.dart`). It resolves the registered `UrgentExceptionHandler` via the `getBinding` bridge, unwraps both carriers exactly like `BaseController` (`FeatureFailure.exception` or a bare exception), routes urgent  exceptions to `handleUrgentException`, and returns `true` when it handled one.
 
 **Rule:** any Riverpod flow consuming an interactor result MUST call this on failure. The caller skips its own failure UI when it returns `true`. The `empty_folder` delegate is refactored onto it, removing the duplicated inline logic.
+
+**Exception — optional discovery:** An optional well-known / config fetch (for example `.well-known/linagora-ecosystem` via `InteractorConsumer`) may pass `shouldRouteUrgentException` so connectivity failures (`ConnectionError`, `NoNetworkError`) soft-degrade without a connection-error toast, while auth urgent exceptions (`BadCredentialsException`, `RefreshTokenFailedException`) still route. Do not use this opt-out for session-critical interactors.
 
 ### Handler is a lifetime service, not a screen controller
 
