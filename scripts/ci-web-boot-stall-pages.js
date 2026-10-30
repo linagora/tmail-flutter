@@ -32,9 +32,9 @@ function readPort(dir) {
   return value;
 }
 
-// Runs in the page: null once booted, else what the boot still waits on.
+// Runs in the page: null once Flutter has a view, else what the boot still waits on.
 function pageBootState() {
-  if (document.readyState === 'complete') return null;
+  if (document.readyState === 'complete' && document.querySelector('flutter-view, flt-glass-pane')) return null;
   const resources = performance.getEntriesByType('resource');
   const finished = new Set(resources.map((entry) => entry.name));
   const scripts = [...document.scripts].map((script) => script.src).filter(Boolean);
