@@ -19,6 +19,9 @@ abstract class AbstractComposerCodeViewRobot {
   /// Reads the editor HTML and writes it back, as Fullscreen does.
   Future<void> writeBackEditorHtml();
 
+  /// Still in Embed code after Escape (or a write-back that must not leave).
+  Future<void> expectStillInCodeView();
+
   /// Checks both that nothing ran and that the editor holds no active markup.
   Future<void> expectActiveContentDidNotRun();
 

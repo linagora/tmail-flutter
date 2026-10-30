@@ -20,7 +20,9 @@ class WriteBackEmbedCodeHtmlScenario extends BaseTestScenario {
     // whose change event reaches the cached body.
     await codeViewRobot.writeBackEditorHtml();
 
+    // Write-back stays in code view. setText only syncs the textarea there, so
+    // an editable DOM check would not prove Fullscreen safety.
+    await codeViewRobot.expectStillInCodeView();
     await codeViewRobot.expectCachedBodyHasNoActiveContent();
-    await codeViewRobot.expectActiveContentDidNotRun();
   }
 }
