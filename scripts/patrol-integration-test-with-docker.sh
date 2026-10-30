@@ -21,6 +21,7 @@ mkdir -p "$CI_LOGS"
 # Per-run paths: /tmp is host-wide, a neighbor job must never read our tunnel ports.
 RESET_SERVER_LOG="$CI_LOGS/backend-reset-server.log"
 BORE_RESET_LOG="$CI_LOGS/bore-reset.log"
+source "$ROOT_DIR/scripts/ci-bore-tunnels.sh"
 
 FTL_SHARDS="${FTL_SHARDS:-4}"
 POOL_SIZE="${POOL_SIZE:-6}"
@@ -78,19 +79,17 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 
 # ── bore tunnel setup ─────────────────────────────────────────────────────────
-echo "Starting bore tunnels..."
+echo "Starting bore tunnels via $BORE_HOST ($(bore --version 2>&1))..."
 timing "bore tunnels start"
 # One tunnel per backend slot; the reset server hands each lease the slot's public URL.
 for (( n = 0; n < POOL_SIZE; n++ )); do
-    nohup bore local $(( 8100 + n )) --to bore.pub > "$CI_LOGS/bore-slot$n.log" 2>&1 &
+    : > "$CI_LOGS/bore-slot$n.log"
+    supervise_bore $(( 8100 + n )) "$CI_LOGS/bore-slot$n.log" &
     BORE_SLOT_PIDS+=($!)
 done
-nohup bore local 9999 --to bore.pub > "$BORE_RESET_LOG" 2>&1 &
+: > "$BORE_RESET_LOG"
+supervise_bore 9999 "$BORE_RESET_LOG" &
 BORE_RESET_PID=$!
-
-bore_port() {
-    grep -oE 'listening at bore\.pub:[0-9]+' "$1" 2>/dev/null | head -1 | cut -d: -f2
-}
 
 echo "Waiting for bore tunnels..."
 BORE_RESET_PORT=""
@@ -116,8 +115,8 @@ until [ -n "$BORE_RESET_PORT" ] && [ "${#BORE_SLOT_PORTS[@]}" -eq "$POOL_SIZE" ]
     sleep 1
 done
 
-BORE_RESET_URL="http://bore.pub:$BORE_RESET_PORT"
-POOL_URLS=$(python3 -c 'import sys; print(",".join(f"http://bore.pub:{p}" for p in sys.argv[1:]))' "${BORE_SLOT_PORTS[@]}")
+BORE_RESET_URL="http://$BORE_HOST:$BORE_RESET_PORT"
+POOL_URLS=$(python3 -c 'import sys; print(",".join(f"http://{sys.argv[1]}:{p}" for p in sys.argv[2:]))' "$BORE_HOST" "${BORE_SLOT_PORTS[@]}")
 # Slots are numbered by their local port, so keep tunnel order = slot order.
 echo "bore backend tunnels:  $POOL_URLS"
 echo "bore reset tunnel:     $BORE_RESET_URL"
@@ -209,7 +208,11 @@ timing "gcloud auth end"
 
 wait "$PATROL_BUILD_PID"
 PATROL_BUILD_PID=""
-kill -0 "${BORE_SLOT_PIDS[@]}" "$BORE_RESET_PID" "$RESET_SERVER_PID"
+check_bore_supervisors || { bore_summary; exit 1; }
+kill -0 "$RESET_SERVER_PID"
+timing "bore probe start"
+probe_bore_tunnels || { bore_summary; exit 1; }
+timing "bore probe end"
 
 # AGP 8.12 puts the APKs under android/app/build, not ../build
 APP_APK=$(find build android/app/build -path '*/apk/debug/app-debug.apk' 2>/dev/null | head -1)
@@ -251,7 +254,9 @@ TEST_EXIT_CODE=${PIPESTATUS[0]}
 set -e
 timing "FTL end ($(( SECONDS - ftl_started ))s, exit $TEST_EXIT_CODE)"
 SERVICES_EXIT_CODE=0
-kill -0 "${BORE_SLOT_PIDS[@]}" "$BORE_RESET_PID" "$RESET_SERVER_PID" || SERVICES_EXIT_CODE=$?
+check_bore_supervisors || SERVICES_EXIT_CODE=1
+kill -0 "$RESET_SERVER_PID" || SERVICES_EXIT_CODE=1
+bore_summary
 stop_services
 
 # Devices have finished, so backend teardown can overlap artifact downloads.
