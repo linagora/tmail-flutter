@@ -42,7 +42,7 @@ if [ -n "$GCS_PATH" ]; then
             [ "$rel" = "$gcs_file" ] && rel="${gcs_file#gs://}"
             mkdir -p "ftl-results/$(dirname "$rel")"
             # One small file per call: gsutil start-up dominates, so copy them concurrently.
-            { gsutil cp "$gcs_file" "ftl-results/$rel" 2>/dev/null || true; } &
+            { for _ in 1 2 3; do gsutil cp "$gcs_file" "ftl-results/$rel" 2>/dev/null && break; sleep 2; done; } &
           done; wait; } || true
 
     xml_count=$(find ftl-results -name 'test_result_*.xml' | wc -l)
