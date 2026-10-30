@@ -1,5 +1,9 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:model/oidc/oidc_configuration.dart';
+import 'package:model/oidc/response/oidc_discovery_response.dart';
 import 'package:model/oidc/token_id.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_mobile.dart';
@@ -97,6 +101,117 @@ void main() {
       expect(refreshed.refreshToken, _currentToken.refreshToken);
     });
   });
+
+  group('AuthenticationClientMobile::logoutOidc', () {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    const webAuthChannel = MethodChannel('flutter_web_auth_2');
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    final discovery = OIDCDiscoveryResponse(
+      'https://sign-up.twake.app/oauth2/authorize',
+      'https://sign-up.twake.app/oauth2/token',
+      'https://sign-up.twake.app/oauth2/logout',
+      'https://sign-up.twake.app/oauth2/userinfo',
+    );
+    final twakeWorkplace = OIDCConfiguration(
+      authority: 'https://sign-up.twake.app',
+      clientId: 'teammail-mobile',
+      scopes: const ['openid'],
+      isTWP: true,
+    );
+    late List<MethodCall> webAuthCalls;
+    late _EndSessionRecordingAppAuth appAuth;
+
+    setUp(() {
+      webAuthCalls = [];
+      appAuth = _EndSessionRecordingAppAuth();
+    });
+
+    tearDown(() {
+      debugDefaultTargetPlatformOverride = null;
+      messenger.setMockMethodCallHandler(webAuthChannel, null);
+    });
+
+    void answerWebAuth(Future<Object?> Function(MethodCall call) answer) {
+      messenger.setMockMethodCallHandler(webAuthChannel, (call) {
+        webAuthCalls.add(call);
+        return answer(call);
+      });
+    }
+
+    // linagora/tmail-flutter#5038: AppAuth's ephemeral session on iOS cannot
+    // see the SSO cookies the sign-in left, so the sign-out must run in the
+    // same browser session as signInTwakeWorkplace. #5037: the portal drops
+    // post_logout_redirect_uri but returns to its own `url` for teammail.mobile.
+    for (final platform in [TargetPlatform.iOS, TargetPlatform.android]) {
+      test('signs a Twake Workplace account out in the sign-in browser on '
+          '${platform.name}, returning on teammail.mobile://logout', () async {
+        debugDefaultTargetPlatformOverride = platform;
+        answerWebAuth((_) async => 'teammail.mobile://logout');
+
+        final result = await AuthenticationClientMobile(appAuth)
+            .logoutOidc(TokenId('an-id-token'), twakeWorkplace, discovery);
+
+        expect(result, isTrue);
+        expect(appAuth.endSessionCalls, 0);
+        expect(webAuthCalls.single.method, 'authenticate');
+        final arguments = webAuthCalls.single.arguments as Map;
+        expect(arguments['callbackUrlScheme'], 'teammail.mobile');
+        final url = Uri.parse(arguments['url'] as String);
+        expect(url.origin + url.path, 'https://sign-up.twake.app/oauth2/logout');
+        expect(url.queryParameters, {
+          'id_token_hint': 'an-id-token',
+          'post_logout_redirect_uri': 'teammail.mobile://logout',
+          'url': 'teammail.mobile://logout',
+        });
+      });
+    }
+
+    // The dashboard treats end_session_failed as "the user closed the logout
+    // page" and still clears the local data.
+    test('reports a closed logout page as end_session_failed', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      answerWebAuth((_) async => throw PlatformException(code: 'CANCELED'));
+
+      expect(
+        AuthenticationClientMobile(appAuth)
+            .logoutOidc(TokenId('an-id-token'), twakeWorkplace, discovery),
+        throwsA(isA<PlatformException>()
+            .having((e) => e.code, 'code', 'end_session_failed')),
+      );
+    });
+
+    for (final platform in [TargetPlatform.iOS, TargetPlatform.android]) {
+      test('keeps AppAuth for an organisation server on ${platform.name}',
+          () async {
+        debugDefaultTargetPlatformOverride = platform;
+        answerWebAuth((_) async => fail('FlutterWebAuth2 must not be used'));
+
+        await AuthenticationClientMobile(appAuth).logoutOidc(
+          TokenId('an-id-token'),
+          OIDCConfiguration(
+            authority: 'https://sso.example.com',
+            clientId: 'teammail-mobile',
+            scopes: const ['openid'],
+          ),
+          discovery,
+        );
+
+        expect(appAuth.endSessionCalls, 1);
+        expect(webAuthCalls, isEmpty);
+      });
+    }
+  });
+}
+
+class _EndSessionRecordingAppAuth extends FlutterAppAuth {
+  int endSessionCalls = 0;
+
+  @override
+  Future<EndSessionResponse> endSession(EndSessionRequest request) async {
+    endSessionCalls++;
+    return EndSessionResponse('a-state');
+  }
 }
 
 TokenResponse _tokenResponse({
