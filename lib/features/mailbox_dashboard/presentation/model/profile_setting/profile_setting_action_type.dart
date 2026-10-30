@@ -6,6 +6,11 @@ enum ProfileSettingActionType {
   manageAccount,
   signOut;
 
+  static List<ProfileSettingActionType> shown({required bool canOpenSettings}) => [
+    if (canOpenSettings) manageAccount,
+    signOut,
+  ];
+
   String getTitle(AppLocalizations appLocalizations) {
     switch(this) {
       case ProfileSettingActionType.manageAccount:

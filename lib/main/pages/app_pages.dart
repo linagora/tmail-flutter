@@ -4,6 +4,7 @@ import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart' deferred as composer;
 import 'package:tmail_ui_user/features/contact/presentation/contact_bindings.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/route/settings_route_guard.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_bindings.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_view.dart' deferred as destination_picker;
 import 'package:tmail_ui_user/features/email_previewer/email_previewer_bindings.dart';
@@ -74,7 +75,8 @@ class AppPages {
         page: () => DeferredWidget(
             manage_account_dashboard.loadLibrary,
             () => manage_account_dashboard.ManageAccountDashBoardView()),
-        binding: ManageAccountDashBoardBindings()),
+        binding: ManageAccountDashBoardBindings(),
+        middlewares: [SettingsRouteGuard()]),
     GetPage(
       name: AppRoutes.contact,
       opaque: false,
