@@ -19,8 +19,8 @@ class BackendResetClient {
 
   /// Leases a backend; the server holds the request until one is free.
   static Future<TestBackend> lease({
-    // Longer than the server's LEASE_TIMEOUT (300 s), so the server answers first.
-    Duration timeout = const Duration(minutes: 6),
+    // Server answers by LEASE_TIMEOUT (150 s); stays under TestBase's 4 min test timeout.
+    Duration timeout = const Duration(minutes: 3),
   }) async {
     final dio = _newDio(timeout);
     try {

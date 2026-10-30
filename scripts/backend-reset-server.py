@@ -26,7 +26,8 @@ Environment variables:
   POOL_LOG_DIR              Directory of the per-slot backend logs (default: cwd)
   BOOT_TIMEOUT              Seconds a container may take to start (default: 180)
   LEASE_TTL                 Seconds after which an unreleased lease is reclaimed (default: 600)
-  LEASE_TIMEOUT             Seconds a /lease waits for a free backend (default: 300)
+  LEASE_TIMEOUT             Seconds a /lease waits for a free backend; under the client's 3 min (default: 150)
+  POOL_READY_TIMEOUT        Seconds startup waits for POOL_MIN_FREE free slots (default: 300)
   WORK_DIR                  Repo root, used to resolve the compose file (default: cwd)
   BACKUP_ZIP                Path to backup.zip on the host (default: provisioning/... relative to WORK_DIR)
 """
@@ -57,7 +58,8 @@ POOL_PROJECT            = os.environ.get("POOL_PROJECT", "tmail-pool")
 POOL_JAVA_TOOL_OPTIONS  = os.environ.get("POOL_JAVA_TOOL_OPTIONS", "-Xmx512m -XX:TieredStopAtLevel=1 -XX:+UseSerialGC -Xshare:auto")
 BOOT_TIMEOUT            = float(os.environ.get("BOOT_TIMEOUT", "180"))
 LEASE_TTL               = float(os.environ.get("LEASE_TTL", "600"))
-LEASE_TIMEOUT           = float(os.environ.get("LEASE_TIMEOUT", "300"))
+LEASE_TIMEOUT           = float(os.environ.get("LEASE_TIMEOUT", "150"))
+POOL_READY_TIMEOUT      = float(os.environ.get("POOL_READY_TIMEOUT", "300"))
 WORK_DIR                = os.environ.get("WORK_DIR", os.getcwd())
 POOL_LOG_DIR            = os.environ.get("POOL_LOG_DIR", os.getcwd())
 BACKUP_ZIP              = os.environ.get(
@@ -386,7 +388,7 @@ class ResetHandler(http.server.BaseHTTPRequestHandler):
 
 
 def _watch_ready(pool: Pool) -> None:
-    free = pool.wait_ready(LEASE_TIMEOUT)
+    free = pool.wait_ready(POOL_READY_TIMEOUT)
     if free < POOL_MIN_FREE:
         print(f"[reset-server] ERROR only {free} of {POOL_SIZE} backends are free (need {POOL_MIN_FREE})",
               file=sys.stderr, flush=True)
