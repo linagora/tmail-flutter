@@ -6,11 +6,11 @@ class HideSignOutInsideTwakeWorkplaceScenario extends BaseTestScenario {
   const HideSignOutInsideTwakeWorkplaceScenario(super.$, super.robots);
 
   @override
-  Future<void> execute() async {
-    // Before the seeded login opens the dashboard, which checks once whether
-    // it runs inside Twake Workplace.
+  Future<void> prepare() async {
+    // Before the seeded app mounts and the dashboard checks once whether it
+    // runs inside Twake Workplace.
     simulateTwakeWorkplace();
-    await super.execute();
+    await super.prepare();
   }
 
   @override

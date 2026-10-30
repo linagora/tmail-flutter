@@ -20,12 +20,15 @@ class CollapsedThreadsSearchMoreScenario extends BaseTestScenario
   @override
   Future<void> runTestLogic() => runWithCollapsedThreads(() async {
         final threads = List.generate(_threadCount, (i) => i + 1);
-        await threadProvisioner.provision(ProvisioningThreads(
+        final created = await threadProvisioner.provision(ProvisioningThreads(
           subjectPrefix: threadSubjectPrefix,
           threadNumbers: threads,
           repliesPerThread: _repliesPerThread,
           newest: DateTime.now().toUtc().subtract(const Duration(days: 1)),
         ));
+        // A websocket refresh landing after the search starts replaces the
+        // paged search rows with the first folder page.
+        await waitForEmailState(created.state);
         await reloadFolder();
 
         final searchRobot = robots.searchRobot();
@@ -40,5 +43,15 @@ class CollapsedThreadsSearchMoreScenario extends BaseTestScenario
           threads,
           threadSubjectPrefix,
         );
+
+        // The cleanup restores the thread settings, which refreshes an open
+        // search while it lays out.
+        dashboardController.searchController.disableAllSearchEmail();
+        await waitForStep(
+          'search closed',
+          () => !dashboardController.searchController.isSearchActive(),
+        );
+        await waitForStep('threads listed', () => listedThreads.isNotEmpty);
+        await waitForLoadMoreIdle();
       });
 }

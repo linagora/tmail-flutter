@@ -52,7 +52,7 @@ android {
         manifestPlaceholders = [
                 'appAuthRedirectScheme': 'teammail.mobile'
         ]
-        testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
+        testInstrumentationRunner "com.linagora.android.tmail.ActivityDrainingPatrolJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: "true"
     }
 
@@ -79,6 +79,14 @@ android {
         }
         debug {
             minifyEnabled false
+            // Split APKs cannot also use NDK ABI filters.
+            if (project.findProperty('target-platform') == 'android-arm64' &&
+                    !(project.findProperty('split-per-abi')?.toString()?.toBoolean() ?: false)) {
+                ndk {
+                    abiFilters.clear()
+                    abiFilters 'arm64-v8a'
+                }
+            }
         }
     }
 

@@ -1,11 +1,13 @@
 #!/bin/bash
-# Usage: ci-web-stall-watchdog.sh <patrol-console-log> <dump-file> <root-pid>
+# Usage: ci-web-stall-watchdog.sh <patrol-console-log> <dump-file> <root-pid> [<reset-server-log>]
 # Once Playwright runs under <root-pid>, a console with no new test/step marker
+# (or, with parallel workers, no new backend lease/release in <reset-server-log>)
 # for STALL_MINUTES gets its process/socket/HTTP state dumped and Playwright
 # interrupted, so a stuck run fails fast with evidence.
 PATROL_LOG="$1"
 DUMP_FILE="$2"
 ROOT_PID="$3"
+RESET_LOG="${4:-}"
 STALL_MINUTES="${STALL_MINUTES:-15}"
 POLL_SECONDS="${POLL_SECONDS:-30}"
 GRACE_SECONDS="${GRACE_SECONDS:-60}"
@@ -27,8 +29,14 @@ playwright_pids() {
     done
 }
 
+# Parallel workers hide Patrol's per-test markers; leases and releases still show progress.
 count_markers() {
-    LC_ALL=C grep -acE '✅|❌' "$PATROL_LOG" 2>/dev/null || true
+    local markers leases=0
+    markers=$(LC_ALL=C grep -acE '✅|❌' "$PATROL_LOG" 2>/dev/null || true)
+    if [ -n "$RESET_LOG" ]; then
+        leases=$(grep -acE 'lease slot|release slot' "$RESET_LOG" 2>/dev/null || true)
+    fi
+    echo $(( ${markers:-0} + ${leases:-0} ))
 }
 
 dump_state() {
@@ -37,7 +45,7 @@ dump_state() {
         echo "--- processes by cpu"
         ps -eo pid,ppid,stat,etime,pcpu,pmem,rss,comm --sort=-pcpu | head -30
         echo "--- sockets"
-        ss -tanp 2>/dev/null | grep -E ':(3000|9999|80)\b'
+        ss -tanp 2>/dev/null | grep -E ':(3000|9999|81[0-9]{2}|82[0-9]{2})\b'
         echo "--- flutter web server"
         curl -sS -m 10 -o /dev/null -w 'GET / http=%{http_code} time=%{time_total}s\n' http://localhost:3000/
         curl -sS -m 10 -o /dev/null -w 'GET main.dart.js http=%{http_code} time=%{time_total}s\n' http://localhost:3000/main.dart.js

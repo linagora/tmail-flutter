@@ -2400,10 +2400,11 @@ packages:
   super_tag_editor:
     dependency: "direct main"
     description:
-      name: super_tag_editor
-      sha256: "7f7c1cb38e98e9cfa92fb074d4d5f5f53846d6bffcc96e05cb2191c159dba28d"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: f7ae73316b986b533d29be5be41a461243df3b20
+      resolved-ref: f7ae73316b986b533d29be5be41a461243df3b20
+      url: "https://github.com/tddang-linagora/super_tag_editor.git"
+    source: git
     version: "1.1.0"
   syncfusion_flutter_core:
     dependency: transitive

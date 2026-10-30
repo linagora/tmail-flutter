@@ -9,10 +9,8 @@ set -euo pipefail
 # Usage:
 #   ./scripts/patrol-local-integration-test-with-docker.sh
 
-# Stop previous backend environment if any
-cd backend-docker || exit 1
-docker compose down || true
-cd ..
+# Each test leases a fresh tmail-backend container from the reset server (slots on ports 8100+).
+POOL_SIZE="${POOL_SIZE:-3}"
 
 cd backend-docker || exit 1
 
@@ -22,44 +20,37 @@ if [[ ! -f jwt_privatekey ]]; then
     openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -out jwt_privatekey
     openssl rsa -in jwt_privatekey -pubout -out jwt_publickey
 fi
+cd ..
 
-# 10.0.2.2 is the QEMU alias for the host machine — the Android emulator uses this
-# to reach tmail-backend which is bound to host port 80.
-# Edit the sed commands if not using MacOS
-sed -i.bak "s|url.prefix=.*|url.prefix=http://10.0.2.2|" jmap.properties
-sed -i.bak "s|websocket.url.prefix=.*|websocket.url.prefix=ws://10.0.2.2|" jmap.properties
-
-echo "Starting tmail-backend via Docker..."
-docker compose up -d tmail-backend
-
-# Wait for tmail-backend
-until (docker compose logs tmail-backend | grep -i "JAMES server started"); do
-    echo "Waiting for tmail-backend to start..."
-    sleep 2
-done
 export BOB="bob"
 export ALICE="alice"
 export DOMAIN="example.com"
 
-docker exec tmail-backend /root/conf/integration_test/provisioning.sh >/dev/null 2>&1
-
-cd ..
-
-# 10.0.2.2 is QEMU's hardcoded alias for the host — reaches tmail-backend on port 80
-export BASIC_AUTH_URL="http://10.0.2.2"
+# 10.0.2.2 is QEMU's hardcoded alias for the host — reaches the backend slots on ports 8100+
+export BASIC_AUTH_URL="http://10.0.2.2:8100"
 export RESET_PORT=9999
 
 RESET_SERVER_LOG="/tmp/backend-reset-server.log"
 echo "Starting backend reset server on port $RESET_PORT (logs: $RESET_SERVER_LOG)..."
-RESET_PORT="$RESET_PORT" python3 scripts/backend-reset-server.py > "$RESET_SERVER_LOG" 2>&1 &
+POOL_URLS=$(python3 -c 'import sys; print(",".join(f"http://10.0.2.2:{8100 + i}" for i in range(int(sys.argv[1]))))' "$POOL_SIZE")
+RESET_PORT="$RESET_PORT" POOL_SIZE="$POOL_SIZE" POOL_URLS="$POOL_URLS" POOL_LOG_DIR=/tmp WORK_DIR="$PWD" \
+    python3 scripts/backend-reset-server.py > "$RESET_SERVER_LOG" 2>&1 &
 RESET_SERVER_PID=$!
+deadline=$(( SECONDS + 300 ))
+until grep -q "pool ready" "$RESET_SERVER_LOG"; do
+    if ! kill -0 "$RESET_SERVER_PID" 2>/dev/null || (( SECONDS >= deadline )); then
+        echo "ERROR: backend pool did not become ready:"
+        tail -n 50 "$RESET_SERVER_LOG"
+        exit 1
+    fi
+    sleep 1
+done
 
 cleanup() {
     echo "Cleaning up test environment..."
+    # SIGTERM makes the reset server remove its backend containers.
     kill "$RESET_SERVER_PID" 2>/dev/null || true
-    cd backend-docker || exit 0
-    docker compose down
-    cd ..
+    wait "$RESET_SERVER_PID" 2>/dev/null || true
 }
 trap cleanup EXIT
 
