@@ -230,13 +230,14 @@ printf 'Results GCS path: gs://%s/%s/\n' "$RESULTS_BUCKET" "$RESULTS_DIR" | tee 
 timing "FTL start ($FTL_SHARDS shards)"
 ftl_started=$SECONDS
 set +e
+# Normal shards take ~7 min; a stuck instrumentation must fail fast.
 gcloud beta firebase test android run \
     --project="$FIREBASE_PROJECT_ID" \
     --type instrumentation \
     --app "$APP_APK" \
     --test "$TEST_APK" \
     --device model=MediumPhone.arm,version=34 \
-    --timeout 60m \
+    --timeout 20m \
     --use-orchestrator \
     --num-uniform-shards="$FTL_SHARDS" \
     --environment-variables clearPackageData=true \
