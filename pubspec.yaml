@@ -115,7 +115,10 @@ dependencies:
   intl_generator:
 
   ### Dependencies from pub.dev ###
-  super_tag_editor: 1.1.0
+  super_tag_editor:
+    git:
+      url: https://github.com/tddang-linagora/super_tag_editor.git
+      ref: f7ae73316b986b533d29be5be41a461243df3b20
 
   super_dns_client: 0.3.8
 
