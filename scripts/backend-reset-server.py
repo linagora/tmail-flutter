@@ -224,7 +224,6 @@ class Pool:
         self._token: Dict[int, str] = {}
         self._leased_at: Dict[int, float] = {}
         self._threads: List[threading.Thread] = []
-        self._ready_logged = False
 
     def start(self) -> None:
         for n in self._state:
@@ -308,10 +307,6 @@ class Pool:
                 print(f"[reset-server] ERROR slot {n} attempt {attempt}: {exc}", file=sys.stderr, flush=True)
         with self._cond:
             self._state[n] = state if not _stopping.is_set() else "dropped"
-            if not self._ready_logged and not any(s == "resetting" for s in self._state.values()):
-                self._ready_logged = True
-                free = sum(1 for s in self._state.values() if s == "free")
-                print(f"[reset-server] pool ready free={free}", flush=True)
             self._cond.notify_all()
 
 
@@ -397,6 +392,7 @@ def _watch_ready(pool: Pool) -> None:
               file=sys.stderr, flush=True)
         stop_all(pool)
         os._exit(1)
+    print(f"[reset-server] pool ready free={free}", flush=True)
 
 
 if __name__ == "__main__":
