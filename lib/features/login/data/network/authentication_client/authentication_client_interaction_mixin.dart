@@ -35,6 +35,24 @@ mixin AuthenticationClientInteractionMixin {
     );
   }
 
+  /// Standard OpenID Connect RP-Initiated Logout request, opened by hand in
+  /// the sign-in browser (#5038). [portalReturnUrl] adds the Twake Workplace
+  /// portal's own `url` parameter, which it honours instead (#5037).
+  String getEndSessionUrl(
+    String endSessionEndpoint,
+    TokenId tokenId,
+    String postLogoutRedirectUrl, {
+    String? portalReturnUrl,
+  }) {
+    final uri = Uri.parse(endSessionEndpoint);
+    return uri.replace(queryParameters: {
+      ...uri.queryParameters,
+      'id_token_hint': tokenId.uuid,
+      'post_logout_redirect_uri': postLogoutRedirectUrl,
+      if (portalReturnUrl != null) 'url': portalReturnUrl,
+    }).toString();
+  }
+
   ExternalUserAgent getExternalUserAgent() => PlatformInfo.isIOS
       ? ExternalUserAgent.ephemeralAsWebAuthenticationSession
       : ExternalUserAgent.asWebAuthenticationSession;

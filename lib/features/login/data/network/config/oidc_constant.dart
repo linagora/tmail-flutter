@@ -13,6 +13,9 @@ class OIDCConstant {
   static const String postLoginRedirectUrlPathParams = 'post_login_redirect_url';
   static const String endSessionFailedCode = 'end_session_failed';
   static const String redirectOidcMobile = 'teammail.mobile://oauthredirect';
+  // The portal only returns to some schemes after a logout, teammail.mobile
+  // among them, and drops post_logout_redirect_uri (#5037).
+  static const String twakeWorkplaceLogoutRedirectUrl = 'teammail.mobile://logout';
   static const String loginRedirectOidcWeb = 'login-callback.html';
   static const String logoutRedirectOidcWeb = 'logout-callback.html';
 
