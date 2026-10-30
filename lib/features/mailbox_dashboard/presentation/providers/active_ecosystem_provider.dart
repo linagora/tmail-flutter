@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosyst
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_linagora_ecosystem_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_linagora_system_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/linagora_ecosystem_providers.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 
 enum EcosystemUnavailableReason {
   missingAccount,
@@ -101,9 +102,13 @@ EcosystemState resolveActiveEcosystem(
   );
 }
 
-/// Consumes the ecosystem interactor through the shared seam so the failure is
-/// logged once and urgent exceptions still reach the re-login / reconnect flow
-/// (ADR-0103), exactly like `BaseController.consumeState` does for GetX.
+/// Loads the optional `.well-known/linagora-ecosystem` document.
+///
+/// Connectivity failures (missing/CORS-blocked file → [ConnectionError] /
+/// [NoNetworkError]) soft-degrade to [EcosystemUnavailable] without a
+/// "Connection error" toast. Auth urgent exceptions from the shared Dio still
+/// route re-login (ADR-0103). Stronger than the old GetX path, which toasted
+/// [ConnectionError] before `handleGetLinagoraEcosystemFailure` could run.
 class _EcosystemLoader with InteractorConsumer {
   final Ref _ref;
 
@@ -118,17 +123,21 @@ class _EcosystemLoader with InteractorConsumer {
     StackTrace? failureStackTrace;
 
     await consumeInteractor(
-      () => interactor.execute(jmapUrl).firstWhere(_isTerminalEcosystemState),
-      isStale: () => !_ref.mounted,
-      onSuccess: (success) {
-        if (success is GetLinagoraEcosystemSuccess) {
-          loadedEcosystem = success.linagoraEcosystem;
-        }
-      },
-      onFailure: (error, stackTrace) {
-        failure = error;
-        failureStackTrace = stackTrace;
-      },
+      InteractorConsumeRequest(
+        run: () =>
+            interactor.execute(jmapUrl).firstWhere(_isTerminalEcosystemState),
+        isStale: () => !_ref.mounted,
+        shouldRouteUrgentException: shouldRouteEcosystemUrgentException,
+        onSuccess: (success) {
+          if (success is GetLinagoraEcosystemSuccess) {
+            loadedEcosystem = success.linagoraEcosystem;
+          }
+        },
+        onFailure: (error, stackTrace) {
+          failure = error;
+          failureStackTrace = stackTrace;
+        },
+      ),
     );
 
     final error = failure;
@@ -147,3 +156,12 @@ bool _isTerminalEcosystemState(Either<Failure, Success> state) => state.fold(
       (_) => true,
       (success) => success is! GettingLinagoraEcosystem,
     );
+
+/// Soft-fails optional-discovery connectivity; keeps auth urgent routing.
+///
+/// [InteractorConsumer] already unwraps [FeatureFailure] before calling this;
+/// the unwrap here keeps the helper correct if invoked directly (tests).
+bool shouldRouteEcosystemUrgentException(Object error) {
+  final exception = error is FeatureFailure ? error.exception : error;
+  return exception is! ConnectionError && exception is! NoNetworkError;
+}

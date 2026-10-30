@@ -194,13 +194,15 @@ class SearchEmailNotifier extends _$SearchEmailNotifier with InteractorConsumer 
     required InteractorFailureHandler onFailure,
   }) async {
     final succeeded = await consumeInteractor(
-      runInteractor,
-      isStale: () => !ref.mounted || requestId != _latestRequestId,
-      onSuccess: (success) {
-        final page = _emailsOf(success);
-        if (page != null) onPageLoaded(page); // else intermediate — keep current
-      },
-      onFailure: onFailure,
+      InteractorConsumeRequest(
+        run: runInteractor,
+        isStale: () => !ref.mounted || requestId != _latestRequestId,
+        onSuccess: (success) {
+          final page = _emailsOf(success);
+          if (page != null) onPageLoaded(page); // else intermediate — keep current
+        },
+        onFailure: onFailure,
+      ),
     );
     if (succeeded) return SearchExecutionResult.success;
     // Re-check staleness after the await: a newer execute() during the
