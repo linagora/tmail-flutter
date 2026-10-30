@@ -40,9 +40,10 @@ stalled_tabs() {
         }' <<< "$1"
 }
 
-# CDP did not answer for every tab: no tab list, a hung page, or the helper timeout.
+# CDP failed somewhere: no tab list, a failed connection or page, or the helper timeout.
+# A profile dir without DevToolsActivePort is a closed browser, not a failure.
 tabs_unreadable() {
-    ! grep -q '^TABS' <<< "$1" || grep -qE '^TIMEOUT|^SKIP .* page=' <<< "$1"
+    ! grep -q '^TABS' <<< "$1" || grep -E '^(SKIP|TIMEOUT)' <<< "$1" | grep -qv 'DevToolsActivePort'
 }
 
 dump_state() {
