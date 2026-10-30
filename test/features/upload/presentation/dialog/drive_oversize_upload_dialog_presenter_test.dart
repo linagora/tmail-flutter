@@ -93,12 +93,17 @@ void main() {
     });
 
     for (final layoutCase in [
-      (isWeb: true, layout: LinagoraFileTransferLayout.wide),
-      (isWeb: false, layout: LinagoraFileTransferLayout.compact),
+      (isWeb: true, width: 1280.0, layout: LinagoraFileTransferLayout.wide),
+      (isWeb: true, width: 600.0, layout: LinagoraFileTransferLayout.wide),
+      (isWeb: true, width: 390.0, layout: LinagoraFileTransferLayout.compact),
+      (isWeb: false, width: 1280.0, layout: LinagoraFileTransferLayout.compact),
     ]) {
-      testWidgets('show uses the ${layoutCase.layout.name} layout when isWeb is ${layoutCase.isWeb}', (tester) async {
+      testWidgets('show uses the ${layoutCase.layout.name} layout when isWeb is ${layoutCase.isWeb} at ${layoutCase.width}px', (tester) async {
         PlatformInfo.isTestingForWeb = layoutCase.isWeb;
         addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = Size(layoutCase.width, 800);
+        addTearDown(tester.view.reset);
         await _pumpHost(tester, container);
 
         await _showDialog(tester, container);
@@ -106,9 +111,40 @@ void main() {
         final surface = tester.widget<LinagoraFileTransferSurface>(find.byType(LinagoraFileTransferSurface));
         final view = tester.widget<DriveOversizeUploadDialogView>(_dialogView);
         expect(surface.layout, equals(layoutCase.layout));
-        expect(view.isWebLayout, equals(layoutCase.isWeb));
+        expect(view.isWebLayout, equals(layoutCase.layout == LinagoraFileTransferLayout.wide));
       });
     }
+
+    testWidgets('narrowing the web window to mobile width swaps the open dialog to the sheet', (tester) async {
+      PlatformInfo.isTestingForWeb = true;
+      addTearDown(() => PlatformInfo.isTestingForWeb = false);
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(1280, 800);
+      addTearDown(tester.view.reset);
+      await _pumpHost(tester, container);
+      await _showDialog(tester, container);
+      expect(
+        tester.widget<LinagoraFileTransferSurface>(find.byType(LinagoraFileTransferSurface)).layout,
+        equals(LinagoraFileTransferLayout.wide),
+      );
+
+      tester.view.physicalSize = const Size(320, 800);
+      await tester.pump();
+
+      expect(
+        tester.widget<LinagoraFileTransferSurface>(find.byType(LinagoraFileTransferSurface)).layout,
+        equals(LinagoraFileTransferLayout.compact),
+      );
+      expect(_dialogView, findsOneWidget);
+
+      // Rebuilt view still drives the same batch.
+      container.read(driveOversizeTransferProvider.notifier).cancelAll();
+      await tester.pump();
+      expect(
+        container.read(driveOversizeTransferProvider).every((item) => item.status.settled),
+        isTrue,
+      );
+    });
 
     testWidgets('the compact sheet background reaches the bottom edge while its content clears the inset', (tester) async {
       tester.view.devicePixelRatio = 1;

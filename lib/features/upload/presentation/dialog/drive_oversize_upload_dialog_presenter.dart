@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,8 +10,8 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/features/upload/presentation/dialog/drive_oversize_upload_dialog_view.dart';
 
-/// Web gets the centred `Dialog`, mobile the bottom sheet, matching the two
-/// Figma frames.
+/// Wide web gets the centred card, mobile and narrow web the bottom sheet,
+/// matching the two Figma frames.
 class DriveOversizeUploadDialogPresenter {
   const DriveOversizeUploadDialogPresenter._();
 
@@ -24,41 +25,45 @@ class DriveOversizeUploadDialogPresenter {
   /// Completes when the route is removed, by [close] or by anything else.
   static Future<void> show(ProviderContainer container, {required Object owner}) {
     _owner = owner;
-    final isWebLayout = PlatformInfo.isWeb;
-    final body = PointerInterceptor(
-      child: UncontrolledProviderScope(
-        container: container,
-        child: DriveOversizeUploadDialogView(
-          imagePaths: ImagePaths(),
-          isWebLayout: isWebLayout,
-        ),
+    return Get.dialog<void>(
+      PopScope(
+        canPop: false,
+        // Rebuilt on resize, so a web window narrowed to mobile width swaps to the sheet.
+        child: Builder(builder: (context) => _buildSurface(context, container)),
       ),
-    );
+      barrierDismissible: false,
+      barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      useSafeArea: PlatformInfo.isWeb,
+    ).whenComplete(() {
+      if (identical(_owner, owner)) _owner = null;
+    });
+  }
 
+  static bool _isWideLayout(BuildContext context) =>
+      PlatformInfo.isWeb &&
+      !ResponsiveUtils.isMatchedMobileWidth(MediaQuery.sizeOf(context).width);
+
+  static Widget _buildSurface(BuildContext context, ProviderContainer container) {
+    final isWebLayout = _isWideLayout(context);
     final surface = LinagoraFileTransferSurface(
       layout: isWebLayout
           ? LinagoraFileTransferLayout.wide
           : LinagoraFileTransferLayout.compact,
-      semanticLabel: Get.context == null
-          ? null
-          : AppLocalizations.of(Get.context!).attachingFileTitle,
-      child: body,
-    );
-
-    return Get.dialog<void>(
-      PopScope(
-        canPop: false,
-        // The sheet pads its own bottom/sides so its background reaches the screen edge.
-        child: isWebLayout
-            ? surface
-            : SafeArea(bottom: false, left: false, right: false, child: surface),
+      semanticLabel: AppLocalizations.of(context).attachingFileTitle,
+      child: PointerInterceptor(
+        child: UncontrolledProviderScope(
+          container: container,
+          child: DriveOversizeUploadDialogView(
+            imagePaths: ImagePaths(),
+            isWebLayout: isWebLayout,
+          ),
+        ),
       ),
-      barrierDismissible: false,
-      barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-      useSafeArea: isWebLayout,
-    ).whenComplete(() {
-      if (identical(_owner, owner)) _owner = null;
-    });
+    );
+    // The sheet pads its own bottom/sides so its background reaches the screen edge.
+    return isWebLayout
+        ? surface
+        : SafeArea(bottom: false, left: false, right: false, child: surface);
   }
 
   /// Pops only [owner]'s dialog, so a batch that outlived its dialog never closes the next one.
