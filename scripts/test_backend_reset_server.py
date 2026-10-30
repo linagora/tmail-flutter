@@ -1,5 +1,7 @@
+import contextlib
 import http.server
 import importlib.util
+import io
 import json
 import os
 import re
@@ -10,6 +12,7 @@ import time
 import unittest
 import urllib.error
 import urllib.request
+from unittest import mock
 
 os.environ["POOL_URLS"] = "http://h:1,http://h:2"
 os.environ["POOL_SIZE"] = "2"
@@ -154,6 +157,40 @@ class SlotEnvTest(unittest.TestCase):
         [t.join() for t in threads]
         dirs = {os.path.dirname(e["SLOT_JMAP_PROPERTIES"]) for e in envs}
         self.assertEqual(len(dirs), 1)
+
+
+class _FixedPool:
+    def __init__(self, free):
+        self.free = free
+
+    def wait_ready(self, timeout):
+        return self.free
+
+
+class WatchReadyTest(unittest.TestCase):
+    def _watch(self, free, min_free):
+        out = io.StringIO()
+        with mock.patch.object(server, "POOL_MIN_FREE", min_free), \
+                mock.patch.object(server, "stop_all") as stop, \
+                mock.patch.object(server.os, "_exit", side_effect=SystemExit) as exit_, \
+                contextlib.redirect_stdout(out), contextlib.redirect_stderr(io.StringIO()):
+            try:
+                server._watch_ready(_FixedPool(free))
+            except SystemExit:
+                pass
+        return out.getvalue(), stop, exit_
+
+    def test_logs_ready_when_enough_backends_are_free(self):
+        out, stop, exit_ = self._watch(free=2, min_free=2)
+        self.assertIn("pool ready free=2", out)
+        stop.assert_not_called()
+        exit_.assert_not_called()
+
+    def test_exits_without_ready_when_too_few_backends_are_free(self):
+        out, stop, exit_ = self._watch(free=0, min_free=1)
+        self.assertNotIn("pool ready", out)
+        stop.assert_called_once()
+        exit_.assert_called_once_with(1)
 
 
 class RecycleAfterStopTest(unittest.TestCase):
