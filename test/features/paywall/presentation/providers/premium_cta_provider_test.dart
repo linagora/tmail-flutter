@@ -648,10 +648,11 @@ void _streamDisposalTests() {
 
     subscription.close();
     await container.pump();
-    // Must be a type validateUrgentException accepts — StateError is rejected
-    // before handleUrgentException and would leave handledCount at 0 even if
-    // the stale guard failed (vacuous green).
-    completer.completeError(const ConnectionError());
+    // Must pass both shouldRouteEcosystemUrgentException and
+    // validateUrgentException. ConnectionError is soft-failed by the predicate,
+    // and StateError is rejected by validation. Either would leave handledCount
+    // at 0 even if the stale guard failed (vacuous green).
+    completer.completeError(const BadCredentialsException());
     await container.pump();
 
     expect(handler.handledCount, 0);
