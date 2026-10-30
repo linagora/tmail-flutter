@@ -96,7 +96,7 @@ pipeline {
                         image: {
                             if (buildPrImage) {
                                 // A tracked-files snapshot: the workspace is being written by prebuild meanwhile.
-                                sh '''
+                                def imageStatus = sh(returnStatus: true, script: '''
                                     QUOTA=${PR_IMAGE_CPU_QUOTA:-200000}
                                     case $QUOTA in ''|*[!0-9]*) QUOTA=200000 ;; esac
                                     # The quota is part of the name: an existing builder keeps the limits it was created with.
@@ -115,11 +115,16 @@ pipeline {
                                         git archive --format=tar HEAD | docker buildx build --builder "$BUILDER" --load \
                                             --build-arg FLUTTER_VERSION=$FLUTTER_VERSION -t linagora/tmail-web-pr:$CHANGE_ID -
                                     else
-                                        echo "PR image build: UNCAPPED (no buildx or builder unavailable)"
-                                        git archive --format=tar HEAD | docker build --build-arg FLUTTER_VERSION=$FLUTTER_VERSION -t linagora/tmail-web-pr:$CHANGE_ID -
+                                        # An uncapped build starves the parallel Patrol tests; no preview image this run.
+                                        echo "PR image build: skipped, capped builder unavailable"
+                                        exit 3
                                     fi
-                                '''
-                                env.PR_IMAGE_BUILT = 'true'
+                                ''')
+                                if (imageStatus == 0) {
+                                    env.PR_IMAGE_BUILT = 'true'
+                                } else if (imageStatus != 3) {
+                                    error("PR image build failed with exit code ${imageStatus}")
+                                }
                             }
                         },
                         failFast: false
