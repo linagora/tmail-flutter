@@ -52,7 +52,7 @@ android {
         manifestPlaceholders = [
                 'appAuthRedirectScheme': 'teammail.mobile'
         ]
-        testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
+        testInstrumentationRunner "com.linagora.android.tmail.ActivityDrainingPatrolJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: "true"
     }
 
