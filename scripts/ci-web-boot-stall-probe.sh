@@ -3,7 +3,7 @@
 # Every tab boot logs one "DDC is about to load 1/2 scripts" first and one "Starting application" last.
 # While a boot stays pending past BOOT_STALL_SECONDS, dump the dev server and socket state
 # so a stalled page.goto shows whether the server starved or dwds dropped the connection.
-# A failed boot never logs "Starting application", so the count can stay above 0: keep dumping at a fixed rate.
+# A failed boot never logs "Starting application": boots already dumped count as lost, so each stall dumps once.
 PATROL_LOG="$1"
 DUMP_FILE="$2"
 SERVER_URL="$3"
@@ -65,17 +65,23 @@ dump_state() {
 
 pending_since=0
 last_dump=0
+lost=0
 while sleep "$POLL_SECONDS"; do
     now=$(date +%s)
     pending=$(pending_boots)
-    if [ "$pending" -le 0 ]; then
+    # A lost boot that finishes late lowers the count again.
+    [ "$pending" -ge "$lost" ] || lost="$pending"
+    active=$((pending - lost))
+    if [ "$active" -le 0 ]; then
         pending_since=0
         continue
     fi
     [ "$pending_since" -gt 0 ] || pending_since="$now"
     if [ $((now - pending_since)) -ge "$BOOT_STALL_SECONDS" ] &&
         [ $((now - last_dump)) -ge "$DUMP_EVERY_SECONDS" ]; then
-        dump_state "$pending"
+        dump_state "$active"
         last_dump="$now"
+        lost="$pending"
+        pending_since=0
     fi
 done
