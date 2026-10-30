@@ -1,16 +1,21 @@
 #!/bin/bash
 # Usage: ci-web-boot-stall-probe.sh <patrol-console-log> <dump-file> <dev-server-url>
-# Every tab boot logs one "DDC is about to load 1/2 scripts" first and one "Starting application" last.
-# While a boot stays pending past BOOT_STALL_SECONDS, dump the dev server and socket state
-# so a stalled page.goto shows whether the server starved or dwds dropped the connection.
-# A failed boot never logs "Starting application": boots already dumped count as lost, so each stall dumps once.
+# Every tab boot logs one "DDC is about to load 1/2 scripts" first and one "Starting application" last,
+# but the lines name no tab, so the log only says that some boot is unfinished.
+# Then the tabs are asked: each one without a Flutter view for BOOT_STALL_SECONDS dumps the dev server
+# and socket state once, so a stalled page.goto shows whether the server starved or dwds dropped the connection.
 PATROL_LOG="$1"
 DUMP_FILE="$2"
 SERVER_URL="$3"
 BOOT_STALL_SECONDS="${BOOT_STALL_SECONDS:-90}"
-DUMP_EVERY_SECONDS="${DUMP_EVERY_SECONDS:-120}"
+CHECK_EVERY_SECONDS="${CHECK_EVERY_SECONDS:-30}"
 POLL_SECONDS="${POLL_SECONDS:-10}"
 SERVER_PORT="${SERVER_URL##*:}"
+
+if [ -z "${WEB_RUNNER_DIR:-}" ]; then
+    echo "SKIP boot stall probe: WEB_RUNNER_DIR unset" >> "$DUMP_FILE"
+    exit 0
+fi
 
 count_log() {
     LC_ALL=C grep -acE "$1" "$PATROL_LOG" 2>/dev/null || true
@@ -23,10 +28,20 @@ pending_boots() {
     echo $(( ${started:-0} - ${finished:-0} ))
 }
 
+# One "<profile dir> <navigation origin>" per tab that waited past BOOT_STALL_SECONDS for its Flutter view.
+stalled_tabs() {
+    awk -v min_ms="$((BOOT_STALL_SECONDS * 1000))" '
+        $1 == "TABS" { dir = $2 }
+        $1 == "PAGE" {
+            for (i = 2; i <= NF; i++) { split($i, kv, "="); f[kv[1]] = kv[2] }
+            if (f["now"] + 0 >= min_ms) print dir, f["origin"]
+        }' <<< "$1"
+}
+
 dump_state() {
-    local pages src
+    local pages="$1" src
     {
-        echo "=== boot stall $(date -u +%FT%TZ): $1 boot(s) pending > ${BOOT_STALL_SECONDS}s ==="
+        echo "=== boot stall $(date -u +%FT%TZ): $2 tab(s) booting > ${BOOT_STALL_SECONDS}s ==="
         echo "--- boot markers: started=$(count_log 'DDC is about to load 1/2 scripts') connected=$(count_log 'App connection established') running=$(count_log 'Starting application from main method') isolate-exits=$(count_log 'Isolate exit handled')"
         echo "--- last dwds/boot lines"
         LC_ALL=C grep -aE 'DDC is about to load|App connection established|Starting application from main method|Isolate exit handled|DevHandler|Playwright: .*(rror|ailed)' "$PATROL_LOG" | tail -15 | cut -c1-240
@@ -46,12 +61,7 @@ dump_state() {
         curl -sS -m 20 -o /dev/null -w 'GET main.dart.js http=%{http_code} connect=%{time_connect}s ttfb=%{time_starttransfer}s total=%{time_total}s bytes=%{size_download}\n' "${SERVER_URL}/main.dart.js"
         curl -sS -m 20 -o /dev/null -w 'GET / http=%{http_code} total=%{time_total}s\n' "${SERVER_URL}/"
         echo "--- tabs still booting (CDP)"
-        if [ -n "${WEB_RUNNER_DIR:-}" ]; then
-            pages=$(timeout 40 node "$(dirname "$0")/ci-web-boot-stall-pages.js" "$WEB_RUNNER_DIR" 2>&1) || true
-            printf '%s\n' "$pages"
-        else
-            echo "SKIP CDP: WEB_RUNNER_DIR unset"
-        fi
+        printf '%s\n' "$pages"
         echo "--- pending and last script responsiveness"
         while IFS= read -r src; do
             [ -n "$src" ] || continue
@@ -63,25 +73,20 @@ dump_state() {
     } >> "$DUMP_FILE" 2>&1
 }
 
-pending_since=0
-last_dump=0
-lost=0
+last_check=0
+seen=""
 while sleep "$POLL_SECONDS"; do
+    # A stalled boot never logs "Starting application", so pending stays above 0 while one exists.
+    [ "$(pending_boots)" -gt 0 ] || continue
     now=$(date +%s)
-    pending=$(pending_boots)
-    # A lost boot that finishes late lowers the count again.
-    [ "$pending" -ge "$lost" ] || lost="$pending"
-    active=$((pending - lost))
-    if [ "$active" -le 0 ]; then
-        pending_since=0
-        continue
-    fi
-    [ "$pending_since" -gt 0 ] || pending_since="$now"
-    if [ $((now - pending_since)) -ge "$BOOT_STALL_SECONDS" ] &&
-        [ $((now - last_dump)) -ge "$DUMP_EVERY_SECONDS" ]; then
-        dump_state "$active"
-        last_dump="$now"
-        lost="$pending"
-        pending_since=0
-    fi
+    [ $((now - last_check)) -ge "$CHECK_EVERY_SECONDS" ] || continue
+    last_check="$now"
+    pages=$(timeout 40 node "$(dirname "$0")/ci-web-boot-stall-pages.js" "$WEB_RUNNER_DIR" 2>&1) || true
+    fresh=0
+    while read -r key; do
+        case "$seen" in *"|$key|"*) continue ;; esac
+        seen="$seen|$key|"
+        fresh=$((fresh + 1))
+    done < <(stalled_tabs "$pages")
+    [ "$fresh" -eq 0 ] || dump_state "$pages" "$fresh"
 done

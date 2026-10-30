@@ -45,12 +45,13 @@ function pageBootState() {
     readyState: document.readyState,
     resources: resources.length,
     now: Math.round(performance.now()),
+    origin: Math.round(performance.timeOrigin),
     pending: scripts.filter((src) => !finished.has(src)),
   };
 }
 
 function printState(state) {
-  console.log(`PAGE url=${state.url} readyState=${state.readyState} resources=${state.resources} now=${state.now}`);
+  console.log(`PAGE url=${state.url} readyState=${state.readyState} resources=${state.resources} now=${state.now} origin=${state.origin}`);
   console.log(`SCRIPTS total=${state.scripts}`);
   // The resource timing buffer holds 250 entries: past that, finished scripts look pending.
   if (state.resources >= 250) console.log('PENDING_UNRELIABLE resource timing buffer is full');
@@ -60,6 +61,8 @@ function printState(state) {
 }
 
 async function inspectPage(dir, page) {
+  // A fresh context's blank tab never boots Flutter.
+  if (page.url().startsWith('about:')) return;
   try {
     const state = await page.evaluate(pageBootState);
     if (state) printState(state);
