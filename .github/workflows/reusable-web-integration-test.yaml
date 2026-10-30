@@ -39,7 +39,7 @@ jobs:
         run: ./scripts/patrol-web-integration-test-with-docker.sh
 
       - name: Upload test logs
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: web-integration-test-logs
