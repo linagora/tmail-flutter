@@ -4,11 +4,13 @@
 # but the lines name no tab, so the log only says that some boot is unfinished.
 # Then the tabs are asked: each one without a Flutter view for BOOT_STALL_SECONDS dumps the dev server
 # and socket state once, so a stalled page.goto shows whether the server starved or dwds dropped the connection.
+# When the tabs cannot be read, the unfinished boot itself triggers the dump, at most every DUMP_EVERY_SECONDS.
 PATROL_LOG="$1"
 DUMP_FILE="$2"
 SERVER_URL="$3"
 BOOT_STALL_SECONDS="${BOOT_STALL_SECONDS:-90}"
 CHECK_EVERY_SECONDS="${CHECK_EVERY_SECONDS:-30}"
+DUMP_EVERY_SECONDS="${DUMP_EVERY_SECONDS:-120}"
 POLL_SECONDS="${POLL_SECONDS:-10}"
 SERVER_PORT="${SERVER_URL##*:}"
 
@@ -38,10 +40,15 @@ stalled_tabs() {
         }' <<< "$1"
 }
 
+# CDP did not answer for every tab: no tab list, a hung page, or the helper timeout.
+tabs_unreadable() {
+    ! grep -q '^TABS' <<< "$1" || grep -qE '^TIMEOUT|^SKIP .* page=' <<< "$1"
+}
+
 dump_state() {
     local pages="$1" src
     {
-        echo "=== boot stall $(date -u +%FT%TZ): $2 tab(s) booting > ${BOOT_STALL_SECONDS}s ==="
+        echo "=== boot stall $(date -u +%FT%TZ): $2 > ${BOOT_STALL_SECONDS}s ==="
         echo "--- boot markers: started=$(count_log 'DDC is about to load 1/2 scripts') connected=$(count_log 'App connection established') running=$(count_log 'Starting application from main method') isolate-exits=$(count_log 'Isolate exit handled')"
         echo "--- last dwds/boot lines"
         LC_ALL=C grep -aE 'DDC is about to load|App connection established|Starting application from main method|Isolate exit handled|DevHandler|Playwright: .*(rror|ailed)' "$PATROL_LOG" | tail -15 | cut -c1-240
@@ -74,10 +81,15 @@ dump_state() {
 }
 
 last_check=0
+blind_since=0
+last_blind_dump=0
 seen=""
 while sleep "$POLL_SECONDS"; do
     # A stalled boot never logs "Starting application", so pending stays above 0 while one exists.
-    [ "$(pending_boots)" -gt 0 ] || continue
+    if [ "$(pending_boots)" -le 0 ]; then
+        blind_since=0
+        continue
+    fi
     now=$(date +%s)
     [ $((now - last_check)) -ge "$CHECK_EVERY_SECONDS" ] || continue
     last_check="$now"
@@ -88,5 +100,15 @@ while sleep "$POLL_SECONDS"; do
         seen="$seen|$key|"
         fresh=$((fresh + 1))
     done < <(stalled_tabs "$pages")
-    [ "$fresh" -eq 0 ] || dump_state "$pages" "$fresh"
+    if [ "$fresh" -gt 0 ]; then
+        dump_state "$pages" "$fresh tab(s) booting"
+    elif tabs_unreadable "$pages"; then
+        [ "$blind_since" -gt 0 ] || blind_since="$now"
+        if [ $((now - blind_since)) -ge "$BOOT_STALL_SECONDS" ] && [ $((now - last_blind_dump)) -ge "$DUMP_EVERY_SECONDS" ]; then
+            dump_state "$pages" "boot(s) pending, tabs unreadable"
+            last_blind_dump="$now"
+        fi
+    else
+        blind_since=0
+    fi
 done
