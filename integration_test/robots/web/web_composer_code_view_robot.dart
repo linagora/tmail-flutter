@@ -96,6 +96,20 @@ class WebComposerCodeViewRobot extends CoreRobot
   }
 
   @override
+  Future<void> expectStillInCodeView() async {
+    await waitForCondition(
+      () =>
+          findWebComposerController($)?.richTextWebController?.codeViewEnabled ==
+          true,
+    );
+    expect(
+      _codeViewText(),
+      isNotNull,
+      reason: 'code view textarea missing while Embed code should stay open',
+    );
+  }
+
+  @override
   Future<void> expectActiveContentDidNotRun() async {
     await Future.delayed(_scriptGracePeriod);
     await $.pumpAndTrySettle();

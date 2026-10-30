@@ -20,8 +20,10 @@ class LeaveEmbedCodeWithEscapeScenario extends BaseTestScenario {
     // skip the sanitizer the Embed code button goes through.
     await codeViewRobot.pressEscape();
 
+    // Escape must not leave code view. A vacuous DOM check on the editable
+    // would pass if Escape were a no-op while still showing pre-code-view HTML.
+    await codeViewRobot.expectStillInCodeView();
     await codeViewRobot.expectActiveContentDidNotRun();
-    // Escape in the code view never closes the composer.
     await composerRobot.expectComposerViewVisible();
   }
 }
