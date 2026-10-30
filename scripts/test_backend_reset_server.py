@@ -3,6 +3,7 @@ import importlib.util
 import json
 import os
 import re
+import shutil
 import tempfile
 import threading
 import time
@@ -121,9 +122,18 @@ class PoolTest(unittest.TestCase):
 
 
 class SlotEnvTest(unittest.TestCase):
+    def setUp(self):
+        self.root = tempfile.mkdtemp()
+        shutil.copy(os.path.join(ROOT, "backend-docker", "jmap.properties"), self.root)
+        self.saved = (server._JMAP_PROPERTIES, server._slot_dir)
+        server._JMAP_PROPERTIES = os.path.join(self.root, "jmap.properties")
+        server._slot_dir = None
+
+    def tearDown(self):
+        server._JMAP_PROPERTIES, server._slot_dir = self.saved
+        shutil.rmtree(self.root)
+
     def test_slot_properties_advertise_the_slot_url(self):
-        server._JMAP_PROPERTIES = os.path.join(ROOT, "backend-docker", "jmap.properties")
-        server._slot_dir = tempfile.mkdtemp()
         env = server._slot_env(1)
         with open(env["SLOT_JMAP_PROPERTIES"]) as f:
             text = f.read()
@@ -133,9 +143,11 @@ class SlotEnvTest(unittest.TestCase):
         self.assertEqual(env["SLOT_WEBADMIN_PORT"], "8201")
 
 
+    def test_slot_dir_sits_beside_the_compose_mounts(self):
+        props = server._slot_env(0)["SLOT_JMAP_PROPERTIES"]
+        self.assertEqual(os.path.dirname(os.path.dirname(props)), self.root)
+
     def test_concurrent_first_calls_share_one_slot_dir(self):
-        server._JMAP_PROPERTIES = os.path.join(ROOT, "backend-docker", "jmap.properties")
-        server._slot_dir = None
         envs = []
         threads = [threading.Thread(target=lambda n=n: envs.append(server._slot_env(n))) for n in (0, 1)]
         [t.start() for t in threads]

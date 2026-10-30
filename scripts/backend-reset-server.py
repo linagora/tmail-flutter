@@ -155,7 +155,8 @@ def _slot_env(n: int) -> Dict[str, str]:
     global _slot_dir
     with _slot_lock:
         if _slot_dir is None:
-            _slot_dir = tempfile.mkdtemp(prefix="tmail-pool-")
+            # Under backend-docker: a Docker daemon outside this agent sees the workspace, not its /tmp.
+            _slot_dir = tempfile.mkdtemp(prefix="tmail-pool-", dir=os.path.dirname(_JMAP_PROPERTIES))
         props = os.path.join(_slot_dir, f"jmap-slot{n}.properties")
         if not os.path.exists(props):
             url = POOL_URLS[n]
