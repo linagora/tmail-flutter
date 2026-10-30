@@ -66,25 +66,40 @@ probe_bore_url() {
     [ -n "$code" ] && [ "$code" != "000" ]
 }
 
-# The reset server accepts a pool with FTL_SHARDS free backends, so only that many slot tunnels must answer.
+# A tunnel may be mid-rebind, so a failed probe gets one more try.
+probe_bore_url_retry() {
+    probe_bore_url "$1" && return 0
+    sleep 5
+    probe_bore_url "$1"
+}
+
+# The reset server accepts a pool with FTL_SHARDS free backends and never leases a dropped slot
+# (it logs "ERROR slot N attempt 2" when it drops one), so:
+# - a slot that is not dropped must answer through the relay (it can still be leased);
+# - a dropped slot only warns;
+# - at least FTL_SHARDS slot tunnels must answer.
 probe_bore_tunnels() {
-    local n reachable=0 slot_urls
-    if ! probe_bore_url "$BORE_RESET_URL"; then
+    local n reachable=0 failed=0 slot_urls
+    if ! probe_bore_url_retry "$BORE_RESET_URL"; then
         echo "ERROR: reset tunnel $BORE_RESET_URL unreachable through $BORE_HOST"
         return 1
     fi
     IFS=, read -ra slot_urls <<< "$POOL_URLS"
     for n in "${!slot_urls[@]}"; do
-        if probe_bore_url "${slot_urls[$n]}"; then
+        if probe_bore_url_retry "${slot_urls[$n]}"; then
             reachable=$(( reachable + 1 ))
+        elif grep -q "ERROR slot $n attempt 2:" "$RESET_SERVER_LOG" 2>/dev/null; then
+            echo "WARN: slot$n was dropped from the pool; tunnel ${slot_urls[$n]} not used"
         else
-            echo "WARN: slot$n tunnel ${slot_urls[$n]} unreachable through $BORE_HOST (backend dropped from the pool, or the relay dropped it)"
+            echo "ERROR: slot$n can be leased but its tunnel ${slot_urls[$n]} is unreachable through $BORE_HOST"
+            failed=1
         fi
     done
     if (( reachable < FTL_SHARDS )); then
         echo "ERROR: only $reachable of ${#slot_urls[@]} slot tunnels answer through $BORE_HOST, FTL needs $FTL_SHARDS"
-        return 1
+        failed=1
     fi
+    return "$failed"
 }
 
 # One row per tunnel: which relay ports dropped, whether they came back, how much traffic they carried.
