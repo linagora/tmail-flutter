@@ -45,7 +45,7 @@ dump_state() {
         echo "--- processes by cpu"
         ps -eo pid,ppid,stat,etime,pcpu,pmem,rss,comm --sort=-pcpu | head -30
         echo "--- sockets"
-        ss -tanp 2>/dev/null | grep -E ':(3000|9999|80)\b'
+        ss -tanp 2>/dev/null | grep -E ':(3000|9999|81[0-9]{2}|82[0-9]{2})\b'
         echo "--- flutter web server"
         curl -sS -m 10 -o /dev/null -w 'GET / http=%{http_code} time=%{time_total}s\n' http://localhost:3000/
         curl -sS -m 10 -o /dev/null -w 'GET main.dart.js http=%{http_code} time=%{time_total}s\n' http://localhost:3000/main.dart.js
