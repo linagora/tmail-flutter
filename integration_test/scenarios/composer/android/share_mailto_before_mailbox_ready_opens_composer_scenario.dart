@@ -1,10 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 
 import '../../../base/base_test_scenario.dart';
 import '../../../utils/receive_sharing_intent_simulator.dart';
+import '../../../utils/test_timeouts.dart';
 import '../../../utils/wait_for_condition.dart';
 import '../../../utils/wait_for_mailbox_ready.dart';
 
@@ -22,11 +25,31 @@ import '../../../utils/wait_for_mailbox_ready.dart';
 /// started at `HomeController.onInit()` (effectively app boot), so it is
 /// already listening by the time this scenario emits the share.
 class ShareMailtoBeforeMailboxReadyOpensComposerScenario extends BaseTestScenario {
-  const ShareMailtoBeforeMailboxReadyOpensComposerScenario(super.$, super.robots);
+  ShareMailtoBeforeMailboxReadyOpensComposerScenario(super.$, super.robots);
+
+  late final Future<void> _shareStreamListened;
+
+  @override
+  Future<void> prepare() async {
+    // Armed before the app mounts so the share goes out the moment HomeController subscribes.
+    _shareStreamListened = waitForSharedMediaStreamListen();
+    await super.prepare();
+  }
 
   @override
   Future<void> runTestLogic() async {
     final composerRobot = robots.composerRobot();
+
+    await _shareStreamListened.timeout(
+      TestTimeouts.medium,
+      onTimeout: () => fail('the app never subscribed to the shared-media stream'),
+    );
+    expect(
+      Get.isRegistered<MailboxDashBoardController>() &&
+          !Get.isPrepared<MailboxDashBoardController>(),
+      isFalse,
+      reason: 'the share must arrive before the mailbox controller exists',
+    );
 
     // Emitted before the mailbox controller exists — must not be dropped.
     await emitSharedMediaEvent([
