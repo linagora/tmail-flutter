@@ -132,6 +132,7 @@ export RESET_PORT=9999
 set -m
 (
     trap - EXIT INT TERM
+    set -o pipefail
     timing "patrol CLI check start"
     if command -v patrol >/dev/null 2>&1 && [ "$(CI=true PATROL_ANALYTICS_ENABLED=false patrol --version 2>/dev/null)" = 'patrol_cli v4.3.1' ]; then
         echo "Using installed patrol_cli 4.3.1."
@@ -150,7 +151,7 @@ set -m
         --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \
         --dart-define=BASIC_AUTH_EMAIL="$BOB@$DOMAIN" \
         --dart-define=BASIC_AUTH_URL="$BASIC_AUTH_URL" \
-        --dart-define=RESET_SERVER_URL="$BORE_RESET_URL"
+        --dart-define=RESET_SERVER_URL="$BORE_RESET_URL" 2>&1 | tee "$CI_LOGS/patrol-build.log" | perl scripts/ci-console-filter.pl "ci-logs/patrol-build.log"
     timing "Patrol/Gradle build end ($(( SECONDS - build_started ))s)"
 ) &
 PATROL_BUILD_PID=$!
