@@ -88,7 +88,7 @@ class PoolTest(unittest.TestCase):
         pool, _ = make_pool(2, recycle)
         leased = pool.lease(1)
         self.assertEqual(leased["url"], "http://h:2")
-        self.assertEqual(attempts.count(0), 2)
+        self.assertTrue(wait_until(lambda: attempts.count(0) == 2))
         pool.release(leased["token"])
         self.assertEqual(pool.lease(1)["url"], "http://h:2")
 
@@ -98,7 +98,7 @@ class PoolTest(unittest.TestCase):
 
         pool, _ = make_pool(2, recycle)
         start = time.time()
-        self.assertTrue(wait_until(lambda: pool.lease(0) is None))
+        self.assertIsNone(pool.lease(30))
         self.assertLess(time.time() - start, 2)
 
     def test_expired_lease_is_reclaimed(self):
