@@ -123,6 +123,30 @@
                <data android:scheme="twakemail.mobile"
                    android:host="redirect" />
            </intent-filter>
+           <!-- Return from the Twake Workplace logout page (#5037). -->
+           <intent-filter>
+               <action android:name="android.intent.action.VIEW" />
+               <category android:name="android.intent.category.DEFAULT" />
+               <category android:name="android.intent.category.BROWSABLE" />
+               <data android:scheme="${appAuthRedirectScheme}"
+                   android:host="logout" />
+           </intent-filter>
+       </activity>
+
+       <!-- AppAuth declares its redirect activity for the whole scheme; keep only
+            the organisation-server redirect so teammail.mobile://logout reaches
+            FlutterWebAuth2 (#5037). -->
+       <activity
+           android:name="net.openid.appauth.RedirectUriReceiverActivity"
+           android:exported="true"
+           tools:node="replace">
+           <intent-filter>
+               <action android:name="android.intent.action.VIEW" />
+               <category android:name="android.intent.category.DEFAULT" />
+               <category android:name="android.intent.category.BROWSABLE" />
+               <data android:scheme="${appAuthRedirectScheme}"
+                   android:host="oauthredirect" />
+           </intent-filter>
        </activity>
 
        <provider android:authorities="${applicationId}.firebaseinitprovider"
