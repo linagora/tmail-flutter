@@ -208,6 +208,41 @@ void main() {
       expect(controller.isCodeViewToggleInFlight, isFalse);
     });
 
+    test('is busy in code view when no toggle is running', () {
+      controller.codeViewState.value = CodeViewState.enabled;
+
+      expect(controller.isCodeViewBusy, isTrue);
+    });
+
+    test('is busy while entering code view', () async {
+      final isActivated = Completer<bool>();
+      when(editorController.isActivatedCodeView()).thenAnswer((_) => isActivated.future);
+
+      controller.toggleCodeView();
+      await untilCalled(editorController.isActivatedCodeView());
+
+      expect(controller.codeViewEnabled, isFalse);
+      expect(controller.isCodeViewBusy, isTrue);
+      isActivated.complete(false);
+    });
+
+    test('ignores a second click while leaving code view is still running', () async {
+      final html = Completer<String>();
+      when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+      when(editorController.getText()).thenAnswer((_) => html.future);
+
+      controller.toggleCodeView();
+      await untilCalled(editorController.getText());
+      controller.toggleCodeView();
+      html.complete(benignComposerHtml);
+      await untilCalled(editorController.toggleCodeView());
+      await Future<void>.delayed(Duration.zero);
+
+      verify(editorController.isActivatedCodeView()).called(1);
+      verify(editorController.getText()).called(1);
+      verify(editorController.toggleCodeView()).called(1);
+    });
+
     test('stays busy until leaving code view has written the sanitized HTML', () async {
       final html = Completer<String>();
       when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);

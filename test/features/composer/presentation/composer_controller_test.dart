@@ -158,8 +158,10 @@ class MockRichTextWebController extends Mock implements RichTextWebController {
   @override
   HtmlEditorController get editorController => _editorController;
 
+  bool isCodeViewOnForTest = false;
+
   @override
-  bool get codeViewEnabled => false;
+  bool get codeViewEnabled => isCodeViewOnForTest;
 
   bool isCodeViewBusyForTest = false;
 
@@ -1874,13 +1876,29 @@ void main() {
       });
     });
 
-    group('displayScreenTypeComposerAction on web:', () {
+    group('code view on web:', () {
       setUp(() {
         reset(mockRichTextWebController.editorController);
         composerController?.richTextWebController = mockRichTextWebController;
       });
 
-      tearDown(() => mockRichTextWebController.isCodeViewBusyForTest = false);
+      tearDown(() {
+        mockRichTextWebController.isCodeViewBusyForTest = false;
+        mockRichTextWebController.isCodeViewOnForTest = false;
+      });
+
+      test(
+        'Should sanitize the body it hands out\n'
+        'When the editor changed it while code view is on',
+      () {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        mockRichTextWebController.isCodeViewOnForTest = true;
+
+        composerController?.onChangeTextEditorWeb('<img src="x" onerror="alert(1)"><p>text</p>');
+
+        expect(composerController?.textEditorWeb, isNot(contains('onerror')));
+      });
 
       test(
         'Should not read and write back the editor HTML\n'

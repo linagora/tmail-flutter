@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/composer/presentation/utils/composer_code_view_sanitizer.dart';
 import 'package:tmail_ui_user/features/composer/presentation/utils/composer_web_body_cache.dart';
 
 import '../fixtures/code_view_html_fixtures.dart';
@@ -17,6 +18,17 @@ void main() {
       expect(body, isNot(contains('<script')));
       expect(body, isNot(contains('javascript:')));
       expect(body, contains('visible text'));
+    });
+
+    test('sanitizes once per code view change, not on every read', () {
+      final sanitizer = _CountingSanitizer();
+      cache = ComposerWebBodyCache(sanitizer: sanitizer);
+      cache.onEditorChange(ghsaEmbedCodeXssPayload, inCodeView: true);
+
+      cache.read();
+      cache.read();
+
+      expect(sanitizer.calls, 1);
     });
 
     test('keeps the sanitized body for later reads', () {
@@ -66,4 +78,14 @@ void main() {
       expect(cache.read(), isNull);
     });
   });
+}
+
+class _CountingSanitizer extends ComposerCodeViewSanitizer {
+  int calls = 0;
+
+  @override
+  String sanitize(String html) {
+    calls++;
+    return super.sanitize(html);
+  }
 }
