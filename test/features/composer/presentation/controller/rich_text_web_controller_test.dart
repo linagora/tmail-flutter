@@ -203,6 +203,31 @@ void main() {
       });
     });
 
+    test('is not busy outside code view', () {
+      expect(controller.isCodeViewBusy, isFalse);
+      expect(controller.isCodeViewToggleInFlight, isFalse);
+    });
+
+    test('stays busy until leaving code view has written the sanitized HTML', () async {
+      final html = Completer<String>();
+      when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+      when(editorController.getText()).thenAnswer((_) => html.future);
+      controller.codeViewState.value = CodeViewState.enabled;
+
+      controller.toggleCodeView();
+      await untilCalled(editorController.getText());
+
+      expect(controller.isCodeViewToggleInFlight, isTrue);
+      expect(controller.isCodeViewBusy, isTrue);
+
+      html.complete(benignComposerHtml);
+      await untilCalled(editorController.toggleCodeView());
+      await Future<void>.delayed(Duration.zero);
+
+      expect(controller.isCodeViewToggleInFlight, isFalse);
+      expect(controller.isCodeViewBusy, isFalse);
+    });
+
     group('error toast', () {
       late MockAppToast appToast;
 

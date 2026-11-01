@@ -1723,7 +1723,7 @@ class ComposerController extends BaseController
     if (screenDisplayMode.value.isNotContentVisible()) {
       _isEmailBodyLoaded = false;
     }
-    if (richTextWebController != null && !screenDisplayMode.value.isNotContentVisible()) {
+    if (richTextWebController?.isCodeViewBusy == false && !screenDisplayMode.value.isNotContentVisible()) {
       final textCurrent = await richTextWebController!.editorController.getText();
       richTextWebController!.editorController.setText(textCurrent);
     }

@@ -161,6 +161,11 @@ class MockRichTextWebController extends Mock implements RichTextWebController {
   @override
   bool get codeViewEnabled => false;
 
+  bool isCodeViewBusyForTest = false;
+
+  @override
+  bool get isCodeViewBusy => isCodeViewBusyForTest;
+
   @override
   Future<void> setEnableCodeView() async {}
 }
@@ -1866,6 +1871,41 @@ void main() {
 
         expect(inserted, isTrue);
         verify(mockRichTextWebController.editorController.insertHtml(cardHtml)).called(1);
+      });
+    });
+
+    group('displayScreenTypeComposerAction on web:', () {
+      setUp(() {
+        reset(mockRichTextWebController.editorController);
+        composerController?.richTextWebController = mockRichTextWebController;
+      });
+
+      tearDown(() => mockRichTextWebController.isCodeViewBusyForTest = false);
+
+      test(
+        'Should not read and write back the editor HTML\n'
+        'When code view is on or being left',
+      () async {
+        mockRichTextWebController.isCodeViewBusyForTest = true;
+
+        composerController?.displayScreenTypeComposerAction(ScreenDisplayMode.fullScreen);
+        await Future<void>.delayed(Duration.zero);
+
+        verifyNever(mockRichTextWebController.editorController.getText());
+        expect(composerController?.screenDisplayMode.value, ScreenDisplayMode.fullScreen);
+      });
+
+      test(
+        'Should write the editor HTML back before switching\n'
+        'When code view is off',
+      () async {
+        when(mockRichTextWebController.editorController.getText())
+            .thenAnswer((_) async => '<p>body</p>');
+
+        composerController?.displayScreenTypeComposerAction(ScreenDisplayMode.fullScreen);
+        await untilCalled(mockRichTextWebController.editorController.setText('<p>body</p>'));
+
+        verify(mockRichTextWebController.editorController.setText('<p>body</p>')).called(1);
       });
     });
 

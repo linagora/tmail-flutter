@@ -268,6 +268,11 @@ class RichTextWebController extends GetxController {
 
   bool _codeViewToggleInFlight = false;
 
+  bool get isCodeViewToggleInFlight => _codeViewToggleInFlight;
+
+  /// In code view, or leaving it: the editor HTML may still be raw.
+  bool get isCodeViewBusy => codeViewEnabled || _codeViewToggleInFlight;
+
   void setEnableCodeView() async {
     final isActivated = await isActivatedCodeView;
     if (codeViewEnabled && !isActivated) {
