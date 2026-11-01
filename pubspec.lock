@@ -2065,8 +2065,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: "68e961c4a5044c811f54c715fb4736ccc7f04033"
+      ref: "871522932827b5716d7906551cf5000a61106584"
+      resolved-ref: "871522932827b5716d7906551cf5000a61106584"
       url: "https://github.com/linagora/receive_sharing_intent.git"
     source: git
     version: "1.8.1"

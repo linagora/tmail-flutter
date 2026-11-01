@@ -53,6 +53,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/list_shared_media_file_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/compose_action_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/domain_activation_pending_dialog.dart';
@@ -678,9 +679,9 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   @visibleForTesting
-  void handleReceivingFileSharing(List<SharedMediaFile> listSharedMediaFile) {
-    log('MailboxDashBoardController::handleReceivingFileSharing: LIST_LENGTH = ${listSharedMediaFile.length}');
-    if (listSharedMediaFile.isEmpty) return;
+  void handleReceivingFileSharing(List<SharedMediaFile> sharedMediaFiles) {
+    log('MailboxDashBoardController::handleReceivingFileSharing: LIST_LENGTH = ${sharedMediaFiles.length}');
+    if (sharedMediaFiles.isEmpty) return;
 
     // Consume the share as soon as it is taken for processing:
     // pendingSharedFileInfo is a BehaviorSubject that replays its latest
@@ -689,9 +690,15 @@ class MailboxDashBoardController extends ReloadableController
     // the guard above ignores, so this cannot recurse.
     _emailReceiveManager.clearPendingFileInfo();
 
-    for (var file in listSharedMediaFile) {
+    for (var file in sharedMediaFiles) {
       log('MailboxDashBoardController::handleReceivingFileSharing:SharedMediaFile = ${file.toMap()}');
     }
+
+    final unreadableCount = sharedMediaFiles.unreadableCount;
+    if (unreadableCount > 0) _showUnreadableSharedFilesToast(unreadableCount);
+
+    final listSharedMediaFile = sharedMediaFiles.readableFiles;
+    if (listSharedMediaFile.isEmpty) return;
 
     if (listSharedMediaFile.length == 1) {
       final sharedMediaFile = listSharedMediaFile.first;
@@ -704,6 +711,13 @@ class MailboxDashBoardController extends ReloadableController
     openComposer(
       ComposerArguments.fromFileShared(listSharedMediaFile),
     );
+  }
+
+  void _showUnreadableSharedFilesToast(int count) {
+    if (currentOverlayContext == null || currentContext == null) return;
+    appToast.showToastErrorMessage(
+      currentOverlayContext!,
+      AppLocalizations.of(currentContext!).sharedFilesCannotBeRead(count));
   }
 
   void _registerDeepLinks() {
