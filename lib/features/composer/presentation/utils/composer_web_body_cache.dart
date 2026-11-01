@@ -30,8 +30,13 @@ class ComposerWebBodyCache {
   }
 
   /// Content reported by the editor, raw whenever code view is on.
+  ///
+  /// Once code view has written to it, the body stays marked until it is read
+  /// or replaced by the app: a change event can land after code view is left.
   void onEditorChange(String? body, {required bool inCodeView}) {
     _body = body;
-    _needsSanitizing = inCodeView;
+    if (inCodeView) {
+      _needsSanitizing = true;
+    }
   }
 }

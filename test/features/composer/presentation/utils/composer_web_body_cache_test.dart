@@ -50,6 +50,14 @@ void main() {
       expect(cache.read()!.toLowerCase(), isNot(contains('onerror')));
     });
 
+    test('still sanitizes when a raw change lands after code view was left', () {
+      cache.onEditorChange(benignComposerHtml, inCodeView: true);
+
+      cache.onEditorChange(ghsaEmbedCodeXssPayload, inCodeView: false);
+
+      expect(cache.read()!.toLowerCase(), isNot(contains('onerror')));
+    });
+
     test('returns null once cleared', () {
       cache.onEditorChange(ghsaEmbedCodeXssPayload, inCodeView: true);
 
