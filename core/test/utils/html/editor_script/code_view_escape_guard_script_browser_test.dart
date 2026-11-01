@@ -56,6 +56,13 @@ void main() {
     expect(editableKeyups, ['Escape']);
   });
 
+  // Summernote checks only keyCode, which some browsers send with another key name.
+  test('keeps Escape from the code view textarea when only keyCode says Escape', () {
+    _dispatchKeyup(codable, 'Esc', keyCode: 27);
+
+    expect(codableKeyups, isEmpty);
+  });
+
 }
 
 T _required<T>(T? value, String label) {
@@ -72,11 +79,11 @@ List<String> _recordKeyups(web.Element target) {
   return keys;
 }
 
-void _dispatchKeyup(web.Element target, String key) {
+void _dispatchKeyup(web.Element target, String key, {int keyCode = 0}) {
   target.dispatchEvent(
     web.KeyboardEvent(
       'keyup',
-      web.KeyboardEventInit(key: key, bubbles: true, cancelable: true),
+      web.KeyboardEventInit(key: key, keyCode: keyCode, bubbles: true, cancelable: true),
     ),
   );
 }
