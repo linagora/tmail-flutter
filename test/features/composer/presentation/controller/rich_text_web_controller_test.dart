@@ -32,61 +32,39 @@ void main() {
       controller = RichTextWebController(editorController: editorController);
     });
 
-    test(
-      'does not insert an image when the file has no readable bytes',
-      () async {
-        const fileInfo = FilePlaceholderInfo(fileName: 'a.png', fileSize: 3);
+    test('does not insert an image when the file has no readable bytes', () async {
+      const fileInfo = FilePlaceholderInfo(fileName: 'a.png', fileSize: 3);
 
-        await expectLater(
-          controller.insertImageAsBase64(fileInfo: fileInfo),
-          completes,
-        );
-        verifyNever(editorController.insertHtml(any));
-      },
-    );
+      await expectLater(controller.insertImageAsBase64(fileInfo: fileInfo), completes);
+      verifyNever(editorController.insertHtml(any));
+    });
 
     test('does not insert an image when the file bytes are empty', () async {
       final fileInfo = FileBytesInfo(bytes: Uint8List(0), fileName: 'a.png');
 
-      await expectLater(
-        controller.insertImageAsBase64(fileInfo: fileInfo),
-        completes,
-      );
+      await expectLater(controller.insertImageAsBase64(fileInfo: fileInfo), completes);
       verifyNever(editorController.insertHtml(any));
     });
 
     test('inserts an image when the file has bytes', () async {
-      final fileInfo = FileBytesInfo(
-        bytes: Uint8List.fromList([1, 2, 3]),
-        fileName: 'a.png',
-      );
+      final fileInfo = FileBytesInfo(bytes: Uint8List.fromList([1, 2, 3]), fileName: 'a.png');
 
       await controller.insertImageAsBase64(fileInfo: fileInfo);
-      verify(
-        editorController.insertHtml(argThat(contains('data-filename="a.png"'))),
-      ).called(1);
+      verify(editorController.insertHtml(argThat(contains('data-filename="a.png"')))).called(1);
     });
   });
 
   group('RichTextWebController::buildInlineImageHtml', () {
-    test(
-      'escapes the file name before it is written to the data-filename attribute',
-      () {
-        final html = RichTextWebController.buildInlineImageHtml(
-          base64Data: 'AAAA',
-          mimeType: 'image/png',
-          fileName: '"><script>alert(1)</script>.png',
-        );
+    test('escapes the file name before it is written to the data-filename attribute', () {
+      final html = RichTextWebController.buildInlineImageHtml(
+        base64Data: 'AAAA',
+        mimeType: 'image/png',
+        fileName: '"><script>alert(1)</script>.png',
+      );
 
-        expect(html, isNot(contains('<script>')));
-        expect(
-          html,
-          contains(
-            'data-filename="&quot;&gt;&lt;script&gt;alert(1)&lt;/script&gt;.png"',
-          ),
-        );
-      },
-    );
+      expect(html, isNot(contains('<script>')));
+      expect(html, contains('data-filename="&quot;&gt;&lt;script&gt;alert(1)&lt;/script&gt;.png"'));
+    });
 
     test('keeps a normal file name unchanged', () {
       final html = RichTextWebController.buildInlineImageHtml(
@@ -98,28 +76,17 @@ void main() {
       expect(html, contains('data-filename="signature.png"'));
     });
 
-    test(
-      'escapes the MIME type before it is written to the src and data-mimetype attributes',
-      () {
-        final html = RichTextWebController.buildInlineImageHtml(
-          base64Data: 'AAAA',
-          mimeType: 'image/png" onerror="alert(1)',
-          fileName: 'signature.png',
-        );
+    test('escapes the MIME type before it is written to the src and data-mimetype attributes', () {
+      final html = RichTextWebController.buildInlineImageHtml(
+        base64Data: 'AAAA',
+        mimeType: 'image/png" onerror="alert(1)',
+        fileName: 'signature.png',
+      );
 
-        expect(html, isNot(contains('" onerror="')));
-        expect(
-          html,
-          contains('data-mimetype="image/png&quot; onerror=&quot;alert(1)"'),
-        );
-        expect(
-          html,
-          contains(
-            'src="data:image/png&quot; onerror=&quot;alert(1);base64,AAAA"',
-          ),
-        );
-      },
-    );
+      expect(html, isNot(contains('" onerror="')));
+      expect(html, contains('data-mimetype="image/png&quot; onerror=&quot;alert(1)"'));
+      expect(html, contains('src="data:image/png&quot; onerror=&quot;alert(1);base64,AAAA"'));
+    });
   });
 
   group('RichTextWebController::toggleCodeView', () {
@@ -131,163 +98,109 @@ void main() {
       controller = RichTextWebController(editorController: editorController);
     });
 
-    test(
-      'enables code view without reading or rewriting the editor HTML',
-      () async {
-        when(
-          editorController.isActivatedCodeView(),
-        ).thenAnswer((_) async => false);
+    test('enables code view without reading or rewriting the editor HTML', () async {
+      when(editorController.isActivatedCodeView()).thenAnswer((_) async => false);
 
-        controller.toggleCodeView();
-        await untilCalled(editorController.toggleCodeView());
+      controller.toggleCodeView();
+      await untilCalled(editorController.toggleCodeView());
 
-        expect(controller.codeViewEnabled, isTrue);
-        verifyNever(editorController.getText());
-        verifyNever(editorController.setText(any));
-        verify(editorController.toggleCodeView()).called(1);
-      },
-    );
-
-    test(
-      'leaving code view still toggles the editor and disables code view',
-      () async {
-        when(
-          editorController.isActivatedCodeView(),
-        ).thenAnswer((_) async => true);
-        when(
-          editorController.getText(),
-        ).thenAnswer((_) async => benignComposerHtml);
-
-        controller.toggleCodeView();
-        await untilCalled(editorController.toggleCodeView());
-
-        expect(controller.codeViewEnabled, isFalse);
-        verify(editorController.toggleCodeView()).called(1);
-        verify(
-          editorController.evaluateJavascriptWeb(
-            HtmlUtils.recalculateEditorHeight().name,
-          ),
-        ).called(1);
-      },
-    );
-
-    test(
-      'sanitizes GHSA-73vq-c7p5-pvp4 HTML before leaving code view',
-      () async {
-        when(
-          editorController.isActivatedCodeView(),
-        ).thenAnswer((_) async => true);
-        when(
-          editorController.getText(),
-        ).thenAnswer((_) async => ghsaEmbedCodeXssPayload);
-
-        controller.toggleCodeView();
-        await untilCalled(editorController.toggleCodeView());
-
-        final captured =
-            verify(editorController.setText(captureAny)).captured.single
-                as String;
-        final sanitized = captured.toLowerCase();
-        expect(sanitized, isNot(contains('<script')));
-        expect(sanitized, isNot(contains('onerror')));
-        expect(sanitized, isNot(contains('onload')));
-        expect(sanitized, isNot(contains('javascript:')));
-        expect(sanitized, contains('visible text'));
-        verify(editorController.getText()).called(1);
-        verify(editorController.toggleCodeView()).called(1);
-      },
-    );
-
-    test(
-      'writes an empty paragraph when sanitizing removes all the code view HTML',
-      () async {
-        when(
-          editorController.isActivatedCodeView(),
-        ).thenAnswer((_) async => true);
-        when(
-          editorController.getText(),
-        ).thenAnswer((_) async => scriptOnlyEmbedCodePayload);
-
-        controller.toggleCodeView();
-        await untilCalled(editorController.toggleCodeView());
-
-        verify(editorController.setText('<p><br></p>')).called(1);
-      },
-    );
-
-    test(
-      'does not leave code view when the editor HTML cannot be read',
-      () async {
-        when(
-          editorController.isActivatedCodeView(),
-        ).thenAnswer((_) async => true);
-        when(
-          editorController.getText(),
-        ).thenAnswer((_) async => throw Exception('editor unavailable'));
-        controller.codeViewState.value = CodeViewState.enabled;
-
-        controller.toggleCodeView();
-        await untilCalled(editorController.isActivatedCodeView());
-        await untilCalled(editorController.getText());
-        await Future<void>.delayed(Duration.zero);
-
-        expect(controller.codeViewEnabled, isTrue);
-        verifyNever(editorController.setText(any));
-        verifyNever(editorController.toggleCodeView());
-      },
-    );
-  });
-
-  group('when the editor never answers', () {
-    late MockHtmlEditorController editorController;
-    late RichTextWebController controller;
-    const replyTimeout = Duration(milliseconds: 10);
-
-    setUp(() {
-      editorController = MockHtmlEditorController();
-
-      controller = RichTextWebController(
-        editorController: editorController,
-        editorReplyTimeout: replyTimeout,
-      );
+      expect(controller.codeViewEnabled, isTrue);
+      verifyNever(editorController.getText());
+      verifyNever(editorController.setText(any));
+      verify(editorController.toggleCodeView()).called(1);
     });
 
-    test(
-      'gives up on the code view state and accepts a later toggle',
-      () async {
-        when(
-          editorController.isActivatedCodeView(),
-        ).thenAnswer((_) => Completer<bool>().future);
+    test('leaving code view still toggles the editor and disables code view', () async {
+      when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+      when(editorController.getText()).thenAnswer((_) async => benignComposerHtml);
 
-        controller.toggleCodeView();
-        await Future<void>.delayed(replyTimeout * 3);
+      controller.toggleCodeView();
+      await untilCalled(editorController.toggleCodeView());
 
-        when(
-          editorController.isActivatedCodeView(),
-        ).thenAnswer((_) async => false);
-        controller.toggleCodeView();
-        await untilCalled(editorController.toggleCodeView());
+      expect(controller.codeViewEnabled, isFalse);
+      verify(editorController.toggleCodeView()).called(1);
+      verify(editorController.evaluateJavascriptWeb(HtmlUtils.recalculateEditorHeight().name)).called(1);
+    });
 
-        expect(controller.codeViewEnabled, isTrue);
-        verify(editorController.toggleCodeView()).called(1);
-      },
-    );
+    test('sanitizes GHSA-73vq-c7p5-pvp4 HTML before leaving code view', () async {
+      when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+      when(editorController.getText()).thenAnswer((_) async => ghsaEmbedCodeXssPayload);
 
-    test('stays in code view when reading the HTML times out', () async {
-      when(
-        editorController.isActivatedCodeView(),
-      ).thenAnswer((_) async => true);
-      when(
-        editorController.getText(),
-      ).thenAnswer((_) => Completer<String>().future);
+      controller.toggleCodeView();
+      await untilCalled(editorController.toggleCodeView());
+
+      final captured = verify(editorController.setText(captureAny)).captured.single as String;
+      final sanitized = captured.toLowerCase();
+      expect(sanitized, isNot(contains('<script')));
+      expect(sanitized, isNot(contains('onerror')));
+      expect(sanitized, isNot(contains('onload')));
+      expect(sanitized, isNot(contains('javascript:')));
+      expect(sanitized, contains('visible text'));
+      verify(editorController.getText()).called(1);
+      verify(editorController.toggleCodeView()).called(1);
+    });
+
+    test('writes an empty paragraph when sanitizing removes all the code view HTML', () async {
+      when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+      when(editorController.getText()).thenAnswer((_) async => scriptOnlyEmbedCodePayload);
+
+      controller.toggleCodeView();
+      await untilCalled(editorController.toggleCodeView());
+
+      verify(editorController.setText('<p><br></p>')).called(1);
+    });
+
+    test('does not leave code view when the editor HTML cannot be read', () async {
+      when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+      when(editorController.getText()).thenAnswer((_) async => throw Exception('editor unavailable'));
       controller.codeViewState.value = CodeViewState.enabled;
 
       controller.toggleCodeView();
-      await Future<void>.delayed(replyTimeout * 3);
+      await untilCalled(editorController.isActivatedCodeView());
+      await untilCalled(editorController.getText());
+      await Future<void>.delayed(Duration.zero);
 
       expect(controller.codeViewEnabled, isTrue);
       verifyNever(editorController.setText(any));
       verifyNever(editorController.toggleCodeView());
+    });
+
+    group('when the editor never answers', () {
+      const replyTimeout = Duration(milliseconds: 10);
+
+      setUp(() {
+        controller = RichTextWebController(
+          editorController: editorController,
+          editorReplyTimeout: replyTimeout,
+        );
+      });
+
+      test('gives up on the code view state and accepts a later toggle', () async {
+        when(editorController.isActivatedCodeView()).thenAnswer((_) => Completer<bool>().future);
+
+        controller.toggleCodeView();
+        await Future<void>.delayed(replyTimeout * 3);
+
+        when(editorController.isActivatedCodeView()).thenAnswer((_) async => false);
+        controller.toggleCodeView();
+        await untilCalled(editorController.toggleCodeView());
+
+        expect(controller.codeViewEnabled, isTrue);
+        verify(editorController.toggleCodeView()).called(1);
+      });
+
+      test('stays in code view when reading the HTML times out', () async {
+        when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+        when(editorController.getText()).thenAnswer((_) => Completer<String>().future);
+        controller.codeViewState.value = CodeViewState.enabled;
+
+        controller.toggleCodeView();
+        await Future<void>.delayed(replyTimeout * 3);
+
+        expect(controller.codeViewEnabled, isTrue);
+        verifyNever(editorController.setText(any));
+        verifyNever(editorController.toggleCodeView());
+      });
     });
 
     group('error toast', () {
