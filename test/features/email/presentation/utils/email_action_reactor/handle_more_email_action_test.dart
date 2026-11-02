@@ -134,7 +134,7 @@ Future<void> openMoreMenu(
     position: const RelativeRect.fromLTRB(100, 100, 100, 100),
     responsiveUtils: ResponsiveUtils(),
     imagePaths: ImagePaths(),
-    ownEmailAddress: 'me@example.com',
+    ownerEmailAddresses: const {'me@example.com'},
     handleEmailAction: (email, action) => handled.add((email, action)),
     additionalActions: const [],
     emailIsRead: true,

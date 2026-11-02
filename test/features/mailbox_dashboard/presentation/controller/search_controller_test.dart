@@ -89,7 +89,7 @@ void main() {
   SearchEmailFilter committed() => appProviderContainer.read(searchFilterProvider);
 
   void toggle(QuickSearchFilter filter) =>
-      searchController.toggleQuickSearchFilter(filter, currentUserEmail: _me);
+      searchController.toggleQuickSearchFilter(filter, ownerEmailAddresses: {_me});
 
   group('updateFilterEmail', () {
     test('user intent writes the committed SSOT', () {
@@ -199,14 +199,14 @@ void main() {
       expect(committed().from, isEmpty);
     });
 
-    test('fromMe is a no-op when the current user email is empty', () {
+    test('fromMe is a no-op when the me addresses are empty', () {
       searchController.updateFilterEmail(
         fromOption: const Some({'other@example.com'}),
       );
 
       searchController.toggleQuickSearchFilter(
         QuickSearchFilter.fromMe,
-        currentUserEmail: '',
+        ownerEmailAddresses: const {},
       );
 
       expect(committed().from, {'other@example.com'});

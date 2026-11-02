@@ -513,7 +513,7 @@ void main() {
             updated: updated,
             destroyed: destroyed,
             sentMailboxId: sentMailboxId,
-            ownEmailAddress: ownEmailAddress,
+            ownerEmailAddresses: {ownEmailAddress},
           );
 
           // assert
@@ -546,7 +546,7 @@ void main() {
             updated: updated,
             destroyed: destroyed,
             sentMailboxId: sentMailboxId,
-            ownEmailAddress: ownEmailAddress,
+            ownerEmailAddresses: {ownEmailAddress},
           );
 
           // assert
@@ -578,7 +578,7 @@ void main() {
             updated: updated,
             destroyed: destroyed,
             sentMailboxId: sentMailboxId,
-            ownEmailAddress: ownEmailAddress,
+            ownerEmailAddresses: {ownEmailAddress},
           );
 
           // assert
@@ -620,7 +620,7 @@ void main() {
             updated: updated,
             destroyed: destroyed,
             sentMailboxId: sentMailboxId,
-            ownEmailAddress: ownEmailAddress,
+            ownerEmailAddresses: {ownEmailAddress},
           );
 
           // assert
@@ -664,7 +664,7 @@ void main() {
             updated: updated,
             destroyed: destroyed,
             sentMailboxId: sentMailboxId,
-            ownEmailAddress: ownEmailAddress,
+            ownerEmailAddresses: {ownEmailAddress},
           );
 
           // assert
@@ -722,7 +722,7 @@ void main() {
             updated: updated,
             destroyed: destroyed,
             sentMailboxId: sentMailboxId,
-            ownEmailAddress: ownEmailAddress,
+            ownerEmailAddresses: {ownEmailAddress},
           );
 
           // assert

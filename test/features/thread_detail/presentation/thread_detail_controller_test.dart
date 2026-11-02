@@ -14,6 +14,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/add_a_label_to_a_thread_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
@@ -68,7 +69,14 @@ void main() {
     Get.put<NetworkConnectionController>(MockNetworkConnectionController());
     Get.put<ThreadDetailManager>(MockThreadDetailManager());
     Get.put<DownloadManager>(MockDownloadManager());
-    ActiveAccountSourceFixtures.putShowing(DelegationFixtures.bobAccountId);
+    final session = DelegationFixtures.session();
+    final source = ActiveAccountSourceFixtures.putShowing(
+      DelegationFixtures.bobAccountId,
+    );
+    source.show(
+      DelegationFixtures.bobAccountId,
+      ActiveAccount.delegated(session, DelegationFixtures.bobAccountId),
+    );
   });
 
   tearDown(Get.reset);
@@ -107,9 +115,12 @@ void main() {
       when(dashboard.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
       when(dashboard.getMailboxIdByRole(PresentationMailbox.roleSent)).thenReturn(MailboxId(Id('sent-id')));
       when(dashboard.ownEmailAddress).thenReturn(RxString(DelegationFixtures.bobAddress));
+      when(dashboard.ownerEmailAddresses)
+          .thenReturn({DelegationFixtures.bobAddress});
       when(Get.find<NetworkConnectionController>().isNetworkConnectionAvailable()).thenReturn(true);
       when(Get.find<ThreadDetailManager>().isThreadDetailEnabled).thenReturn(true);
       final source = Get.find<ActiveAccountSource>() as FakeActiveAccountSource;
+      final session = DelegationFixtures.session();
       final controller = ThreadDetailController(
         getThreadByIdInteractor,
         MockGetEmailsByIdsInteractor(),
@@ -126,7 +137,10 @@ void main() {
       async.elapse(const Duration(seconds: 1));
       verify(getThreadByIdInteractor.execute(any, any, any, any, any, isSentMailbox: false)).called(1);
 
-      source.show(DelegationFixtures.carolAccountId);
+      source.show(
+        DelegationFixtures.carolAccountId,
+        ActiveAccount.delegated(session, DelegationFixtures.carolAccountId),
+      );
       bobThread.add(Right(GetThreadByIdSuccess([EmailId(Id('email-1'))], threadId: threadId)));
       async.flushMicrotasks();
 

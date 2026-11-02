@@ -17,7 +17,7 @@ extension SetupListIdentitiesExtension on ComposerController {
   }
 
   Future<void> getAllIdentitiesAsSynchronize() async {
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = mailboxDashBoardController.activeAccountId;
     final session = mailboxDashBoardController.sessionCurrent;
 
     if (accountId == null || session == null) return;

@@ -37,7 +37,10 @@ extension PresentationEmailExtension on PresentationEmail {
       cc.numberEmailAddress() +
       bcc.numberEmailAddress();
 
-  int getCountMailAddressWithoutMe(String userName) {
+  int getCountMailAddressWithoutMe(String userName) =>
+      getCountMailAddressWithoutMeAddresses({userName});
+
+  int getCountMailAddressWithoutMeAddresses(Set<String> meAddresses) {
     final uniqueEmails = <String>{};
     final newTo = to ?? {};
     final newCc = cc ?? {};
@@ -45,7 +48,7 @@ extension PresentationEmailExtension on PresentationEmail {
     final newFrom = from ?? {};
 
     for (final email in <EmailAddress>[...newTo, ...newCc, ...newBcc, ...newFrom]) {
-      if (email.emailAddress != userName) {
+      if (!meAddresses.contains(email.emailAddress)) {
         uniqueEmails.add(email.emailAddress);
       }
     }
@@ -219,8 +222,9 @@ extension PresentationEmailExtension on PresentationEmail {
     return mailboxContain?.isTrash ?? mailboxContain?.isSpam ?? false;
   }
 
-  bool isReplyAllEnabled(String ownerEmailAddress) {
-    final countMailAddress = getCountMailAddressWithoutMe(ownerEmailAddress);
-    return countMailAddress > 1;
-  }
+  bool isReplyAllEnabled(String ownerEmailAddress) =>
+      isReplyAllEnabledForAddresses({ownerEmailAddress});
+
+  bool isReplyAllEnabledForAddresses(Set<String> meAddresses) =>
+      getCountMailAddressWithoutMeAddresses(meAddresses) > 1;
 }

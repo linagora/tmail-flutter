@@ -8,12 +8,12 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 
 extension HandleLogicLabelExtension on MailboxDashBoardController  {
   bool get isLabelCapabilitySupported {
-    final accountId = this.accountId.value;
+    final shownAccountId = activeAccountId;
     final session = sessionCurrent;
 
-    if (accountId == null || session == null) return false;
+    if (shownAccountId == null || session == null) return false;
 
-    return labelController.isLabelCapabilitySupported(session, accountId);
+    return labelController.isLabelCapabilitySupported(session, shownAccountId);
   }
 
   bool get isLabelAvailable {

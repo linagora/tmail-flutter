@@ -8,28 +8,62 @@ void main() {
   group('ShownAccountCapabilities.of', () {
     final session = DelegationFixtures.session();
 
-    for (final (shown, shownAccount, canOpenSettings) in [
-      ('my own account', ActiveAccount.personal(session), true),
-      ('a delegated account', ActiveAccount.delegated(session, DelegationFixtures.bobAccountId), false),
-      ('no account yet', null, true),
+    for (final (
+          shown,
+          shownAccount,
+          canOpenSettings,
+          canCreateFilter,
+          canCreateDefaultFolders,
+          canUseNotificationKeychain,
+        ) in [
+      (
+        'my own account',
+        ActiveAccount.personal(session),
+        true,
+        true,
+        true,
+        true,
+      ),
+      (
+        'a delegated account',
+        ActiveAccount.delegated(session, DelegationFixtures.bobAccountId),
+        false,
+        false,
+        false,
+        false,
+      ),
+      (
+        'no account yet',
+        null,
+        true,
+        true,
+        false,
+        false,
+      ),
     ]) {
-      test('${canOpenSettings ? 'opens' : 'does not open'} Settings while $shown is shown', () {
-        expect(ShownAccountCapabilities.of(shownAccount).canOpenSettings, canOpenSettings);
-      });
+      test(
+        '${canOpenSettings ? 'opens' : 'does not open'} Settings, '
+        '${canCreateFilter ? 'allows' : 'does not allow'} creating a filter, '
+        '${canCreateDefaultFolders ? 'creates' : 'does not create'} default folders and '
+        '${canUseNotificationKeychain ? 'writes' : 'does not write'} the notification keychain '
+        'while $shown is shown',
+        () {
+          final capabilities = ShownAccountCapabilities.of(shownAccount);
+
+          expect(capabilities.canOpenSettings, canOpenSettings);
+          expect(capabilities.canCreateFilter, canCreateFilter);
+          expect(capabilities.canCreateDefaultFolders, canCreateDefaultFolders);
+          expect(capabilities.canUseNotificationKeychain, canUseNotificationKeychain);
+        },
+      );
     }
 
-    for (final (shown, shownAccount, canCreateFilter) in [
-      ('my own account', ActiveAccount.personal(session), true),
-      ('a delegated account', ActiveAccount.delegated(session, DelegationFixtures.bobAccountId), false),
-      ('no account yet', null, true),
-    ]) {
-      test('${canCreateFilter ? 'allows' : 'does not allow'} creating a filter while $shown is shown', () {
-        expect(ShownAccountCapabilities.of(shownAccount).canCreateFilter, canCreateFilter);
-      });
-    }
+    test('opens Settings and allows creating a filter for my own account and no account yet', () {
+      final mine = ShownAccountCapabilities.of(ActiveAccount.personal(session));
+      final none = ShownAccountCapabilities.of(null);
 
-    test('gives equal capabilities for my own account and no account yet', () {
-      expect(ShownAccountCapabilities.of(ActiveAccount.personal(session)), ShownAccountCapabilities.of(null));
+      expect(mine.canOpenSettings, none.canOpenSettings);
+      expect(mine.canCreateFilter, none.canCreateFilter);
     });
   });
 }

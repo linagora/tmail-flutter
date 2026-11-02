@@ -318,8 +318,10 @@ class ComposerController extends BaseController
 
   TransformHtmlEmailContentInteractor get transformHtmlEmailContentInteractor => _transformHtmlEmailContentInteractor;
 
-  String get ownEmailAddress =>
-      mailboxDashBoardController.ownEmailAddress.value;
+  String get ownEmailAddress => mailboxDashBoardController.ownerEmailAddress;
+
+  Set<String> get ownerEmailAddresses =>
+      mailboxDashBoardController.ownerEmailAddresses;
 
   late Worker uploadInlineImageWorker;
   late bool _isEmailBodyLoaded;
@@ -566,7 +568,7 @@ class ComposerController extends BaseController
   Future<CreateEmailRequest?> _generateCreateEmailRequestToSaveAsCache({String? htmlContent}) async {
     final arguments = composerArguments.value;
     final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = mailboxDashBoardController.activeAccountId;
 
     if (arguments == null || session == null || accountId == null) {
       log('ComposerController::_generateCreateEmailRequest: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
@@ -687,7 +689,7 @@ class ComposerController extends BaseController
   void _injectBinding() {
     injectAutoCompleteBindings(
       mailboxDashBoardController.sessionCurrent,
-      mailboxDashBoardController.accountId.value,
+      mailboxDashBoardController.activeAccountId,
     );
   }
 
@@ -742,7 +744,7 @@ class ComposerController extends BaseController
 
   void _getAllIdentities() {
     log('ComposerController::_getAllIdentities: Fetch again identity !');
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = mailboxDashBoardController.activeAccountId;
     final session = mailboxDashBoardController.sessionCurrent;
     if (accountId != null && session != null) {
       consumeState(_getAllIdentitiesInteractor.execute(session, accountId));
@@ -761,15 +763,17 @@ class ComposerController extends BaseController
     required EmailActionType actionType,
     String? listPost,
   }) {
-    final senderEmailAddress = ownEmailAddress;
+    final meAddresses = mailboxDashBoardController.ownerEmailAddresses;
     final isSender = presentationEmail.from
       .asList()
-      .any((element) => element.emailAddress.isNotEmpty && element.emailAddress == senderEmailAddress);
+      .any((element) =>
+          element.emailAddress.isNotEmpty &&
+          meAddresses.contains(element.emailAddress));
 
     final recipients = presentationEmail.generateRecipientsEmailAddressForComposer(
       emailActionType: actionType,
       isSender: isSender,
-      userName: senderEmailAddress,
+      meAddresses: meAddresses,
       listPost: listPost,
     );
 
@@ -978,7 +982,7 @@ class ComposerController extends BaseController
   Future<void> _prepareToSendMessages(BuildContext context) async {
     final arguments = composerArguments.value;
     final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = mailboxDashBoardController.activeAccountId;
 
     if (arguments == null || session == null || accountId == null) {
       log('ComposerController::_handleSendMessages: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
@@ -1174,7 +1178,7 @@ class ComposerController extends BaseController
       return DriveAttachmentTransferRunner.notStartedOutcome;
     }
     final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = mailboxDashBoardController.activeAccountId;
     final uploadUri = session?.getUploadFromUrlUri(
       accountId,
       jmapUrl: jmapUrl,
@@ -1334,7 +1338,7 @@ class ComposerController extends BaseController
     final autoCompletePattern = AutoCompletePattern(
       word: queryString,
       limit: limit,
-      accountId: mailboxDashBoardController.accountId.value);
+      accountId: mailboxDashBoardController.activeAccountId);
 
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
       if (_getAllAutoCompleteInteractor != null) {
@@ -1443,7 +1447,7 @@ class ComposerController extends BaseController
 
   void uploadAttachmentsAction({required List<FileInfo> pickedFiles}) {
     final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = mailboxDashBoardController.activeAccountId;
     if (session != null && accountId != null) {
       try {
         final uploadUri = session.getUploadUri(accountId, jmapUrl: dynamicUrlInterceptors.jmapUrl);
@@ -1539,7 +1543,7 @@ class ComposerController extends BaseController
 
     final arguments = composerArguments.value;
     final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = mailboxDashBoardController.activeAccountId;
 
     if (arguments == null ||
         session == null ||
@@ -1615,7 +1619,7 @@ class ComposerController extends BaseController
   Future<void> handleClickSaveAsTemplateButton(BuildContext context) async {
     if (composerArguments.value == null ||
         mailboxDashBoardController.sessionCurrent == null ||
-        mailboxDashBoardController.accountId.value == null
+        mailboxDashBoardController.activeAccountId == null
     ) {
       log('ComposerController::handleClickSaveAsTemplateButton: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
       return;
@@ -2014,7 +2018,7 @@ class ComposerController extends BaseController
     } catch (e) {
       logWarning('ComposerController::_handleUploadInlineSuccess(): $e');
     }
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = mailboxDashBoardController.activeAccountId;
 
     if (baseDownloadUrl != null && accountId != null) {
       final imageUrl = uploadState.attachment.getDownloadUrl(baseDownloadUrl, accountId);
@@ -2433,7 +2437,7 @@ class ComposerController extends BaseController
   void _handleSaveMessageToDraft(BuildContext context) async {
     final arguments = composerArguments.value;
     final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = mailboxDashBoardController.activeAccountId;
 
     if (arguments == null ||
         session == null ||
@@ -2567,7 +2571,7 @@ class ComposerController extends BaseController
       child: SavingTemplateDialogView(
         createEmailRequest: CreateEmailRequest(
           session: mailboxDashBoardController.sessionCurrent!,
-          accountId: mailboxDashBoardController.accountId.value!,
+          accountId: mailboxDashBoardController.activeAccountId!,
           emailActionType: composerArguments.value!.emailActionType,
           ownEmailAddress: ownEmailAddress,
           subject: subjectEmail.value ?? '',
@@ -2680,7 +2684,7 @@ class ComposerController extends BaseController
   @override
   Future<void> onBeforeReconnect() async {
     if (!PlatformInfo.isWeb) return;
-    if (mailboxDashBoardController.accountId.value != null &&
+    if (mailboxDashBoardController.activeAccountId != null &&
         mailboxDashBoardController.sessionCurrent?.username != null
     ) {
       await _saveComposerSessionCache();
