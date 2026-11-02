@@ -72,7 +72,7 @@ pipeline {
     }
 
     environment {
-        FLUTTER_VERSION = '3.38.9'
+        FLUTTER_VERSION = '3.47.9'
         WEB_WORKERS = '4'
         PR_IMAGE_CPU_QUOTA = '100000'
     }

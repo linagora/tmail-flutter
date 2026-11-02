@@ -7,7 +7,7 @@ on:
 
 env:
   JAVA_VERSION: 17
-  FLUTTER_VERSION: 3.38.9
+  FLUTTER_VERSION: 3.47.9
   API_LEVEL: 30
   TARGET: default
   ARCH: x86_64

@@ -42,7 +42,7 @@ dependencies:
 
   quiver: 3.2.1
 
-  intl: 0.20.2
+  intl: 0.20.3
 
   uri: 1.0.0
 
