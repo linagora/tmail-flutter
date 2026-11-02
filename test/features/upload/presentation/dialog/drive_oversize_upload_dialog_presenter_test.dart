@@ -187,6 +187,48 @@ void main() {
       expect(tester.getBottomLeft(_dialogView).dy, lessThanOrEqualTo(screenHeight - 34));
     });
 
+    testWidgets('narrow web compact sheet background reaches the bottom edge with inset', (tester) async {
+      PlatformInfo.isTestingForWeb = true;
+      addTearDown(() => PlatformInfo.isTestingForWeb = false);
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(390, 800);
+      tester.view.padding = const FakeViewPadding(top: 44, bottom: 34);
+      addTearDown(tester.view.reset);
+      await _pumpHost(tester, container);
+      await _showDialog(tester, container);
+
+      final screenHeight = tester.view.physicalSize.height;
+      final background = find.descendant(
+        of: find.byType(LinagoraFileTransferSurface),
+        matching: find.byType(DecoratedBox),
+      ).first;
+      expect(tester.getBottomLeft(background).dy, equals(screenHeight));
+      expect(tester.getBottomLeft(_dialogView).dy, lessThanOrEqualTo(screenHeight - 34));
+    });
+
+    testWidgets('wide web card clears every inset', (tester) async {
+      PlatformInfo.isTestingForWeb = true;
+      addTearDown(() => PlatformInfo.isTestingForWeb = false);
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(1280, 800);
+      tester.view.padding = const FakeViewPadding(top: 44, bottom: 34, left: 20, right: 20);
+      addTearDown(tester.view.reset);
+      await _pumpHost(tester, container);
+      await _showDialog(tester, container);
+
+      expect(
+        tester.widget<LinagoraFileTransferSurface>(find.byType(LinagoraFileTransferSurface)).layout,
+        equals(LinagoraFileTransferLayout.wide),
+      );
+      // The card's own SafeArea consumes the insets, so nothing inside it lays out under them.
+      expect(MediaQuery.paddingOf(tester.element(_dialogView)), equals(EdgeInsets.zero));
+      final card = tester.getRect(find.byType(LinagoraFileTransferSurface));
+      expect(card.top, greaterThanOrEqualTo(44));
+      expect(card.bottom, lessThanOrEqualTo(800 - 34));
+      expect(card.left, greaterThanOrEqualTo(20));
+      expect(card.right, lessThanOrEqualTo(1280 - 20));
+    });
+
     testWidgets('the compact sheet background reaches the side edges while its content clears the side insets', (tester) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = const Size(844, 390);

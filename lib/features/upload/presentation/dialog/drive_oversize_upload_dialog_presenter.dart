@@ -33,7 +33,7 @@ class DriveOversizeUploadDialogPresenter {
       ),
       barrierDismissible: false,
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-      useSafeArea: PlatformInfo.isWeb,
+      useSafeArea: false,
     ).whenComplete(() {
       if (identical(_owner, owner)) _owner = null;
     });
@@ -60,9 +60,10 @@ class DriveOversizeUploadDialogPresenter {
         ),
       ),
     );
-    // The sheet pads its own bottom/sides so its background reaches the screen edge.
+    // The route adds no safe area: the card clears every inset itself, and the
+    // sheet pads its own bottom/sides so its background reaches the screen edge.
     return isWebLayout
-        ? surface
+        ? SafeArea(child: surface)
         : SafeArea(bottom: false, left: false, right: false, child: surface);
   }
 
