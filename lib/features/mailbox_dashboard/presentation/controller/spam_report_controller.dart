@@ -24,7 +24,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/loader_status.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class SpamReportController extends BaseController with ActiveAccountReader {
+class SpamReportController extends BaseController
+    with ActiveAccountReader, ShownAccountStateConsumer {
   final StoreSpamReportInteractor _storeSpamReportInteractor;
   final StoreSpamReportStateInteractor _storeSpamReportStateInteractor;
   final GetSpamReportStateInteractor _getSpamReportStateInteractor;
@@ -120,7 +121,7 @@ class SpamReportController extends BaseController with ActiveAccountReader {
   }
 
   void getSpamMailboxCached(AccountId accountId, UserName userName) {
-    consumeState(_getSpamMailboxCachedInteractor.execute(accountId, userName));
+    consumeShownAccountState(_getSpamMailboxCachedInteractor.execute(accountId, userName));
   }
 
   void _storeLastTimeDismissedSpamReportedAction() {
