@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
@@ -78,6 +80,9 @@ void main() {
     unreadEmails: jmap_mailbox.UnreadEmails(UnsignedInt(count)),
   );
 
+  final testAccountId = AccountId(Id('acc'));
+  final testUserName = UserName('user@example.com');
+
   void putBaseControllerDependencies() {
     Get.put<CachingManager>(MockCachingManager());
     Get.put<LanguageCacheManager>(MockLanguageCacheManager());
@@ -108,6 +113,7 @@ void main() {
         .thenAnswer((_) => const Stream.empty());
 
     putBaseControllerDependencies();
+    ActiveAccountSourceFixtures.putShowing(testAccountId);
 
     controller = SpamReportController(
       storeSpamReportInteractor,
@@ -118,16 +124,13 @@ void main() {
     Get.put(controller);
   });
 
-  tearDown(Get.deleteAll);
+  tearDown(Get.reset);
 
   Stream<Either<Failure, Success>> failureStream(Exception exception) =>
       Stream.fromIterable([
         Right(GetSpamMailboxCachedLoading()),
         Left(GetSpamMailboxCachedFailure(exception)),
       ]);
-
-  final testAccountId = AccountId(Id('acc'));
-  final testUserName = UserName('user@example.com');
 
   group('SpamReportController._validateSpamMailboxChanged', () {
     group('NoUnreadSpamEmailsException', () {
@@ -202,6 +205,25 @@ void main() {
         await pumpEventQueue();
 
         expect(controller.presentationSpamMailbox.value, isNotNull);
+      });
+
+      test('a spam mailbox of an account shown before never reaches the banner once another one is shown',
+          () async {
+        final pending = StreamController<Either<Failure, Success>>();
+        addTearDown(pending.close);
+        final domainMailbox = jmap_mailbox.Mailbox(
+          id: jmap_mailbox.MailboxId(Id('spam')),
+          unreadEmails: jmap_mailbox.UnreadEmails(UnsignedInt(7)),
+        );
+        when(getSpamMailboxCachedInteractor.execute(any, any)).thenAnswer((_) => pending.stream);
+        final source = ActiveAccountSourceFixtures.putShowing(testAccountId);
+
+        controller.getSpamMailboxCached(testAccountId, testUserName);
+        source.show(DelegationFixtures.bobAccountId);
+        pending.add(Right(GetSpamMailboxCachedSuccess(domainMailbox)));
+        await pumpEventQueue();
+
+        expect(controller.presentationSpamMailbox.value, isNull);
       });
     });
   });
