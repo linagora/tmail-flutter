@@ -19,8 +19,9 @@ pluginManagement {
 plugins {
     id "dev.flutter.flutter-plugin-loader" version "1.0.0"
     id "com.android.application" version '8.12.1' apply false
-    // Flutter 3.47 requires Kotlin Gradle Plugin >= 2.2.20.
-    id "org.jetbrains.kotlin.android" version "2.2.20" apply false
+    // Flutter 3.47 requires KGP >= 2.2.20; use 2.3.20 so KGP stays in the
+    // documented AGP 8.12 compatibility range (Kotlin 2.3 ↔ AGP 8.2.2–8.13).
+    id "org.jetbrains.kotlin.android" version "2.3.20" apply false
     id "com.google.gms.google-services" version "4.3.10" apply false
 }
 
