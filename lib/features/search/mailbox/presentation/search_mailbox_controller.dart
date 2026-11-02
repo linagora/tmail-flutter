@@ -11,6 +11,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -82,7 +83,7 @@ import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class SearchMailboxController extends BaseMailboxController
-    with MailboxActionHandlerMixin, ActiveAccountReader {
+    with MailboxActionHandlerMixin, ActiveAccountReader, ShownAccountStateConsumer {
 
   final SearchMailboxInteractor _searchMailboxInteractor;
   final RenameMailboxInteractor _renameMailboxInteractor;
@@ -296,6 +297,14 @@ class SearchMailboxController extends BaseMailboxController
     }
   }
 
+  /// Folder search loads the shown account, so a result of an account shown before never paints here.
+  @override
+  void getAllMailbox(Session session, AccountId accountId) async {
+    if (getAllMailboxInteractor != null) {
+      consumeShownAccountState(getAllMailboxInteractor!.execute(session, accountId));
+    }
+  }
+
   void _refreshMailboxChanges({required jmap.State newState}) {
     if (accountId == null ||
         session == null ||
@@ -310,6 +319,23 @@ class SearchMailboxController extends BaseMailboxController
       currentMailboxState!,
       properties: MailboxConstants.propertiesDefault,
     );
+  }
+
+  @override
+  void refreshMailboxChanges(
+    Session session,
+    AccountId accountId,
+    jmap.State currentMailboxState, {
+    Properties? properties,
+  }) {
+    if (refreshAllMailboxInteractor != null) {
+      consumeShownAccountState(refreshAllMailboxInteractor!.execute(
+        session,
+        accountId,
+        currentMailboxState,
+        properties: properties,
+      ));
+    }
   }
 
   void searchMailboxAction() {
