@@ -24,9 +24,10 @@ USER flutter
 
 # gmeligio images use uid/gid 1001 for the flutter user; fresh cache mounts
 # are root-owned 0755 otherwise, so pub get / gradle fail as flutter.
+# Do not cache-mount the NDK path: an empty mount would hide the image's
+# preinstalled NDK and force a large re-download on first build.
 RUN --mount=type=cache,uid=1001,gid=1001,target=/home/flutter/.pub-cache \
     --mount=type=cache,uid=1001,gid=1001,target=/home/flutter/.gradle \
-    --mount=type=cache,uid=1001,gid=1001,target=/home/flutter/sdks/android-sdk/ndk \
     ./scripts/prebuild.sh && \
     flutter build apk --release && \
     mkdir /home/flutter/out && cp build/app/outputs/flutter-apk/app-release.apk /home/flutter/out/tmail-qa.apk
