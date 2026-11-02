@@ -22,9 +22,11 @@ RUN rm -f android/local.properties android/key.properties && \
 
 USER flutter
 
-RUN --mount=type=cache,target=/home/flutter/.pub-cache \
-    --mount=type=cache,target=/home/flutter/.gradle \
-    --mount=type=cache,target=/home/flutter/sdks/android-sdk/ndk \
+# gmeligio images use uid/gid 1001 for the flutter user; fresh cache mounts
+# are root-owned 0755 otherwise, so pub get / gradle fail as flutter.
+RUN --mount=type=cache,uid=1001,gid=1001,target=/home/flutter/.pub-cache \
+    --mount=type=cache,uid=1001,gid=1001,target=/home/flutter/.gradle \
+    --mount=type=cache,uid=1001,gid=1001,target=/home/flutter/sdks/android-sdk/ndk \
     ./scripts/prebuild.sh && \
     flutter build apk --release && \
     mkdir /home/flutter/out && cp build/app/outputs/flutter-apk/app-release.apk /home/flutter/out/tmail-qa.apk
