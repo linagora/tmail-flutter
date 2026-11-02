@@ -78,7 +78,7 @@ jobs:
           secrets: |
             sentry_auth_token=${{ secrets.SENTRY_AUTH_TOKEN }}
           build-args: |
-            FLUTTER_VERSION=3.38.9
+            FLUTTER_VERSION=3.47.9
             SENTRY_UPLOAD=1
             SENTRY_ORG=${{ secrets.SENTRY_ORG }}
             SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}

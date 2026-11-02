@@ -1,7 +1,8 @@
-ARG FLUTTER_VERSION=3.38.9
+ARG FLUTTER_VERSION=3.47.9
 
-# the digest wins over the tag: update FLUTTER_VERSION and the digest together
-FROM --platform=amd64 ghcr.io/instrumentisto/flutter:${FLUTTER_VERSION}@sha256:7d227ac458bbb5aca38ada779dc0bf983ad24deae8d2ef3ebf5b779915d1547d AS build-env
+# instrumentisto/flutter is archived and has no 3.47.9 tag; gmeligio tracks current stable.
+# Digest pins the linux/amd64 manifest (digest wins over the tag).
+FROM --platform=amd64 ghcr.io/gmeligio/flutter-web:${FLUTTER_VERSION}@sha256:8af1fcd0a7f7e84580f30d7f915f44237bb7a032bd8f4e3135a64fbec1ce1756 AS build-env
 
 ARG SENTRY_ORG
 ARG SENTRY_PROJECT
@@ -10,8 +11,13 @@ ARG SENTRY_RELEASE
 ARG VCS_REF
 ARG GITHUB_SHA
 
+# Image defaults to user flutter; root only for COPY ownership.
+USER root
 WORKDIR /app
 COPY . .
+RUN chown -R flutter:flutter /app
+
+USER flutter
 
 ENV GITHUB_SHA=$GITHUB_SHA \
     SENTRY_ORG=$SENTRY_ORG \
