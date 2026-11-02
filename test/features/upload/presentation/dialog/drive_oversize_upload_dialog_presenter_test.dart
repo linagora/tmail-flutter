@@ -95,6 +95,7 @@ void main() {
     for (final layoutCase in [
       (isWeb: true, width: 1280.0, layout: LinagoraFileTransferLayout.wide),
       (isWeb: true, width: 600.0, layout: LinagoraFileTransferLayout.wide),
+      (isWeb: true, width: 599.0, layout: LinagoraFileTransferLayout.compact),
       (isWeb: true, width: 390.0, layout: LinagoraFileTransferLayout.compact),
       (isWeb: false, width: 1280.0, layout: LinagoraFileTransferLayout.compact),
     ]) {
@@ -137,13 +138,36 @@ void main() {
       );
       expect(_dialogView, findsOneWidget);
 
-      // Rebuilt view still drives the same batch.
-      container.read(driveOversizeTransferProvider.notifier).cancelAll();
+      // Rebuilt compact dialog still wires Cancel to the same batch.
+      await tester.tap(find.byKey(LinagoraFileTransferDialog.cancelAllButtonKey));
       await tester.pump();
       expect(
         container.read(driveOversizeTransferProvider).every((item) => item.status.settled),
         isTrue,
       );
+    });
+
+    testWidgets('widening the web window from mobile width swaps the open sheet to the card', (tester) async {
+      PlatformInfo.isTestingForWeb = true;
+      addTearDown(() => PlatformInfo.isTestingForWeb = false);
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(320, 800);
+      addTearDown(tester.view.reset);
+      await _pumpHost(tester, container);
+      await _showDialog(tester, container);
+      expect(
+        tester.widget<LinagoraFileTransferSurface>(find.byType(LinagoraFileTransferSurface)).layout,
+        equals(LinagoraFileTransferLayout.compact),
+      );
+
+      tester.view.physicalSize = const Size(1280, 800);
+      await tester.pump();
+
+      expect(
+        tester.widget<LinagoraFileTransferSurface>(find.byType(LinagoraFileTransferSurface)).layout,
+        equals(LinagoraFileTransferLayout.wide),
+      );
+      expect(_dialogView, findsOneWidget);
     });
 
     testWidgets('the compact sheet background reaches the bottom edge while its content clears the inset', (tester) async {
