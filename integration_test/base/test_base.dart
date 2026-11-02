@@ -1,6 +1,7 @@
 import 'package:core/utils/config/env_loader.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/main/main_entry.dart';
@@ -22,6 +23,7 @@ class TestBase {
     required String description,
     required BaseScenario Function(PatrolIntegrationTester $, RobotFactory robots) scenarioBuilder,
     List<TestTags> tags = const [TestTags.ios],
+    Map<String, String> envOverrides = const {},
   }) {
     patrolSetUp(_setup);
 
@@ -43,7 +45,7 @@ class TestBase {
       framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive,
       ($) async {
         try {
-          await setupTest();
+          await setupTest(envOverrides: envOverrides);
           await scenarioBuilder($, createRobotFactory($)).execute();
         } catch (_) {
           dumpFailureState($);
@@ -53,8 +55,12 @@ class TestBase {
     );
   }
 
-  Future<void> setupTest() async {
+  Future<void> setupTest({
+    Map<String, String> envOverrides = const {},
+  }) async {
     await EnvLoader.loadEnvFile();
+    // loadEnvFile clears dotenv first, so overrides never leak between tests
+    dotenv.env.addAll(envOverrides);
     await runTmail();
 
     final originalOnError = FlutterError.onError!;

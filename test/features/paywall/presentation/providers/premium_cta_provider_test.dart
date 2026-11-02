@@ -22,6 +22,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_lin
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/active_ecosystem_provider.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/linagora_ecosystem_providers.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/providers/premium_cta_provider.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/main/providers/cozy/inside_cozy_provider.dart';
 import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_user_info_notifier.dart';
 
@@ -34,10 +36,11 @@ void main() {
   group('premium CTA loading states', _loadingStateTests);
   group('premium CTA unavailable states', _premiumCtaUnavailableTests);
   group('premium CTA gating', _premiumCtaGatingTests);
-  group('premium CTA urgent failure routing', _urgentFailureRoutingTests);
+  group('ecosystem soft-fail routing', _ecosystemSoftFailRoutingTests);
   group('premium CTA stream disposal', _streamDisposalTests);
   group('premium CTA missing dependencies', _missingDependenciesTests);
   group('premium CTA degraded inputs', _degradedInputTests);
+  group('ecosystem state equality', _ecosystemStateEqualityTests);
 }
 
 void _ecosystemCachingTests() {
@@ -463,41 +466,156 @@ void _premiumCtaGatingTests() {
   });
 }
 
-void _urgentFailureRoutingTests() {
-  test('routes urgent ecosystem failures exactly once', () async {
-    final exception = StateError('urgent');
-    final handler = _registerUrgentExceptionHandler();
-    final container = _createContainer(
-      _EcosystemRepository((_) async => throw exception),
+void _ecosystemSoftFailRoutingTests() {
+  // Missing / CORS-blocked `.well-known/linagora-ecosystem` is normal; soft-fail
+  // connectivity only. Auth urgent exceptions from the shared Dio still route.
+  test('does not urgent-route a ConnectionError from ecosystem fetch',
+      () async {
+    final loaded = await _loadEcosystemThrowing(
+      const ConnectionError(),
+      keepActiveAlive: true,
     );
-    _keepEcosystemAlive(container, _firstTarget);
-
-    await expectLater(
-      _readEcosystem(container, _firstTarget),
-      throwsA(isA<Failure>()),
+    expect(loaded.handler.handledCount, 0);
+    expect(
+      loaded.container.read(
+        activeEcosystemProvider(_firstAccountId, _firstJmapUrl),
+      ),
+      isA<EcosystemUnavailable>().having(
+        (state) => state.reason,
+        'reason',
+        EcosystemUnavailableReason.loadFailed,
+      ),
     );
+  });
 
+  test('does not urgent-route a NoNetworkError from ecosystem fetch', () async {
+    final loaded = await _loadEcosystemThrowing(const NoNetworkError());
+    expect(loaded.handler.handledCount, 0);
+  });
+
+  test('still urgent-routes BadCredentialsException from ecosystem fetch',
+      () async {
+    const exception = BadCredentialsException();
+    final loaded = await _loadEcosystemThrowing(exception);
+    expect(loaded.handler.handledCount, 1);
+    expect(loaded.handler.lastException, same(exception));
+  });
+
+  test('still urgent-routes RefreshTokenFailedException from ecosystem fetch',
+      () async {
+    final exception = RefreshTokenFailedException();
+    final loaded = await _loadEcosystemThrowing(exception);
+    expect(loaded.handler.handledCount, 1);
+    expect(loaded.handler.lastException, same(exception));
+  });
+
+  test('does not urgent-route a non-urgent Left(GetLinagoraEcosystemFailure)',
+      () async {
+    // Filter allows offering the failure; production validation rejects it.
+    final loaded =
+        await _loadEcosystemThrowing(StateError('ecosystem missing'));
+    expect(loaded.handler.handledCount, 0);
+  });
+
+  test('does not urgent-route a bare ConnectionError stream error', () async {
+    const exception = ConnectionError();
+    final handler = await _loadEcosystemStreamError(exception);
+    expect(handler.handledCount, 0);
+  });
+
+  test('still urgent-routes a bare BadCredentialsException stream error',
+      () async {
+    const exception = BadCredentialsException();
+    final handler = await _loadEcosystemStreamError(exception);
     expect(handler.handledCount, 1);
     expect(handler.lastException, same(exception));
   });
 
-  test('routes urgent ecosystem stream errors exactly once', () async {
-    final exception = Exception('urgent stream error');
-    final handler = _registerUrgentExceptionHandler();
-    final repository = _succeedingRepository();
-    final container = _createContainer(
-      repository,
-      interactor: _StreamErrorEcosystemInteractor(repository, exception),
-    );
-
-    await expectLater(
-      _readEcosystem(container, _firstTarget),
-      throwsA(same(exception)),
-    );
-
-    expect(handler.handledCount, 1);
-    expect(handler.lastException, same(exception));
+  test('does not urgent-route non-urgent ecosystem stream errors', () async {
+    final handler =
+        await _loadEcosystemStreamError(Exception('ecosystem stream error'));
+    expect(handler.handledCount, 0);
   });
+
+  test('shouldRouteEcosystemUrgentException soft-fails only connectivity', () {
+    const connectionError = ConnectionError();
+    const noNetwork = NoNetworkError();
+    const badCredentials = BadCredentialsException();
+    final refreshFailed = RefreshTokenFailedException();
+
+    expect(shouldRouteEcosystemUrgentException(connectionError), isFalse);
+    expect(shouldRouteEcosystemUrgentException(noNetwork), isFalse);
+    expect(
+      shouldRouteEcosystemUrgentException(
+        GetLinagoraEcosystemFailure(connectionError),
+      ),
+      isFalse,
+    );
+    expect(
+      shouldRouteEcosystemUrgentException(
+        GetLinagoraEcosystemFailure(noNetwork),
+      ),
+      isFalse,
+    );
+    expect(shouldRouteEcosystemUrgentException(badCredentials), isTrue);
+    expect(shouldRouteEcosystemUrgentException(refreshFailed), isTrue);
+    expect(
+      shouldRouteEcosystemUrgentException(
+        GetLinagoraEcosystemFailure(badCredentials),
+      ),
+      isTrue,
+    );
+    expect(
+      shouldRouteEcosystemUrgentException(
+        GetLinagoraEcosystemFailure(refreshFailed),
+      ),
+      isTrue,
+    );
+    // Non-urgent types stay eligible for ADR-0103 offer; validation rejects.
+    expect(shouldRouteEcosystemUrgentException(StateError('x')), isTrue);
+  });
+}
+
+/// Loads ecosystem with [exception] from the repository and returns the urgent
+/// handler (and container when active state must be asserted).
+Future<({_UrgentExceptionHandler handler, ProviderContainer container})>
+    _loadEcosystemThrowing(
+  Object exception, {
+  bool keepActiveAlive = false,
+}) async {
+  final handler = _registerUrgentExceptionHandler();
+  final container = _createContainer(
+    _EcosystemRepository((_) async => throw exception),
+  );
+  _keepEcosystemAlive(container, _firstTarget);
+  if (keepActiveAlive) {
+    _keepActiveEcosystemAlive(container, _firstTarget);
+  }
+
+  await expectLater(
+    _readEcosystem(container, _firstTarget),
+    throwsA(isA<Failure>()),
+  );
+  if (keepActiveAlive) await container.pump();
+
+  return (handler: handler, container: container);
+}
+
+Future<_UrgentExceptionHandler> _loadEcosystemStreamError(
+  Object exception,
+) async {
+  final handler = _registerUrgentExceptionHandler();
+  final repository = _succeedingRepository();
+  final container = _createContainer(
+    repository,
+    interactor: _StreamErrorEcosystemInteractor(repository, exception),
+  );
+
+  await expectLater(
+    _readEcosystem(container, _firstTarget),
+    throwsA(same(exception)),
+  );
+  return handler;
 }
 
 void _streamDisposalTests() {
@@ -530,7 +648,11 @@ void _streamDisposalTests() {
 
     subscription.close();
     await container.pump();
-    completer.completeError(StateError('failed after disposal'));
+    // Must pass both shouldRouteEcosystemUrgentException and
+    // validateUrgentException. ConnectionError is soft-failed by the predicate,
+    // and StateError is rejected by validation. Either would leave handledCount
+    // at 0 even if the stale guard failed (vacuous green).
+    completer.completeError(const BadCredentialsException());
     await container.pump();
 
     expect(handler.handledCount, 0);
@@ -573,6 +695,44 @@ void _missingDependenciesTests() {
     expect(
       container.read(activeEcosystemProvider(_firstAccountId, _firstJmapUrl)),
       _unavailableEcosystem(EcosystemUnavailableReason.dependencyUnavailable),
+    );
+  });
+
+  test('loadEcosystem throws when the interactor binding is null', () async {
+    final container = ProviderContainer(overrides: [
+      getLinagoraEcosystemInteractorProvider.overrideWithValue(null),
+      insideCozyProvider.overrideWith((ref) => true),
+    ]);
+    addTearDown(container.dispose);
+
+    await expectLater(
+      container.read(
+        ecosystemProvider(_firstAccountId, _firstJmapUrl).future,
+      ),
+      throwsA(
+        isA<StateError>().having(
+          (error) => error.message,
+          'message',
+          'GetLinagoraEcosystemInteractor is unavailable',
+        ),
+      ),
+    );
+  });
+}
+
+void _ecosystemStateEqualityTests() {
+  test('EcosystemState equality covers Equatable props', () {
+    // Assert props directly: identical const instances skip Equatable.==.
+    expect(const EcosystemLoading().props, isEmpty);
+    expect(
+      const EcosystemUnavailable(EcosystemUnavailableReason.loadFailed).props,
+      [EcosystemUnavailableReason.loadFailed, null],
+    );
+    final ecosystem = _ecosystem(_paywallTemplate);
+    expect(EcosystemAvailable(ecosystem).props, [ecosystem]);
+    expect(
+      EcosystemLoading(),
+      isNot(EcosystemUnavailable(EcosystemUnavailableReason.missingAccount)),
     );
   });
 }
@@ -667,8 +827,8 @@ ProviderContainer _createContainer(
   return container;
 }
 
-/// The shared seam resolves the handler through GetX (ADR-0103), so urgent
-/// routing is exercised the way production wires it.
+/// Registers the GetX urgent handler the way production wires it, so tests can
+/// assert that optional ecosystem failures stay off the urgent path.
 _UrgentExceptionHandler _registerUrgentExceptionHandler() {
   final handler = _UrgentExceptionHandler(isUrgent: true);
   Get.testMode = true;
@@ -887,8 +1047,16 @@ class _UrgentExceptionHandler implements UrgentExceptionHandler {
 
   _UrgentExceptionHandler({this.isUrgent = false});
 
+  /// Mirrors `BaseController.validateUrgentException` so soft-fail vs auth
+  /// routing assertions stay meaningful (not an accept-all stub).
   @override
-  bool validateUrgentException(dynamic exception) => isUrgent;
+  bool validateUrgentException(dynamic exception) {
+    if (!isUrgent) return false;
+    return exception is NoNetworkError
+        || exception is BadCredentialsException
+        || exception is ConnectionError
+        || exception is RefreshTokenFailedException;
+  }
 
   @override
   void handleUrgentException({Failure? failure, Exception? exception}) {
