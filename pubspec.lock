@@ -358,10 +358,10 @@ packages:
     dependency: "direct main"
     description:
       name: cupertino_icons
-      sha256: d57953e10f9f8327ce64a508a355f0b1ec902193f66288e8cb5070e7c47eeb2d
+      sha256: ba631d1c7f7bef6b729a622b7b752645a2d076dba9976925b8f25725a30e1ee6
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.6"
+    version: "1.0.8"
   cupertino_progress_bar:
     dependency: transitive
     description:
@@ -516,13 +516,14 @@ packages:
     source: git
     version: "0.1.6"
   enough_platform_widgets:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: enough_platform_widgets
-      sha256: c0defcb43452ba5df1058567fd6b920bf49f3fb6e6c57ee822a091f084cdee5f
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
+      path: "."
+      ref: "1843df56aa78236e4eb3483e3b1a9447855fbd20"
+      resolved-ref: "1843df56aa78236e4eb3483e3b1a9447855fbd20"
+      url: "https://github.com/Enough-Software/enough_platform_widgets.git"
+    source: git
+    version: "1.1.2"
   equatable:
     dependency: "direct main"
     description:
@@ -1059,10 +1060,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_platform_widgets
-      sha256: "4970c211af1dad0a161e6379d04de2cace80283da0439f2f87d31a541f9b2b84"
+      sha256: "22a86564cb6cc0b93637c813ca91b0b1f61c2681a31e0f9d77590c1fa9f12020"
       url: "https://pub.dev"
     source: hosted
-    version: "6.0.2"
+    version: "9.0.0"
   flutter_portal:
     dependency: "direct main"
     description:
