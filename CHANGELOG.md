@@ -1,3 +1,28 @@
+## [0.41.0] - 2026-11-02
+### Added
+- #4849 Hide sign out in the profile menu inside Twake Workplace
+
+### Fixed
+- #4980 Fix Android composer keyboard input
+- #4982 Keep the cc and bcc of a mailto link on Android
+- #4983 Keep label bindings alive after a share-started composer closes
+- #4984 Skip shared files the app cannot read
+- #4858 Always keep space for a new recipient after the chips
+- List each thread once when a folder loads more with thread view on
+- Sanitize composer reply, forward, mailto and pasted content
+- Fix XSS through composer embed code
+
+### Changed
+- Translate vi, ru, fr, mn
+
+## [0.40.4] - 2026-11-02
+### Fixed
+- Soft-fail missing linagora-ecosystem without a connection toast
+
+## [0.40.3] - 2026-10-29
+### Changed
+- #5071 Restrict web languages with the ALLOWED_LANGUAGES option
+
 ## [0.40.2] - 2026-10-19
 ### Added
 - #4623 Pin the "no attending" row when nobody can be answered or mailed
