@@ -1938,7 +1938,8 @@ class ComposerController extends BaseController
       final resultState = await _transformHtmlEmailContentInteractor
           .execute(signature, TransformConfiguration.forComposerSignature())
           .last;
-      return resultState.fold(
+      // await so exceptions from the returned value stay in this try/catch.
+      return await resultState.fold(
         (failure) => _noSignatureInserted('sanitizing failed: $failure'),
         (success) {
           if (success is! TransformHtmlEmailContentSuccess) {

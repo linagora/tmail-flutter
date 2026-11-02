@@ -51,7 +51,8 @@ class MarionetteMcpBinding extends McpAppBinding {
     registerComposerExtensions(createComposerBodyDriver());
   }
 
-  @visibleForTesting
+  // Used by MarionetteBinding and by tmail-mcp/test (not under package-root
+  // test/), so this stays callable without @visibleForTesting.
   static String? extractTMailText(Element element) {
     final widget = element.widget;
     if (widget is TMailButtonWidget) {

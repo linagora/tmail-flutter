@@ -183,7 +183,8 @@ class EmptyFolderNotifier extends _$EmptyFolderNotifier {
           .last;
 
       if (result == null) return _ClearEmailFailure();
-      return result.fold(
+      // await so exceptions from the returned value stay in this try/catch.
+      return await result.fold(
         (failure) => _ClearEmailFailure(
           exception: failure is FeatureFailure ? failure.exception : null,
         ),
@@ -227,7 +228,8 @@ class EmptyFolderNotifier extends _$EmptyFolderNotifier {
           .last;
 
       if (result == null) return _ClearEmailFailure();
-      return result.fold(
+      // await so exceptions from the returned value stay in this try/catch.
+      return await result.fold(
         (failure) => _ClearEmailFailure(
           exception: failure is FeatureFailure ? failure.exception : null,
         ),
@@ -255,7 +257,8 @@ class EmptyFolderNotifier extends _$EmptyFolderNotifier {
           .last;
 
       if (result == null) return _SubfoldersDeleteFailed();
-      return result.fold(
+      // await so exceptions from the returned value stay in this try/catch.
+      return await result.fold(
         (failure) => _SubfoldersDeleteFailed(
           exception: failure is FeatureFailure ? failure.exception : null,
         ),
