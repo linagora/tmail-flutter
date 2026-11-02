@@ -2,8 +2,12 @@ import 'package:jmap_dart_client/jmap/mail/calendar/attendance/calendar_event_at
 
 /// Where the reader stands with an invitation.
 class CalendarEventCardViewState {
-  /// The address the card answers on behalf of.
+  /// The address the card answers on behalf of (display / calendar URL).
   final String ownEmailAddress;
+
+  /// "Me" match set of the shown mailbox (aliases included). Empty falls back
+  /// to `{ownEmailAddress}`.
+  final Set<String> ownerEmailAddresses;
 
   /// Addresses the carrying email was sent from, used to resolve which
   /// attendee an activity message is about.
@@ -20,9 +24,14 @@ class CalendarEventCardViewState {
 
   const CalendarEventCardViewState({
     required this.ownEmailAddress,
+    this.ownerEmailAddresses = const {},
     this.listEmailAddressSender = const [],
     this.attendanceStatus,
     this.replying = false,
     this.hasScheduleConflict = false,
   });
+
+  Set<String> get meAddresses => ownerEmailAddresses.isNotEmpty
+      ? ownerEmailAddresses
+      : {if (ownEmailAddress.isNotEmpty) ownEmailAddress};
 }

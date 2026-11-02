@@ -48,8 +48,13 @@ extension SetEmailAddressExtension on Set<EmailAddress>? {
       : List.empty();
   }
 
-  Set<EmailAddress> withoutMe(String userName) {
-    return filterEmailAddress(userName).toSet();
+  Set<EmailAddress> withoutMe(String userName) => withoutMeAddresses({userName});
+
+  Set<EmailAddress> withoutMeAddresses(Set<String> meAddresses) {
+    return this
+            ?.where((emailAddress) => !meAddresses.contains(emailAddress.emailAddress))
+            .toSet() ??
+        {};
   }
 
   List<EmailAddress> removeDuplicateEmails() {
@@ -72,19 +77,26 @@ extension ListEmailAddressExtension on List<EmailAddress> {
   Set<String> toNormalizedEmailSet() =>
       map((e) => e.email?.toLowerCase()).whereType<String>().toSet();
 
-  List<EmailAddress> removeInvalidEmails(String username) {
+  List<EmailAddress> removeInvalidEmails(String username) =>
+      removeInvalidEmailsAddresses({username});
+
+  List<EmailAddress> removeInvalidEmailsAddresses(Set<String> meAddresses) {
     final Set<String> seenEmails = {};
     return where((email) {
       if (email.emailAddress.isEmpty) return false;
-      if (email.emailAddress == username) return false;
+      if (meAddresses.contains(email.emailAddress)) return false;
       return seenEmails.add(email.emailAddress);
     }).toList();
   }
 
-  List<EmailAddress> withoutMe(String? userName) {
-    if (userName == null) return this;
+  List<EmailAddress> withoutMe(String? userName) =>
+      withoutMeAddresses(userName == null ? const {} : {userName});
 
-    return where((emailAddress) => emailAddress.emailAddress != userName).toList();
+  List<EmailAddress> withoutMeAddresses(Set<String> meAddresses) {
+    if (meAddresses.isEmpty) return this;
+
+    return where((emailAddress) => !meAddresses.contains(emailAddress.emailAddress))
+        .toList();
   }
 
   List<EmailAddress> removeDuplicateEmails() {

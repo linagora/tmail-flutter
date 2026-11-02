@@ -153,10 +153,8 @@ class MailboxController extends BaseMailboxController
 
   AccountId? get accountId => activeAccountId;
 
-  /// The shown account when it is my own: default folders and the iOS notification keychain are
-  /// kept for my own account only.
-  AccountId? get _shownPersonalAccountId =>
-      activeAccountSource.activeAccount?.isDelegated == false ? accountId : null;
+  /// My own account id while a personal-only side effect is allowed for the shown account.
+  AccountId? _personalAccountIdWhen(bool allowed) => allowed ? accountId : null;
 
   @override
   bool get canCreateFilter => shownAccountCapabilities.canCreateFilter;
@@ -767,7 +765,8 @@ class MailboxController extends BaseMailboxController
       .whereNot((role) => mapDefaultMailboxRole.containsKey(role) || findNodeByNameOnFirstLevel(role.value) != null)
       .toList();
 
-    final personalAccountId = _shownPersonalAccountId;
+    final personalAccountId =
+        _personalAccountIdWhen(shownAccountCapabilities.canCreateDefaultFolders);
     if (listRoleMissing.isEmpty || personalAccountId == null || session == null) {
       updateMailboxTree(
         mailboxCollection: updateMailboxCollection(currentMailboxCollection),
@@ -1291,7 +1290,7 @@ class MailboxController extends BaseMailboxController
       case MailboxActions.copySubaddress:
         try{
           final subaddress = getSubAddress(
-            mailboxDashBoardController.ownEmailAddress.value,
+            mailboxDashBoardController.emailForSubaddress,
             findNodePathWithSeparator(mailbox.id, '.')!,
           );
           copySubAddressAction(context, subaddress);
@@ -1309,7 +1308,7 @@ class MailboxController extends BaseMailboxController
       case MailboxActions.allowSubaddressing:
         try{
           final subAddress = getSubAddress(
-            mailboxDashBoardController.ownEmailAddress.value,
+            mailboxDashBoardController.emailForSubaddress,
             findNodePathWithSeparator(mailbox.id, '.')!,
           );
           openConfirmationDialogSubAddressingAction(
@@ -1420,7 +1419,8 @@ class MailboxController extends BaseMailboxController
   }
 
   Future<void> _updateMailboxIdsBlockNotificationToKeychain(List<PresentationMailbox> mailboxes) async {
-    final personalAccountId = _shownPersonalAccountId;
+    final personalAccountId =
+        _personalAccountIdWhen(shownAccountCapabilities.canUseNotificationKeychain);
     if (personalAccountId == null) return;
 
     _iosSharingManager = getBinding<IOSSharingManager>();

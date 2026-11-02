@@ -72,7 +72,7 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
         threadId: selectedEmail.threadId,
         emailsInThreadDetailInfo: [selectedEmail].toEmailsInThreadDetailInfo(
           sentMailboxId: sentMailboxId,
-          ownEmailAddress: ownEmailAddress,
+          ownerEmailAddresses: ownerEmailAddresses,
         ),
       )),
       Right(PreloadEmailsByIdsSuccess([selectedEmail])),

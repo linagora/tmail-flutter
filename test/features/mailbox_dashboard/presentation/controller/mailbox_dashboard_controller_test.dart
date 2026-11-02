@@ -346,12 +346,16 @@ void main() {
   });
 
   group('send email failure toast:', () {
+    setUp(() {
+      mailboxDashboardController.sessionCurrent = testSession;
+      (mailboxDashboardController.activeAccountSource as FakeActiveAccountSource)
+          .show(testAccountId);
+    });
+
     testWidgets('names the rejected addresses on an InvalidRecipientsException',
         (tester) async {
       await pumpLocalizedApp(tester);
       clearInteractions(appToast);
-      mailboxDashboardController.sessionCurrent = testSession;
-      mailboxDashboardController.accountId.value = testAccountId;
       when(deleteEmailPermanentlyInteractor.execute(any, any, any, any))
           .thenAnswer((_) => const Stream.empty());
 
@@ -385,8 +389,6 @@ void main() {
         'on a ForbiddenToSendException', (tester) async {
       await pumpLocalizedApp(tester);
       clearInteractions(appToast);
-      mailboxDashboardController.sessionCurrent = testSession;
-      mailboxDashboardController.accountId.value = testAccountId;
       when(deleteEmailPermanentlyInteractor.execute(any, any, any, any))
           .thenAnswer((_) => const Stream.empty());
 
@@ -421,8 +423,6 @@ void main() {
         'deletes nothing when the pre-send check refused before any email was created',
         (tester) async {
       await pumpLocalizedApp(tester);
-      mailboxDashboardController.sessionCurrent = testSession;
-      mailboxDashboardController.accountId.value = testAccountId;
 
       mailboxDashboardController.handleFailureViewState(
         SendEmailFailure(exception: ForbiddenToSendException()),

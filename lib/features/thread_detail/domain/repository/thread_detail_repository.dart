@@ -11,7 +11,7 @@ abstract class ThreadDetailRepository {
     Session session,
     AccountId accountId,
     MailboxId sentMailboxId,
-    String ownEmailAddress,
+    Set<String> ownerEmailAddresses,
   );
 
   Future<List<Email>> getEmailsByIds(

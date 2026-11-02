@@ -176,7 +176,10 @@ class SingleEmailController extends BaseController
 
   Session? get session => mailboxDashBoardController.sessionCurrent;
 
-  String get ownEmailAddress => mailboxDashBoardController.ownEmailAddress.value;
+  String get ownEmailAddress => ownerEmailAddress;
+
+  Set<String> get ownerEmailAddresses =>
+      mailboxDashBoardController.ownerEmailAddresses;
 
   GlobalObjectKey? get htmlViewKey => _threadDetailController?.expandedEmailHtmlViewKey;
 
@@ -1547,7 +1550,8 @@ class SingleEmailController extends BaseController
     listEmailAddressAttendees.addAll(listEmailAddress);
 
     final listEmailAddressMailTo =
-        listEmailAddressAttendees.removeInvalidEmails(ownEmailAddress);
+        listEmailAddressAttendees
+            .removeInvalidEmailsAddresses(ownerEmailAddresses);
     log('SingleEmailController::handleMailToAttendees: listEmailAddressMailTo = $listEmailAddressMailTo');
     mailboxDashBoardController.openComposer(
       ComposerArguments.fromMailtoUri(

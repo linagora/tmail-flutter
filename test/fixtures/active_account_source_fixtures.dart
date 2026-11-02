@@ -144,7 +144,8 @@ class FakeActiveAccountSource
     }
   }
 
-  void show(AccountId accountId) => _show(accountId, null);
+  void show(AccountId accountId, [ActiveAccount? activeAccount]) =>
+      _show(accountId, activeAccount);
 
   void _show(AccountId accountId, ActiveAccount? activeAccount) {
     _activeAccount = activeAccount;

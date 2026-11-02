@@ -68,6 +68,8 @@ void main() {
       when(threadDetailController.currentExpandedEmailId).thenReturn(Rxn());
       when(threadDetailController.emailIdsPresentation)
           .thenReturn(<EmailId, PresentationEmail?>{}.obs);
+      when(threadDetailController.ownerEmailAddresses)
+          .thenReturn(const <String>{});
 
       // act
       threadDetailController.onSelectedEmailUpdated(
@@ -88,7 +90,7 @@ void main() {
             threadId: ThreadId(Id('1')),
             emailsInThreadDetailInfo: [selectedEmail].toEmailsInThreadDetailInfo(
               sentMailboxId: null,
-              ownEmailAddress: null,
+              ownerEmailAddresses: const {},
             ),
           )),
           Right(PreloadEmailsByIdsSuccess([selectedEmail])),

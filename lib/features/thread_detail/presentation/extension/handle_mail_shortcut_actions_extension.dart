@@ -77,7 +77,7 @@ extension HandleMailShortcutActionsExtension on ThreadDetailController {
 
     final emailActionType = shortcutType.getEmailActionType(
       currentEmail: expandedEmail,
-      ownerEmailAddress: mailboxDashBoardController.ownEmailAddress.value,
+      ownerEmailAddresses: mailboxDashBoardController.ownerEmailAddresses,
     );
     log('$runtimeType::onKeyDownEventAction:🔥EmailActionType: $emailActionType');
     if (emailActionType == null) return;

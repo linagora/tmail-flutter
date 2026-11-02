@@ -19,6 +19,10 @@ mixin ActiveAccountReader {
 
   AccountId? get activeAccountId => activeAccountSource.accountId;
 
+  /// "Me" display address of the shown mailbox (ADR-0114). Empty while no account is shown.
+  String get ownerEmailAddress =>
+      activeAccountSource.activeAccount?.ownerEmailAddress ?? '';
+
   /// The GetX side of shownAccountCapabilitiesProvider.
   ShownAccountCapabilities get shownAccountCapabilities =>
       ShownAccountCapabilities.of(activeAccountSource.activeAccount);
