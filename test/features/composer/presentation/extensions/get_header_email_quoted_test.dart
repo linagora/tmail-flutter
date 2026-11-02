@@ -83,7 +83,8 @@ void _replyTests() {
 
     expect(
       header,
-      'On Sep 25, 2026 at 3:56 PM, '
+      // Flutter 3.47 / ICU uses U+202F (narrow no-break space) before AM/PM.
+      'On Sep 25, 2026 at 3:56\u202FPM, '
       'Test BTELLIER &lt;btellier@example.com&gt; wrote:',
     );
   });
@@ -149,9 +150,10 @@ void _forwardTests() {
 
     expect(
       header,
+      // Flutter 3.47 / ICU uses U+202F (narrow no-break space) before AM/PM.
       '------- Forwarded message -------</br>'
       'Subject: Hello</br>'
-      'Date: Sep 25, 2026 at 3:56 PM</br>'
+      'Date: Sep 25, 2026 at 3:56\u202FPM</br>'
       'From: Test BTELLIER &lt;btellier@example.com&gt;</br>',
     );
   });
