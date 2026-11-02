@@ -400,13 +400,13 @@ class SearchEmailView extends ConsumerWidget {
     return Consumer(builder: (context, ref, _) {
       final searchEmailFilter = ref.watch(searchFilterProvider);
       final sortOrderType = searchEmailFilter.sortOrderType;
-      final currentUserEmail = controller.ownEmailAddress;
+      final ownerEmailAddresses = controller.ownerEmailAddresses;
 
       final isSelected = searchFilter.isSelected(
         context,
         searchEmailFilter,
         sortOrderType,
-        currentUserEmail);
+        ownerEmailAddresses);
 
       return SearchFilterButton(
         key: Key('mobile_${searchFilter.name}_search_filter_button'),

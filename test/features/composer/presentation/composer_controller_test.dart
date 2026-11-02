@@ -196,11 +196,23 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
 
   @override
   Rxn<AccountId> get accountId => Rxn(currentAccountId);
+  // Composer reads the shown mailbox through activeAccountId (ADR-0114).
+  @override
+  AccountId? get activeAccountId => currentAccountId;
   @override
   Session? get sessionCurrent => currentSession;
 
   @override
   RxString get ownEmailAddress => SessionFixtures.aliceSession.getOwnEmailAddressOrEmpty().obs;
+
+  @override
+  String get ownerEmailAddress => ownEmailAddress.value;
+
+  @override
+  Set<String> get ownerEmailAddresses {
+    final address = ownerEmailAddress;
+    return {if (address.isNotEmpty) address};
+  }
 
   @override
   Rxn<DraggableAppState> get attachmentDraggableAppState => Rxn(DraggableAppState.inActive);

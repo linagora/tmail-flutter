@@ -7,16 +7,6 @@ import 'package:flutter_test/flutter_test.dart';
 /// must say why it needs my own account. Receivers are matched by name, so an alias of the
 /// dashboard escapes the scan: a guard until these readers move to Riverpod.
 const _personalAccountReaders = <String, int>{
-  // Composer, identities and drafts: moved to the shown account in T-02.5, drafts in T-04.
-  'lib/features/composer/presentation/composer_controller.dart': 13,
-  'lib/features/composer/presentation/extensions/composer_print_draft_extension.dart': 1,
-  'lib/features/composer/presentation/extensions/handle_mobile_auto_save_extension.dart': 3,
-  'lib/features/composer/presentation/extensions/setup_email_content_extension.dart': 2,
-  'lib/features/composer/presentation/extensions/setup_email_request_read_receipt_flag_extension.dart': 1,
-  'lib/features/composer/presentation/extensions/setup_list_identities_extension.dart': 1,
-  'lib/features/composer/presentation/manager/web_composer_reload_snapshot_builder.dart': 1,
-  'lib/features/mailbox_dashboard/presentation/extensions/handle_composer_restore_on_mobile_extension.dart': 1,
-  'lib/features/mailbox_dashboard/presentation/extensions/handle_preview_attachment_extension.dart': 1,
   // Settings, filters, preferences and premium: always my own account.
   'lib/features/mailbox/presentation/base_mailbox_view.dart': 1,
   'lib/features/mailbox_dashboard/presentation/widgets/navigation_bar/dashboard_navigation_bar.dart': 1,
@@ -28,6 +18,7 @@ const _personalAccountReaders = <String, int>{
   'lib/features/thread_detail/presentation/thread_detail_controller.dart': 1,
   // AI Scribe, ecosystem and Drive: my own services.
   'lib/features/composer/presentation/extensions/ai_scribe/handle_ai_scribe_in_composer_extension.dart': 1,
+  'lib/features/composer/presentation/extensions/setup_email_request_read_receipt_flag_extension.dart': 1,
   'lib/features/composer/presentation/providers/composer_attachment_extension_registry_provider.dart': 1,
   'lib/features/mailbox_dashboard/presentation/delegates/ecosystem_provider_listener_delegate.dart': 2,
   'lib/features/mailbox_dashboard/presentation/extensions/handle_ai_needs_action_extension.dart': 1,
@@ -36,8 +27,8 @@ const _personalAccountReaders = <String, int>{
   'lib/features/mailbox_dashboard/presentation/extensions/cleanup_recent_search_extension.dart': 1,
   'lib/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart': 2,
   'lib/features/search/email/presentation/search_email_controller.dart': 2,
-  // Label setting and its WebSocket, bound to my own account until T-02.5 and T-03.
-  'lib/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart': 2,
+  // WebSocket connection account stays mine until T-03; label capability itself reads the shown account.
+  'lib/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart': 1,
   // Send queue: each mail keeps the account it was written in (T-04).
   'lib/features/sending_queue/presentation/sending_queue_controller.dart': 2,
 };
@@ -53,18 +44,11 @@ const _dashboardPersonalAccountReaders = <String, int>{
   // Vacation: a setting of my own account.
   '_getVacationResponse': 2,
   'disableVacationResponder': 2,
-  // Label setting after Settings, bound to my own account until T-02.5 and T-03.
-  'goToSettings': 2,
-  'goToVacationSetting': 2,
-  // Composer, its cache, identities and drafts: moved in T-02.5, drafts in T-04.
-  '_handleComposerCache': 2,
+  // Identity-cache restore opens Settings on mine only (ADR-0114).
   '_handleIdentityCache': 2,
-  '_getAllIdentities': 2,
-  '_discardEmail': 1,
-  'deleteEmailPermanentlyInBackground': 1,
-  'maxSizeAttachmentsPerEmail': 2,
-  'removeComposerCacheById': 2,
-  'removeAllComposerCache': 2,
+  // Personal ownEmailAddress is updated from identities only while mine is shown.
+  '_handleGetAllIdentitiesSuccess': 1,
+  '_handleGetAllIdentitiesFailure': 1,
   // Sending queue: each mail keeps the account it was written in (T-04).
   'getAllSendingEmails': 2,
   '_handleSendEmailSuccess': 2,
@@ -77,38 +61,29 @@ const _dashboardPersonalAccountReaders = <String, int>{
   '_handleNotificationMessageFromEmailId': 1,
 };
 
-/// Readers of the "me" sources `ownEmailAddress` and `getOwnEmailAddress*`. T-02.5 moves the
-/// ones of the shown mailbox to `ActiveAccount.ownerEmailAddress` (ADR-0114).
+/// Readers of the "me" sources `ownEmailAddress` and `getOwnEmailAddress*`. Shown-mailbox
+/// "me" uses `ownerEmailAddress` / `ownerEmailAddresses` (ADR-0114 / T-02.5).
 const _ownEmailAddressReaders = <String, int>{
   // Definitions.
   'lib/features/base/mixin/own_email_address_mixin.dart': 4,
   'lib/features/delegation/domain/model/active_account.dart': 1,
   'lib/features/home/domain/extensions/session_extensions.dart': 1,
-  // Shown mailbox: moved in T-02.5.
-  'lib/features/composer/presentation/composer_controller.dart': 1,
-  'lib/features/composer/presentation/extensions/composer_print_draft_extension.dart': 1,
-  'lib/features/email/presentation/controller/single_email_controller.dart': 3,
-  'lib/features/email_previewer/email_previewer_controller.dart': 2,
+  // Personal display: nav, avatar, profile, premium, Settings, session sync.
   'lib/features/mailbox/presentation/base_mailbox_view.dart': 2,
-  'lib/features/mailbox/presentation/mailbox_controller.dart': 2,
-  'lib/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart': 2,
-  'lib/features/mailbox_dashboard/presentation/extensions/handle_preview_attachment_extension.dart': 3,
+  'lib/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart': 3,
   'lib/features/mailbox_dashboard/presentation/extensions/handle_profile_setting_action_type_click_extension.dart': 2,
   'lib/features/mailbox_dashboard/presentation/extensions/premium_cta_context_extension.dart': 2,
-  'lib/features/mailbox_dashboard/presentation/mailbox_dashboard_view_web.dart': 1,
   'lib/features/mailbox_dashboard/presentation/widgets/navigation_bar/dashboard_navigation_bar.dart': 2,
   'lib/features/mailbox_dashboard/presentation/widgets/profile_setting/cozy_profile_setting_icon.dart': 2,
-  'lib/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart': 3,
-  'lib/features/search/email/presentation/search_email_controller.dart': 1,
-  'lib/features/search/mailbox/presentation/search_mailbox_controller.dart': 2,
-  'lib/features/thread_detail/presentation/extension/handle_mail_shortcut_actions_extension.dart': 1,
-  'lib/features/thread_detail/presentation/thread_detail_controller.dart': 1,
-  // Settings: always my own account.
   'lib/features/manage_account/presentation/extensions/handle_profile_setting_action_type_click_extension.dart': 2,
   'lib/features/manage_account/presentation/identities/identities_controller.dart': 3,
   'lib/features/manage_account/presentation/manage_account_dashboard_controller.dart': 2,
   'lib/features/manage_account/presentation/manage_account_dashboard_view.dart': 2,
   'lib/features/manage_account/presentation/menu/settings/settings_first_level_view.dart': 1,
+  // Session fallback when the shown-mailbox display string is empty.
+  'lib/features/composer/presentation/extensions/composer_print_draft_extension.dart': 1,
+  'lib/features/email/presentation/controller/single_email_controller.dart': 2,
+  'lib/features/email_previewer/email_previewer_controller.dart': 2,
 };
 
 typedef SourceCounter = int Function(String source);

@@ -14,13 +14,13 @@ enum MailViewActionShortcutType {
 
   EmailActionType? getEmailActionType({
     required PresentationEmail currentEmail,
-    required String ownerEmailAddress,
+    required Set<String> ownerEmailAddresses,
   }) {
     switch(this) {
       case MailViewActionShortcutType.reply:
         return EmailActionType.reply;
       case MailViewActionShortcutType.replyAll:
-        if (currentEmail.isReplyAllEnabled(ownerEmailAddress)) {
+        if (currentEmail.isReplyAllEnabledForAddresses(ownerEmailAddresses)) {
           return EmailActionType.replyAll;
         } else {
           return null;

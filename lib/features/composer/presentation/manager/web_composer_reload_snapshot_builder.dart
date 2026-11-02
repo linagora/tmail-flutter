@@ -59,7 +59,7 @@ class WebComposerReloadSnapshotBuilder {
 
     final arguments = _controller.composerArguments.value;
     final session = _controller.mailboxDashBoardController.sessionCurrent;
-    final accountId = _controller.mailboxDashBoardController.accountId.value;
+    final accountId = _controller.mailboxDashBoardController.activeAccountId;
     final content = _controller.textEditorWeb;
 
     if (arguments == null) return null;

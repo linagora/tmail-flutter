@@ -115,7 +115,7 @@ class ThreadDetailController extends BaseController
           session!,
           accountId!,
           sentMailboxId!,
-          ownEmailAddress,
+          ownerEmailAddresses,
           isSentMailbox: value.isSentMailbox,
         ));
       }
@@ -141,8 +141,10 @@ class ThreadDetailController extends BaseController
     PresentationMailbox.roleSent,
   );
 
-  String get ownEmailAddress =>
-      mailboxDashBoardController.ownEmailAddress.value;
+  String get ownEmailAddress => ownerEmailAddress;
+
+  Set<String> get ownerEmailAddresses =>
+      mailboxDashBoardController.ownerEmailAddresses;
 
   bool get isSearchRunning {
     final isWebSearchRunning = mailboxDashBoardController

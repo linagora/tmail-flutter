@@ -100,7 +100,7 @@ class ThreadDetailPresentationUtils {
     required List<PresentationEmail> updated,
     required List<EmailId> destroyed,
     required MailboxId? sentMailboxId,
-    required String? ownEmailAddress,
+    required Set<String>? ownerEmailAddresses,
   }) {
     return [
       ...original
@@ -117,7 +117,7 @@ class ThreadDetailPresentationUtils {
         }),
       ...created.toEmailsInThreadDetailInfo(
         sentMailboxId: sentMailboxId,
-        ownEmailAddress: ownEmailAddress,
+        ownerEmailAddresses: ownerEmailAddresses,
       ),
     ];
   }

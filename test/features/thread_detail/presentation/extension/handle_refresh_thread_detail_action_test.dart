@@ -97,8 +97,8 @@ void main() {
         when(threadDetailController.currentExpandedEmailId).thenReturn(Rxn());
         when(threadDetailController.sentMailboxId)
             .thenReturn(MailboxId(Id('sent-mailbox-id')));
-        when(threadDetailController.ownEmailAddress)
-            .thenReturn('9jEYK@example.com');
+        when(threadDetailController.ownerEmailAddresses)
+            .thenReturn(const {'9jEYK@example.com'});
         when(threadDetailController.emailsInThreadDetailInfo)
             .thenReturn(<EmailInThreadDetailInfo>[].obs);
 
@@ -189,7 +189,8 @@ void main() {
       );
       const ownEmailAddress = '9jEYK@example.com';
       when(threadDetailController.sentMailboxId).thenReturn(sentMailboxId);
-      when(threadDetailController.ownEmailAddress).thenReturn(ownEmailAddress);
+      when(threadDetailController.ownerEmailAddresses)
+          .thenReturn({ownEmailAddress});
       
       // act
       final result = threadDetailController.validateNewCreatedEmailForCurrentThread(
@@ -218,7 +219,8 @@ void main() {
         from: {EmailAddress(null, ownEmailAddress)},
       );
       when(threadDetailController.sentMailboxId).thenReturn(sentMailboxId);
-      when(threadDetailController.ownEmailAddress).thenReturn(ownEmailAddress);
+      when(threadDetailController.ownerEmailAddresses)
+          .thenReturn({ownEmailAddress});
       
       // act
       final result = threadDetailController.validateNewCreatedEmailForCurrentThread(
@@ -248,7 +250,8 @@ void main() {
         to: {EmailAddress(null, ownEmailAddress)},
       );
       when(threadDetailController.sentMailboxId).thenReturn(sentMailboxId);
-      when(threadDetailController.ownEmailAddress).thenReturn(ownEmailAddress);
+      when(threadDetailController.ownerEmailAddresses)
+          .thenReturn({ownEmailAddress});
       
       // act
       final result = threadDetailController.validateNewCreatedEmailForCurrentThread(

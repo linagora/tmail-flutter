@@ -136,7 +136,10 @@ class SearchEmailController extends BaseController
 
   Session? get session => mailboxDashBoardController.sessionCurrent;
 
-  String get ownEmailAddress => mailboxDashBoardController.ownEmailAddress.value;
+  String get ownEmailAddress => ownerEmailAddress;
+
+  Set<String> get ownerEmailAddresses =>
+      mailboxDashBoardController.ownerEmailAddresses;
 
   /// Committed search filter from the provider.
   SearchEmailFilter get searchEmailFilter =>

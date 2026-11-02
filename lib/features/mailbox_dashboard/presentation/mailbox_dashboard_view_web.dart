@@ -9,7 +9,6 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
@@ -740,7 +739,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       final searchEmailFilter = ref.watch(searchFilterProvider);
       final sortOrderType = searchEmailFilter.sortOrderType;
       final listAddressOfFrom = searchEmailFilter.from;
-      final currentUserEmail = controller.sessionCurrent?.getOwnEmailAddressOrEmpty();
+      final ownerEmailAddresses = controller.ownerEmailAddresses;
       final startDate = searchEmailFilter.startDate?.value.toLocal();
       final endDate = searchEmailFilter.endDate?.value.toLocal();
       final receiveTimeType = searchEmailFilter.emailReceiveTimeType;
@@ -755,7 +754,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         context,
         searchEmailFilter,
         sortOrderType,
-        currentUserEmail);
+        ownerEmailAddresses);
 
       EdgeInsetsGeometry? buttonPadding;
       if (searchFilter != QuickSearchFilter.sortBy) {

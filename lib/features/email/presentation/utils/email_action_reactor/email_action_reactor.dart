@@ -503,7 +503,7 @@ class EmailActionReactor with LabelSubMenuMixin, ActiveAccountReader {
     required RelativeRect? position,
     required ResponsiveUtils responsiveUtils,
     required ImagePaths imagePaths,
-    required String ownEmailAddress,
+    required Set<String> ownerEmailAddresses,
     required void Function(
       PresentationEmail presentationEmail,
       EmailActionType action,
@@ -524,7 +524,7 @@ class EmailActionReactor with LabelSubMenuMixin, ActiveAccountReader {
         EmailActionType.reply,
       if (additionalActions.contains(EmailActionType.forward))
         EmailActionType.forward,
-      if (presentationEmail.getCountMailAddressWithoutMe(ownEmailAddress) > 1 &&
+      if (presentationEmail.getCountMailAddressWithoutMeAddresses(ownerEmailAddresses) > 1 &&
           additionalActions.contains(EmailActionType.replyAll))
         EmailActionType.replyAll,
       if (EmailUtils.isReplyToListEnabled(presentationEmail.listPost ?? '') &&

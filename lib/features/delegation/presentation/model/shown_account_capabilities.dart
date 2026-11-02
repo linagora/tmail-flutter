@@ -9,21 +9,39 @@ class ShownAccountCapabilities with EquatableMixin {
   final bool canOpenSettings;
 
   /// Rule filters write to my own account, so they stay off while a delegated account is shown.
+  /// True while no account is shown, so the gate matches today's behaviour before the first
+  /// session is applied.
   final bool canCreateFilter;
+
+  /// Missing default folders are created only while my own account is shown.
+  final bool canCreateDefaultFolders;
+
+  /// The iOS notification keychain is written only while my own account is shown.
+  final bool canUseNotificationKeychain;
 
   const ShownAccountCapabilities._({
     required this.canOpenSettings,
     required this.canCreateFilter,
+    required this.canCreateDefaultFolders,
+    required this.canUseNotificationKeychain,
   });
 
   factory ShownAccountCapabilities.of(ActiveAccount? shownAccount) {
-    final isDelegated = shownAccount?.isDelegated == true;
+    final delegatedShown = shownAccount?.isDelegated == true;
+    final personalShown = shownAccount?.isDelegated == false;
     return ShownAccountCapabilities._(
-      canOpenSettings: !isDelegated,
-      canCreateFilter: !isDelegated,
+      canOpenSettings: !delegatedShown,
+      canCreateFilter: !delegatedShown,
+      canCreateDefaultFolders: personalShown,
+      canUseNotificationKeychain: personalShown,
     );
   }
 
   @override
-  List<Object?> get props => [canOpenSettings, canCreateFilter];
+  List<Object?> get props => [
+        canOpenSettings,
+        canCreateFilter,
+        canCreateDefaultFolders,
+        canUseNotificationKeychain,
+      ];
 }

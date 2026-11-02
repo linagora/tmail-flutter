@@ -156,6 +156,8 @@ void main() {
       final capabilities = _Reader().shownAccountCapabilities;
       expect(capabilities.canOpenSettings, isFalse);
       expect(capabilities.canCreateFilter, isFalse);
+      expect(capabilities.canCreateDefaultFolders, isFalse);
+      expect(capabilities.canUseNotificationKeychain, isFalse);
     });
 
     test('open Settings and create a filter while my own account is shown', () {
@@ -164,6 +166,8 @@ void main() {
       final capabilities = _Reader().shownAccountCapabilities;
       expect(capabilities.canOpenSettings, isTrue);
       expect(capabilities.canCreateFilter, isTrue);
+      expect(capabilities.canCreateDefaultFolders, isTrue);
+      expect(capabilities.canUseNotificationKeychain, isTrue);
     });
 
     test('open Settings and create a filter while no account is shown yet', () {
@@ -172,6 +176,8 @@ void main() {
       final capabilities = _Reader().shownAccountCapabilities;
       expect(capabilities.canOpenSettings, isTrue);
       expect(capabilities.canCreateFilter, isTrue);
+      expect(capabilities.canCreateDefaultFolders, isFalse);
+      expect(capabilities.canUseNotificationKeychain, isFalse);
     });
   });
 
