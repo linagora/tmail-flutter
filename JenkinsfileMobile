@@ -10,7 +10,7 @@ pipeline {
     }
 
     environment {
-        FLUTTER_VERSION = '3.38.9'
+        FLUTTER_VERSION = '3.47.9'
         FIREBASE_PROJECT_ID = 'twake-195010'
         RESULTS_BUCKET="flutter-test-results"
         PREBUILD_SKIP_WEB = '1'

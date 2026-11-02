@@ -33,7 +33,7 @@ dependencies:
 
   pointer_interceptor: 0.10.1+2
 
-  intl: 0.20.2
+  intl: 0.20.3
 
   lottie: 3.3.1
 
