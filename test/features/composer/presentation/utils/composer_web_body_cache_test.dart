@@ -70,6 +70,15 @@ void main() {
       expect(cache.read()!.toLowerCase(), isNot(contains('onerror')));
     });
 
+    test('still sanitizes a late raw change after a rebuild read cleared the dirty bit', () {
+      cache.onEditorChange(ghsaEmbedCodeXssPayload, inCodeView: true);
+      expect(cache.read()!.toLowerCase(), isNot(contains('onerror')));
+
+      cache.onEditorChange(ghsaEmbedCodeXssPayload, inCodeView: false);
+
+      expect(cache.read()!.toLowerCase(), isNot(contains('onerror')));
+    });
+
     test('returns null once cleared', () {
       cache.onEditorChange(ghsaEmbedCodeXssPayload, inCodeView: true);
 

@@ -13,6 +13,9 @@ class ComposerWebBodyCache {
   final ComposerCodeViewSanitizer _sanitizer;
   String? _body;
   bool _needsSanitizing = false;
+  // Stays set after any code-view write until setTrusted, so a late editor
+  // change after a rebuild read cannot land raw HTML as trusted.
+  bool _codeViewTouched = false;
 
   String? read() {
     final body = _body;
@@ -27,15 +30,20 @@ class ComposerWebBodyCache {
   void setTrusted(String? body) {
     _body = body;
     _needsSanitizing = false;
+    _codeViewTouched = false;
   }
 
   /// Content reported by the editor, raw whenever code view is on.
   ///
-  /// Once code view has written to it, the body stays marked until it is read
-  /// or replaced by the app: a change event can land after code view is left.
+  /// Once code view has written to it, later editor changes stay marked until
+  /// the app replaces the body. A change event can land after code view is left
+  /// and after a rebuild has already read the sanitized snapshot.
   void onEditorChange(String? body, {required bool inCodeView}) {
     _body = body;
     if (inCodeView) {
+      _codeViewTouched = true;
+    }
+    if (_codeViewTouched) {
       _needsSanitizing = true;
     }
   }
