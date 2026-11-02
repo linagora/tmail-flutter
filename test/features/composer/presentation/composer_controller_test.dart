@@ -1925,6 +1925,25 @@ void main() {
 
         verify(mockRichTextWebController.editorController.setText('<p>body</p>')).called(1);
       });
+
+      test(
+        'Should not write the editor HTML back\n'
+        'When code view becomes busy during getText',
+      () async {
+        final html = Completer<String>();
+        when(mockRichTextWebController.editorController.getText())
+            .thenAnswer((_) => html.future);
+
+        composerController?.displayScreenTypeComposerAction(ScreenDisplayMode.fullScreen);
+        await untilCalled(mockRichTextWebController.editorController.getText());
+        mockRichTextWebController.isCodeViewBusyForTest = true;
+        const rawHtml = '<img src=x onerror="alert(1)">';
+        html.complete(rawHtml);
+        await Future<void>.delayed(Duration.zero);
+
+        verifyNever(mockRichTextWebController.editorController.setText(rawHtml));
+        expect(composerController?.screenDisplayMode.value, ScreenDisplayMode.fullScreen);
+      });
     });
 
     group('oversize files and the Drive recovery:', () {

@@ -1725,7 +1725,9 @@ class ComposerController extends BaseController
     }
     if (richTextWebController?.isCodeViewBusy == false && !screenDisplayMode.value.isNotContentVisible()) {
       final textCurrent = await richTextWebController!.editorController.getText();
-      richTextWebController!.editorController.setText(textCurrent);
+      if (richTextWebController?.isCodeViewBusy != true) {
+        richTextWebController!.editorController.setText(textCurrent);
+      }
     }
     screenDisplayMode.value = displayMode;
     updateDisplayModeForComposerQueue(displayMode);
