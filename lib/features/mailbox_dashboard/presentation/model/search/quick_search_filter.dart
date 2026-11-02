@@ -140,7 +140,7 @@ enum QuickSearchFilter {
     BuildContext context,
     SearchEmailFilter searchFilter,
     EmailSortOrderType sortOrderType,
-    String? currentUserEmail,
+    Set<String>? ownerEmailAddresses,
   ) {
     switch (this) {
       case QuickSearchFilter.hasAttachment:
@@ -148,8 +148,9 @@ enum QuickSearchFilter {
       case QuickSearchFilter.last7Days:
         return searchFilter.emailReceiveTimeType == EmailReceiveTimeType.last7Days;
       case QuickSearchFilter.fromMe:
-        return currentUserEmail != null &&
-          searchFilter.isOnlySender(currentUserEmail);
+        return ownerEmailAddresses != null &&
+            ownerEmailAddresses.isNotEmpty &&
+            searchFilter.isOnlySenders(ownerEmailAddresses);
       case QuickSearchFilter.sortBy:
         return sortOrderType != SearchEmailFilter.defaultSortOrder;
       case QuickSearchFilter.dateTime:

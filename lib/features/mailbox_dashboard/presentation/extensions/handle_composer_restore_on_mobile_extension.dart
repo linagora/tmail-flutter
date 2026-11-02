@@ -14,7 +14,7 @@ extension HandleComposerRestoreOnMobileExtension on MailboxDashBoardController {
   Future<void> checkAndRestoreComposerOnMobile() async {
     if (!PlatformInfo.isAndroid) return;
 
-    final currentAccountId = accountId.value;
+    final currentAccountId = activeAccountId;
     final currentUserName = sessionCurrent?.username;
     if (currentAccountId == null || currentUserName == null) return;
 

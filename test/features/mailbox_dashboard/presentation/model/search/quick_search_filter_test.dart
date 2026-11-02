@@ -11,7 +11,7 @@ void main() {
   Future<bool> isFromMeSelected(
     WidgetTester tester,
     SearchEmailFilter filter, {
-    String? currentUserEmail = me,
+    Set<String>? ownerEmailAddresses = const {me},
   }) async {
     late bool result;
     await tester.pumpWidget(Builder(
@@ -20,7 +20,7 @@ void main() {
           context,
           filter,
           EmailSortOrderType.relevance,
-          currentUserEmail,
+          ownerEmailAddresses,
         );
         return const SizedBox.shrink();
       },
@@ -34,6 +34,18 @@ void main() {
       final selected = await isFromMeSelected(
         tester,
         SearchEmailFilter(from: {me}),
+      );
+
+      expect(selected, isTrue);
+    });
+
+    testWidgets('SHOULD be selected WHEN from equals every me address',
+        (tester) async {
+      const alias = 'alias@example.com';
+      final selected = await isFromMeSelected(
+        tester,
+        SearchEmailFilter(from: {me, alias}),
+        ownerEmailAddresses: {me, alias},
       );
 
       expect(selected, isTrue);
@@ -58,12 +70,12 @@ void main() {
       expect(selected, isFalse);
     });
 
-    testWidgets('SHOULD NOT be selected WHEN the current user email is null',
+    testWidgets('SHOULD NOT be selected WHEN the me addresses are null',
         (tester) async {
       final selected = await isFromMeSelected(
         tester,
         SearchEmailFilter(from: {me}),
-        currentUserEmail: null,
+        ownerEmailAddresses: null,
       );
 
       expect(selected, isFalse);

@@ -92,6 +92,7 @@ MockThreadDetailController buildController() {
   // Labels available: setting on, capability supported for this account
   when(dashboard.labelController).thenReturn(labelController);
   when(dashboard.accountId).thenReturn(Rxn(AccountId(Id('account-1'))));
+  when(dashboard.activeAccountId).thenReturn(AccountId(Id('account-1')));
   when(controller.activeAccountId).thenReturn(AccountId(Id('account-1')));
   when(dashboard.sessionCurrent).thenReturn(MockSession());
   when(labelController.isLabelSettingEnabled).thenReturn(RxBool(true));

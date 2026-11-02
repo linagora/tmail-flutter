@@ -188,7 +188,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
             responsiveUtils: controller.responsiveUtils,
             emailLoaded: currentEmailLoaded,
             presentationEmail: expandedPresentationEmail,
-            userName: controller.ownEmailAddress,
+            ownerEmailAddresses: controller.ownerEmailAddresses,
             emailActionCallback: (action, email) {
               controller.mailboxDashBoardController
                 ..dispatchEmailUIAction(PerformEmailActionInThreadDetailAction(

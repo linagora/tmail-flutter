@@ -108,7 +108,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                         position: position,
                         responsiveUtils: controller.responsiveUtils,
                         imagePaths: controller.imagePaths,
-                        ownEmailAddress: controller.ownEmailAddress,
+                        ownerEmailAddresses: controller.ownerEmailAddresses,
                         handleEmailAction: controller.handleEmailAction,
                         additionalActions: [],
                         emailIsRead: presentationEmail.hasRead,
@@ -194,7 +194,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                   responsiveUtils: controller.responsiveUtils,
                   emailLoaded: emailLoaded,
                   presentationEmail: currentEmail,
-                  userName: controller.ownEmailAddress,
+                  ownerEmailAddresses: controller.ownerEmailAddresses,
                   emailActionCallback: controller.pressEmailAction,
                 );
               }),
@@ -321,7 +321,7 @@ class EmailView extends GetWidget<SingleEmailController> {
             position: position,
             responsiveUtils: controller.responsiveUtils,
             imagePaths: controller.imagePaths,
-            ownEmailAddress: controller.ownEmailAddress,
+            ownerEmailAddresses: controller.ownerEmailAddresses,
             handleEmailAction: controller.handleEmailAction,
             additionalActions: [
               EmailActionType.reply,
@@ -377,6 +377,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                 calendarEvent: calendarEvent,
                 viewState: CalendarEventCardViewState(
                   ownEmailAddress: controller.ownEmailAddress,
+                  ownerEmailAddresses: controller.ownerEmailAddresses,
                   listEmailAddressSender: emailAddressSender ?? [],
                   attendanceStatus: controller.attendanceStatus.value,
                   replying: controller.calendarEventProcessing,

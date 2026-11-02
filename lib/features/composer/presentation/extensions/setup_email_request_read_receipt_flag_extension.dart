@@ -27,6 +27,7 @@ extension SetupEmailRequestReadReceiptFlagExtension on ComposerController {
   }
 
   Future<void> getServerSetting() async {
+    // Server settings stay on mine (ADR-0114); never the shown delegated account.
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId == null) return;
 

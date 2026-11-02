@@ -58,6 +58,7 @@ import 'package:tmail_ui_user/features/composer/presentation/manager/composer_ma
 import 'package:tmail_ui_user/features/composer/presentation/model/compose_action_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/domain_activation_pending_dialog.dart';
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
+import 'package:tmail_ui_user/features/delegation/domain/model/owner_email_addresses.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
@@ -250,7 +251,8 @@ class MailboxDashBoardController extends ReloadableController
         SearchLabelFilterModalMixin,
         AddLabelToEmailMixin,
         HandleTeamMailboxMixin,
-        ActiveAccountReader {
+        ActiveAccountReader,
+        ShownAccountStateConsumer {
 
   SentryEcosystem? _sentryEcosystem;
 
@@ -364,6 +366,9 @@ class MailboxDashBoardController extends ReloadableController
   ProviderSubscription<bool>? advancedSearchViewSubscription;
   ProviderSubscription<bool>? searchInputFocusSubscription;
   DashboardSearchCoordinator? _dashboardSearchCoordinator;
+  CancelShownAccountWatch? _cancelShownAccountWatch;
+  CancelShownAccountWatch? _cancelShownAccountReloadWatch;
+  int? _identitiesLoadedForAttempt;
 
   final StreamController<Either<Failure, Success>> progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
@@ -416,6 +421,9 @@ class MailboxDashBoardController extends ReloadableController
   void onInit() {
     // A new dashboard starts without a shown account, so its readers load once its session is applied.
     _activeAccountWriter.clear();
+    _cancelShownAccountWatch = activeAccountSource.watchShown(_onShownAccountChanged);
+    _cancelShownAccountReloadWatch =
+        activeAccountSource.watchShownReload(_onShownAccountReload);
     if (PlatformInfo.isMobile) {
       _sentryEcosystem = getBinding<SentryEcosystem>();
       _registerReceivingFileSharingStream();
@@ -439,6 +447,34 @@ class MailboxDashBoardController extends ReloadableController
       await ApplicationManager().initUserAgent();
     });
     super.onInit();
+  }
+
+  /// Account id changed: clear stale identities, reload identities/labels, restore web composer cache.
+  void _onShownAccountChanged(AccountId shownAccountId) {
+    _identities = null;
+    _getAllIdentities(shownAccountId);
+    _reloadLabelSettingForShownAccount();
+    if (PlatformInfo.isWeb) {
+      _handleComposerCache();
+    }
+  }
+
+  /// Same account still shown after a switch attempt (watchShown never fires): refresh identities only.
+  /// Skips when watchShown already loaded this attempt (account-changing switch).
+  void _onShownAccountReload(AccountId shownAccountId) {
+    if (_identitiesLoadedForAttempt == activeAccountSource.currentSwitchAttemptId) {
+      return;
+    }
+    _getAllIdentities(shownAccountId);
+  }
+
+  void _reloadLabelSettingForShownAccount() {
+    if (!isLabelCapabilitySupported) return;
+    final accountId = activeAccountId;
+    if (accountId == null) return;
+    final session = sessionCurrent;
+    if (session == null) return;
+    labelController.checkLabelSettingState(session, accountId);
   }
 
   void initSentryUser(SentryUser? user) => _sentryEcosystem?.initUser(user);
@@ -466,14 +502,15 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _handleComposerCache() async {
-    if (accountId.value == null || sessionCurrent == null) return;
+    if (activeAccountId == null || sessionCurrent == null) return;
 
     consumeState(
       _getAllComposerCacheInteractor.execute(
-        accountId.value!,
+        activeAccountId!,
         sessionCurrent!.username));
   }
 
+  /// Identity-cache restore opens Settings on mine only (ADR-0114).
   void _handleIdentityCache() async {
     if (accountId.value == null || sessionCurrent == null) return;
 
@@ -888,10 +925,6 @@ class MailboxDashBoardController extends ReloadableController
     log('MailboxDashBoardController::_handleSession:');
     _setUpComponentsFromSession(session);
 
-    if (PlatformInfo.isWeb) {
-      _handleComposerCache();
-    }
-
     unawaited(checkAndRestoreComposerOnMobile());
 
     if (PlatformInfo.isAndroid && !_notificationManager.isNotificationClickedOnTerminate) {
@@ -935,7 +968,6 @@ class MailboxDashBoardController extends ReloadableController
 
     _getVacationResponse();
     spamReportController.getSpamReportStateAction();
-    _getAllIdentities();
     notifyThreadDetailSettingUpdated();
     getServerSetting();
     cleanupRecentSearch();
@@ -946,9 +978,10 @@ class MailboxDashBoardController extends ReloadableController
       _storeSessionAction(session);
     }
 
-    if (isLabelCapabilitySupported) {
-      labelController.checkLabelSettingState(session, currentAccountId);
+    if (isLabelCapabilitySupported && activeAccountId != null) {
+      labelController.checkLabelSettingState(session, activeAccountId!);
     } else {
+      // Connection stays on mine until T-03 renames the parameter.
       injectWebSocket(session: session, accountId: currentAccountId);
     }
   }
@@ -1197,7 +1230,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _discardEmail(EmailId emailId, MailboxId? draftMailboxId) {
-    final currentAccountId = accountId.value;
+    final currentAccountId = activeAccountId;
     final session = sessionCurrent;
     if (currentAccountId != null && session != null) {
       consumeState(_removeEmailDraftsInteractor.execute(
@@ -1224,7 +1257,7 @@ class MailboxDashBoardController extends ReloadableController
 
   /// Fire-and-forget; the interactor maps every error to a Failure.
   void deleteEmailPermanentlyInBackground(EmailId? emailId) {
-    final currentAccountId = accountId.value;
+    final currentAccountId = activeAccountId;
     final session = sessionCurrent;
     if (emailId == null || currentAccountId == null || session == null) return;
 
@@ -1962,6 +1995,8 @@ class MailboxDashBoardController extends ReloadableController
 
     _getRouteParameters();
     _setUpComponentsFromSession(session);
+    // Same shown accountId does not notify watchShown — refresh identities and web composer cache.
+    _getAllIdentities();
     if (PlatformInfo.isWeb) {
       _handleComposerCache();
     }
@@ -1975,8 +2010,8 @@ class MailboxDashBoardController extends ReloadableController
 
   UnsignedInt? get maxSizeAttachmentsPerEmail {
     try {
-      if (sessionCurrent != null && accountId.value != null) {
-        final mailCapability = sessionCurrent!.getCapabilityProperties<MailCapability>(accountId.value!, CapabilityIdentifier.jmapMail);
+      if (sessionCurrent != null && activeAccountId != null) {
+        final mailCapability = sessionCurrent!.getCapabilityProperties<MailCapability>(activeAccountId!, CapabilityIdentifier.jmapMail);
         final maxSizeAttachmentsPerEmail = mailCapability?.maxSizeAttachmentsPerEmail;
         log('MailboxDashBoardController::maxSizeAttachmentsPerEmail(): $maxSizeAttachmentsPerEmail');
         return maxSizeAttachmentsPerEmail;
@@ -2110,11 +2145,7 @@ class MailboxDashBoardController extends ReloadableController
     getServerSetting();
     spamReportController.getSpamReportStateAction();
     loadAIScribeConfig();
-    if (isLabelCapabilitySupported &&
-        accountId.value != null &&
-        sessionCurrent != null) {
-      labelController.checkLabelSettingState(sessionCurrent!, accountId.value!);
-    }
+    _reloadLabelSettingForShownAccount();
   }
 
   Future<List<PresentationEmail>> quickSearchEmails(String query) async {
@@ -2192,11 +2223,7 @@ class MailboxDashBoardController extends ReloadableController
     getServerSetting();
     spamReportController.getSpamReportStateAction();
     loadAIScribeConfig();
-    if (isLabelCapabilitySupported &&
-        accountId.value != null &&
-        sessionCurrent != null) {
-      labelController.checkLabelSettingState(sessionCurrent!, accountId.value!);
-    }
+    _reloadLabelSettingForShownAccount();
   }
 
   void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {
@@ -3335,20 +3362,20 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   Future<void> removeComposerCacheById(String composerId) async {
-    if (accountId.value == null || sessionCurrent == null) return;
+    if (activeAccountId == null || sessionCurrent == null) return;
 
     await _removeComposerCacheByIdInteractor.execute(
-      accountId.value!,
+      activeAccountId!,
       sessionCurrent!.username,
       composerId,
     );
   }
 
   Future<void> removeAllComposerCache() async {
-    if (accountId.value == null || sessionCurrent == null) return;
+    if (activeAccountId == null || sessionCurrent == null) return;
 
     await _removeAllComposerCacheInteractor.execute(
-      accountId.value!,
+      activeAccountId!,
       sessionCurrent!.username,
     );
   }
@@ -3359,14 +3386,18 @@ class MailboxDashBoardController extends ReloadableController
       PlatformInfo.isMobile;
   }
 
-  void _getAllIdentities() {
-    if (accountId.value != null && sessionCurrent != null) {
-      consumeState(_getAllIdentitiesInteractor.execute(
+  void _getAllIdentities([AccountId? shownAccountId]) {
+    final accountIdForIdentities = shownAccountId ?? activeAccountId;
+    if (accountIdForIdentities != null && sessionCurrent != null) {
+      _identitiesLoadedForAttempt = activeAccountSource.currentSwitchAttemptId;
+      consumeShownAccountState(_getAllIdentitiesInteractor.execute(
         sessionCurrent!,
-        accountId.value!
+        accountIdForIdentities,
       ));
     } else {
-      consumeState(Stream.value(Left(GetAllIdentitiesFailure(NotFoundAccountIdException()))));
+      consumeShownAccountState(
+        Stream.value(Left(GetAllIdentitiesFailure(NotFoundAccountIdException()))),
+      );
     }
   }
 
@@ -3377,15 +3408,47 @@ class MailboxDashBoardController extends ReloadableController
     final listIdentitiesMayDeleted = listIdentities.toListMayDeleted();
     _identities = listIdentitiesMayDeleted;
 
-    updateOwnEmailAddressFromIdentities(listIdentities);
+    // Personal ownEmailAddress stays mine; shown-mailbox "me" reads ownerEmailAddresses.
+    if (activeAccountId == accountId.value) {
+      updateOwnEmailAddressFromIdentities(listIdentities);
+    }
   }
 
   void _handleGetAllIdentitiesFailure() {
     _identities = null;
-    updateOwnEmailAddressFromIdentities([]);
+    if (activeAccountId == accountId.value) {
+      updateOwnEmailAddressFromIdentities([]);
+    }
   }
 
   List<Identity> get listIdentities => _identities ?? [];
+
+  /// "Me" match set of the shown mailbox (ADR-0114), including aliases once identities load.
+  Set<String> get ownerEmailAddresses {
+    final account = activeAccountSource.activeAccount;
+    if (account == null) {
+      final mine = ownEmailAddress.value;
+      return {if (mine.isNotEmpty) mine};
+    }
+    return ownerEmailAddressesOf(
+      account: account,
+      identities: listIdentities,
+      teamMailboxEmails: mapMailboxById.values
+          .where((mailbox) => mailbox.isTeamMailboxRoot)
+          .map((mailbox) => mailbox.emailTeamMailBoxes),
+    );
+  }
+
+  /// User address for subaddressing of the shown mailbox. Prefers [ownerEmailAddress], then an
+  /// alias from [ownerEmailAddresses] once identities load (personal username-only owner).
+  String get emailForSubaddress {
+    final owner = ownerEmailAddress;
+    if (owner.contains('@')) return owner;
+    for (final address in ownerEmailAddresses) {
+      if (address.contains('@')) return address;
+    }
+    return owner;
+  }
 
   bool validateNoEmailsInTrashAndSpamFolder() {
     return selectedMailbox.value != null
@@ -3484,6 +3547,10 @@ class MailboxDashBoardController extends ReloadableController
     _isFirstSessionLoad = false;
     twakeAppManager.setHasComposer(false);
     _sentryEcosystem = null;
+    _cancelShownAccountWatch?.call();
+    _cancelShownAccountWatch = null;
+    _cancelShownAccountReloadWatch?.call();
+    _cancelShownAccountReloadWatch = null;
     _disposeWorkerObxVariables();
     _dashboardSearchCoordinator?.dispose();
     _dashboardSearchCoordinator = null;

@@ -836,6 +836,23 @@ void main() {
       });
     });
 
+    group('isOnlySenders::test', () {
+      const me = 'me@example.com';
+      const alias = 'alias@example.com';
+
+      test('SHOULD return true WHEN from equals the me addresses', () {
+        final filter = SearchEmailFilter(from: {me, alias});
+
+        expect(filter.isOnlySenders({me, alias}), isTrue);
+      });
+
+      test('SHOULD return false WHEN from is a proper subset of the me addresses', () {
+        final filter = SearchEmailFilter(from: {me});
+
+        expect(filter.isOnlySenders({me, alias}), isFalse);
+      });
+    });
+
     group('sort-order change clears load-more cursors::test', () {
       UTCDate? extractAfterFromFilter(Object? filter) {
         if (filter is EmailFilterCondition) return filter.after;

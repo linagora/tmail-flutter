@@ -116,11 +116,15 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     );
   }
 
-  /// True when [address] is the sole sender in `from`. Backs the "from me" chip:
-  /// selected only when `from` holds just the current user, so any extra address
-  /// clears the selection.
-  bool isOnlySender(String address) =>
-      address.isNotEmpty && from.length == 1 && from.first == address;
+  /// True when [address] is the sole sender in `from`. Backs the "from me" chip
+  /// when the user has a single address.
+  bool isOnlySender(String address) => isOnlySenders({address});
+
+  /// True when `from` equals [addresses] (ADR-0114 "From me" with aliases).
+  bool isOnlySenders(Set<String> addresses) {
+    final me = addresses.where((address) => address.isNotEmpty).toSet();
+    return me.isNotEmpty && from.length == me.length && from.containsAll(me);
+  }
 
   /// Strips the load-more date cursors (`before`, `after`), keeping all user intent
   /// (incl. `startDate`/`endDate` bounds). Notifiers run full replacements through

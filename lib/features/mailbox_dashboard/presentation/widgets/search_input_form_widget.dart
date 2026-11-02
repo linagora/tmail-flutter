@@ -94,7 +94,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
           if (filterAction is QuickSearchFilter) {
             _searchController.toggleQuickSearchFilter(
               filterAction,
-              currentUserEmail: _dashBoardController.ownEmailAddress.value,
+              ownerEmailAddresses: _dashBoardController.ownerEmailAddresses,
             );
           }
         },
@@ -315,7 +315,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         context,
         searchEmailFilter,
         _searchController.sortOrderFiltered,
-        _dashBoardController.ownEmailAddress.value,
+        _dashBoardController.ownerEmailAddresses,
       );
 
       return SearchFilterButton(
@@ -328,7 +328,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         onDeleteSearchFilterAction: (searchFilter) {
           _searchController.toggleQuickSearchFilter(
             searchFilter,
-            currentUserEmail: _dashBoardController.ownEmailAddress.value,
+            ownerEmailAddresses: _dashBoardController.ownerEmailAddresses,
           );
           suggestionsListState.invalidateSuggestions();
         },
