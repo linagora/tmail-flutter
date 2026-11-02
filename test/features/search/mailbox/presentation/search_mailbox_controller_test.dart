@@ -1,3 +1,8 @@
+import 'dart:async';
+
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:dartz/dartz.dart';
 import 'package:email_recovery/email_recovery/capability_deleted_messages_vault.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,6 +13,7 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/capability/default_capability.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -15,7 +21,9 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_folder_content_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_folder_content_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_changes_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/delete_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
@@ -203,6 +211,56 @@ void main() {
 
     expect(_newController().canCreateFilter, isTrue);
   });
+
+  test('the folders of an account shown before never reach folder search once another one is shown',
+      () async {
+    final myFolders = StreamController<Either<Failure, Success>>();
+    addTearDown(myFolders.close);
+    final getAllMailboxInteractor = MockGetAllMailboxInteractor();
+    when(getAllMailboxInteractor.execute(any, any)).thenAnswer((_) => myFolders.stream);
+    final source = ActiveAccountSourceFixtures.putShowing(DelegationFixtures.aliceAccountId);
+    final controller = _newController(getAllMailboxInteractor: getAllMailboxInteractor);
+
+    controller.getAllMailbox(DelegationFixtures.session(), DelegationFixtures.aliceAccountId);
+    source.show(DelegationFixtures.bobAccountId);
+    myFolders.add(Right(GetAllMailboxSuccess(
+      mailboxList: [],
+      currentMailboxState: jmap.State('alice-state'),
+    )));
+    await pumpEventQueue();
+
+    expect(controller.currentMailboxState, isNull);
+  });
+
+  test('a folder refresh of an account shown before never reaches folder search once another one is shown',
+      () async {
+    final myChanges = StreamController<Either<Failure, Success>>();
+    addTearDown(myChanges.close);
+    final refreshAllMailboxInteractor = MockRefreshAllMailboxInteractor();
+    when(refreshAllMailboxInteractor.execute(
+      any,
+      any,
+      any,
+      properties: anyNamed('properties'),
+    )).thenAnswer((_) => myChanges.stream);
+    final source = ActiveAccountSourceFixtures.putShowing(DelegationFixtures.aliceAccountId);
+    final controller = _newController(refreshAllMailboxInteractor: refreshAllMailboxInteractor)
+      ..currentMailboxState = jmap.State('alice-state');
+
+    controller.refreshMailboxChanges(
+      DelegationFixtures.session(),
+      DelegationFixtures.aliceAccountId,
+      jmap.State('alice-state'),
+    );
+    source.show(DelegationFixtures.bobAccountId);
+    myChanges.add(Right(RefreshChangesAllMailboxSuccess(
+      mailboxList: [],
+      currentMailboxState: jmap.State('alice-refreshed-state'),
+    )));
+    await pumpEventQueue();
+
+    expect(controller.currentMailboxState, jmap.State('alice-state'));
+  });
 }
 
 /// Alice is my own account and bob the shown one: only [accountId] gets the deleted messages
@@ -241,6 +299,8 @@ final _folder = PresentationMailbox(MailboxId(Id('folder-1')));
 SearchMailboxController _newController({
   SubaddressingInteractor? subaddressingInteractor,
   MoveFolderContentInteractor? moveFolderContentInteractor,
+  GetAllMailboxInteractor? getAllMailboxInteractor,
+  RefreshAllMailboxInteractor? refreshAllMailboxInteractor,
 }) =>
     SearchMailboxController(
       MockSearchMailboxInteractor(),
@@ -254,8 +314,8 @@ SearchMailboxController _newController({
       moveFolderContentInteractor ?? MockMoveFolderContentInteractor(),
       TreeBuilder(),
       VerifyNameInteractor(),
-      MockGetAllMailboxInteractor(),
-      MockRefreshAllMailboxInteractor(),
+      getAllMailboxInteractor ?? MockGetAllMailboxInteractor(),
+      refreshAllMailboxInteractor ?? MockRefreshAllMailboxInteractor(),
     );
 
 Future<BuildContext> _pumpContext(WidgetTester tester) async {
