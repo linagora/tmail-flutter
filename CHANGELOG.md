@@ -1,3 +1,7 @@
+## [0.40.4] - 2026-11-02
+### Fixed
+- Soft-fail missing linagora-ecosystem without a connection toast
+
 ## [0.40.3] - 2026-10-29
 ### Changed
 - #5071 Restrict web languages with the ALLOWED_LANGUAGES option
