@@ -348,6 +348,16 @@
       "count": {}
     }
   },
+  "sharedFilesCannotBeRead": "{count,plural, =1{Không thể đọc một tệp được chia sẻ nên tệp này chưa được thêm}other{Không thể đọc {count} tệp được chia sẻ nên các tệp này chưa được thêm}}",
+  "@sharedFilesCannotBeRead": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
   "attachments_uploaded_successfully": "Tệp đính kèm đã được tải lên thành công",
   "@attachments_uploaded_successfully": {
     "type": "text",

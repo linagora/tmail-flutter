@@ -348,6 +348,16 @@
       "count": {}
     }
   },
+  "sharedFilesCannotBeRead": "{count,plural, =1{Не удалось прочитать один общий файл, он не был добавлен}other{Не удалось прочитать общих файлов: {count}, они не были добавлены}}",
+  "@sharedFilesCannotBeRead": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
   "attachments_uploaded_successfully": "Вложения успешно загружены",
   "@attachments_uploaded_successfully": {
     "type": "text",

@@ -348,6 +348,16 @@
       "count": {}
     }
   },
+  "sharedFilesCannotBeRead": "{count,plural, =1{Un fichier partagé n'a pas pu être lu et n'a pas été ajouté}other{{count} fichiers partagés n'ont pas pu être lus et n'ont pas été ajoutés}}",
+  "@sharedFilesCannotBeRead": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
   "attachments_uploaded_successfully": "Pièces jointes téléversées avec succès",
   "@attachments_uploaded_successfully": {
     "type": "text",

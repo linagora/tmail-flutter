@@ -409,6 +409,16 @@
       "count": {}
     }
   },
+  "sharedFilesCannotBeRead": "{count,plural, =1{Хуваалцсан нэг файлыг уншиж чадаагүй тул нэмээгүй}other{Хуваалцсан {count} файлыг уншиж чадаагүй тул нэмээгүй}}",
+  "@sharedFilesCannotBeRead": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
   "attachments_uploaded_successfully": "Хавсралтуудыг амжилттай байршууллаа",
   "@attachments_uploaded_successfully": {
     "type": "text",
