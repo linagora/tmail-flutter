@@ -1,15 +1,27 @@
+import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:core/presentation/utils/app_toast.dart';
+import 'package:core/utils/html/html_utils.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/code_view_state.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
+import 'package:tmail_ui_user/main/localizations/localization_service.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
+import '../fixtures/code_view_html_fixtures.dart';
 import 'rich_text_web_controller_test.mocks.dart';
 
-@GenerateNiceMocks([MockSpec<HtmlEditorController>()])
+@GenerateNiceMocks([MockSpec<HtmlEditorController>(), MockSpec<AppToast>()])
 void main() {
   group('RichTextWebController::insertImageAsBase64', () {
     late MockHtmlEditorController editorController;
@@ -76,4 +88,277 @@ void main() {
       expect(html, contains('src="data:image/png&quot; onerror=&quot;alert(1);base64,AAAA"'));
     });
   });
+
+  group('RichTextWebController::toggleCodeView', () {
+    late MockHtmlEditorController editorController;
+    late RichTextWebController controller;
+
+    setUp(() {
+      editorController = MockHtmlEditorController();
+      controller = RichTextWebController(editorController: editorController);
+    });
+
+    test('enables code view without reading or rewriting the editor HTML', () async {
+      when(editorController.isActivatedCodeView()).thenAnswer((_) async => false);
+
+      controller.toggleCodeView();
+      await untilCalled(editorController.toggleCodeView());
+
+      expect(controller.codeViewEnabled, isTrue);
+      verifyNever(editorController.getText());
+      verifyNever(editorController.setText(any));
+      verify(editorController.toggleCodeView()).called(1);
+    });
+
+    test('leaving code view still toggles the editor and disables code view', () async {
+      when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+      when(editorController.getText()).thenAnswer((_) async => benignComposerHtml);
+
+      controller.toggleCodeView();
+      await untilCalled(editorController.toggleCodeView());
+
+      expect(controller.codeViewEnabled, isFalse);
+      verify(editorController.toggleCodeView()).called(1);
+      verify(editorController.evaluateJavascriptWeb(HtmlUtils.recalculateEditorHeight().name)).called(1);
+    });
+
+    test('sanitizes GHSA-73vq-c7p5-pvp4 HTML before leaving code view', () async {
+      when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+      when(editorController.getText()).thenAnswer((_) async => ghsaEmbedCodeXssPayload);
+
+      controller.toggleCodeView();
+      await untilCalled(editorController.toggleCodeView());
+
+      final captured = verify(editorController.setText(captureAny)).captured.single as String;
+      final sanitized = captured.toLowerCase();
+      expect(sanitized, isNot(contains('<script')));
+      expect(sanitized, isNot(contains('onerror')));
+      expect(sanitized, isNot(contains('onload')));
+      expect(sanitized, isNot(contains('javascript:')));
+      expect(sanitized, contains('visible text'));
+      verify(editorController.getText()).called(1);
+      verify(editorController.toggleCodeView()).called(1);
+    });
+
+    test('writes an empty paragraph when sanitizing removes all the code view HTML', () async {
+      when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+      when(editorController.getText()).thenAnswer((_) async => scriptOnlyEmbedCodePayload);
+
+      controller.toggleCodeView();
+      await untilCalled(editorController.toggleCodeView());
+
+      verify(editorController.setText('<p><br></p>')).called(1);
+    });
+
+    test('does not leave code view when the editor HTML cannot be read', () async {
+      when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+      when(editorController.getText()).thenAnswer((_) async => throw Exception('editor unavailable'));
+      controller.codeViewState.value = CodeViewState.enabled;
+
+      controller.toggleCodeView();
+      await untilCalled(editorController.isActivatedCodeView());
+      await untilCalled(editorController.getText());
+      await Future<void>.delayed(Duration.zero);
+
+      expect(controller.codeViewEnabled, isTrue);
+      verifyNever(editorController.setText(any));
+      verifyNever(editorController.toggleCodeView());
+    });
+
+    group('when the editor never answers', () {
+      const replyTimeout = Duration(milliseconds: 10);
+
+      setUp(() {
+        controller = RichTextWebController(
+          editorController: editorController,
+          editorReplyTimeout: replyTimeout,
+        );
+      });
+
+      test('gives up on the code view state and accepts a later toggle', () async {
+        when(editorController.isActivatedCodeView()).thenAnswer((_) => Completer<bool>().future);
+
+        controller.toggleCodeView();
+        await Future<void>.delayed(replyTimeout * 3);
+
+        when(editorController.isActivatedCodeView()).thenAnswer((_) async => false);
+        controller.toggleCodeView();
+        await untilCalled(editorController.toggleCodeView());
+
+        expect(controller.codeViewEnabled, isTrue);
+        verify(editorController.toggleCodeView()).called(1);
+      });
+
+      test('stays in code view when reading the HTML times out', () async {
+        when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+        when(editorController.getText()).thenAnswer((_) => Completer<String>().future);
+        controller.codeViewState.value = CodeViewState.enabled;
+
+        controller.toggleCodeView();
+        await Future<void>.delayed(replyTimeout * 3);
+
+        expect(controller.codeViewEnabled, isTrue);
+        verifyNever(editorController.setText(any));
+        verifyNever(editorController.toggleCodeView());
+      });
+    });
+
+    test('is not busy outside code view', () {
+      expect(controller.isCodeViewBusy, isFalse);
+      expect(controller.isCodeViewToggleInFlight, isFalse);
+    });
+
+    test('is busy in code view when no toggle is running', () {
+      controller.codeViewState.value = CodeViewState.enabled;
+
+      expect(controller.isCodeViewBusy, isTrue);
+    });
+
+    test('is busy while entering code view', () async {
+      final isActivated = Completer<bool>();
+      when(editorController.isActivatedCodeView()).thenAnswer((_) => isActivated.future);
+
+      controller.toggleCodeView();
+      await untilCalled(editorController.isActivatedCodeView());
+
+      expect(controller.codeViewEnabled, isFalse);
+      expect(controller.isCodeViewBusy, isTrue);
+      isActivated.complete(false);
+    });
+
+    test('ignores a second click while leaving code view is still running', () async {
+      final html = Completer<String>();
+      when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+      when(editorController.getText()).thenAnswer((_) => html.future);
+
+      controller.toggleCodeView();
+      await untilCalled(editorController.getText());
+      controller.toggleCodeView();
+      html.complete(benignComposerHtml);
+      await untilCalled(editorController.toggleCodeView());
+      await Future<void>.delayed(Duration.zero);
+
+      verify(editorController.isActivatedCodeView()).called(1);
+      verify(editorController.getText()).called(1);
+      verify(editorController.toggleCodeView()).called(1);
+    });
+
+    test('stays busy until leaving code view has written the sanitized HTML', () async {
+      final html = Completer<String>();
+      when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+      when(editorController.getText()).thenAnswer((_) => html.future);
+      controller.codeViewState.value = CodeViewState.enabled;
+
+      controller.toggleCodeView();
+      await untilCalled(editorController.getText());
+
+      expect(controller.isCodeViewToggleInFlight, isTrue);
+      expect(controller.isCodeViewBusy, isTrue);
+
+      html.complete(benignComposerHtml);
+      await untilCalled(editorController.toggleCodeView());
+      await Future<void>.delayed(Duration.zero);
+
+      expect(controller.isCodeViewToggleInFlight, isFalse);
+      expect(controller.isCodeViewBusy, isFalse);
+    });
+
+    group('error toast', () {
+      late MockAppToast appToast;
+
+      setUp(() {
+        appToast = MockAppToast();
+        Get.put<AppToast>(appToast);
+        addTearDown(() => Get.delete<AppToast>());
+      });
+
+      testWidgets('shows an unknown error toast when the editor HTML cannot be read', (tester) async {
+        final context = await _pumpOverlayContext(tester);
+        when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+        when(editorController.getText()).thenAnswer((_) async => throw Exception('editor unavailable'));
+
+        controller.toggleCodeView();
+        await tester.pump();
+
+        verify(appToast.showToastErrorMessage(context, AppLocalizations.of(context).unknownError)).called(1);
+      });
+
+      testWidgets('shows an unknown error toast when the code view state never comes back', (tester) async {
+        controller = RichTextWebController(
+          editorController: editorController,
+          editorReplyTimeout: _replyTimeout,
+        );
+        final context = await _pumpOverlayContext(tester);
+        when(editorController.isActivatedCodeView()).thenAnswer((_) => Completer<bool>().future);
+
+        controller.toggleCodeView();
+        await tester.pump(_replyTimeout);
+
+        verify(appToast.showToastErrorMessage(context, AppLocalizations.of(context).unknownError)).called(1);
+      });
+
+      testWidgets('shows an unknown error toast and stays in code view when the HTML never comes back', (tester) async {
+        controller = RichTextWebController(
+          editorController: editorController,
+          editorReplyTimeout: _replyTimeout,
+        );
+        final context = await _pumpOverlayContext(tester);
+        when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+        when(editorController.getText()).thenAnswer((_) => Completer<String>().future);
+        controller.codeViewState.value = CodeViewState.enabled;
+
+        controller.toggleCodeView();
+        await tester.pump(_replyTimeout);
+
+        verify(appToast.showToastErrorMessage(context, AppLocalizations.of(context).unknownError)).called(1);
+        expect(controller.codeViewEnabled, isTrue);
+        verifyNever(editorController.setText(any));
+        verifyNever(editorController.toggleCodeView());
+      });
+
+      testWidgets('does not show a toast when the composer closed while the toggle waited', (tester) async {
+        controller = RichTextWebController(
+          editorController: editorController,
+          editorReplyTimeout: _replyTimeout,
+        );
+        await _pumpOverlayContext(tester);
+        when(editorController.isActivatedCodeView()).thenAnswer((_) => Completer<bool>().future);
+
+        controller.toggleCodeView();
+        controller.onDelete();
+        await tester.pump(_replyTimeout);
+
+        verifyNever(appToast.showToastErrorMessage(any, any));
+      });
+
+      testWidgets('does not show a toast when leaving code view succeeds', (tester) async {
+        await _pumpOverlayContext(tester);
+        when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+        when(editorController.getText()).thenAnswer((_) async => benignComposerHtml);
+
+        controller.toggleCodeView();
+        await tester.pump();
+
+        verify(editorController.toggleCodeView()).called(1);
+        verifyNever(appToast.showToastErrorMessage(any, any));
+      });
+    });
+  });
+}
+
+const _replyTimeout = Duration(seconds: 1);
+
+Future<BuildContext> _pumpOverlayContext(WidgetTester tester) async {
+  await tester.pumpWidget(const GetMaterialApp(
+    localizationsDelegates: [
+      AppLocalizationsDelegate(),
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: LocalizationService.supportedLocales,
+    home: SizedBox.shrink(),
+  ));
+  await tester.pumpAndSettle();
+  return currentOverlayContext!;
 }

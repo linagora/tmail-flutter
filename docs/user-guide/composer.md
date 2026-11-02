@@ -42,7 +42,7 @@ To insert images to the email body as an inline image, clock on `image icon` the
 ![Group 8](https://github.com/user-attachments/assets/f7454160-072b-4e2f-9c3a-b08bdd26a9c9)
 
 10. Mark as important: When you click this button, the email you are writing is marked as important  for easy identification and quick access. You can enabled or disabled this option 
-11. Embeded code: The "Embed Code" feature in Tmail allows users to insert external content (such as videos, iframes, or interactive elements) into an email using HTML embed codes. When you click Embed code button, the email body will switch to HTML mode, allowing you to paste your embed code.
+11. Embed code: The "Embed Code" button switches the email body to HTML source so you can edit markup (tables, links, inline images). Active content such as `<script>`, event handlers, `javascript:` URLs, and `<iframe>` / `<object>` / `<embed>` is removed when you leave HTML mode, the same way the mail viewer sanitizes a received message. To share a YouTube video, paste the watch URL (`https://www.youtube.com/watch?v=…` or `https://youtu.be/…`) as a link; do not paste YouTube's iframe embed code.
 12. Request Read receipt
 
 This feature allows the sender of an email to know when the recipient has opened and read the email. It provides a way for the sender to confirm that the message has been received and viewed by the recipient.
