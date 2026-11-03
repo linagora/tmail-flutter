@@ -151,13 +151,14 @@ FTL_OUTPUT=$(mktemp)
 # BUILD_TAG holds the job name, so PR jobs with the same build number do not share a GCS dir.
 RESULTS_DIR="jenkins/$(printf '%s' "${BUILD_TAG:-local-$(date +%s)}" | tr -c 'A-Za-z0-9._-' '_')"
 
+# FTL bills every minute a hung run stays open. Green runs take under 10 min; keep this close to that.
 set +e
 gcloud firebase test android run \
     --type instrumentation \
     --app "$APP_APK" \
     --test "$TEST_APK" \
     --device model=MediumPhone.arm,version=34 \
-    --timeout 60m \
+    --timeout 20m \
     --use-orchestrator \
     --environment-variables clearPackageData=true \
     --no-record-video \
