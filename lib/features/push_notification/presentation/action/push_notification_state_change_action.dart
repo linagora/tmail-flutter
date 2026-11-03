@@ -10,16 +10,30 @@ class SynchronizeEmailOnForegroundAction extends PushNotificationStateChangeActi
 
   final AccountId accountId;
   final Session? session;
+  final bool refreshView;
+  final bool storeOfflineBodies;
+  final bool updateDeliveryAndNotifications;
 
   SynchronizeEmailOnForegroundAction(
     TypeName typeName,
     jmap.State newState,
     this.accountId,
-    this.session
-  ) : super(typeName, newState);
+    this.session, {
+    this.refreshView = true,
+    this.storeOfflineBodies = true,
+    this.updateDeliveryAndNotifications = true,
+  }) : super(typeName, newState);
 
   @override
-  List<Object?> get props => [typeName, newState, accountId, session];
+  List<Object?> get props => [
+        typeName,
+        newState,
+        accountId,
+        session,
+        refreshView,
+        storeOfflineBodies,
+        updateDeliveryAndNotifications,
+      ];
 }
 
 class PushNotificationAction extends PushNotificationStateChangeAction {
@@ -27,17 +41,26 @@ class PushNotificationAction extends PushNotificationStateChangeAction {
   final Session? session;
   final AccountId accountId;
   final UserName userName;
+  final bool storeOfflineBodies;
 
   PushNotificationAction(
     TypeName typeName,
     jmap.State newState,
     this.session,
     this.accountId,
-    this.userName
-  ) : super(typeName, newState);
+    this.userName, {
+    this.storeOfflineBodies = true,
+  }) : super(typeName, newState);
 
   @override
-  List<Object?> get props => [typeName, newState, accountId, session, userName];
+  List<Object?> get props => [
+        typeName,
+        newState,
+        accountId,
+        session,
+        userName,
+        storeOfflineBodies,
+      ];
 }
 
 class StoreEmailStateToRefreshAction extends PushNotificationStateChangeAction {

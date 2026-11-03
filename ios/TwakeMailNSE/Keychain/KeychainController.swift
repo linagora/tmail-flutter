@@ -54,6 +54,28 @@ class KeychainController: KeychainControllerDelegate, SentryConfigProvider {
             return false
         }
     }
+
+    /// Returns false when the personal session is missing, cannot be encoded, or the keychain write throws.
+    @discardableResult
+    func updateDelegatedAccountEmailDeliveryStateToKeychain(
+        personalAccountId: String,
+        delegatedAccountId: String,
+        newEmailDeliveryState: String
+    ) -> Bool {
+        guard let sharingSession = retrieveSharingSessionFromKeychain(accountId: personalAccountId),
+              let newSharingSessionData = sharingSession.updateDelegatedAccountEmailDeliveryState(
+                    accountId: delegatedAccountId,
+                    newEmailDeliveryState: newEmailDeliveryState
+               ).toData() else {
+            return false
+        }
+        do {
+            try keychain.set(newSharingSessionData, key: personalAccountId)
+            return true
+        } catch {
+            return false
+        }
+    }
     
     func updateTokenOidc(accountId: String, newTokenOidc: TokenOidc) {
         do {
@@ -62,6 +84,34 @@ class KeychainController: KeychainControllerDelegate, SentryConfigProvider {
                 try keychain.set(newSharingSessionData, key: accountId)
             }
         } catch {}
+    }
+
+    /// Own keychain entry, or an item of `delegatedAccounts` on the personal entry.
+    func resolveSharingSession(for accountId: String) -> ResolvedSharingSession? {
+        if let ownSession = retrieveSharingSessionFromKeychain(accountId: accountId) {
+            return ResolvedSharingSession(
+                personalSession: ownSession,
+                personalAccountId: accountId,
+                emailDeliveryState: ownSession.emailDeliveryState ?? ownSession.emailState,
+                mailboxIdsBlockNotification: ownSession.mailboxIdsBlockNotification,
+                isDelegated: false
+            )
+        }
+
+        for credentials in retrieveSharingSessions() {
+            guard let delegated = credentials.sharingSession.delegatedAccounts?
+                .first(where: { $0.accountId == accountId }) else {
+                continue
+            }
+            return ResolvedSharingSession(
+                personalSession: credentials.sharingSession,
+                personalAccountId: credentials.accountId,
+                emailDeliveryState: delegated.emailDeliveryState,
+                mailboxIdsBlockNotification: delegated.mailboxIdsBlockNotification,
+                isDelegated: true
+            )
+        }
+        return nil
     }
 }
 

@@ -1,10 +1,12 @@
-
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_session.dart';
 
 extension KeychainSharingSessionExtension on KeychainSharingSession {
 
-  KeychainSharingSession updating({String? emailState, List<MailboxId>? mailboxIdsBlockNotification}) {
+  KeychainSharingSession updating({
+    String? emailState,
+    List<MailboxId>? mailboxIdsBlockNotification,
+  }) {
     return KeychainSharingSession(
       accountId: accountId,
       userName: userName,
@@ -17,6 +19,7 @@ extension KeychainSharingSessionExtension on KeychainSharingSession {
       tokenEndpoint: tokenEndpoint,
       oidcScopes: oidcScopes,
       mailboxIdsBlockNotification: mailboxIdsBlockNotification ?? this.mailboxIdsBlockNotification,
+      delegatedAccounts: delegatedAccounts,
       isTWP: isTWP,
     );
   }

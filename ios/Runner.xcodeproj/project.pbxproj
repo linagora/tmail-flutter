@@ -18,6 +18,16 @@
 		A14E00032F6E000000000003 /* SentryConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC933B2F236E7800A0EDC7 /* SentryConfig.swift */; };
 		A14E00042F6E000000000004 /* SentryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC933D2F23705D00A0EDC7 /* SentryManager.swift */; };
 		A14E00052F6E000000000005 /* TwakeLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EFC07C2B328B9F00829056 /* TwakeLogger.swift */; };
+		B14E10022F70220000000002 /* ResolvedSharingSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14E10012F70220000000001 /* ResolvedSharingSession.swift */; };
+		B14E10042F70220000000004 /* MultiAccountEmailFetchBatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14E10032F70220000000003 /* MultiAccountEmailFetchBatch.swift */; };
+		B14E10062F70220000000006 /* KeychainSharingSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14E10052F70220000000005 /* KeychainSharingSessionTests.swift */; };
+		B14E10082F70220000000008 /* MultiAccountEmailFetchBatchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14E10072F70220000000007 /* MultiAccountEmailFetchBatchTests.swift */; };
+		B14E10092F70220000000009 /* KeychainSharingSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5630C7A2B2CE148003CC0FD /* KeychainSharingSession.swift */; };
+		B14E100A2F7022000000000A /* TokenOidc.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E892B2E4BB700051FD0 /* TokenOidc.swift */; };
+		B14E100B2F7022000000000B /* AuthenticationType.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E872B2E4B3B00051FD0 /* AuthenticationType.swift */; };
+		B14E100C2F7022000000000C /* Email.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E6B2B2E208C00051FD0 /* Email.swift */; };
+		B14E100D2F7022000000000D /* EmailAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E7B2B2E35CC00051FD0 /* EmailAddress.swift */; };
+		B14E100E2F7022000000000E /* MultiAccountEmailFetchBatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14E10032F70220000000003 /* MultiAccountEmailFetchBatch.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
@@ -152,6 +162,10 @@
 		84EC933B2F236E7800A0EDC7 /* SentryConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentryConfig.swift; sourceTree = "<group>"; };
 		84EC933D2F23705D00A0EDC7 /* SentryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentryManager.swift; sourceTree = "<group>"; };
 		A14E00022F6E000000000002 /* SentryManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentryManagerTests.swift; sourceTree = "<group>"; };
+		B14E10012F70220000000001 /* ResolvedSharingSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResolvedSharingSession.swift; sourceTree = "<group>"; };
+		B14E10032F70220000000003 /* MultiAccountEmailFetchBatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiAccountEmailFetchBatch.swift; sourceTree = "<group>"; };
+		B14E10052F70220000000005 /* KeychainSharingSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainSharingSessionTests.swift; sourceTree = "<group>"; };
+		B14E10072F70220000000007 /* MultiAccountEmailFetchBatchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiAccountEmailFetchBatchTests.swift; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
 		97C146EE1CF9000F007C117D /* Runner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Runner.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -414,6 +428,8 @@
 				F522E87E2C0EE23400DDA35B /* AuthenticationSSOTests.swift */,
 				A5E61D042BE410C000000001 /* JmapClientChangesTests.swift */,
 				A14E00022F6E000000000002 /* SentryManagerTests.swift */,
+				B14E10052F70220000000005 /* KeychainSharingSessionTests.swift */,
+				B14E10072F70220000000007 /* MultiAccountEmailFetchBatchTests.swift */,
 			);
 			path = TwakeMailTests;
 			sourceTree = "<group>";
@@ -432,6 +448,7 @@
 			children = (
 				84EC933B2F236E7800A0EDC7 /* SentryConfig.swift */,
 				F5630C7A2B2CE148003CC0FD /* KeychainSharingSession.swift */,
+				B14E10012F70220000000001 /* ResolvedSharingSession.swift */,
 				F5630C842B2CF50C003CC0FD /* TypeName.swift */,
 			);
 			path = Model;
@@ -444,6 +461,7 @@
 				F5630C7D2B2CE359003CC0FD /* InfoPlistReader.swift */,
 				F5BBBF542B2EEF3D007930E1 /* BundleExtension.swift */,
 				F5630C862B2D0387003CC0FD /* PayloadParser.swift */,
+				B14E10032F70220000000003 /* MultiAccountEmailFetchBatch.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -900,6 +918,14 @@
 				A14E00032F6E000000000003 /* SentryConfig.swift in Sources */,
 				A14E00042F6E000000000004 /* SentryManager.swift in Sources */,
 				A14E00052F6E000000000005 /* TwakeLogger.swift in Sources */,
+				B14E10062F70220000000006 /* KeychainSharingSessionTests.swift in Sources */,
+				B14E10082F70220000000008 /* MultiAccountEmailFetchBatchTests.swift in Sources */,
+				B14E10092F70220000000009 /* KeychainSharingSession.swift in Sources */,
+				B14E100A2F7022000000000A /* TokenOidc.swift in Sources */,
+				B14E100B2F7022000000000B /* AuthenticationType.swift in Sources */,
+				B14E100C2F7022000000000C /* Email.swift in Sources */,
+				B14E100D2F7022000000000D /* EmailAddress.swift in Sources */,
+				B14E100E2F7022000000000E /* MultiAccountEmailFetchBatch.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -912,6 +938,8 @@
 				84EC933C2F236E8300A0EDC7 /* SentryConfig.swift in Sources */,
 				F5E7D8822B3876F60009BB8A /* AuthenticationCredential.swift in Sources */,
 				F5D4EA032B2ABF090090DDFC /* NotificationService.swift in Sources */,
+				B14E10022F70220000000002 /* ResolvedSharingSession.swift in Sources */,
+				B14E10042F70220000000004 /* MultiAccountEmailFetchBatch.swift in Sources */,
 				F522E8872C0EE8B600DDA35B /* CoreUtils.swift in Sources */,
 				F53D1E8A2B2E4BB700051FD0 /* TokenOidc.swift in Sources */,
 				F53D1E862B2E401B00051FD0 /* JmapRequestGenerator.swift in Sources */,

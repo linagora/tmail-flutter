@@ -1,6 +1,20 @@
 import Foundation
 import Sentry
 
+struct KeychainDelegatedAccount: Codable {
+    let accountId: String
+    let emailDeliveryState: String?
+    let mailboxIdsBlockNotification: [String]?
+
+    func updateEmailDeliveryState(newEmailDeliveryState: String) -> KeychainDelegatedAccount {
+        return KeychainDelegatedAccount(
+            accountId: accountId,
+            emailDeliveryState: newEmailDeliveryState,
+            mailboxIdsBlockNotification: mailboxIdsBlockNotification
+        )
+    }
+}
+
 struct KeychainSharingSession: Codable {
     let accountId: String
     let userName: String
@@ -13,6 +27,7 @@ struct KeychainSharingSession: Codable {
     let tokenEndpoint: String?
     let oidcScopes: [String]?
     let mailboxIdsBlockNotification: [String]?
+    let delegatedAccounts: [KeychainDelegatedAccount]?
     let isTWP: Bool?
 }
 
@@ -30,6 +45,33 @@ extension KeychainSharingSession {
             tokenEndpoint: self.tokenEndpoint,
             oidcScopes: self.oidcScopes,
             mailboxIdsBlockNotification: self.mailboxIdsBlockNotification,
+            delegatedAccounts: self.delegatedAccounts,
+            isTWP: self.isTWP
+        )
+    }
+
+    func updateDelegatedAccountEmailDeliveryState(
+        accountId: String,
+        newEmailDeliveryState: String
+    ) -> KeychainSharingSession {
+        let updatedDelegatedAccounts = (self.delegatedAccounts ?? []).map { account in
+            account.accountId == accountId
+                ? account.updateEmailDeliveryState(newEmailDeliveryState: newEmailDeliveryState)
+                : account
+        }
+        return KeychainSharingSession(
+            accountId: self.accountId,
+            userName: self.userName,
+            authenticationType: self.authenticationType,
+            apiUrl: self.apiUrl,
+            emailState: self.emailState,
+            emailDeliveryState: self.emailDeliveryState,
+            tokenOIDC: self.tokenOIDC,
+            basicAuth: self.basicAuth,
+            tokenEndpoint: self.tokenEndpoint,
+            oidcScopes: self.oidcScopes,
+            mailboxIdsBlockNotification: self.mailboxIdsBlockNotification,
+            delegatedAccounts: updatedDelegatedAccounts,
             isTWP: self.isTWP
         )
     }
@@ -52,6 +94,7 @@ extension KeychainSharingSession {
             tokenEndpoint: self.tokenEndpoint,
             oidcScopes: self.oidcScopes,
             mailboxIdsBlockNotification: self.mailboxIdsBlockNotification,
+            delegatedAccounts: self.delegatedAccounts,
             isTWP: self.isTWP
         )
     }

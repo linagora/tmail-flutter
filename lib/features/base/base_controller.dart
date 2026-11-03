@@ -437,28 +437,28 @@ abstract class BaseController extends GetxController
 
   void injectWebSocket({
     Session? session,
-    AccountId? accountId,
+    AccountId? personalAccountId,
     bool isLabelAvailable = false,
   }) {
     try {
       log('$runtimeType::injectWebSocket: isLabelAvailable is $isLabelAvailable');
       requireCapability(
         session!,
-        accountId!,
+        personalAccountId!,
         [
           CapabilityIdentifier.jmapWebSocket,
           CapabilityIdentifier.jmapWebSocketTicket
         ]
       );
       final wsCapability = session.getCapabilityProperties<WebSocketCapability>(
-        accountId,
+        personalAccountId,
         CapabilityIdentifier.jmapWebSocket);
       if (wsCapability?.supportsPush != true) {
         throw WebSocketPushNotSupportedException();
       }
       WebSocketInteractorBindings().dependencies();
       WebSocketController.instance.initialize(
-        accountId: accountId,
+        personalAccountId: personalAccountId,
         session: session,
         isLabelAvailable: isLabelAvailable,
       );
