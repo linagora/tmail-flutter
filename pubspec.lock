@@ -1480,11 +1480,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: "38b7be01cdd11e473be6249c4d5ac2f5e8f7cf34"
+      ref: "feature/tf-4678-sidebar-section-header-action-tap-target"
+      resolved-ref: "428f14c95758564b5f72cd2a42df3d96a6b0bbac"
       url: "https://github.com/linagora/linagora-design-flutter.git"
     source: git
-    version: "0.3.4"
+    version: "0.4.1"
   linkify:
     dependency: transitive
     description:
