@@ -29,6 +29,9 @@ class RiverpodActiveAccountSource
   int get currentSwitchAttemptId => _container.read(accountSwitchProvider).currentAttemptId;
 
   @override
+  bool get isSwitching => _container.read(accountSwitchProvider).isSwitching;
+
+  @override
   void applySession(Session session) {
     _container.read(activeAccountProvider.notifier).applySession(session);
   }

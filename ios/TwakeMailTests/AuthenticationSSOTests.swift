@@ -9,7 +9,7 @@ final class AuthenticationSSOTests: XCTestCase {
         let expireDate = currentDate.addingTimeInterval(3600)
         
         let authenticationSSO = AuthenticationSSO(
-            type: AuthenticationType.oidc,
+            type: Runner.AuthenticationType.oidc,
             accessToken: "abcxyz",
             refreshToken: "abcxyz",
             expireTime: expireDate.convertDateToISO8601String()
@@ -23,7 +23,7 @@ final class AuthenticationSSOTests: XCTestCase {
         let expireDate = currentDate.addingTimeInterval(-3600)
         
         let authenticationSSO = AuthenticationSSO(
-            type: AuthenticationType.oidc,
+            type: Runner.AuthenticationType.oidc,
             accessToken: "abcxyz",
             refreshToken: "abcxyz",
             expireTime: expireDate.convertDateToISO8601String()
@@ -36,7 +36,7 @@ final class AuthenticationSSOTests: XCTestCase {
         let currentDate = CoreUtils.shared.getCurrentDate()
         
         let authenticationSSO = AuthenticationSSO(
-            type: AuthenticationType.oidc,
+            type: Runner.AuthenticationType.oidc,
             accessToken: "abcxyz",
             refreshToken: "abcxyz",
             expireTime: nil

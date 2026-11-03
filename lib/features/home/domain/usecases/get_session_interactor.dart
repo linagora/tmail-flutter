@@ -34,7 +34,11 @@ class GetSessionInteractor {
       log('GetSessionInteractor::_getStoredSessionFromCache:remoteException: $remoteException');
       yield Right<Failure, Success>(GetSessionLoading());
       final session = await sessionRepository.getStoredSession();
-      yield Right<Failure, Success>(GetSessionSuccess(session, stateChange: stateChange));
+      yield Right<Failure, Success>(GetSessionSuccess(
+        session,
+        stateChange: stateChange,
+        fromCache: true,
+      ));
     } catch (e) {
       yield Left<Failure, Success>(GetSessionFailure(remoteException ?? e));
     }

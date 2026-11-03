@@ -77,7 +77,10 @@ void main() {
         expect(
           interactor.execute(),
           _emitsNetworkThenCacheThen(
-            Right<Failure, Success>(GetSessionSuccess(SessionFixtures.aliceSession)),
+            Right<Failure, Success>(GetSessionSuccess(
+              SessionFixtures.aliceSession,
+              fromCache: true,
+            )),
           ),
         );
       });

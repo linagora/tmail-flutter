@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/oidc/token_oidc.dart';
+import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_delegated_account.dart';
 
 part 'keychain_sharing_session.g.dart';
 
@@ -27,6 +28,7 @@ class KeychainSharingSession with EquatableMixin {
   String? tokenEndpoint;
   List<String>? oidcScopes;
   List<MailboxId>? mailboxIdsBlockNotification;
+  List<KeychainDelegatedAccount>? delegatedAccounts;
   bool isTWP;
 
   KeychainSharingSession({
@@ -41,6 +43,7 @@ class KeychainSharingSession with EquatableMixin {
     this.tokenEndpoint,
     this.oidcScopes,
     this.mailboxIdsBlockNotification,
+    this.delegatedAccounts,
     this.isTWP = false,
   });
 
@@ -61,6 +64,7 @@ class KeychainSharingSession with EquatableMixin {
     tokenEndpoint,
     oidcScopes,
     mailboxIdsBlockNotification,
+    delegatedAccounts,
     isTWP,
   ];
 }

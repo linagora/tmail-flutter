@@ -8,11 +8,12 @@ class GetSessionLoading extends LoadingState {}
 class GetSessionSuccess extends UIState {
   final Session session;
   final StateChange? stateChange;
+  final bool fromCache;
 
-  GetSessionSuccess(this.session, {this.stateChange});
+  GetSessionSuccess(this.session, {this.stateChange, this.fromCache = false});
 
   @override
-  List<Object?> get props => [session, stateChange];
+  List<Object?> get props => [session, stateChange, fromCache];
 }
 
 class GetSessionFailure extends FeatureFailure {

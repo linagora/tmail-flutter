@@ -27,7 +27,7 @@ const _personalAccountReaders = <String, int>{
   'lib/features/mailbox_dashboard/presentation/extensions/cleanup_recent_search_extension.dart': 1,
   'lib/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart': 2,
   'lib/features/search/email/presentation/search_email_controller.dart': 2,
-  // WebSocket connection account stays mine until T-03; label capability itself reads the shown account.
+  // WebSocket connection account stays mine (ADR-0114). Label capability itself reads the shown account.
   'lib/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart': 1,
   // Send queue: each mail keeps the account it was written in (T-04).
   'lib/features/sending_queue/presentation/sending_queue_controller.dart': 2,
@@ -57,7 +57,7 @@ const _dashboardPersonalAccountReaders = <String, int>{
   '_setUpMinInputLengthAutocomplete': 2,
   'selectFromSearchFilter': 2,
   'selectToSearchFilter': 2,
-  // Notification taps: my own account until T-03.
+  // Notification taps: my own account until T-09.
   '_handleNotificationMessageFromEmailId': 1,
   // Username-only personal: session owner empty, identities fill ownEmailAddress.
   'ownerEmailAddress': 1,
