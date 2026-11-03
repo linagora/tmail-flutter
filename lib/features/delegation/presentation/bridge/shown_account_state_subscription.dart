@@ -74,9 +74,11 @@ class ShownAccountStateSubscription {
     if (_cancelIfStale()) return;
     try {
       _onDone();
-    } finally {
-      _end(_doneResult());
+    } catch (error, stackTrace) {
+      _end(ShownAccountLoadFailed(error, stackTrace));
+      rethrow;
     }
+    _end(_doneResult());
   }
 
   bool _cancelIfStale() {

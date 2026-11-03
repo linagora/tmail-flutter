@@ -295,17 +295,20 @@ void main() {
       expect(reader.errors, [error]);
     });
 
-    test('a load still ends when the controller fails while handling its end', () async {
+    test('a load counts as failed when the controller fails while handling its end', () async {
       final uncaught = <Object>[];
+      final error = StateError('onDone failed');
       final load = runZonedGuarded(() {
-        reader.errorThrownByOnDone = StateError('onDone failed');
+        reader.errorThrownByOnDone = error;
         return _consumeReported(reader, viewResults, source);
       }, (error, _) => uncaught.add(error))!;
 
       await viewResults.close();
 
-      expect(await load.result, isA<ShownAccountLoaded>());
-      expect(uncaught, [isA<StateError>()]);
+      final result = await load.result;
+      expect((result as ShownAccountLoadFailed).error, error);
+      expect(result.stackTrace, isNotNull);
+      expect(uncaught, [error]);
     });
 
     test('a closed reader gets no more results and its load counts as dropped', () async {
