@@ -66,11 +66,13 @@ probe_bore_url() {
     [ -n "$code" ] && [ "$code" != "000" ]
 }
 
-# A tunnel may be mid-rebind, so a failed probe gets one more try.
+# A tunnel may be mid-rebind, so a failed probe is retried until the shared deadline.
 probe_bore_url_retry() {
-    probe_bore_url "$1" && return 0
-    sleep 5
-    probe_bore_url "$1"
+    local url=$1 deadline=$2
+    until probe_bore_url "$url"; do
+        (( SECONDS < deadline )) || return 1
+        sleep 5
+    done
 }
 
 # The reset server is ready once FTL_SHARDS backends are free and leases only free slots, so:
@@ -78,14 +80,14 @@ probe_bore_url_retry() {
 # - a slot whose backend is down (dropped or still booting) only warns;
 # - at least FTL_SHARDS slot tunnels must answer.
 probe_bore_tunnels() {
-    local n reachable=0 failed=0 slot_urls
-    if ! probe_bore_url_retry "$BORE_RESET_URL"; then
+    local n reachable=0 failed=0 slot_urls deadline=$(( SECONDS + BORE_RECONNECT_WINDOW ))
+    if ! probe_bore_url_retry "$BORE_RESET_URL" "$deadline"; then
         echo "ERROR: reset tunnel $BORE_RESET_URL unreachable through $BORE_HOST"
         return 1
     fi
     IFS=, read -ra slot_urls <<< "$POOL_URLS"
     for n in "${!slot_urls[@]}"; do
-        if probe_bore_url_retry "${slot_urls[$n]}"; then
+        if probe_bore_url_retry "${slot_urls[$n]}" "$deadline"; then
             reachable=$(( reachable + 1 ))
         elif ! probe_bore_url "http://localhost:$(( 8100 + n ))"; then
             echo "WARN: slot$n backend is not up (dropped or still booting); tunnel ${slot_urls[$n]} not checked"
