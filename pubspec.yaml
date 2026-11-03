@@ -191,7 +191,7 @@ dependencies:
 
   async: 2.13.0
 
-  html: 0.15.3
+  html: 0.15.6
 
   custom_pop_up_menu: 1.2.4
 
@@ -306,11 +306,11 @@ dev_dependencies:
 
   flutter_lints: 2.0.1
 
-  flutter_native_splash: 2.2.18
+  flutter_native_splash: 2.4.8
 
   flutter_launcher_icons: 0.12.0
 
-  xml: 6.6.1
+  xml: 7.0.1
 
   json_serializable: ^6.11.3
 
@@ -376,11 +376,6 @@ dependency_overrides:
     git:
       url: https://github.com/Enough-Software/enough_platform_widgets.git
       ref: 1843df56aa78236e4eb3483e3b1a9447855fbd20
-  # pdfrx_engine pulls image ^4.8.0; pub resolves 4.11.0 which calls
-  # ZLibDecoder.decodeLazy, but archive only gained that API in 4.5.0 while
-  # image 4.11 still declares archive ^4.0.9. Pin 4.10.0 (last without
-  # decodeLazy) until image 4.12.0 + archive ^4.5.0 can be taken together.
-  image: 4.10.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
