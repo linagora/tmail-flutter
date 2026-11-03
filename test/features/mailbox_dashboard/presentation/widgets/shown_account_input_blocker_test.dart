@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/shown_account_input_block_notifier.dart';
@@ -21,6 +22,25 @@ Widget _dashboard(ProviderContainer container, VoidCallback onTap, {bool showsBl
               child: TextButton(key: _buttonKey, onPressed: onTap, child: const Text('Open')),
             )
           : const SizedBox.shrink(),
+    ),
+  );
+}
+
+/// Like the mail list, whose shortcuts (N opens a composer) listen on a focused node.
+Widget _shortcutDashboard(ProviderContainer container, VoidCallback onKey) {
+  return UncontrolledProviderScope(
+    container: container,
+    child: MaterialApp(
+      home: ShownAccountInputBlocker(
+        child: Focus(
+          autofocus: true,
+          onKeyEvent: (_, event) {
+            if (event is KeyDownEvent) onKey();
+            return KeyEventResult.handled;
+          },
+          child: const Text('mail list'),
+        ),
+      ),
     ),
   );
 }
@@ -75,6 +95,39 @@ void main() {
     await tester.pump();
     await tester.pumpWidget(_dashboard(container, taps.record));
     await tester.tap(find.byKey(_buttonKey));
+
+    expect(taps.count, 1);
+  });
+
+  testWidgets('lets key presses reach the shown mailbox while no switch blocks them', (tester) async {
+    await tester.pumpWidget(_shortcutDashboard(container, taps.record));
+    await tester.pump();
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyN);
+
+    expect(taps.count, 1);
+  });
+
+  testWidgets('keeps key presses from the shown mailbox while a switch blocks them', (tester) async {
+    await tester.pumpWidget(_shortcutDashboard(container, taps.record));
+    await tester.pump();
+    container.read(shownAccountInputBlockProvider.notifier).block();
+    await tester.pump();
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyN);
+
+    expect(taps.count, 0);
+  });
+
+  testWidgets('lets key presses reach the shown mailbox again once the switch unblocks them', (tester) async {
+    await tester.pumpWidget(_shortcutDashboard(container, taps.record));
+    await tester.pump();
+    container.read(shownAccountInputBlockProvider.notifier).block();
+    await tester.pump();
+    container.read(shownAccountInputBlockProvider.notifier).unblock();
+    await tester.pump();
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyN);
 
     expect(taps.count, 1);
   });
