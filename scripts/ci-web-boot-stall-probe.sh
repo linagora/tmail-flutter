@@ -21,6 +21,8 @@ fi
 
 # shellcheck source=ci-web-boot-stall-proc.sh
 . "$(dirname "$0")/ci-web-boot-stall-proc.sh"
+# shellcheck source=ci-web-boot-stall-native.sh
+. "$(dirname "$0")/ci-web-boot-stall-native.sh"
 
 count_log() {
     LC_ALL=C grep -acE "$1" "$PATROL_LOG" 2>/dev/null || true
@@ -79,7 +81,7 @@ unreachable_browser_ps() {
 }
 
 dump_state() {
-    local pages="$1" src dir sampled
+    local pages="$1" src dir sampled main
     {
         echo "=== boot stall $(date -u +%FT%TZ): $2 > ${BOOT_STALL_SECONDS}s ==="
         echo "--- boot markers: started=$(count_log 'DDC is about to load 1/2 scripts') connected=$(count_log 'App connection established') running=$(count_log 'Starting application from main method') isolate-exits=$(count_log 'Isolate exit handled')"
@@ -96,6 +98,17 @@ dump_state() {
             printf '%s\n' "$sampled"
             # shellcheck disable=SC2046
             renderer_thread_state $(awk '$NF == "renderer" || $NF == "gpu-process" {print $1}' <<< "$sampled")
+            # Once per browser: gdb stops the process, and this one already lost its test.
+            case "$native_seen" in *"|$dir|"*) continue ;; esac
+            native_seen="$native_seen|$dir|"
+            main=$(pgrep -o -f -- "--user-data-dir=$dir")
+            if ! native_owned "$main"; then
+                echo "NATIVE $dir skipped: ${main:+browser not started by this job}${main:-browser exited}"
+                continue
+            fi
+            # shellcheck disable=SC2046
+            native_stacks $(awk '$NF == "renderer" || $NF == "gpu-process" || $NF == "browser" {print $1}' <<< "$sampled")
+            timeout 25 node "$(dirname "$0")/ci-web-boot-stall-debugger.js" "$dir" 2>&1 || true
         done < <(printf '%s\n' "$pages" | sed -n 's/^SKIP \(\/[^ ]*playwright_chromiumdev_profile-[^ ]*\) browserType\.connectOverCDP.*/\1/p' | sort -u) || true
         echo "--- browser and dev server processes"
         echo "chrome processes: $(pgrep -fc 'chrom.*(headless|--remote-debugging)')"
@@ -124,6 +137,7 @@ last_check=0
 blind_since=0
 last_blind_dump=0
 seen=""
+native_seen=""
 while sleep "$POLL_SECONDS"; do
     # A stalled boot never logs "Starting application", so pending stays above 0 while one exists.
     if [ "$(pending_boots)" -le 0 ]; then

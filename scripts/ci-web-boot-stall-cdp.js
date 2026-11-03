@@ -151,4 +151,4 @@ function cdpEvaluate(wsUrl, expression, timeoutMs) {
   });
 }
 
-module.exports = { cdpEvaluate };
+module.exports = { cdpEvaluate, encodeTextFrame, createFrameStream, handshakeOptions };
