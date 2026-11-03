@@ -145,7 +145,7 @@ void main() {
 
         expect(pdfViewer.documentRef.passwordProvider, isNotNull);
         expect(pdfViewer.documentRef.firstAttemptByEmptyPassword, isTrue);
-        expect(pdfViewer.documentRef.sourceName, 'report.pdf');
+        expect(pdfViewer.documentRef.key.sourceName, 'report.pdf');
       },
     );
 
@@ -156,8 +156,10 @@ void main() {
 
         expect(pdfViewer.controller, isNotNull);
         expect(pdfViewer.params.panAxis, PanAxis.vertical);
-        expect(pdfViewer.params.minScale, 1);
-        expect(pdfViewer.params.maxScale, 4);
+        final sizing = pdfViewer.params.getSizeDelegateProvider()
+            as PdfViewerSizeDelegateProviderLegacy;
+        expect(sizing.minScale, 1);
+        expect(sizing.maxScale, 4);
         expect(pdfViewer.params.layoutPages, isNotNull);
         expect(pdfViewer.params.onViewerReady, isNotNull);
         expect(pdfViewer.params.errorBannerBuilder, isNotNull);
