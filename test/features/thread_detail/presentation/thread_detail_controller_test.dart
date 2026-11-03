@@ -7,7 +7,11 @@ import 'package:dartz/dartz.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/account/account.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
@@ -145,6 +149,59 @@ void main() {
       async.flushMicrotasks();
 
       expect(controller.emailIdsPresentation, isEmpty);
+    });
+  });
+
+  test('loads the thread of my own account WHEN the session username is not an email', () {
+    fakeAsync((async) {
+      final usernameOnlySession = Session(
+        {},
+        {DelegationFixtures.aliceAccountId: Account(AccountName('alice'), true, false, {})},
+        {},
+        UserName('alice'),
+        Uri.parse('http://domain.com/jmap'),
+        Uri.parse('http://domain.com/download/{accountId}/{blobId}/?type={type}&name={name}'),
+        Uri.parse('http://domain.com/upload/{accountId}'),
+        Uri.parse('http://domain.com/eventSource?types={types}&closeAfter={closeafter}&ping={ping}'),
+        jmap.State('state-1'),
+      );
+      (Get.find<ActiveAccountSource>() as FakeActiveAccountSource).show(
+        DelegationFixtures.aliceAccountId,
+        ActiveAccount.personal(usernameOnlySession),
+      );
+      final threadId = ThreadId(Id('thread-1'));
+      final getThreadByIdInteractor = MockGetThreadByIdInteractor();
+      when(getThreadByIdInteractor.execute(any, any, any, any, any, isSentMailbox: anyNamed('isSentMailbox')))
+          .thenAnswer((_) => const Stream.empty());
+      final dashboard = Get.find<MailboxDashBoardController>() as MockMailboxDashBoardController;
+      final threadDetailUIAction = Rxn<ThreadDetailUIAction>();
+      when(dashboard.accountId).thenReturn(Rxn(DelegationFixtures.aliceAccountId));
+      when(dashboard.selectedEmail).thenReturn(Rxn(PresentationEmail(id: EmailId(Id('email-1')), threadId: threadId)));
+      when(dashboard.threadDetailUIAction).thenReturn(threadDetailUIAction);
+      when(dashboard.emailUIAction).thenReturn(Rxn());
+      when(dashboard.sessionCurrent).thenReturn(usernameOnlySession);
+      when(dashboard.getMailboxIdByRole(PresentationMailbox.roleSent)).thenReturn(MailboxId(Id('sent-id')));
+      // The address the dashboard derived from identities for this username-only account.
+      when(dashboard.ownEmailAddress).thenReturn(RxString('alice@domain.tld'));
+      when(dashboard.ownerEmailAddresses).thenReturn({'alice@domain.tld'});
+      when(Get.find<NetworkConnectionController>().isNetworkConnectionAvailable()).thenReturn(true);
+      when(Get.find<ThreadDetailManager>().isThreadDetailEnabled).thenReturn(true);
+      ThreadDetailController(
+        getThreadByIdInteractor,
+        MockGetEmailsByIdsInteractor(),
+        MockMarkAsEmailReadInteractor(),
+        MockMarkAsStarEmailInteractor(),
+        MockPrintEmailInteractor(),
+        MockGetEmailContentInteractor(),
+        MockMarkAsStarMultipleEmailInteractor(),
+        MockMarkAsMultipleEmailReadInteractor(),
+        MockAddALabelToAThreadInteractor(),
+        MockRemoveALabelFromAThreadInteractor(),
+      ).onInit();
+      threadDetailUIAction.value = LoadThreadDetailAfterSelectedEmailAction(threadId, isSentMailbox: false);
+      async.elapse(const Duration(seconds: 1));
+
+      verify(getThreadByIdInteractor.execute(any, any, any, any, any, isSentMailbox: false)).called(1);
     });
   });
 }
