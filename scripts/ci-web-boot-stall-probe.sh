@@ -19,6 +19,9 @@ if [ -z "${WEB_RUNNER_DIR:-}" ]; then
     exit 0
 fi
 
+# shellcheck source=ci-web-boot-stall-proc.sh
+. "$(dirname "$0")/ci-web-boot-stall-proc.sh"
+
 count_log() {
     LC_ALL=C grep -acE "$1" "$PATROL_LOG" 2>/dev/null || true
 }
@@ -76,7 +79,7 @@ unreachable_browser_ps() {
 }
 
 dump_state() {
-    local pages="$1" src
+    local pages="$1" src dir sampled
     {
         echo "=== boot stall $(date -u +%FT%TZ): $2 > ${BOOT_STALL_SECONDS}s ==="
         echo "--- boot markers: started=$(count_log 'DDC is about to load 1/2 scripts') connected=$(count_log 'App connection established') running=$(count_log 'Starting application from main method') isolate-exits=$(count_log 'Isolate exit handled')"
@@ -89,7 +92,10 @@ dump_state() {
         ps -eo pid,ppid,stat,etime,pcpu,pmem,rss,comm --sort=-pcpu | head -25
         echo "--- unreachable browser processes (pid ppid stat etime pcpu rss nlwp wchan type)"
         while IFS= read -r dir; do
-            unreachable_browser_ps "$dir"
+            sampled=$(unreachable_browser_ps "$dir")
+            printf '%s\n' "$sampled"
+            # shellcheck disable=SC2046
+            renderer_thread_state $(awk '$NF == "renderer" || $NF == "gpu-process" {print $1}' <<< "$sampled")
         done < <(printf '%s\n' "$pages" | sed -n 's/^SKIP \(\/[^ ]*playwright_chromiumdev_profile-[^ ]*\) browserType\.connectOverCDP.*/\1/p' | sort -u) || true
         echo "--- browser and dev server processes"
         echo "chrome processes: $(pgrep -fc 'chrom.*(headless|--remote-debugging)')"
@@ -127,7 +133,7 @@ while sleep "$POLL_SECONDS"; do
     now=$(date +%s)
     [ $((now - last_check)) -ge "$CHECK_EVERY_SECONDS" ] || continue
     last_check="$now"
-    pages=$(timeout 40 node "$(dirname "$0")/ci-web-boot-stall-pages.js" "$WEB_RUNNER_DIR" 2>&1) || true
+    pages=$(timeout 60 node "$(dirname "$0")/ci-web-boot-stall-pages.js" "$WEB_RUNNER_DIR" 2>&1) || true
     fresh=0
     while read -r key; do
         case "$seen" in *"|$key|"*) continue ;; esac

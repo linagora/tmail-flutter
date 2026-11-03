@@ -3,11 +3,18 @@ const fs = require('fs');
 const http = require('http');
 const os = require('os');
 const path = require('path');
+const { cdpEvaluate } = require('./ci-web-boot-stall-cdp');
 
 setTimeout(() => {
-  console.log('TIMEOUT CDP diagnostics exceeded 38s');
+  console.log('TIMEOUT CDP diagnostics exceeded 55s');
   process.exit(0);
-}, 38000);
+}, 55000);
+
+// Unreachable profiles are probed together after discovery, so their 9 s of sampling is paid once.
+const deferredProbes = [];
+const PAGE_WS_SAMPLES = 2;
+const PAGE_WS_GAP_MS = Number(process.env.PAGE_WS_GAP_MS || 3000);
+const PAGE_WS_TIMEOUT_MS = Number(process.env.PAGE_WS_TIMEOUT_MS || 3000);
 
 const reason = (error) => String(error.message || error).split(/\r?\n/)[0];
 
@@ -65,8 +72,29 @@ async function describeUnreachable(dir, port) {
     const targets = Array.isArray(list.json) ? list.json : [];
     console.log(`TARGETS ${dir} ms=${list.ms} total=${targets.length}`);
     targets.forEach((target) => console.log(`TARGET ${dir} id=${target.id} type=${target.type} url=${target.url}`));
+    deferredProbes.push({ dir, targets });
   } catch (error) {
     console.log(`BROWSER_HTTP ${dir} fail ${reason(error)}`);
+  }
+}
+
+// A raw page socket can answer where connectOverCDP cannot attach: no answer means the page itself is unresponsive.
+// Two samples show whether `now` and `resources` still advance.
+async function probePageTargets(dir, targets, log) {
+  const pages = targets.filter((target) => target.type === 'page' && target.webSocketDebuggerUrl
+    && !String(target.url).startsWith('about:'));
+  const expression = `(${pageBootState.toString()})()`;
+  for (let sample = 1; sample <= PAGE_WS_SAMPLES; sample++) {
+    if (sample > 1) await new Promise((resolve) => setTimeout(resolve, PAGE_WS_GAP_MS));
+    const answers = await Promise.all(pages.map((target) => cdpEvaluate(target.webSocketDebuggerUrl, expression, PAGE_WS_TIMEOUT_MS)));
+    answers.forEach((answer, index) => {
+      const detail = answer.detail ? ` detail=${answer.detail}` : '';
+      log(`PAGE_WS ${dir} id=${pages[index].id} sample=${sample} phase=${answer.phase} result=${answer.result} ms=${answer.ms}${detail}`);
+      if (answer.result !== 'ok') return;
+      // Another prefix: the probe counts every PAGE line as a tab read through Playwright.
+      if (answer.value) printState(answer.value, 'PAGE_WS_STATE', log);
+      else log(`PAGE_WS ${dir} id=${pages[index].id} sample=${sample} flutter view present`);
+    });
   }
 }
 
@@ -88,14 +116,14 @@ function pageBootState() {
   };
 }
 
-function printState(state) {
-  console.log(`PAGE url=${state.url} readyState=${state.readyState} resources=${state.resources} now=${state.now} origin=${state.origin}`);
-  console.log(`SCRIPTS total=${state.scripts}`);
+function printState(state, prefix = 'PAGE', log = console.log) {
+  log(`${prefix} url=${state.url} readyState=${state.readyState} resources=${state.resources} now=${state.now} origin=${state.origin}`);
+  log(`SCRIPTS total=${state.scripts}`);
   // The resource timing buffer holds 250 entries: past that, finished scripts look pending.
-  if (state.resources >= 250) console.log('PENDING_UNRELIABLE resource timing buffer is full');
-  state.lastScripts.forEach((src) => console.log(`LAST_SCRIPT ${src}`));
-  console.log(`PENDING_COUNT ${state.pending.length}`);
-  state.pending.slice(0, 20).forEach((src) => console.log(`PENDING ${src}`));
+  if (state.resources >= 250) log('PENDING_UNRELIABLE resource timing buffer is full');
+  state.lastScripts.forEach((src) => log(`LAST_SCRIPT ${src}`));
+  log(`PENDING_COUNT ${state.pending.length}`);
+  state.pending.slice(0, 20).forEach((src) => log(`PENDING ${src}`));
 }
 
 async function inspectPage(dir, page) {
@@ -127,9 +155,16 @@ async function main() {
   const runnerDir = process.argv[2];
   if (!runnerDir) throw new Error('web-runner-dir missing');
   const { chromium } = require(path.join(path.resolve(runnerDir), 'node_modules', '@playwright', 'test'));
+  console.log(`NODE version=${process.version}`);
   const profiles = findProfiles();
   if (!profiles.length) console.log('SKIP no Playwright Chromium profiles');
   for (const dir of profiles) await inspectProfile(chromium, dir);
+  const outputs = await Promise.all(deferredProbes.map(async ({ dir, targets }) => {
+    const lines = [];
+    await probePageTargets(dir, targets, (line) => lines.push(line));
+    return lines;
+  }));
+  outputs.forEach((lines) => lines.forEach((line) => console.log(line)));
 }
 
 // Drop CDP sockets without closing the observed browsers or pages.
