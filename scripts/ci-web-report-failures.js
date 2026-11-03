@@ -41,12 +41,14 @@ function isReported(test, status) {
   return status !== 'passed' || test.status === 'flaky';
 }
 
+const errorText = (error) => firstLine(error.message || error.value || error);
+
 function errorMessage(final) {
-  if (!final) return '';
-  const error = final.error || (final.errors || [])[0];
-  if (!error) return '';
-  return firstLine(error.message || error.value || error).slice(0, 200);
+  const error = final && (final.error || (final.errors || [])[0]);
+  return error ? errorText(error).slice(0, 200) : '';
 }
+
+const specLocation = (suite, spec) => `${spec.file || suite.file || '?'}:${spec.line || 0}`;
 
 function printTest(suite, spec, test, prefix) {
   const results = test.results || [];
@@ -55,36 +57,48 @@ function printTest(suite, spec, test, prefix) {
   if (!isReported(test, status)) return;
   const title = firstLine([...prefix, spec.title].filter(Boolean).join(' > '));
   const label = test.status === 'flaky' ? 'flaky' : status;
-  console.log(`${label} ${spec.file || suite.file || '?'}:${spec.line || 0} ${title} | ${errorMessage(final)}`);
+  console.log(`${label} ${specLocation(suite, spec)} ${title} | ${errorMessage(final)}`);
+}
+
+function printSpec(suite, spec, prefix) {
+  for (const test of spec.tests || []) printTest(suite, spec, test, prefix);
 }
 
 function printSuite(suite, titles = []) {
   const prefix = [...titles, suite.title].filter(Boolean);
-  for (const spec of suite.specs || []) {
-    for (const test of spec.tests || []) printTest(suite, spec, test, prefix);
-  }
+  for (const spec of suite.specs || []) printSpec(suite, spec, prefix);
   for (const child of suite.suites || []) printSuite(child, prefix);
 }
 
-function newestReport(dir) {
-  if (!dir) throw new Error('web-results-dir missing');
+function newestFile(dir) {
   const reports = new Map();
   findReports(path.resolve(dir), reports);
   // Patrol's JSON reporter writes under --web-report-dir, beside the results directory in CI.
   findReports(path.resolve(dir, '..', 'playwright-report'), reports);
   const newest = [...reports].sort((a, b) => b[1] - a[1])[0];
   if (!newest) throw new Error(`no results.json or report.json found in ${dir} or sibling playwright-report`);
-  const report = JSON.parse(fs.readFileSync(newest[0], 'utf8'));
-  if (!Array.isArray(report.suites) || !report.stats) throw new Error(`invalid Playwright report: ${newest[0]}`);
+  return newest[0];
+}
+
+function loadReport(file) {
+  const report = JSON.parse(fs.readFileSync(file, 'utf8'));
+  if (!Array.isArray(report.suites) || !report.stats) throw new Error(`invalid Playwright report: ${file}`);
   return report;
 }
 
+function newestReport(dir) {
+  if (!dir) throw new Error('web-results-dir missing');
+  return loadReport(newestFile(dir));
+}
+
+const count = (stats, key) => Number(stats[key]) || 0;
+
 function printReport(report) {
-  for (const error of report.errors || []) console.log(`error ${firstLine(error.message || error.value || error)}`);
+  for (const error of report.errors || []) console.log(`error ${errorText(error)}`);
   for (const suite of report.suites) printSuite(suite);
   const stats = report.stats;
-  const total = ['expected', 'unexpected', 'flaky', 'skipped'].reduce((sum, key) => sum + (Number(stats[key]) || 0), 0);
-  console.log(`Playwright: total=${total} unexpected=${Number(stats.unexpected) || 0}`);
+  const total = ['expected', 'unexpected', 'flaky', 'skipped'].reduce((sum, key) => sum + count(stats, key), 0);
+  console.log(`Playwright: total=${total} unexpected=${count(stats, 'unexpected')}`);
 }
 
 try {
