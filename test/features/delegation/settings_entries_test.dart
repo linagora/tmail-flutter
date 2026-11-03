@@ -5,11 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 /// Settings entries handed to a view, each hidden while a delegated account is shown (ADR-0114).
 /// The dashboard also refuses to open Settings then, so an entry missing here only looks broken.
 const _gatedSettingsEntries = <String, int>{
-  'lib/features/email/presentation/email_view.dart': 1,
   'lib/features/mailbox/presentation/base_mailbox_view.dart': 1,
-  'lib/features/mailbox_dashboard/presentation/mailbox_dashboard_view_web.dart': 1,
-  'lib/features/thread/presentation/thread_view.dart': 1,
-  'lib/features/thread_detail/presentation/thread_detail_view.dart': 1,
+  'lib/features/mailbox_dashboard/presentation/widgets/dashboard_vacation_banner.dart': 1,
 };
 
 /// Avatar menus listing Manage account.

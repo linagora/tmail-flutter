@@ -16,7 +16,6 @@ import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_ac
 import 'package:tmail_ui_user/features/base/widget/report_message_banner.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/web/composer_overlay_view.dart';
-import 'package:tmail_ui_user/features/delegation/presentation/providers/shown_account_capabilities_provider.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_empty_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dart';
@@ -48,7 +47,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/se
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/top_bar_thread_selection.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/styles/vacation_notification_message_widget_style.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_banner_widget.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/popup_menu_item_date_filter_action.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/popup_menu_item_sort_order_type_action.dart';
@@ -67,6 +65,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/shown_account_input_blocker.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/dashboard_vacation_banner.dart';
 
 class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
@@ -606,12 +605,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     return Obx(() {
       final vacation = controller.vacationResponse.value;
       if (vacation?.vacationResponderIsValid == true) {
-        return Consumer(builder: (context, ref, child) => VacationNotificationMessageWidget(
+        return DashboardVacationBanner(
             margin: VacationNotificationMessageWidgetStyle.bannerMargin,
             vacationResponse: vacation!,
-            actionGotoVacationSetting: ref.watch(shownAccountCapabilitiesProvider).canOpenSettings ? controller.goToVacationSetting : null,
-            actionEndNow: controller.disableVacationResponder,
-        ));
+        );
       } else {
         return const SizedBox.shrink();
       }

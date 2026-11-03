@@ -21,7 +21,6 @@ import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_expanded.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_scroll.dart';
-import 'package:tmail_ui_user/features/delegation/presentation/providers/shown_account_capabilities_provider.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/handle_label_for_email_extension.dart';
@@ -48,8 +47,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/verify_display_overlay_view_on_iframe_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/dashboard_vacation_banner.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
@@ -159,16 +158,14 @@ class EmailView extends GetWidget<SingleEmailController> {
                           isPlatformSupportVacationVisible;
 
                   if (isVacationBannerVisible) {
-                    return Consumer(builder: (context, ref, child) => VacationNotificationMessageWidget(
+                    return DashboardVacationBanner(
                         margin: const EdgeInsetsDirectional.only(
                           start: 12,
                           end: 12,
                           top: 8,
                         ),
                         vacationResponse: vacation!,
-                        actionGotoVacationSetting: ref.watch(shownAccountCapabilitiesProvider).canOpenSettings ? controller.mailboxDashBoardController.goToVacationSetting : null,
-                        actionEndNow: controller.mailboxDashBoardController.disableVacationResponder,
-                    ));
+                    );
                   } else {
                     return const SizedBox.shrink();
                   }
