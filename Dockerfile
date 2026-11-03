@@ -34,7 +34,7 @@ ENV GITHUB_SHA=$GITHUB_SHA \
 # values are recorded in the image provenance attestation pushed to public registries.
 # Release builds set SENTRY_UPLOAD so a missing secret fails instead of caching a skip.
 ARG SENTRY_UPLOAD=
-RUN --mount=type=secret,id=sentry_auth_token \
+RUN --mount=type=secret,id=sentry_auth_token,uid=1001 \
     sentry_auth_token="$(cat /run/secrets/sentry_auth_token 2>/dev/null || true)" && \
     if [ -n "${SENTRY_UPLOAD}" ] && [ -z "$sentry_auth_token" ]; then \
       echo "SENTRY_UPLOAD is set but the sentry_auth_token secret is empty" >&2; exit 1; \

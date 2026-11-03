@@ -28,5 +28,5 @@ if [ "$MOBILE" = true ]; then
   DOCKER_BUILDKIT=1 docker build --network host -t tmail-mobile-qa-apk \
     -f "$SCRIPT_DIR/Dockerfile.android" "$REPO_DIR"
 else
-  docker build --network host -t tmail-web-qa -f "$REPO_DIR/Dockerfile" "$REPO_DIR"
+  DOCKER_BUILDKIT=1 docker build --network host -t tmail-web-qa -f "$REPO_DIR/Dockerfile" "$REPO_DIR"
 fi
