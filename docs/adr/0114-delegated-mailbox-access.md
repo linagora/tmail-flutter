@@ -4,6 +4,7 @@ Date: 2026-10-20
 Updated: 2026-10-28
 Updated: 2026-10-29
 Updated: 2026-11-02
+Updated: 2026-11-03
 
 ## Status
 
@@ -83,7 +84,7 @@ A test lists the remaining readers of `dashboard.accountId` and of the "me" sour
 
 ### Settings
 
-- Settings is reached from `mine` only. With `active` delegated, one rule, `ShownAccountCapabilities.canOpenSettings` (false only while a delegated account is shown), hides every entry: "Manage account" in the avatar menu, the settings button of the mobile mailbox bar and the link of the vacation banner. The web avatar menu keeps Sign out. On mobile, Sign out sits inside Settings, so T-09 keeps it reachable while a delegated account is shown. The web identity-cache restore opens Settings on `mine` only.
+- Settings is reached from `mine` only. With `active` delegated, one rule, `ShownAccountCapabilities.canOpenSettings` (false only while a delegated account is shown), hides every entry: "Manage account" in the avatar menu, the settings button of the mobile mailbox bar and the link of the vacation banner. The web avatar menu keeps Sign out. On mobile, Sign out sits inside Settings and is hidden with it: the user switches back to `mine` to sign out. The web identity-cache restore opens Settings on `mine` only.
 - `/settings` opened while a delegated account is shown goes to the dashboard of that account. A page load of `/settings` carries no `account`, so it starts on `mine`.
 - Settings still reads `mine` only, so an entry that a later change forgets to hide still cannot reach the owner's settings.
 
@@ -143,7 +144,7 @@ A test lists the remaining readers of `dashboard.accountId` and of the "me" sour
 | T-02.6 | Start on a delegated account (web URL `account=`, mobile last shown account). Goes through `canSelect` / `switchTo` only | T-02.1–2.5, T-06 |
 | T-07 | Web Workplace switcher chip (#4977 §8) | T-02.1–2.6, T-03, T-04, T-05, T-06, DS-2 |
 | T-08 | Web stand-alone avatar menu + "Viewing [Owner] ✕" banner (#4977 §9) | T-02.1–2.6, T-03, T-04, T-05, T-06, DS-3 |
-| T-09 | Mobile app, tablet, mobile web (Figma mobile), Sign out reachable while a delegated account is shown, notifications of delegated accounts (kept by the filter when delegation is on, notification baseline, `delegatedAccounts` items in the iOS keychain, `accountId` in the payload) and their tap | T-02.1–2.6, T-03, T-04, T-05, T-06, DS-1, DS-3 |
+| T-09 | Mobile app, tablet, mobile web (Figma mobile), notifications of delegated accounts (kept by the filter when delegation is on, notification baseline, `delegatedAccounts` items in the iOS keychain, `accountId` in the payload) and their tap | T-02.1–2.6, T-03, T-04, T-05, T-06, DS-1, DS-3 |
 | T-10 | `DelegatedAccount/get\|set` extension + data layer | — |
 | T-11 | Settings › Delegation: "Delegated to me" + "Remove your access". `/settings?type=delegation` opens Settings › Delegation when the entry is shown, otherwise the default settings page with no delegation controls and no request | T-06, T-10, DS-1, DS-4 |
 | T-12 | E2E scenarios, with each release | — |
