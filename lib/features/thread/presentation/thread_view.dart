@@ -34,7 +34,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/re
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_banner_widget.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_banner_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
@@ -62,6 +61,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_
 import 'package:tmail_ui_user/features/thread/presentation/widgets/scroll_to_top_button_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_view_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/dialogs/empty_trash_confirmation_dialog.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/dashboard_vacation_banner.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class ThreadView extends GetWidget<ThreadController>
@@ -182,13 +182,11 @@ class ThreadView extends GetWidget<ThreadController>
                         Obx(() {
                           final vacation = controller.mailboxDashBoardController.vacationResponse.value;
                           if (vacation?.vacationResponderIsValid == true) {
-                            return VacationNotificationMessageWidget(
-                              margin: ThreadViewStyle.getBannerMargin(
-                                context,
-                                controller.responsiveUtils),
-                              vacationResponse: vacation!,
-                              actionGotoVacationSetting: controller.mailboxDashBoardController.goToVacationSetting,
-                              actionEndNow: controller.mailboxDashBoardController.disableVacationResponder
+                            return DashboardVacationBanner(
+                                margin: ThreadViewStyle.getBannerMargin(
+                                  context,
+                                  controller.responsiveUtils),
+                                vacationResponse: vacation!,
                             );
                           } else {
                             return const SizedBox.shrink();

@@ -12,8 +12,8 @@ import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_bottom_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/dashboard_vacation_banner.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_action_status.dart';
@@ -87,15 +87,13 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                   isPlatformSupportVacationVisible;
 
           if (isVacationBannerVisible) {
-            return VacationNotificationMessageWidget(
-              margin: const EdgeInsetsDirectional.only(
-                start: 12,
-                end: 12,
-                top: 8,
-              ),
-              vacationResponse: vacation!,
-              actionGotoVacationSetting: controller.mailboxDashBoardController.goToVacationSetting,
-              actionEndNow: controller.mailboxDashBoardController.disableVacationResponder,
+            return DashboardVacationBanner(
+                margin: const EdgeInsetsDirectional.only(
+                  start: 12,
+                  end: 12,
+                  top: 8,
+                ),
+                vacationResponse: vacation!,
             );
           } else {
             return const SizedBox.shrink();

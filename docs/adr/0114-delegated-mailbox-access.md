@@ -4,6 +4,7 @@ Date: 2026-10-20
 Updated: 2026-10-28
 Updated: 2026-10-29
 Updated: 2026-11-02
+Updated: 2026-11-03
 
 ## Status
 
@@ -83,7 +84,7 @@ A test lists the remaining readers of `dashboard.accountId` and of the "me" sour
 
 ### Settings
 
-- Settings is reached from `mine` only. With `active` delegated, one rule, `canOpenSettings = !active.isDelegated`, hides every entry: "Manage account" in the avatar menu, the settings button of the mobile mailbox bar and the link of the vacation banner. The web identity-cache restore opens Settings on `mine` only.
+- Settings is reached from `mine` only. With `active` delegated, one rule, `ShownAccountCapabilities.canOpenSettings` (false only while a delegated account is shown), hides every entry: "Manage account" in the avatar menu, the settings button of the mobile mailbox bar and the link of the vacation banner. The web avatar menu keeps Sign out. On mobile, Sign out sits inside Settings and is hidden with it: the user switches back to `mine` to sign out. The web identity-cache restore opens Settings on `mine` only.
 - `/settings` opened while a delegated account is shown goes to the dashboard of that account. A page load of `/settings` carries no `account`, so it starts on `mine`.
 - Settings still reads `mine` only, so an entry that a later change forgets to hide still cannot reach the owner's settings.
 
