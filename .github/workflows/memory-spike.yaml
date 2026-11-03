@@ -6,16 +6,16 @@ permissions:
   contents: read
 jobs:
   emulator:
-    name: ${{ matrix.name }} #${{ matrix.run }}
+    name: ${{ matrix.name }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
-        run: [1]
+        cand: [A, B]
         include:
-          - { name: A-api34-google_apis, api: 34, target: google_apis }
-          - { name: B-api30-default, api: 30, target: default }
+          - { cand: A, name: A-api34-google_apis, api: 34, target: google_apis }
+          - { cand: B, name: B-api30-default, api: 30, target: default }
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Enable KVM
