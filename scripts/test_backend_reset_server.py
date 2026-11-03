@@ -255,6 +255,14 @@ class RunTimeoutTest(unittest.TestCase):
         with self.assertRaises(subprocess.TimeoutExpired):
             server._run(["sleep", "5"], timeout=0.2)
 
+    def test_timeout_kills_the_children_of_the_command(self):
+        marker = os.path.join(tempfile.mkdtemp(), "child-survived")
+        self.addCleanup(shutil.rmtree, os.path.dirname(marker), ignore_errors=True)
+        with self.assertRaises(subprocess.TimeoutExpired):
+            server._run(["sh", "-c", f"(sleep 1; touch {marker}) & wait"], timeout=0.3)
+        time.sleep(1.5)
+        self.assertFalse(os.path.exists(marker))
+
     def test_stop_all_cleans_every_slot_when_one_call_hangs(self):
         downs = []
 

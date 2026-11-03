@@ -88,7 +88,17 @@ _stopped = False
 def _run(cmd: List[str], check: bool = False, env: Optional[dict] = None,
          timeout: float = RUN_TIMEOUT) -> subprocess.CompletedProcess:
     # A hung call raises TimeoutExpired, so Pool._reset retries then drops the slot.
-    return subprocess.run(cmd, check=check, capture_output=True, text=True, env=env, timeout=timeout)
+    # Own session: killing only the docker CLI would leave its compose plugin running into the retry.
+    with subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=env,
+                          start_new_session=True) as proc:
+        try:
+            out, err = proc.communicate(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            os.killpg(proc.pid, signal.SIGKILL)
+            raise
+        if check and proc.returncode:
+            raise subprocess.CalledProcessError(proc.returncode, cmd, out, err)
+        return subprocess.CompletedProcess(cmd, proc.returncode, out, err)
 
 
 def _webadmin(port: int, method: str, path: str, data: Optional[str] = None) -> dict:
