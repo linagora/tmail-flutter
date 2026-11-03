@@ -109,7 +109,22 @@ class PoolTest(unittest.TestCase):
 
     def test_wait_ready_counts_free_backends(self):
         pool, _ = make_pool(2)
-        self.assertEqual(pool.wait_ready(2), 2)
+        self.assertEqual(pool.wait_ready(2, 2), 2)
+
+    def test_wait_ready_returns_once_enough_backends_are_free(self):
+        stalled = threading.Event()
+
+        def recycle(n):
+            if n == 1:
+                stalled.wait(5)
+
+        pool, _ = make_pool(2, recycle)
+        try:
+            start = time.time()
+            self.assertEqual(pool.wait_ready(5, 1), 1)
+            self.assertLess(time.time() - start, 2)
+        finally:
+            stalled.set()
 
     def test_release_while_stopping_starts_no_recycle(self):
         pool, recycled = make_pool(1)
@@ -163,7 +178,7 @@ class _FixedPool:
     def __init__(self, free):
         self.free = free
 
-    def wait_ready(self, timeout):
+    def wait_ready(self, timeout, min_free):
         return self.free
 
 

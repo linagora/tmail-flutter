@@ -17,7 +17,7 @@ Environment variables:
   RESET_PORT                Listening port (default: 9999)
   POOL_SIZE                 Number of slots (default: 4)
   POOL_URLS                 Comma-separated public JMAP base URL per slot, POOL_SIZE entries (required)
-  POOL_MIN_FREE             Startup fails when fewer slots are free once the pool settles (default: 1)
+  POOL_MIN_FREE             Free slots startup waits for; it fails when the pool settles with fewer (default: 1)
   POOL_RECYCLE_CONCURRENCY  Containers booting at once (default: 2)
   POOL_JMAP_BASE_PORT       Host port of slot 0's JMAP; slot n uses base + n (default: 8100)
   POOL_WEBADMIN_BASE_PORT   Host port of slot 0's WebAdmin; slot n uses base + n (default: 8200)
@@ -231,16 +231,16 @@ class Pool:
         for n in self._state:
             self._begin_reset(n)
 
-    def wait_ready(self, timeout: float) -> int:
-        """Block until no slot is being replaced; returns the number of free slots."""
+    def wait_ready(self, timeout: float, min_free: int) -> int:
+        """Block until min_free slots are free or none is being replaced; returns the number of free slots."""
         deadline = time.time() + timeout
         with self._cond:
-            while any(s == "resetting" for s in self._state.values()):
+            while True:
+                free = sum(1 for s in self._state.values() if s == "free")
                 left = deadline - time.time()
-                if left <= 0:
-                    break
+                if free >= min_free or "resetting" not in self._state.values() or left <= 0:
+                    return free
                 self._cond.wait(min(left, self._poll))
-            return sum(1 for s in self._state.values() if s == "free")
 
     def join(self, timeout: float) -> None:
         deadline = time.time() + timeout
@@ -388,7 +388,7 @@ class ResetHandler(http.server.BaseHTTPRequestHandler):
 
 
 def _watch_ready(pool: Pool) -> None:
-    free = pool.wait_ready(POOL_READY_TIMEOUT)
+    free = pool.wait_ready(POOL_READY_TIMEOUT, POOL_MIN_FREE)
     if free < POOL_MIN_FREE:
         print(f"[reset-server] ERROR only {free} of {POOL_SIZE} backends are free (need {POOL_MIN_FREE})",
               file=sys.stderr, flush=True)

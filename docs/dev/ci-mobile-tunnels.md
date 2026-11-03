@@ -33,8 +33,8 @@
 - Before FTL starts, the tunnels are checked:
   - every supervisor is alive;
   - the reset tunnel answers an HTTP request through the relay;
-  - every slot that is not dropped also answers through the relay, because the reset server can still lease it (a failed tunnel is retried once after 5 s);
-  - a slot the reset server dropped (`ERROR slot N attempt 2` in `backend-reset-server.log`) only logs a `WARN`;
+  - every slot whose backend answers on localhost also answers through the relay, because the reset server can lease it (a failed tunnel is retried once after 5 s);
+  - a slot whose backend is not up (dropped, or still booting) only logs a `WARN`;
   - at least `FTL_SHARDS` slot tunnels answer (the reset server also starts with that many free backends).
 - After FTL, `check_bore_supervisors` runs again and `bore_summary` prints one row per tunnel.
 - A request in flight when a tunnel drops still fails. Only later requests recover.

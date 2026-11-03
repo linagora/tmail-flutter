@@ -73,10 +73,9 @@ probe_bore_url_retry() {
     probe_bore_url "$1"
 }
 
-# The reset server accepts a pool with FTL_SHARDS free backends and never leases a dropped slot
-# (it logs "ERROR slot N attempt 2" when it drops one), so:
-# - a slot that is not dropped must answer through the relay (it can still be leased);
-# - a dropped slot only warns;
+# The reset server is ready once FTL_SHARDS backends are free and leases only free slots, so:
+# - a slot whose backend answers locally must also answer through the relay;
+# - a slot whose backend is down (dropped or still booting) only warns;
 # - at least FTL_SHARDS slot tunnels must answer.
 probe_bore_tunnels() {
     local n reachable=0 failed=0 slot_urls
@@ -88,10 +87,10 @@ probe_bore_tunnels() {
     for n in "${!slot_urls[@]}"; do
         if probe_bore_url_retry "${slot_urls[$n]}"; then
             reachable=$(( reachable + 1 ))
-        elif grep -q "ERROR slot $n attempt 2:" "$RESET_SERVER_LOG" 2>/dev/null; then
-            echo "WARN: slot$n was dropped from the pool; tunnel ${slot_urls[$n]} not used"
+        elif ! probe_bore_url "http://localhost:$(( 8100 + n ))"; then
+            echo "WARN: slot$n backend is not up (dropped or still booting); tunnel ${slot_urls[$n]} not checked"
         else
-            echo "ERROR: slot$n can be leased but its tunnel ${slot_urls[$n]} is unreachable through $BORE_HOST"
+            echo "ERROR: slot$n backend is up but its tunnel ${slot_urls[$n]} is unreachable through $BORE_HOST"
             failed=1
         fi
     done
