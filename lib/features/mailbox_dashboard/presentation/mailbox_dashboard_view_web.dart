@@ -18,20 +18,17 @@ import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/web/composer_overlay_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_empty_widget.dart';
-import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/dialogs/empty_trash_confirmation_dialog.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_profile_setting_action_type_click_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/select_search_filter_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/desktop_dashboard_route_body.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/profile_setting/profile_setting_action_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
@@ -41,8 +38,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/co
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/empty_trash_banner_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/mark_mailbox_as_read_loading_banner.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/navigation_bar_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/profile_setting/profile_setting_icon.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/dashboard_navigation_bar.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/profile_setting/cozy_profile_setting_icon.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/filter_message_button.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/search_filter_button.dart';
@@ -50,7 +47,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/se
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/top_bar_thread_selection.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/styles/vacation_notification_message_widget_style.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_banner_widget.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/popup_menu_item_date_filter_action.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/popup_menu_item_sort_order_type_action.dart';
@@ -69,6 +65,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/shown_account_input_blocker.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/dashboard_vacation_banner.dart';
 
 class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
@@ -91,39 +88,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                         return const SizedBox.shrink();
                       }
 
-                      return Obx(() {
-                        final accountId = controller.accountId.value;
-                        String accountDisplayName = controller.ownEmailAddress.value;
-                        final contactSupportCapability = accountId != null
-                          ? controller.sessionCurrent?.getContactSupportCapability(accountId)
-                          : null;
-                        if (accountDisplayName.trim().isEmpty) {
-                          accountDisplayName = controller
-                            .sessionCurrent
-                            ?.getOwnEmailAddressOrUsername() ?? '';
-                        }
-
-                        return NavigationBarWidget(
-                          imagePaths: controller.imagePaths,
-                          accountId: accountId,
-                          ownEmailAddress: accountDisplayName,
-                          leadingWidth: ResponsiveUtils.sidebarMenuWidth,
-                          contactSupportCapability: contactSupportCapability,
-                          searchForm: SearchInputFormWidget(),
-                          appGridController:
-                              controller.appGridDashboardController,
-                          settingActionTypes: ProfileSettingActionType.values,
-                          onTapApplicationLogoAction:
-                              controller.redirectToInboxAction,
-                          onTapContactSupportAction: (contactSupport) =>
-                              controller.onGetHelpOrReportBug(contactSupport),
-                          onProfileSettingActionTypeClick: (actionType) =>
-                              controller.handleProfileSettingActionTypeClick(
-                            context: context,
-                            actionType: actionType,
-                          ),
-                        );
-                      });
+                      return DashboardNavigationBar();
                     },
                   ),
                   Expanded(
@@ -175,26 +140,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                                           ),
                                         ),
                                         const Spacer(),
-                                        Obx(() {
-                                          String accountDisplayName =
-                                              controller.ownEmailAddress.value;
-                                          if (accountDisplayName.trim().isEmpty) {
-                                            accountDisplayName = controller
-                                              .sessionCurrent
-                                              ?.getOwnEmailAddressOrUsername() ?? '';
-                                          }
-                                          return ProfileSettingIcon(
-                                            key: const ValueKey(UiKeys.workplaceSettingsButton),
-                                            ownEmailAddress: accountDisplayName,
-                                            settingActionTypes: ProfileSettingActionType.values,
-                                            onProfileSettingActionTypeClick: (actionType) =>
-                                              controller.handleProfileSettingActionTypeClick(
-                                                context: context,
-                                                actionType: actionType,
-                                              ),
-                                            isInsideCozy: true,
-                                          );
-                                        }),
+                                        CozyProfileSettingIcon(),
                                       ],
                                     ),
                                   );
@@ -659,11 +605,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     return Obx(() {
       final vacation = controller.vacationResponse.value;
       if (vacation?.vacationResponderIsValid == true) {
-        return VacationNotificationMessageWidget(
-          margin: VacationNotificationMessageWidgetStyle.bannerMargin,
-          vacationResponse: vacation!,
-          actionGotoVacationSetting: controller.goToVacationSetting,
-          actionEndNow: controller.disableVacationResponder,
+        return DashboardVacationBanner(
+            margin: VacationNotificationMessageWidgetStyle.bannerMargin,
+            vacationResponse: vacation!,
         );
       } else {
         return const SizedBox.shrink();

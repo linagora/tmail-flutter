@@ -146,26 +146,32 @@ void main() {
     });
   });
 
-  group('isDelegatedAccountShown', () {
-    test('is true while a delegated account is shown', () {
+  group('shownAccountCapabilities', () {
+    test('do not open Settings or create a filter while a delegated account is shown', () {
       ActiveAccountSourceFixtures.put(
         DelegationFixtures.session(),
         shownAccountId: DelegationFixtures.bobAccountId,
       );
 
-      expect(_Reader().isDelegatedAccountShown, isTrue);
+      final capabilities = _Reader().shownAccountCapabilities;
+      expect(capabilities.canOpenSettings, isFalse);
+      expect(capabilities.canCreateFilter, isFalse);
     });
 
-    test('is false while my own account is shown', () {
+    test('open Settings and create a filter while my own account is shown', () {
       ActiveAccountSourceFixtures.put(DelegationFixtures.session());
 
-      expect(_Reader().isDelegatedAccountShown, isFalse);
+      final capabilities = _Reader().shownAccountCapabilities;
+      expect(capabilities.canOpenSettings, isTrue);
+      expect(capabilities.canCreateFilter, isTrue);
     });
 
-    test('is false while no account is shown yet', () {
+    test('open Settings and create a filter while no account is shown yet', () {
       ActiveAccountSourceFixtures.putEmpty();
 
-      expect(_Reader().isDelegatedAccountShown, isFalse);
+      final capabilities = _Reader().shownAccountCapabilities;
+      expect(capabilities.canOpenSettings, isTrue);
+      expect(capabilities.canCreateFilter, isTrue);
     });
   });
 
