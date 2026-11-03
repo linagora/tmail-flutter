@@ -69,6 +69,25 @@ class PoolTest(unittest.TestCase):
         self.assertEqual(second["url"], first["url"])
         self.assertEqual(recycled, [0, 0])
 
+    def test_lease_waits_until_the_released_backend_is_recycled(self):
+        entered, held = threading.Event(), threading.Event()
+        calls = []
+
+        def recycle(n):
+            calls.append(n)
+            if len(calls) == 2:
+                entered.set()
+                held.wait(10)
+
+        pool, _ = make_pool(1, recycle)
+        try:
+            pool.release(pool.lease(1)["token"])
+            self.assertTrue(entered.wait(2))  # handshake: recycle is in flight
+            self.assertIsNone(pool.lease(0.1))
+        finally:
+            held.set()
+        self.assertIsNotNone(pool.lease(5))
+
     def test_stale_or_repeated_release_is_a_no_op(self):
         pool, recycled = make_pool(1)
         leased = pool.lease(1)
@@ -103,10 +122,11 @@ class PoolTest(unittest.TestCase):
         self.assertLess(time.time() - start, 2)
 
     def test_expired_lease_is_reclaimed(self):
-        pool, _ = make_pool(1, ttl=0.05)
+        pool, recycled = make_pool(1, ttl=0.05)
         pool.lease(1)
         time.sleep(0.1)
         self.assertIsNotNone(pool.lease(1))
+        self.assertEqual(recycled, [0, 0])
 
     def test_wait_ready_counts_free_backends(self):
         pool, _ = make_pool(2)
