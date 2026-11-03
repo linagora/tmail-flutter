@@ -449,11 +449,11 @@ class MailboxDashBoardController extends ReloadableController
     super.onInit();
   }
 
-  /// Account id changed: clear stale identities, reload identities/labels, restore web composer cache.
+  /// Account id changed: clear stale identities, reload identities, restore web composer cache.
+  /// Labels reload on session setup and on a switch's loadAccount, not here.
   void _onShownAccountChanged(AccountId shownAccountId) {
     _identities = null;
     _getAllIdentities(shownAccountId);
-    _reloadLabelSettingForShownAccount();
     if (PlatformInfo.isWeb) {
       _handleComposerCache();
     }
@@ -468,7 +468,7 @@ class MailboxDashBoardController extends ReloadableController
     _getAllIdentities(shownAccountId);
   }
 
-  void _reloadLabelSettingForShownAccount() {
+  void reloadLabelSettingForShownAccount() {
     if (!isLabelCapabilitySupported) return;
     final accountId = activeAccountId;
     if (accountId == null) return;
@@ -504,7 +504,7 @@ class MailboxDashBoardController extends ReloadableController
   void _handleComposerCache() async {
     if (activeAccountId == null || sessionCurrent == null) return;
 
-    consumeState(
+    consumeShownAccountState(
       _getAllComposerCacheInteractor.execute(
         activeAccountId!,
         sessionCurrent!.username));
@@ -2145,7 +2145,7 @@ class MailboxDashBoardController extends ReloadableController
     getServerSetting();
     spamReportController.getSpamReportStateAction();
     loadAIScribeConfig();
-    _reloadLabelSettingForShownAccount();
+    reloadLabelSettingForShownAccount();
   }
 
   Future<List<PresentationEmail>> quickSearchEmails(String query) async {
@@ -2223,7 +2223,7 @@ class MailboxDashBoardController extends ReloadableController
     getServerSetting();
     spamReportController.getSpamReportStateAction();
     loadAIScribeConfig();
-    _reloadLabelSettingForShownAccount();
+    reloadLabelSettingForShownAccount();
   }
 
   void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {
@@ -3422,6 +3422,17 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   List<Identity> get listIdentities => _identities ?? [];
+
+  /// A username that is not an email has no session address.
+  @override
+  String get ownerEmailAddress {
+    final shown = super.ownerEmailAddress;
+    if (shown.isNotEmpty) return shown;
+    if (activeAccountId == null || activeAccountId == accountId.value) {
+      return ownEmailAddress.value;
+    }
+    return '';
+  }
 
   /// "Me" match set of the shown mailbox (ADR-0114), including aliases once identities load.
   Set<String> get ownerEmailAddresses {

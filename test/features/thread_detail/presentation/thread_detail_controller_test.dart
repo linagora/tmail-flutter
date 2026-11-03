@@ -183,6 +183,7 @@ void main() {
       when(dashboard.getMailboxIdByRole(PresentationMailbox.roleSent)).thenReturn(MailboxId(Id('sent-id')));
       // The address the dashboard derived from identities for this username-only account.
       when(dashboard.ownEmailAddress).thenReturn(RxString('alice@domain.tld'));
+      when(dashboard.ownerEmailAddress).thenReturn('alice@domain.tld');
       when(dashboard.ownerEmailAddresses).thenReturn({'alice@domain.tld'});
       when(Get.find<NetworkConnectionController>().isNetworkConnectionAvailable()).thenReturn(true);
       when(Get.find<ThreadDetailManager>().isThreadDetailEnabled).thenReturn(true);

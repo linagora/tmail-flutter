@@ -126,6 +126,13 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     return me.isNotEmpty && from.length == me.length && from.containsAll(me);
   }
 
+  /// True when every `from` address is one of [addresses]. Keeps the "From me" chip
+  /// selected after identities add aliases the filter has not picked up yet.
+  bool isFromMeFilter(Set<String> addresses) {
+    final me = addresses.where((address) => address.isNotEmpty).toSet();
+    return from.isNotEmpty && me.containsAll(from);
+  }
+
   /// Strips the load-more date cursors (`before`, `after`), keeping all user intent
   /// (incl. `startDate`/`endDate` bounds). Notifiers run full replacements through
   /// this so a stale cursor can never enter the SSOT (ADR-0093). Pagination `position`

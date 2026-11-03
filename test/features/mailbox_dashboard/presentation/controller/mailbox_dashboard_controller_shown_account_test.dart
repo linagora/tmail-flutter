@@ -67,8 +67,11 @@ import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_la
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/labels/label_method_action_define.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_all_composer_cache_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/quick_search_email_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/getx_account_switch_dashboard.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_type_for_email_selection.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:model/extensions/mailbox_extension.dart';
@@ -583,6 +586,101 @@ void main() {
 
       expect(dashboardStateOnLoad, [(DelegationFixtures.aliceAccountId, DelegationFixtures.aliceAddress)]);
     });
+
+    test('ownerEmailAddress falls back to the identity-derived address when the session username is not an email', () {
+      final usernameOnlySession = Session(
+        {},
+        {DelegationFixtures.aliceAccountId: Account(AccountName('alice'), true, false, {})},
+        {},
+        UserName('alice'),
+        Uri.parse('http://domain.com/jmap'),
+        Uri.parse('http://domain.com/download/{accountId}/{blobId}/?type={type}&name={name}'),
+        Uri.parse('http://domain.com/upload/{accountId}'),
+        Uri.parse('http://domain.com/eventSource?types={types}&closeAfter={closeafter}&ping={ping}'),
+        State('state-1'),
+      );
+      ActiveAccountSourceFixtures.putShowing(DelegationFixtures.aliceAccountId).show(
+        DelegationFixtures.aliceAccountId,
+        ActiveAccount.personal(usernameOnlySession),
+      );
+      mailboxDashboardController.accountId.value = DelegationFixtures.aliceAccountId;
+      mailboxDashboardController.ownEmailAddress.value = 'alice@domain.tld';
+
+      expect(mailboxDashboardController.ownerEmailAddress, 'alice@domain.tld');
+    });
+
+    test('reads the label setting once when a session is applied', () {
+      when(labelController.isLabelCapabilitySupported(any, any)).thenReturn(true);
+      ActiveAccountSourceFixtures.putEmpty();
+      Get.put(mailboxDashboardController);
+      clearInteractions(labelController);
+
+      mailboxDashboardController.handleReloaded(DelegationFixtures.session());
+
+      verify(labelController.checkLabelSettingState(any, any)).called(1);
+    });
+
+    test('a switch to another account reloads the label setting once', () {
+      when(labelController.isLabelCapabilitySupported(any, any)).thenReturn(true);
+      Get.put(mailboxDashboardController);
+      mailboxDashboardController.sessionCurrent = DelegationFixtures.session();
+      final source = ActiveAccountSourceFixtures.putShowing(DelegationFixtures.aliceAccountId);
+      source.show(
+        DelegationFixtures.bobAccountId,
+        ActiveAccount.delegated(
+          DelegationFixtures.session(),
+          DelegationFixtures.bobAccountId,
+        ),
+      );
+      clearInteractions(labelController);
+
+      GetXAccountSwitchDashboard(mailboxDashboardController)
+          .reloadLabelSettingForShownAccount();
+
+      verify(labelController.checkLabelSettingState(
+        DelegationFixtures.session(),
+        DelegationFixtures.bobAccountId,
+      )).called(1);
+    });
+
+    test(
+      'a composer cache of an account shown before never reopens once another is shown',
+      () async {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        StreamController<Either<Failure, Success>>? aliceCache;
+        when(getAllComposerCacheInteractor.execute(any, any)).thenAnswer((_) {
+          final pending = StreamController<Either<Failure, Success>>();
+          addTearDown(pending.close);
+          aliceCache ??= pending;
+          return pending.stream;
+        });
+        when(mockTwakeAppManager.hasComposer).thenReturn(false);
+        clearInteractions(composerManager);
+
+        final source = ActiveAccountSourceFixtures.putShowing(null);
+        Get.put(mailboxDashboardController);
+        mailboxDashboardController.sessionCurrent = DelegationFixtures.session();
+
+        source.show(
+          DelegationFixtures.aliceAccountId,
+          ActiveAccount.personal(DelegationFixtures.session()),
+        );
+        source.show(
+          DelegationFixtures.bobAccountId,
+          ActiveAccount.delegated(
+            DelegationFixtures.session(),
+            DelegationFixtures.bobAccountId,
+          ),
+        );
+        aliceCache!.add(Right(GetAllComposerCacheSuccess([
+          ComposerCache(composerId: 'stale', composerIndex: 0),
+        ])));
+        await pumpEventQueue();
+
+        verifyNever(composerManager.addListComposer(any));
+      },
+    );
   });
 
   group('Settings entries:', () {
