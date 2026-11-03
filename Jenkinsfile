@@ -73,6 +73,7 @@ pipeline {
 
     environment {
         FLUTTER_VERSION = '3.38.9'
+        WEB_WORKERS = '4'
     }
 
     stages {
