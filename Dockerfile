@@ -21,9 +21,13 @@ ENV GITHUB_SHA=$GITHUB_SHA \
 
 # The Sentry auth token comes in as a BuildKit secret, never a build-arg: build-arg
 # values are recorded in the image provenance attestation pushed to public registries.
-# The mount is optional, so builds without the secret skip the source map upload.
+# Release builds set SENTRY_UPLOAD so a missing secret fails instead of caching a skip.
+ARG SENTRY_UPLOAD=
 RUN --mount=type=secret,id=sentry_auth_token \
     sentry_auth_token="$(cat /run/secrets/sentry_auth_token 2>/dev/null || true)" && \
+    if [ -n "${SENTRY_UPLOAD}" ] && [ -z "$sentry_auth_token" ]; then \
+      echo "SENTRY_UPLOAD is set but the sentry_auth_token secret is empty" >&2; exit 1; \
+    fi && \
     ./scripts/prebuild.sh && \
     SENTRY_AUTH_TOKEN="$sentry_auth_token" ./scripts/configure-sentry.sh && \
     flutter build web --release --source-maps --no-web-resources-cdn \
