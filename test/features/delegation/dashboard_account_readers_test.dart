@@ -59,6 +59,8 @@ const _dashboardPersonalAccountReaders = <String, int>{
   'selectToSearchFilter': 2,
   // Notification taps: my own account until T-03.
   '_handleNotificationMessageFromEmailId': 1,
+  // Username-only personal: session owner empty, identities fill ownEmailAddress.
+  'ownerEmailAddress': 1,
 };
 
 /// Readers of the "me" sources `ownEmailAddress` and `getOwnEmailAddress*`. Shown-mailbox
@@ -70,7 +72,7 @@ const _ownEmailAddressReaders = <String, int>{
   'lib/features/home/domain/extensions/session_extensions.dart': 1,
   // Personal display: nav, avatar, profile, premium, Settings, session sync.
   'lib/features/mailbox/presentation/base_mailbox_view.dart': 2,
-  'lib/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart': 3,
+  'lib/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart': 4,
   'lib/features/mailbox_dashboard/presentation/extensions/handle_profile_setting_action_type_click_extension.dart': 2,
   'lib/features/mailbox_dashboard/presentation/extensions/premium_cta_context_extension.dart': 2,
   'lib/features/mailbox_dashboard/presentation/widgets/navigation_bar/dashboard_navigation_bar.dart': 2,
