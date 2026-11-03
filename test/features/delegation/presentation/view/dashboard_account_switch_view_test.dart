@@ -15,7 +15,7 @@ import 'package:tmail_ui_user/features/delegation/presentation/notifier/shown_ac
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/shown_account_reload_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/shown_account_load_tracker_provider.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/view/dashboard_account_switch_view.dart';
-import 'package:tmail_ui_user/features/delegation/presentation/view/shown_mailbox_selection.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/view/account_switch_dashboard.dart';
 
 import '../../../../fixtures/delegation_fixtures.dart';
 
@@ -26,14 +26,14 @@ class _MenuAction extends PopupMenuItemAction<String> {
   String get actionName => action;
 }
 
-class _FakeSelection implements ShownMailboxSelection {
+class _FakeDashboard implements AccountSwitchDashboard {
   @override
   bool hasOpenComposer = false;
 
-  int clearedCount = 0;
+  int resetCount = 0;
 
   @override
-  void clearSelectionAndSearch() => clearedCount++;
+  void resetForNewAccount() => resetCount++;
 }
 
 ShownAccountLoad _loadedIn(int attemptId) =>
@@ -41,7 +41,7 @@ ShownAccountLoad _loadedIn(int attemptId) =>
 
 void main() {
   late ProviderContainer container;
-  late _FakeSelection selection;
+  late _FakeDashboard dashboard;
   late DashboardAccountSwitchView view;
   late List<int?> reloadRequests;
   late ActiveAccount account;
@@ -53,15 +53,15 @@ void main() {
     container.listen(shownAccountInputBlockProvider, (_, __) {});
     reloadRequests = [];
     container.listen(shownAccountReloadProvider, (_, attemptId) => reloadRequests.add(attemptId));
-    selection = _FakeSelection();
+    dashboard = _FakeDashboard();
     navigatorKey = GlobalKey<NavigatorState>();
-    view = DashboardAccountSwitchView(container, selection, navigatorKey);
+    view = DashboardAccountSwitchView(container, dashboard, navigatorKey);
     account = ActiveAccount.personal(DelegationFixtures.session());
   });
 
   group('composer and input:', () {
     test('reports an open composer of the dashboard', () {
-      selection.hasOpenComposer = true;
+      dashboard.hasOpenComposer = true;
 
       expect(view.hasOpenComposer, isTrue);
     });
@@ -154,7 +154,7 @@ void main() {
     test('clearing the selection and search clears them in the dashboard once', () {
       view.clearSelectionAndSearch();
 
-      expect(selection.clearedCount, 1);
+      expect(dashboard.resetCount, 1);
     });
   });
 
@@ -193,7 +193,7 @@ void main() {
 
       view.catchUpAccount(account, 3);
 
-      expect(selection.clearedCount, 1);
+      expect(dashboard.resetCount, 1);
     });
 
     test('catching up an account nothing reloaded in the attempt asks for a reload', () {
@@ -247,7 +247,7 @@ void main() {
       final result = await switching;
 
       expect(result, isA<AccountSwitchFailed>());
-      expect(selection.clearedCount, 2);
+      expect(dashboard.resetCount, 2);
       expect(source.accountId, DelegationFixtures.aliceAccountId);
       expect(container.read(shownAccountInputBlockProvider), isFalse);
       expect(reloadRequests, isEmpty);

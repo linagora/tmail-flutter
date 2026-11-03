@@ -7,10 +7,10 @@ import 'package:tmail_ui_user/features/composer/presentation/manager/composer_ma
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/dashboard_shown_mailbox_selection.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/getx_account_switch_dashboard.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 
-import 'dashboard_shown_mailbox_selection_test.mocks.dart';
+import 'getx_account_switch_dashboard_test.mocks.dart';
 
 mockControllerCallback() => InternalFinalCallback<void>(callback: () {});
 const fallbackGenerators = {
@@ -27,7 +27,7 @@ void main() {
   late MockMailboxDashBoardController dashboard;
   late MockSearchController searchController;
   late MockComposerManager composerManager;
-  late DashboardShownMailboxSelection selection;
+  late GetXAccountSwitchDashboard accountSwitchDashboard;
 
   setUp(() {
     dashboard = MockMailboxDashBoardController();
@@ -35,25 +35,25 @@ void main() {
     composerManager = MockComposerManager();
     when(dashboard.searchController).thenReturn(searchController);
     when(dashboard.composerManager).thenReturn(composerManager);
-    selection = DashboardShownMailboxSelection(dashboard);
+    accountSwitchDashboard = GetXAccountSwitchDashboard(dashboard);
   });
 
-  group('clearSelectionAndSearch:', () {
+  group('resetForNewAccount:', () {
     test('unselects the folder and closes the opened email', () {
-      selection.clearSelectionAndSearch();
+      accountSwitchDashboard.resetForNewAccount();
 
       verify(dashboard.setSelectedMailbox(null)).called(1);
       verify(dashboard.clearSelectedEmail()).called(1);
     });
 
     test('goes back to the email list', () {
-      selection.clearSelectionAndSearch();
+      accountSwitchDashboard.resetForNewAccount();
 
       verify(dashboard.dispatchRoute(DashboardRoutes.thread)).called(1);
     });
 
     test('drops the quick filter, the search and the advanced search fields of the old account', () {
-      selection.clearSelectionAndSearch();
+      accountSwitchDashboard.resetForNewAccount();
 
       verify(dashboard.clearFilterMessageOption()).called(1);
       verify(searchController.disableAllSearchEmail()).called(1);
@@ -61,13 +61,13 @@ void main() {
     });
 
     test('makes the first email list of the target catch up with its changes', () {
-      selection.clearSelectionAndSearch();
+      accountSwitchDashboard.resetForNewAccount();
 
       verify(dashboard.setIsFirstSessionLoad(true)).called(1);
     });
 
     test('forgets the email state of the old account, so a refresh never sends it to the target', () {
-      selection.clearSelectionAndSearch();
+      accountSwitchDashboard.resetForNewAccount();
 
       verify(dashboard.setCurrentEmailState(null)).called(1);
     });
@@ -78,7 +78,7 @@ void main() {
       test('is $hasComposer when the dashboard composers say $hasComposer', () {
         when(composerManager.hasComposer).thenReturn(hasComposer);
 
-        expect(selection.hasOpenComposer, hasComposer);
+        expect(accountSwitchDashboard.hasOpenComposer, hasComposer);
       });
     }
 
@@ -91,7 +91,7 @@ void main() {
         Get.lazyPut<ComposerController>(() => throw UnimplementedError('never built'), tag: tag);
         addTearDown(() => Get.delete<ComposerController>(tag: tag, force: true));
 
-        expect(selection.hasOpenComposer, isOpen);
+        expect(accountSwitchDashboard.hasOpenComposer, isOpen);
       });
     }
   });
