@@ -204,7 +204,7 @@ notifier = container.read(composerAutoSaveProvider('test-id').notifier);
 
 `appProviderContainer` is frozen. No new `.read()` / `.listen()` / `.invalidate()` calls may be added to it. New features that need Riverpod state must use `ConsumerWidget` + `ref.watch/read` against the widget tree scope.
 
-One exception is recorded by [ADR-0114](./0114-delegated-mailbox-access.md). `DelegationBindings` hands the container once to `RiverpodActiveAccountSource`, registered as `ActiveAccountSource` and `ActiveAccountWriter`, the only GetX access to the shown account and to the account switch. Its readers are GetX controllers with no `WidgetRef`, and the dashboard must write each session synchronously before any of them runs, which a delegate mounted by a view cannot guarantee.
+One exception is recorded by [ADR-0114](./0114-delegated-mailbox-access.md). `DelegationBindings` hands the container once to `RiverpodActiveAccountSource`, registered as `ActiveAccountSource`, `ActiveAccountWriter` and `ShownAccountLoadReporter`, the only GetX access to the shown account and to the account switch. Its readers are GetX controllers with no `WidgetRef`, and the dashboard must write each session synchronously before any of them runs, which a delegate mounted by a view cannot guarantee.
 
 ### Existing call sites to migrate
 
@@ -216,7 +216,7 @@ One exception is recorded by [ADR-0114](./0114-delegated-mailbox-access.md). `De
 | `SearchEmailController` | `.read(localSettingsProvider)` | Migrate to `ConsumerWidget` + `ref.watch` |
 | `HandleMobileAutoSaveExtension` | `.read(composerAutoSaveProvider(id).notifier)` + `.invalidate(...)` | Migrate composer to `ConsumerStatefulWidget` |
 | `HandleComposerRestoreOnMobileExtension` | `.read(resolveComposerCacheForRestoreProvider)` | Migrate to `ref.read` within a `ConsumerWidget` |
-| `DelegationBindings` | Container handed to `RiverpodActiveAccountSource` (`.read` / `.listen(activeAccountProvider)`, `.read(accountSwitchProvider)`) | Move each `ActiveAccountReader` to `ref.watch(activeAccountProvider)`, then delete `ActiveAccountSource` and `ActiveAccountWriter` |
+| `DelegationBindings` | Container handed to `RiverpodActiveAccountSource` (`.read` / `.listen` of `activeAccountProvider` and `shownAccountReloadProvider`, `.read(accountSwitchProvider)`, `.read` / `.invalidate(shownAccountLoadTrackerProvider)`) | Move each `ActiveAccountReader` to `ref.watch(activeAccountProvider)`, then delete `ActiveAccountSource`, `ActiveAccountWriter` and `ShownAccountLoadReporter` |
 
 Each migration will be covered by a dedicated ADR and eliminates one `appProviderContainer` call site. When all of them are gone:
 
