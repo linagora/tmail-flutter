@@ -22,6 +22,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/quotas/data_types.dart';
 import 'package:jmap_dart_client/jmap/quotas/quota.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -1422,6 +1423,93 @@ void main() {
           WidgetFixtures.resetResponsive(tester);
         },
       );
+
+      for (final isWebDesktop in [true, false]) {
+        final layout = isWebDesktop ? 'web desktop' : 'drawer';
+        final style = isWebDesktop
+            ? LinagoraSidebarStyle.light()
+            : LinagoraSidebarStyle.light().copyWith(
+                section: LinagoraSidebarSectionStyleOverride.drawer,
+              );
+
+        testWidgets(
+          'GIVEN the $layout sidebar with labels available '
+          'WHEN the section headers are built '
+          'THEN their actions use the $layout symbols, gap and tap target',
+          (tester) async {
+            // Arrange
+            arrangeSidebarMenu();
+            when(responsiveUtils.isWebDesktop(any)).thenReturn(isWebDesktop);
+            mailboxDashboardController.sessionCurrent = createPremiumSession();
+            mailboxDashboardController.accountId.value =
+                AccountFixtures.aliceAccountId;
+            when(labelController.isLabelSettingEnabled)
+                .thenReturn(RxBool(true));
+            when(labelController.isLabelCapabilitySupported(any, any))
+                .thenReturn(true);
+            when(labelController.labelListExpandMode)
+                .thenReturn(Rx(ExpandMode.EXPAND));
+            when(labelController.labelAppBarKey).thenReturn(GlobalKey());
+
+            // Act
+            addTearDown(() => WidgetFixtures.resetResponsive(tester));
+            await WidgetFixtures.pumpResponsiveWidget(
+              tester,
+              WidgetFixtures.makeTestableWidget(child: MailboxView()),
+              logicalSize: const Size(1920, 1080),
+            );
+
+            // Assert
+            Finder within(String key, Type type) => find.descendant(
+                  of: find.byKey(Key(key)),
+                  matching: find.byType(type),
+                );
+            final search = tester.getRect(
+              within(UiKeys.mailboxSearchButton, SvgPicture),
+            );
+            final add = tester.getRect(
+              within(UiKeys.addNewFolderButton, SvgPicture),
+            );
+            void expectSquare(Size size, double side) {
+              expect(size.width, closeTo(side, 0.01));
+              expect(size.height, closeTo(side, 0.01));
+            }
+
+            expectSquare(search.size, style.sectionHeaderActionIconSize);
+            expectSquare(add.size, style.sectionHeaderActionIconSize);
+            expect(
+              add.left - search.right,
+              closeTo(style.sectionHeaderActionSpacing, 0.01),
+            );
+            for (final key in [
+              UiKeys.mailboxSearchButton,
+              UiKeys.addNewFolderButton,
+              UiKeys.addNewLabelButton,
+            ]) {
+              expectSquare(
+                tester.getSize(within(key, InkResponse)),
+                style.sectionHeaderActionTargetSize,
+              );
+            }
+            expect(
+              tester
+                  .widgetList<SvgPicture>(find.byType(SvgPicture))
+                  .map((svg) => svg.bytesLoader)
+                  .whereType<SvgAssetLoader>()
+                  .where(
+                    (loader) =>
+                        loader.packageName == LinagoraDesignImages.packageName,
+                  )
+                  .map((loader) => loader.assetName),
+              [
+                LinagoraDesignImages.sidebarSearchIcon,
+                LinagoraDesignImages.sidebarAddIcon,
+                LinagoraDesignImages.sidebarAddIcon,
+              ],
+            );
+          },
+        );
+      }
 
       testWidgets(
         'GIVEN personal folders are collapsed '
