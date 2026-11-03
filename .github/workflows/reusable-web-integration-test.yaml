@@ -32,6 +32,9 @@ jobs:
           channel: "stable"
           cache: true
 
+      - name: Test CI scripts
+        run: python3 -m unittest discover -s scripts -p 'test_*.py'
+
       - name: Run prebuild
         run: ./scripts/prebuild.sh
 
