@@ -15,9 +15,13 @@ class GetMailboxesNotPutNotificationsInteractor {
     try {
       yield Right<Failure, Success>(GetMailboxesNotPutNotificationsLoading());
       final mailboxes = await _fcmRepository.getExcludedMailboxesForNotification(session, accountId);
-      yield Right<Failure, Success>(GetMailboxesNotPutNotificationsSuccess(mailboxes, session.username));
+      yield Right<Failure, Success>(
+        GetMailboxesNotPutNotificationsSuccess(mailboxes, accountId, session.username),
+      );
     } catch (e) {
-      yield Left<Failure, Success>(GetMailboxesNotPutNotificationsFailure(e, session.username));
+      yield Left<Failure, Success>(
+        GetMailboxesNotPutNotificationsFailure(e, accountId, session.username),
+      );
     }
   }
 }

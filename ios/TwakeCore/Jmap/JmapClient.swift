@@ -23,6 +23,7 @@ class JmapClient {
         tokenEndpointUrl: String?,
         oidcScopes: [String]?,
         isTWP: Bool?,
+        keychainAccountId: String? = nil,
         onComplete: @escaping (NewEmailFetchResult) -> Void
     ) {
         if (authenticationType == AuthenticationType.basic) {
@@ -46,9 +47,10 @@ class JmapClient {
             )
         }
 
+        // Token refresh must write under the personal keychain key, not a delegated accountId.
         authenticationInterceptor = AuthenticationInterceptor(
             authentication: authentication,
-            accountId: accountId,
+            accountId: keychainAccountId ?? accountId,
             tokenRefreshManager: tokenRefreshManager
         )
         

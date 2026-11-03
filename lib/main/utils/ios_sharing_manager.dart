@@ -89,6 +89,8 @@ class IOSSharingManager {
         accountId: personalAccount.accountId!,
         userName: personalAccount.userName!);
 
+      final existingSession = await getKeychainSharingSession(personalAccount.accountId!);
+
       final keychainSharingSession = KeychainSharingSession(
         accountId: personalAccount.accountId!,
         userName: personalAccount.userName!,
@@ -101,6 +103,7 @@ class IOSSharingManager {
         tokenEndpoint: tokenRecords?.tokenEndpoint,
         oidcScopes: tokenRecords?.scopes,
         mailboxIdsBlockNotification: mailboxIdsBlockNotification,
+        delegatedAccounts: existingSession?.delegatedAccounts,
         isTWP: tokenRecords?.isTWP ?? false,
       );
 

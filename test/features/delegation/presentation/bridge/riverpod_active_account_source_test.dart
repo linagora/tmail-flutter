@@ -3,7 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/riverpod_active_account_source.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/account_switch_state.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/switch_attempt.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/shown_account_reload_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/shown_account_load_tracker_provider.dart';
@@ -12,6 +15,15 @@ import '../../../../fixtures/delegation_fixtures.dart';
 
 ShownAccountLoad _loadOf(int attemptId) =>
     ShownAccountLoad(attemptId: attemptId, result: Future.value(const ShownAccountLoaded()));
+
+class _RunningSwitchNotifier extends AccountSwitchNotifier {
+  @override
+  AccountSwitchState build() => AccountSwitching(SwitchAttempt(
+        id: 1,
+        from: DelegationFixtures.aliceAccountId,
+        to: DelegationFixtures.bobAccountId,
+      ));
+}
 
 void main() {
   late ProviderContainer container;
@@ -54,6 +66,19 @@ void main() {
 
       expect(source.accountId, DelegationFixtures.bobAccountId);
       expect(source.activeAccount!.isDelegated, isTrue);
+    });
+
+    test('is not switching outside a switch', () {
+      expect(source.isSwitching, isFalse);
+    });
+
+    test('is switching while a switch runs', () {
+      final switchingContainer = ProviderContainer(
+        overrides: [accountSwitchProvider.overrideWith(_RunningSwitchNotifier.new)],
+      );
+      addTearDown(switchingContainer.dispose);
+
+      expect(RiverpodActiveAccountSource(switchingContainer).isSwitching, isTrue);
     });
 
     test('clear forgets the shown account', () {

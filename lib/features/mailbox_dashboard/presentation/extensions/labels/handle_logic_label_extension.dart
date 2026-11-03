@@ -35,7 +35,7 @@ extension HandleLogicLabelExtension on MailboxDashBoardController  {
     final isLabelAvailable = isEnabled && isLabelCapabilitySupported;
     injectWebSocket(
       session: sessionCurrent,
-      accountId: accountId.value,
+      personalAccountId: accountId.value,
       isLabelAvailable: isLabelAvailable,
     );
   }

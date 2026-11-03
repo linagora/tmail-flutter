@@ -10,4 +10,10 @@ protocol KeychainControllerDelegate: AnyObject {
     func retrieveSharingSessions() -> [KeychainCredentials]
     @discardableResult
     func updateEmailDeliveryStateToKeychain(accountId: String, newEmailDeliveryState: String) -> Bool
+    @discardableResult
+    func updateDelegatedAccountEmailDeliveryStateToKeychain(
+        personalAccountId: String,
+        delegatedAccountId: String,
+        newEmailDeliveryState: String
+    ) -> Bool
 }
