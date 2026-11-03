@@ -139,6 +139,7 @@ node scripts/ci-web-dev-server-keeper.js "http://localhost:3000" "$ROOT_DIR" "$W
 KEEPER_PID=$!
 
 # Full output goes to $PATROL_LOG (archived as patrol-console.log.gz); the console drops repetitive lines (scripts/ci-console-filter.pl) and ends with what it dropped.
+# The timestamped log is written by a pipeline stage, so it is complete before cleanup gzips it.
 timing "patrol tests started"
 # Allow page setup time so the Dart timeout can report first.
 patrol test -v \
@@ -162,7 +163,9 @@ patrol test -v \
     --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \
     --dart-define=BASIC_AUTH_EMAIL="$BOB@$DOMAIN" \
     --dart-define=BASIC_AUTH_URL="$BASIC_AUTH_URL" \
-    --dart-define=RESET_SERVER_URL="http://localhost:$RESET_PORT" 2>&1 | tee >(perl -MPOSIX -pe 'BEGIN { $| = 1 } $_ = strftime("%T ", localtime) . $_' > "$PATROL_LOG") | perl scripts/ci-console-filter.pl "ci-logs/patrol-console.log.gz"
+    --dart-define=RESET_SERVER_URL="http://localhost:$RESET_PORT" 2>&1 \
+    | perl -MPOSIX -ne 'BEGIN { open(LOG, ">", shift) or die "$!\n"; select((select(LOG), $| = 1)[0]); $| = 1 } print LOG strftime("%T ", localtime), $_; print' "$PATROL_LOG" \
+    | perl scripts/ci-console-filter.pl "ci-logs/patrol-console.log.gz"
 TEST_EXIT_CODE=${PIPESTATUS[0]}
 timing "patrol tests finished (exit $TEST_EXIT_CODE)"
 
