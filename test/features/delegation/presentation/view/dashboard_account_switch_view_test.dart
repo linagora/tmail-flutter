@@ -31,9 +31,13 @@ class _FakeDashboard implements AccountSwitchDashboard {
   bool hasOpenComposer = false;
 
   int resetCount = 0;
+  int labelReloadCount = 0;
 
   @override
   void resetForNewAccount() => resetCount++;
+
+  @override
+  void reloadLabelSettingForShownAccount() => labelReloadCount++;
 }
 
 ShownAccountLoad _loadedIn(int attemptId) =>
@@ -166,6 +170,14 @@ void main() {
 
       expect(reloadRequests, isEmpty);
       expect(tracker.hasFoldersLoad(2), isTrue);
+    });
+
+    test('a switch to another account reloads the label setting once', () async {
+      container.read(shownAccountLoadTrackerProvider).reportFolders(_loadedIn(2));
+
+      await view.loadAccount(account, 2);
+
+      expect(dashboard.labelReloadCount, 1);
     });
 
     test('loading an account nothing loads yet in the attempt asks for a reload', () {

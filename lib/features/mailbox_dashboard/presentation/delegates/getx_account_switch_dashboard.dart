@@ -29,4 +29,7 @@ class GetXAccountSwitchDashboard implements AccountSwitchDashboard {
     _dashboard.setSelectedMailbox(null);
     _dashboard.dispatchRoute(DashboardRoutes.thread);
   }
+
+  @override
+  void reloadLabelSettingForShownAccount() => _dashboard.reloadLabelSettingForShownAccount();
 }
