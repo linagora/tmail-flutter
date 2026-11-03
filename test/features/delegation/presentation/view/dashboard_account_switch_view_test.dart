@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/base/model/popup_menu_item_action.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_action_group_widget.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_submenu_controller.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/riverpod_active_account_source.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/account_switch_result.dart';
@@ -15,6 +18,13 @@ import 'package:tmail_ui_user/features/delegation/presentation/view/dashboard_ac
 import 'package:tmail_ui_user/features/delegation/presentation/view/shown_mailbox_selection.dart';
 
 import '../../../../fixtures/delegation_fixtures.dart';
+
+class _MenuAction extends PopupMenuItemAction<String> {
+  _MenuAction(super.action);
+
+  @override
+  String get actionName => action;
+}
 
 class _FakeSelection implements ShownMailboxSelection {
   @override
@@ -107,6 +117,29 @@ void main() {
         expect(find.text('login', skipOffstage: false), findsOneWidget);
       });
     }
+
+    testWidgets('blockInput closes the submenu of an open menu, which sits on the overlay and not on a route',
+        (tester) async {
+      await tester.pumpWidget(MaterialApp(navigatorKey: navigatorKey, home: const Text('dashboard')));
+      final context = tester.element(find.text('dashboard'));
+      final submenuController = PopupSubmenuController();
+      unawaited(PopupMenuActionGroupWidget(
+        actions: [_MenuAction('Label as')],
+        onActionSelected: (_) {},
+        submenuController: submenuController,
+      ).show(context, RelativeRect.fill));
+      await tester.pumpAndSettle();
+      submenuController.show(context: context, anchor: Rect.zero, submenu: const Text('labels of the old account'));
+      await tester.pump();
+      expect(find.text('labels of the old account'), findsOneWidget);
+
+      view.blockInput();
+      await tester.pumpAndSettle();
+
+      expect(find.text('Label as'), findsNothing);
+      expect(find.text('labels of the old account'), findsNothing);
+      expect(submenuController.isShowing, isFalse);
+    });
 
     test('unblockInput lets taps through again', () {
       view.blockInput();
