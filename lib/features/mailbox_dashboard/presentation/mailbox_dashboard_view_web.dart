@@ -68,6 +68,7 @@ import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filte
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/shown_account_input_blocker.dart';
 
 class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
@@ -376,7 +377,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     );
     return MailboxDashboardProviderListenerWidget(
       delegateFactories: mailboxDashboardProviderListenerDelegateFactories,
-      child: child,
+      child: ShownAccountInputBlocker(child: child),
     );
   }
 

@@ -2,6 +2,8 @@
 
 Date: 2026-10-20
 Updated: 2026-10-28
+Updated: 2026-10-29
+Updated: 2026-11-02
 
 ## Status
 
@@ -33,6 +35,7 @@ delegation on = session has urn:apache:james:params:jmap:delegation
              && Preferences › "Delegation" is on   // local, off by default, hidden behind the 7-tap experimental reveal like Drive was
 ```
 
+- One rule, one provider: `delegationEnabledProvider` exposes that conjunction. `ActiveAccountNotifier.canSelect` reads it for a delegated target (`mine` stays selectable). Start (T-02.6), notification taps, intents and the switcher entry points call `canSelect` / `switchTo` only — no second `if` of their own.
 - Delegation off or no delegated account: `active` = `mine` and there is no switcher, so the app works as today, apart from the cleanup of ended delegations and my aliases counting as "me". Turning the toggle off while a delegated mailbox is shown runs the normal switch back to `mine`. While a composer is open that switch is refused with a toast and the toggle stays on. Once stable, a later ticket turns the toggle on by default and removes it from the reveal.
 - One mailbox is shown at a time. A delegated mailbox is never merged into my folder tree. A web reload and a mobile app restart keep the shown account (see Start on a delegated account). A sign-in still lands on `mine`, as it lands on a plain `/dashboard` today.
 - An owner is shown by name and address when a name is known, otherwise by address only. The session gives only the address, so v1 shows the address.
@@ -103,9 +106,9 @@ A test lists the remaining readers of `dashboard.accountId` and of the "me" sour
 ### Switching
 
 1. Refused while a composer is open or another switch runs. The switcher stays disabled until the switch ends.
-2. Input is blocked, so no action on the old list goes out with the new account. The current selection and search are saved, and `active` is set to the target.
+2. Input is blocked and every open dialog, sheet, menu and page above the dashboard closes, such as the destination picker, so no action on the old list goes out with the new account. The selected folder, the opened email and the search are cleared, so the target opens on its Inbox, and `active` is set to the target.
 3. Folders and the first page of emails load from cache first, then `/changes`. Identities load from the server. A modal loading dialog appears after 300 ms, stays at least 500 ms and offers Cancel (no design yet).
-4. The switch ends on success, failure, cancel or a 30 s timeout, and the dialog closes. On failure, cancel or timeout `active` goes back to the previous account with its selection and search, and a toast says "Couldn't open [Owner]'s mailbox". The previous account then runs `/changes` from its loaded state, which picks up what arrived during the switch.
+4. The switch ends on success, failure, cancel or a 30 s timeout, and the dialog closes. On failure, cancel or timeout `active` goes back to the previous account, opened on its Inbox, and a toast says "Couldn't open [Owner]'s mailbox". The previous account then runs `/changes` from its loaded state, which picks up what arrived during the switch. Its folder and search are not restored (see the optional T-20 below).
 
 - A switch to `mine` (toggle off, revocation, notification tap of `mine`, intent) never rolls back to a delegated account. On failure, cancel or timeout `mine` is shown from cache with the error toast, and a pending tap or intent is dropped.
 - The switch state is `Idle(lastAttemptId)` or `Switching(attempt)`, where `SwitchAttempt(id, from, to)` is one try to change the shown account. Going back after a failure, cancel or timeout is a new attempt too. Every view result (load more, search, opened email, refresh) is stamped with the id of the attempt it was requested in, or of the last one when no switch runs. One check where view results are consumed drops a result whose attempt is no longer current, so a cancelled or timed-out switch never paints stale data into a later one, even to the same account.
@@ -132,23 +135,26 @@ A test lists the remaining readers of `dashboard.accountId` and of the "me" sour
 |---|---|---|
 | DS-1..4 | Design system: person row + group, switcher chip + menu, stacked avatars + "Viewing ✕" chip, empty-state card. The switcher takes generic groups of items (id, name, address, avatar): my mailbox, delegated to me, and later team mailboxes | — |
 | T-01 | `ActiveAccount` and the switch flow, no UI | — |
-| T-02 | Classify every reader and every "me" source onto `ActiveAccount` or `mine`, view capabilities, stale view results, Settings quota, Settings entries hidden on a delegated account, composer, URL with `account`, the start on a delegated account (web URL, mobile last shown account), notification tap and intents. One test per reader and per Settings entry, plus the test on new readers of `dashboard.accountId` and of the "me" sources | T-01 |
+| T-02.1–2.5 | Classify every reader and every "me" source onto `ActiveAccount` or `mine`, view capabilities, stale view results, Settings quota, Settings entries hidden on a delegated account, composer and "me". One test per reader and per Settings entry, plus the test on new readers of `dashboard.accountId` and of the "me" sources | T-01 |
 | T-03 | Realtime and FCM filter per account with delegated entries dropped, `delegatedAccounts` in the keychain entry of `mine` read by the iOS notification extension, per-account debounce (WebSocket, FCM background, email change listener) and "from cache" flag on the session result | T-01 |
 | T-04 | Local data: no delegated bodies, cleanup of ended delegations, composer snapshots | T-01, T-03 |
 | T-05 | Loading dialog | T-01 |
-| T-06 | Experimental "Delegation" toggle in Preferences, with the session re-read and revocation it turns on | T-01, T-03, T-04 |
-| T-07 | Web Workplace switcher chip (#4977 §8) | T-02, T-03, T-04, T-05, T-06, DS-2 |
-| T-08 | Web stand-alone avatar menu + "Viewing [Owner] ✕" banner (#4977 §9) | T-02, T-03, T-04, T-05, T-06, DS-3 |
-| T-09 | Mobile app, tablet, mobile web (Figma mobile), notifications of delegated accounts (kept by the filter when delegation is on, notification baseline, `delegatedAccounts` items in the iOS keychain, `accountId` in the payload) and their tap | T-02, T-03, T-04, T-05, T-06, DS-1, DS-3 |
+| T-06 | Experimental "Delegation" toggle in Preferences; `delegationEnabledProvider` (capability ∧ toggle); `canSelect` reads it for delegated targets; session re-read and revocation it turns on | T-01, T-03, T-04 |
+| T-02.6 | Start on a delegated account (web URL `account=`, mobile last shown account). Goes through `canSelect` / `switchTo` only | T-02.1–2.5, T-06 |
+| T-07 | Web Workplace switcher chip (#4977 §8) | T-02.1–2.6, T-03, T-04, T-05, T-06, DS-2 |
+| T-08 | Web stand-alone avatar menu + "Viewing [Owner] ✕" banner (#4977 §9) | T-02.1–2.6, T-03, T-04, T-05, T-06, DS-3 |
+| T-09 | Mobile app, tablet, mobile web (Figma mobile), notifications of delegated accounts (kept by the filter when delegation is on, notification baseline, `delegatedAccounts` items in the iOS keychain, `accountId` in the payload) and their tap | T-02.1–2.6, T-03, T-04, T-05, T-06, DS-1, DS-3 |
 | T-10 | `DelegatedAccount/get\|set` extension + data layer | — |
 | T-11 | Settings › Delegation: "Delegated to me" + "Remove your access". `/settings?type=delegation` opens Settings › Delegation when the entry is shown, otherwise the default settings page with no delegation controls and no request | T-06, T-10, DS-1, DS-4 |
 | T-12 | E2E scenarios, with each release | — |
 
-Ticket ids follow the implementation order. T-01 to T-04 run on `mine` as soon as they merge, with no change of behaviour apart from my aliases counting as "me" (T-02). The switch flow of T-01 is reached only from the entry points. The toggle (T-06) merges with its first reader, the session re-read, right before the entry points. The entry points (T-07, T-08, T-09) merge last, after T-02: without T-02, a switch would mix the two accounts in the composer, in "me" and in the quota shown in Settings. The toggle keeps them hidden from users while testers can turn them on.
+Optional, not part of this plan: **T-20** brings back the folder and search of the previous account after a failed, cancelled or timed-out switch. It is discussed before anyone decides to build it.
+
+Ticket ids follow the implementation order. T-01 to T-04 run on `mine` as soon as they merge, with no change of behaviour apart from my aliases counting as "me" (T-02.1–2.5). The switch flow of T-01 is reached only from the entry points. T-06 lands `delegationEnabledProvider` and wires `canSelect` before any path that can leave `mine` without a switcher (T-02.6) or show the switcher (T-07, T-08, T-09). The entry points merge last, after T-02.1–2.5: without those readers, a switch would mix the two accounts in the composer, in "me" and in the quota shown in Settings. The toggle keeps them hidden from users while testers can turn them on.
 
 ```mermaid
 flowchart LR
-  S1["1. No visible change apart from aliases as me<br/>T-01, T-02, T-03, T-04, DS-1"] --> S2["2. Web release<br/>T-05, T-06, T-07, T-08, DS-2, DS-3"] --> S3["3. Mobile release<br/>T-09"]
+  S1["1. No visible change apart from aliases as me<br/>T-01, T-02.1–2.5, T-03, T-04, DS-1"] --> S2["2. Web release<br/>T-05, T-06, T-02.6, T-07, T-08, DS-2, DS-3"] --> S3["3. Mobile release<br/>T-09"]
   S1 --> S4["Later, not blocking<br/>T-10, T-11, DS-4"]
 ```
 
