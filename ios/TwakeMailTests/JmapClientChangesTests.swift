@@ -109,5 +109,148 @@ final class JmapClientChangesTests: XCTestCase {
             ),
             .write("s5")
         )
+        XCTAssertEqual(
+            DeliveryBookmarkUpdate.resolve(
+                failed: false,
+                hasMoreChanges: true,
+                payloadState: "payload",
+                latestState: nil
+            ),
+            .keep
+        )
+        XCTAssertEqual(
+            DeliveryBookmarkUpdate.resolve(
+                failed: false,
+                hasMoreChanges: true,
+                payloadState: "payload",
+                latestState: ""
+            ),
+            .keep
+        )
+    }
+
+    func testEmptyPayloadStateKeepsBookmark() {
+        XCTAssertEqual(
+            DeliveryBookmarkUpdate.resolve(
+                failed: false,
+                hasMoreChanges: false,
+                payloadState: "",
+                latestState: "s2"
+            ),
+            .keep
+        )
+    }
+
+    func testMissingEmailChangesReturnsNilPage() throws {
+        let response = try decode("""
+        {
+          "sessionState": "session",
+          "methodResponses": [
+            ["Email/get", {"accountId": "acc", "state": "s1", "list": []}, "c1"]
+          ]
+        }
+        """)
+        XCTAssertNil(response.emailChangesPage())
+    }
+
+    func testEmailChangesWithoutStateFieldsReturnsNilPage() throws {
+        let response = try decode("""
+        {
+          "sessionState": "session",
+          "methodResponses": [
+            ["Email/changes", {"accountId": "acc", "oldState": "s0", "created": []}, "c0"],
+            ["Email/get", {"accountId": "acc", "state": "s1", "list": []}, "c1"]
+          ]
+        }
+        """)
+        XCTAssertNil(response.emailChangesPage())
+    }
+
+    func testEmptyNewStateReturnsNilPage() throws {
+        let response = try decode("""
+        {
+          "sessionState": "session",
+          "methodResponses": [
+            ["Email/changes", {
+              "accountId": "acc",
+              "oldState": "s0",
+              "newState": "",
+              "hasMoreChanges": false,
+              "created": []
+            }, "c0"],
+            ["Email/get", {"accountId": "acc", "state": "s1", "list": []}, "c1"]
+          ]
+        }
+        """)
+        XCTAssertNil(response.emailChangesPage())
+    }
+
+    func testMissingEmailGetReturnsNilPage() throws {
+        let response = try decode("""
+        {
+          "sessionState": "session",
+          "methodResponses": [
+            ["Email/changes", {
+              "accountId": "acc",
+              "oldState": "s0",
+              "newState": "s1",
+              "hasMoreChanges": false,
+              "created": []
+            }, "c0"]
+          ]
+        }
+        """)
+        XCTAssertNil(response.emailChangesPage())
+    }
+
+    func testParsesNonEmptyEmailGetList() throws {
+        let response = try decode("""
+        {
+          "sessionState": "session",
+          "methodResponses": [
+            ["Email/changes", {
+              "accountId": "acc",
+              "oldState": "s0",
+              "newState": "s1",
+              "hasMoreChanges": false,
+              "created": ["e1"]
+            }, "c0"],
+            ["Email/get", {
+              "accountId": "acc",
+              "state": "s1",
+              "list": [{"id": "e1", "subject": "Hi"}]
+            }, "c1"]
+          ]
+        }
+        """)
+        let page = try XCTUnwrap(response.emailChangesPage())
+        XCTAssertEqual(page.emails.map(\.id), ["e1"])
+        XCTAssertEqual(page.newState, "s1")
+        XCTAssertFalse(page.hasMoreChanges)
+    }
+
+    func testEmptySinceStateDoesNotFetch() {
+        let walker = EmailChangesWalker(sinceState: "")
+        XCTAssertFalse(walker.shouldFetch)
+        XCTAssertEqual(walker.pagesFetched, 0)
+        XCTAssertNil(walker.latestState)
+    }
+
+    func testFailStopsFetchingAndKeepsPartialEmails() {
+        var walker = EmailChangesWalker(sinceState: "s0")
+        walker.beginPage()
+        let email = Email(id: "e1", subject: "Hi", preview: nil, from: nil, receivedAt: nil, mailboxIds: nil)
+        XCTAssertTrue(walker.apply(EmailChangesPage(emails: [email], hasMoreChanges: true, newState: "s1")))
+        XCTAssertTrue(walker.shouldFetch)
+        walker.fail()
+        XCTAssertTrue(walker.failed)
+        XCTAssertFalse(walker.shouldFetch)
+        XCTAssertFalse(walker.hasMoreChanges)
+        XCTAssertEqual(walker.emails.map(\.id), ["e1"])
+        XCTAssertEqual(walker.latestState, "s1")
+    }
+
+    private func decode(_ json: String) throws -> JmapResponseObject<Email> {
+        try JSONDecoder().decode(JmapResponseObject<Email>.self, from: Data(json.utf8))
     }
 }

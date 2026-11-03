@@ -72,6 +72,7 @@ enum DeliveryBookmarkUpdate: Equatable {
             guard let latestState, !latestState.isEmpty else { return .keep }
             return .write(latestState)
         }
+        guard !payloadState.isEmpty else { return .keep }
         return .write(payloadState)
     }
 }
@@ -84,14 +85,20 @@ extension JmapResponseObject where T == Email {
         ) else {
             return nil
         }
-        let changes = parsing(
+        // An incomplete Email/changes must fail the page so the bookmark is kept.
+        guard let changes = parsing(
             methodName: JmapConstants.EMAIL_CHANGES_METHOD_NAME,
             methodCallId: "c0"
-        )
+        ),
+        let hasMoreChanges = changes.hasMoreChanges,
+        let newState = changes.newState,
+        !newState.isEmpty else {
+            return nil
+        }
         return EmailChangesPage(
             emails: emailGet.list ?? [],
-            hasMoreChanges: changes?.hasMoreChanges ?? false,
-            newState: changes?.newState
+            hasMoreChanges: hasMoreChanges,
+            newState: newState
         )
     }
 }
