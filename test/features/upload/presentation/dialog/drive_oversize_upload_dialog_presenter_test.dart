@@ -83,7 +83,7 @@ void main() {
       final appLocalizations = AppLocalizations.of(tester.element(_dialogView));
       expect(
         tester.getSemantics(find.byType(LinagoraFileTransferSurface)),
-        containsSemantics(
+        isSemantics(
           label: appLocalizations.attachingFileTitle,
           scopesRoute: true,
           namesRoute: true,
