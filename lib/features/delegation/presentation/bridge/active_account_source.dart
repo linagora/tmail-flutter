@@ -15,6 +15,8 @@ abstract interface class ActiveAccountSource {
 
   int get currentSwitchAttemptId;
 
+  bool get isSwitching;
+
   /// Calls [onShown] with the shown account at once, then each time another account is shown, never
   /// on a session re-read of the same account.
   CancelShownAccountWatch watchShown(OnShownAccount onShown);

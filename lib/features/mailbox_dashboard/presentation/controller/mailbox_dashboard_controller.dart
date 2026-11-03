@@ -985,8 +985,7 @@ class MailboxDashBoardController extends ReloadableController
     if (isLabelCapabilitySupported && activeAccountId != null) {
       labelController.checkLabelSettingState(session, activeAccountId!);
     } else {
-      // Connection stays on mine until T-03 renames the parameter.
-      injectWebSocket(session: session, accountId: currentAccountId);
+      injectWebSocket(session: session, personalAccountId: currentAccountId);
     }
   }
 

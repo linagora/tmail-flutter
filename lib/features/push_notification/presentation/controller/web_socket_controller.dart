@@ -20,18 +20,38 @@ import 'package:tmail_ui_user/features/push_notification/data/model/web_socket_e
 import 'package:tmail_ui_user/features/push_notification/data/model/web_socket_push_enable_request.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/web_socket_push_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/connect_web_socket_interactor.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/push_base_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/extensions/state_change_extension.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/extensions/state_change_merge_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/label_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/mailbox_change_listener.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/model/state_change_account_filter.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/model/state_change_action_roles.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class WebSocketController extends PushBaseController {
-  WebSocketController._internal();
+  final EmailChangeListener _emailChangeListener;
+  final MailboxChangeListener _mailboxChangeListener;
+  final LabelChangeListener _labelChangeListener;
+
+  WebSocketController._internal()
+      : _emailChangeListener = EmailChangeListener.instance,
+        _mailboxChangeListener = MailboxChangeListener.instance,
+        _labelChangeListener = LabelChangeListener.instance;
+
+  @visibleForTesting
+  WebSocketController.forTesting({
+    required EmailChangeListener emailChangeListener,
+    required MailboxChangeListener mailboxChangeListener,
+    required LabelChangeListener labelChangeListener,
+  })  : _emailChangeListener = emailChangeListener,
+        _mailboxChangeListener = mailboxChangeListener,
+        _labelChangeListener = labelChangeListener;
 
   static final WebSocketController _instance = WebSocketController._internal();
 
@@ -59,6 +79,31 @@ class WebSocketController extends PushBaseController {
   StreamSubscription? _webSocketSubscription;
   AppLifecycleListener? _appLifecycleListener;
   Debouncer<StateChange?>? _stateChangeDebouncer;
+  StateChange? _pendingStateChange;
+
+  AccountId? get personalAccountId => accountId;
+
+  /// Starts the 2 s debouncer if needed, then merges [stateChange] like the socket listen path.
+  @visibleForTesting
+  void receiveStateChangeFrame(
+    StateChange stateChange, {
+    required AccountId personalAccountId,
+    required Session session,
+  }) {
+    if (_stateChangeDebouncer == null) {
+      accountId = personalAccountId;
+      this.session = session;
+      _initStateChangeDeouncerTimer();
+    }
+    _accumulateStateChange(stateChange);
+  }
+
+  void _accumulateStateChange(StateChange stateChange) {
+    _pendingStateChange = _pendingStateChange == null
+        ? stateChange
+        : _pendingStateChange!.mergeWith(stateChange);
+    _stateChangeDebouncer?.value = _pendingStateChange;
+  }
 
   @override
   void handleFailureViewState(Failure failure) {
@@ -85,11 +130,13 @@ class WebSocketController extends PushBaseController {
   @override
   void initialize({
     AccountId? accountId,
+    AccountId? personalAccountId,
     Session? session,
     bool isLabelAvailable = false,
   }) {
-    log('WebSocketController::initialize:AccountId = ${accountId?.asString}, isLabelAvailable = $isLabelAvailable');
-    super.initialize(accountId: accountId, session: session);
+    final boundPersonalAccountId = personalAccountId ?? accountId;
+    log('WebSocketController::initialize:personalAccountId = ${boundPersonalAccountId?.asString}, isLabelAvailable = $isLabelAvailable');
+    super.initialize(accountId: boundPersonalAccountId, session: session);
     _isLabelAvailable = isLabelAvailable;
     _connectWebSocket();
     _listenToAppLifeCycle();
@@ -174,6 +221,7 @@ class WebSocketController extends PushBaseController {
     _webSocketChannel = null;
     _webSocketPingTimer?.cancel();
     _stateChangeDebouncer?.cancel();
+    _pendingStateChange = null;
   }
 
   void _handleWebSocketConnectionSuccess(WebSocketConnectionSuccess success) {
@@ -227,8 +275,7 @@ class WebSocketController extends PushBaseController {
         }
 
         try {
-          final stateChange = StateChange.fromJson(data);
-          _stateChangeDebouncer?.value = stateChange;
+          _accumulateStateChange(StateChange.fromJson(data));
         } catch (e) {
           logWarning('WebSocketController::_listenToWebSocket(): Data is not StateChange');
         }
@@ -258,21 +305,40 @@ class WebSocketController extends PushBaseController {
   void _handleStateChange(StateChange? stateChange) {
     try {
       log('WebSocketController::_handleStateChange:stateChange = $stateChange');
-      if (stateChange == null || accountId == null || session == null) return;
+      _pendingStateChange = null;
+      if (stateChange == null || personalAccountId == null || session == null) return;
 
-      final mapTypeState = stateChange.getMapTypeState(accountId!);
-      mappingTypeStateToAction(
-        mapTypeState,
-        accountId!,
-        emailChangeListener: EmailChangeListener.instance,
-        mailboxChangeListener: MailboxChangeListener.instance,
-        labelChangeListener: LabelChangeListener.instance,
-        session!.username,
-        session: session,
-      );
+      final filter = _accountFilter();
+      for (final accountId in filter.accountsToProcess(stateChange)) {
+        final mapTypeState = stateChange.getMapTypeState(accountId);
+        if (mapTypeState.isEmpty) continue;
+        mappingTypeStateToAction(
+          mapTypeState,
+          accountId,
+          emailChangeListener: _emailChangeListener,
+          mailboxChangeListener: _mailboxChangeListener,
+          labelChangeListener: _labelChangeListener,
+          session!.username,
+          session: session,
+          roles: StateChangeActionRoles(
+            refreshView: filter.shouldRefreshView(accountId),
+            storeOfflineBodies: filter.shouldStoreOfflineBodies(accountId),
+            updateDeliveryAndNotifications: filter.shouldKeepDelivery(accountId),
+          ),
+        );
+      }
     } catch (e) {
       logWarning('WebSocketController::_handleStateChange:Exception = $e');
     }
+  }
+
+  StateChangeAccountFilter _accountFilter() {
+    final source = getBinding<ActiveAccountSource>();
+    return StateChangeAccountFilter(
+      personalAccountId: personalAccountId!,
+      activeAccountId: source?.accountId ?? personalAccountId,
+      isSwitching: source?.isSwitching ?? false,
+    );
   }
 
   void _monitorNetwork() {

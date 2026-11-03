@@ -16,9 +16,17 @@ class GetStoredEmailDeliveryStateInteractor {
     try {
       yield Right<Failure, Success>(GetStoredEmailDeliveryStateLoading());
       final storedState = await _fcmRepository.getStateToRefresh(accountId, userName, TypeName.emailDelivery);
-      yield Right<Failure, Success>(GetStoredEmailDeliveryStateSuccess(storedState));
+      yield Right<Failure, Success>(GetStoredEmailDeliveryStateSuccess(
+        storedState,
+        accountId,
+        userName,
+      ));
     } catch (e) {
-      yield Left<Failure, Success>(GetStoredEmailDeliveryStateFailure(e));
+      yield Left<Failure, Success>(GetStoredEmailDeliveryStateFailure(
+        e,
+        accountId: accountId,
+        userName: userName,
+      ));
     }
   }
 }

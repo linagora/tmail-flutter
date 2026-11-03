@@ -14,6 +14,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/action/pus
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/label_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/mailbox_change_listener.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/model/state_change_action_roles.dart';
 
 abstract class PushBaseController {
   Session? session;
@@ -51,6 +52,7 @@ abstract class PushBaseController {
     UserName userName, {
     bool isForeground = true,
     Session? session,
+    StateChangeActionRoles roles = StateChangeActionRoles.all,
     required EmailChangeListener emailChangeListener,
     required MailboxChangeListener mailboxChangeListener,
     required LabelChangeListener labelChangeListener,
@@ -62,7 +64,15 @@ abstract class PushBaseController {
 
     final listEmailActions = listTypeName
       .where((typeName) => typeName == TypeName.emailType || typeName == TypeName.emailDelivery)
-      .map((typeName) => _toPushNotificationAction(typeName, accountId, userName, mapTypeState, isForeground, session: session))
+      .map((typeName) => _toPushNotificationAction(
+            typeName,
+            accountId,
+            userName,
+            mapTypeState,
+            isForeground,
+            session: session,
+            roles: roles,
+          ))
       .nonNulls
       .toList();
 
@@ -72,32 +82,34 @@ abstract class PushBaseController {
        emailChangeListener.dispatchActions(listEmailActions);
     }
 
-    final listMailboxActions = listTypeName
-      .where((typeName) => typeName == TypeName.mailboxType)
-      .map((typeName) => _toPushNotificationAction(typeName, accountId, userName, mapTypeState, isForeground))
-      .nonNulls
-      .toList();
-
-    log('PushBaseController::mappingTypeStateToAction():listMailboxActions: $listMailboxActions');
-
-    if (listMailboxActions.isNotEmpty) {
-      mailboxChangeListener.dispatchActions(listMailboxActions);
-    }
-
-    final labelActions = listTypeName
-        .where((typeName) => typeName == TypeName.labelType)
-        .map((typeName) => _toPushNotificationAction(
-              typeName,
-              accountId,
-              userName,
-              mapTypeState,
-              isForeground,
-            ))
+    if (roles.refreshView || !isForeground) {
+      final listMailboxActions = listTypeName
+        .where((typeName) => typeName == TypeName.mailboxType)
+        .map((typeName) => _toPushNotificationAction(typeName, accountId, userName, mapTypeState, isForeground))
         .nonNulls
         .toList();
-    log('PushBaseController::mappingTypeStateToAction():LabelActions: $labelActions');
-    if (labelActions.isNotEmpty) {
-      labelChangeListener.dispatchActions(labelActions);
+
+      log('PushBaseController::mappingTypeStateToAction():listMailboxActions: $listMailboxActions');
+
+      if (listMailboxActions.isNotEmpty) {
+        mailboxChangeListener.dispatchActions(listMailboxActions);
+      }
+
+      final labelActions = listTypeName
+          .where((typeName) => typeName == TypeName.labelType)
+          .map((typeName) => _toPushNotificationAction(
+                typeName,
+                accountId,
+                userName,
+                mapTypeState,
+                isForeground,
+              ))
+          .nonNulls
+          .toList();
+      log('PushBaseController::mappingTypeStateToAction():LabelActions: $labelActions');
+      if (labelActions.isNotEmpty) {
+        labelChangeListener.dispatchActions(labelActions);
+      }
     }
   }
 
@@ -106,20 +118,23 @@ abstract class PushBaseController {
     AccountId accountId,
     UserName userName,
     Map<String, dynamic> mapTypeState,
-    isForeground,
-    {Session? session}
-  ) {
+    isForeground, {
+    Session? session,
+    StateChangeActionRoles roles = StateChangeActionRoles.all,
+  }) {
     final newState = jmap.State(mapTypeState[typeName.value]);
+    if (typeName == TypeName.emailType || typeName == TypeName.emailDelivery) {
+      return _toEmailPushAction(
+        typeName,
+        newState,
+        accountId,
+        userName,
+        isForeground,
+        session,
+        roles,
+      );
+    }
     switch (typeName) {
-      case TypeName.emailType:
-        return isForeground
-            ? SynchronizeEmailOnForegroundAction(typeName, newState, accountId, session)
-            : StoreEmailStateToRefreshAction(typeName, newState, accountId, userName, session);
-      case TypeName.emailDelivery:
-        if (!isForeground) {
-          return PushNotificationAction(typeName, newState, session, accountId, userName);
-        }
-        break;
       case TypeName.mailboxType:
         return isForeground
             ? SynchronizeMailboxOnForegroundAction(typeName, newState, accountId)
@@ -133,7 +148,45 @@ abstract class PushBaseController {
                 accountId,
                 userName,
               );
+      default:
+        return null;
     }
-    return null;
+  }
+
+  PushNotificationStateChangeAction? _toEmailPushAction(
+    TypeName typeName,
+    jmap.State newState,
+    AccountId accountId,
+    UserName userName,
+    bool isForeground,
+    Session? session,
+    StateChangeActionRoles roles,
+  ) {
+    if (typeName == TypeName.emailDelivery) {
+      if (!isForeground && roles.updateDeliveryAndNotifications) {
+        return PushNotificationAction(
+          typeName,
+          newState,
+          session,
+          accountId,
+          userName,
+          storeOfflineBodies: roles.storeOfflineBodies,
+        );
+      }
+      return null;
+    }
+    if (!isForeground) {
+      return StoreEmailStateToRefreshAction(typeName, newState, accountId, userName, session);
+    }
+    if (!roles.hasForegroundEmailWork) return null;
+    return SynchronizeEmailOnForegroundAction(
+      typeName,
+      newState,
+      accountId,
+      session,
+      refreshView: roles.refreshView,
+      storeOfflineBodies: roles.storeOfflineBodies,
+      updateDeliveryAndNotifications: roles.updateDeliveryAndNotifications,
+    );
   }
 }

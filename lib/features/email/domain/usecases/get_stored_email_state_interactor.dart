@@ -15,7 +15,11 @@ class GetStoredEmailStateInteractor {
     try {
       final state = await _emailRepository.getEmailState(session, accountId);
       if (state != null) {
-        yield Right<Failure, Success>(GetStoredEmailStateSuccess(state));
+        yield Right<Failure, Success>(GetStoredEmailStateSuccess(
+          state,
+          accountId,
+          session.username,
+        ));
       } else {
         yield Left<Failure, Success>(NotFoundEmailState());
       }

@@ -102,6 +102,9 @@ class FakeActiveAccountSource
   @override
   int currentSwitchAttemptId = 0;
 
+  @override
+  bool isSwitching = false;
+
   FakeActiveAccountSource(this._accountId);
 
   @override
