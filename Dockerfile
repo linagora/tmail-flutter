@@ -3,7 +3,6 @@ ARG FLUTTER_VERSION=3.38.9
 # the digest wins over the tag: update FLUTTER_VERSION and the digest together
 FROM --platform=amd64 ghcr.io/instrumentisto/flutter:${FLUTTER_VERSION}@sha256:7d227ac458bbb5aca38ada779dc0bf983ad24deae8d2ef3ebf5b779915d1547d AS build-env
 
-ARG SENTRY_AUTH_TOKEN
 ARG SENTRY_ORG
 ARG SENTRY_PROJECT
 ARG SENTRY_URL
@@ -20,12 +19,21 @@ ENV GITHUB_SHA=$GITHUB_SHA \
     SENTRY_URL=$SENTRY_URL \
     SENTRY_RELEASE=$SENTRY_RELEASE
 
-RUN ./scripts/prebuild.sh && \
-    SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN:-} ./scripts/configure-sentry.sh && \
+# The Sentry auth token comes in as a BuildKit secret, never a build-arg: build-arg
+# values are recorded in the image provenance attestation pushed to public registries.
+# Release builds set SENTRY_UPLOAD so a missing secret fails instead of caching a skip.
+ARG SENTRY_UPLOAD=
+RUN --mount=type=secret,id=sentry_auth_token \
+    sentry_auth_token="$(cat /run/secrets/sentry_auth_token 2>/dev/null || true)" && \
+    if [ -n "${SENTRY_UPLOAD}" ] && [ -z "$sentry_auth_token" ]; then \
+      echo "SENTRY_UPLOAD is set but the sentry_auth_token secret is empty" >&2; exit 1; \
+    fi && \
+    ./scripts/prebuild.sh && \
+    SENTRY_AUTH_TOKEN="$sentry_auth_token" ./scripts/configure-sentry.sh && \
     flutter build web --release --source-maps --no-web-resources-cdn \
     --dart-define=SENTRY_RELEASE=$SENTRY_RELEASE \
     --dart-define=SENTRY_DIST=$GITHUB_SHA && \
-    SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN:-} ./scripts/run-sentry.sh
+    SENTRY_AUTH_TOKEN="$sentry_auth_token" ./scripts/run-sentry.sh
 
 FROM nginx:alpine@sha256:df221db836e1754089190208cee7eeda94f233197056426eda74a43ab1abeac2
 RUN apk add gzip
