@@ -13,6 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/method_level_exception.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
@@ -50,6 +51,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/clean_and_get_emai
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
@@ -72,6 +74,9 @@ import 'package:tmail_ui_user/features/search/email/presentation/coordinator/sea
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_dispatch_context.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/service/search_execution_observer.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_pull_to_refresh_list_email_extension.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/mail_list_shortcut_action_view_event.dart';
+import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_keyboard_shortcut_actions_extension.dart';
+import 'package:tmail_ui_user/features/base/shortcut/mail/mail_list_action_shortcut_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/auto_load_more_policy.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
@@ -646,6 +651,17 @@ void main() {
         verify(fetchEmailsOf(DelegationFixtures.bobAccountId));
       });
 
+      test('reports the email list it loads with its switch attempt', () async {
+        ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+        final source = Get.find<ActiveAccountSource>() as FakeActiveAccountSource;
+
+        await changeSelectedMailbox();
+
+        final (kind, load) = source.reportedLoads.last;
+        expect(kind, ShownAccountLoadKind.emailList);
+        expect(load.attemptId, source.currentSwitchAttemptId);
+      });
+
       test('the emails of an account shown before never reach the list once another one is shown', () async {
         ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
         final source = Get.find<ActiveAccountSource>() as FakeActiveAccountSource;
@@ -748,6 +764,56 @@ void main() {
         verifyNever(mockMailboxDashBoardController.setSelectedMailbox(any));
         verifyNever(mockMailboxDashBoardController.dispatchRoute(any));
       });
+    });
+
+    group('mail list shortcuts during a switch:', () {
+      late StreamController<MailListShortcutActionViewEvent> shortcutEvents;
+      late List<MailListShortcutActionViewEvent> sentEvents;
+
+      setUp(() {
+        shortcutEvents = StreamController<MailListShortcutActionViewEvent>();
+        sentEvents = [];
+        shortcutEvents.stream.listen(sentEvents.add);
+        threadController.shortcutActionEventController = shortcutEvents;
+        // One read and one unread email, so every shortcut has an action on them.
+        when(mockMailboxDashBoardController.emailsInCurrentMailbox).thenReturn(RxList([
+          PresentationEmail(id: EmailId(Id('email-of-old-account')), selectMode: SelectMode.ACTIVE),
+          PresentationEmail(
+            id: EmailId(Id('read-email-of-old-account')),
+            keywords: {KeyWordIdentifier.emailSeen: true},
+            selectMode: SelectMode.ACTIVE,
+          ),
+        ]));
+      });
+
+      tearDown(() {
+        threadController.shortcutActionEventController = null;
+        shortcutEvents.close();
+      });
+
+      test('acts on the selected emails while a folder is shown', () async {
+        when(mockMailboxDashBoardController.selectedMailbox)
+            .thenReturn(Rxn(PresentationMailbox(MailboxId(Id('inbox-id')))));
+
+        threadController.handleMailListShortcutAction(MailListActionShortcutType.delete);
+        await pumpEventQueue();
+
+        expect(sentEvents.single.listPresentationEmail.map((email) => email.id), [
+          EmailId(Id('email-of-old-account')),
+          EmailId(Id('read-email-of-old-account')),
+        ]);
+      });
+
+      for (final shortcut in MailListActionShortcutType.values) {
+        test('${shortcut.name} does nothing once a switch unselected the folder of the old account', () async {
+          when(mockMailboxDashBoardController.selectedMailbox).thenReturn(Rxn());
+
+          threadController.handleMailListShortcutAction(shortcut);
+          await pumpEventQueue();
+
+          expect(sentEvents, isEmpty);
+        });
+      }
     });
 
     group('email actions in the shown account:', () {

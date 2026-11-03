@@ -11,5 +11,6 @@ class DelegationBindings extends Bindings {
     final source = RiverpodActiveAccountSource(appProviderContainer);
     Get.put<ActiveAccountSource>(source, permanent: true);
     Get.put<ActiveAccountWriter>(source, permanent: true);
+    Get.put<ShownAccountLoadReporter>(source, permanent: true);
   }
 }
