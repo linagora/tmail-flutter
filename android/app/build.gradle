@@ -80,11 +80,16 @@ android {
         debug {
             minifyEnabled false
         }
+        profile {
+            signingConfig signingConfigs.debug
+        }
     }
 
     testOptions {
         execution "ANDROIDX_TEST_ORCHESTRATOR"
     }
+
+    testBuildType System.getenv('ANDROID_TEST_BUILD_TYPE') ?: 'debug'
 
     namespace "com.linagora.android.tmail"
 }
