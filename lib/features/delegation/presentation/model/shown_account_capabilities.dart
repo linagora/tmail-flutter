@@ -8,13 +8,22 @@ class ShownAccountCapabilities with EquatableMixin {
   /// `/settings` has no dashboard, so no shown account, and it starts on my own account.
   final bool canOpenSettings;
 
-  const ShownAccountCapabilities._({required this.canOpenSettings});
+  /// Rule filters write to my own account, so they stay off while a delegated account is shown.
+  final bool canCreateFilter;
+
+  const ShownAccountCapabilities._({
+    required this.canOpenSettings,
+    required this.canCreateFilter,
+  });
 
   factory ShownAccountCapabilities.of(ActiveAccount? shownAccount) {
-    final isDelegatedAccountShown = shownAccount?.isDelegated == true;
-    return ShownAccountCapabilities._(canOpenSettings: !isDelegatedAccountShown);
+    final isDelegated = shownAccount?.isDelegated == true;
+    return ShownAccountCapabilities._(
+      canOpenSettings: !isDelegated,
+      canCreateFilter: !isDelegated,
+    );
   }
 
   @override
-  List<Object?> get props => [canOpenSettings];
+  List<Object?> get props => [canOpenSettings, canCreateFilter];
 }

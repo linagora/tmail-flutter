@@ -556,7 +556,7 @@ class EmailActionReactor with LabelSubMenuMixin, ActiveAccountReader {
           EmailActionType.unSpam
         else
           EmailActionType.moveToSpam,
-      if (!isDelegatedAccountShown && presentationEmail.from?.isNotEmpty == true)
+      if (shownAccountCapabilities.canCreateFilter && presentationEmail.from?.isNotEmpty == true)
         EmailActionType.createRule,
       if (!presentationEmail.isSubscribed && presentationEmail.listUnsubscribe != null)
         EmailActionType.unsubscribe,
@@ -712,7 +712,7 @@ class EmailActionReactor with LabelSubMenuMixin, ActiveAccountReader {
     AccountId accountId,
     OnQuickCreateRuleRequest onQuickCreateRuleRequest,
   ) {
-    if (isDelegatedAccountShown) return null;
+    if (!shownAccountCapabilities.canCreateFilter) return null;
 
     return (emailAddress) => onQuickCreateRuleRequest(
       quickCreateRule(session, accountId, emailAddress: emailAddress),

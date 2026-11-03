@@ -146,49 +146,32 @@ void main() {
     });
   });
 
-  group('isDelegatedAccountShown', () {
-    test('is true while a delegated account is shown', () {
-      ActiveAccountSourceFixtures.put(
-        DelegationFixtures.session(),
-        shownAccountId: DelegationFixtures.bobAccountId,
-      );
-
-      expect(_Reader().isDelegatedAccountShown, isTrue);
-    });
-
-    test('is false while my own account is shown', () {
-      ActiveAccountSourceFixtures.put(DelegationFixtures.session());
-
-      expect(_Reader().isDelegatedAccountShown, isFalse);
-    });
-
-    test('is false while no account is shown yet', () {
-      ActiveAccountSourceFixtures.putEmpty();
-
-      expect(_Reader().isDelegatedAccountShown, isFalse);
-    });
-  });
-
   group('shownAccountCapabilities', () {
-    test('do not open Settings while a delegated account is shown', () {
+    test('do not open Settings or create a filter while a delegated account is shown', () {
       ActiveAccountSourceFixtures.put(
         DelegationFixtures.session(),
         shownAccountId: DelegationFixtures.bobAccountId,
       );
 
-      expect(_Reader().shownAccountCapabilities.canOpenSettings, isFalse);
+      final capabilities = _Reader().shownAccountCapabilities;
+      expect(capabilities.canOpenSettings, isFalse);
+      expect(capabilities.canCreateFilter, isFalse);
     });
 
-    test('open Settings while my own account is shown', () {
+    test('open Settings and create a filter while my own account is shown', () {
       ActiveAccountSourceFixtures.put(DelegationFixtures.session());
 
-      expect(_Reader().shownAccountCapabilities.canOpenSettings, isTrue);
+      final capabilities = _Reader().shownAccountCapabilities;
+      expect(capabilities.canOpenSettings, isTrue);
+      expect(capabilities.canCreateFilter, isTrue);
     });
 
-    test('open Settings while no account is shown yet', () {
+    test('open Settings and create a filter while no account is shown yet', () {
       ActiveAccountSourceFixtures.putEmpty();
 
-      expect(_Reader().shownAccountCapabilities.canOpenSettings, isTrue);
+      final capabilities = _Reader().shownAccountCapabilities;
+      expect(capabilities.canOpenSettings, isTrue);
+      expect(capabilities.canCreateFilter, isTrue);
     });
   });
 

@@ -159,7 +159,7 @@ class MailboxController extends BaseMailboxController
       activeAccountSource.activeAccount?.isDelegated == false ? accountId : null;
 
   @override
-  bool get canCreateFilter => !isDelegatedAccountShown;
+  bool get canCreateFilter => shownAccountCapabilities.canCreateFilter;
 
   Session? get session => mailboxDashBoardController.sessionCurrent;
 

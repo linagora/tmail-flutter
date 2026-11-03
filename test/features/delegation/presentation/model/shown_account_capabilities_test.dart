@@ -18,6 +18,16 @@ void main() {
       });
     }
 
+    for (final (shown, shownAccount, canCreateFilter) in [
+      ('my own account', ActiveAccount.personal(session), true),
+      ('a delegated account', ActiveAccount.delegated(session, DelegationFixtures.bobAccountId), false),
+      ('no account yet', null, true),
+    ]) {
+      test('${canCreateFilter ? 'allows' : 'does not allow'} creating a filter while $shown is shown', () {
+        expect(ShownAccountCapabilities.of(shownAccount).canCreateFilter, canCreateFilter);
+      });
+    }
+
     test('gives equal capabilities for my own account and no account yet', () {
       expect(ShownAccountCapabilities.of(ActiveAccount.personal(session)), ShownAccountCapabilities.of(null));
     });
