@@ -11,6 +11,15 @@ timing() {
     echo "[timing $(date -u +%FT%TZ)] +${SECONDS}s $*"
 }
 
+# nproc shows the cores, not the CPU quota or the stall time the job really got; the totals are cumulative, so compare start and end.
+cgroup_limits() {
+    local file
+    for file in cpu.max cpu.pressure memory.pressure; do
+        [ -r "/sys/fs/cgroup/$file" ] || continue
+        echo "cgroup $file: $(tr '\n' ' ' < "/sys/fs/cgroup/$file")"
+    done
+}
+
 timing "agent backend wait started"
 bash "$ROOT_DIR/scripts/ci-wait-agent-backend-free.sh" || exit 1
 timing "agent backend available"
@@ -19,6 +28,7 @@ timing "agent backend available"
     echo "=== agent ==="; uname -a; nproc; free -h; lscpu | head -20
     docker info --format 'docker: {{.NCPU}} CPU, {{.MemTotal}} B'
     google-chrome --version || chromium --version
+    echo "=== agent at start ==="; cgroup_limits
 } 2>&1 | tee "$CI_LOGS/agent.txt"
 vmstat -t 5 > "$CI_LOGS/vmstat.log" 2>&1 &
 VMSTAT_PID=$!
@@ -158,6 +168,7 @@ patrol test -v \
     | perl scripts/ci-console-filter.pl "ci-logs/patrol-console.log.gz"
 TEST_EXIT_CODE=${PIPESTATUS[0]}
 timing "patrol tests finished (exit $TEST_EXIT_CODE)"
+{ echo "=== agent at end ==="; cgroup_limits; } >> "$CI_LOGS/agent.txt" 2>&1
 
 echo "=== non-passing Playwright tests ==="
 node scripts/ci-web-report-failures.js "$CI_LOGS/web-results" || true
