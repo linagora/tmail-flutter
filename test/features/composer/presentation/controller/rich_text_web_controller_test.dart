@@ -89,6 +89,44 @@ void main() {
     });
   });
 
+  group('RichTextWebController::setEnableCodeView', () {
+    late MockHtmlEditorController editorController;
+    late RichTextWebController controller;
+
+    setUp(() {
+      editorController = MockHtmlEditorController();
+      controller = RichTextWebController(editorController: editorController);
+    });
+
+    test('does not query the editor when code view is off', () async {
+      controller.setEnableCodeView();
+      await pumpEventQueue();
+
+      verifyNever(editorController.isActivatedCodeView());
+      verifyNever(editorController.toggleCodeView());
+    });
+
+    test('re-enables code view when the re-initialized editor is not in code view', () async {
+      controller.codeViewState.value = CodeViewState.enabled;
+      when(editorController.isActivatedCodeView()).thenAnswer((_) async => false);
+
+      controller.setEnableCodeView();
+      await pumpEventQueue();
+
+      verify(editorController.toggleCodeView()).called(1);
+    });
+
+    test('does not toggle when the editor is already in code view', () async {
+      controller.codeViewState.value = CodeViewState.enabled;
+      when(editorController.isActivatedCodeView()).thenAnswer((_) async => true);
+
+      controller.setEnableCodeView();
+      await pumpEventQueue();
+
+      verifyNever(editorController.toggleCodeView());
+    });
+  });
+
   group('RichTextWebController::toggleCodeView', () {
     late MockHtmlEditorController editorController;
     late RichTextWebController controller;
