@@ -11,6 +11,7 @@ import '../../base/core_robot.dart';
 import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
 import '../abstract/abstract_composer_code_view_robot.dart';
+import 'web_composer_code_view_diagnostics.dart';
 import 'web_composer_controller_finder.dart';
 
 class WebComposerCodeViewRobot extends CoreRobot
@@ -34,12 +35,31 @@ class WebComposerCodeViewRobot extends CoreRobot
   // Long enough for the broken image's error event to fire.
   static const _scriptGracePeriod = Duration(seconds: 2);
 
-  @override
-  Future<void> openEmbedCode() => _toggleEmbedCode(expectCodeViewEnabled: true);
+  late final _diagnostics = WebComposerCodeViewDiagnostics(() {
+    final richText = findWebComposerController($)?.richTextWebController;
+    return 'codeViewEnabled=${richText?.codeViewEnabled} '
+        'toggleInFlight=${richText?.isCodeViewToggleInFlight}';
+  });
 
   @override
-  Future<void> leaveEmbedCode() =>
-      _toggleEmbedCode(expectCodeViewEnabled: false);
+  Future<void> openEmbedCode() async {
+    _diagnostics.startObserving();
+    try {
+      await _toggleEmbedCode(expectCodeViewEnabled: true);
+    } catch (_) {
+      _diagnostics.stopObserving();
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> leaveEmbedCode() async {
+    try {
+      await _toggleEmbedCode(expectCodeViewEnabled: false);
+    } finally {
+      _diagnostics.stopObserving();
+    }
+  }
 
   Future<void> _toggleEmbedCode({required bool expectCodeViewEnabled}) async {
     await $(const Key(UiKeys.composerMoreButton)).tap();
@@ -51,7 +71,7 @@ class WebComposerCodeViewRobot extends CoreRobot
           findWebComposerController($)?.richTextWebController?.codeViewEnabled ==
           expectCodeViewEnabled,
     );
-    _dumpEditorState('after toggle, expected codeViewEnabled=$expectCodeViewEnabled');
+    _diagnostics.dump('after toggle, expected codeViewEnabled=$expectCodeViewEnabled');
   }
 
   // Fullscreen itself trips a Flutter web semantics assertion under Patrol,
@@ -82,7 +102,7 @@ class WebComposerCodeViewRobot extends CoreRobot
 
   Future<void> _typeInCodeView(String payload) async {
     web.document.documentElement?.removeAttribute(_markerAttribute);
-    _dumpEditorState('before enterText');
+    _diagnostics.dump('before enterText');
     // Playwright's fill() waits for a visible textarea without a client timeout.
     try {
       await $.platformAutomator.web
@@ -93,7 +113,8 @@ class WebComposerCodeViewRobot extends CoreRobot
           )
           .timeout(TestTimeouts.medium);
     } on TimeoutException {
-      _dumpEditorState('enterText still pending after ${TestTimeouts.medium.inSeconds}s');
+      _diagnostics.dump('enterText still pending after ${TestTimeouts.medium.inSeconds}s');
+      _diagnostics.stopObserving();
       fail('Code view textarea never accepted text within ${TestTimeouts.medium.inSeconds} seconds');
     }
     // Guards against a vacuous pass: the payload must sit in the code view.
@@ -152,33 +173,6 @@ class WebComposerCodeViewRobot extends CoreRobot
       isNot(anyOf(contains('onerror'), contains('onload'), contains('<script'))),
       reason: 'raw code view HTML reached the cached body',
     );
-  }
-
-  // One line per iframe: the web console forwarder keeps only the first line of a message.
-  void _dumpEditorState(String when) {
-    try {
-      final richText = findWebComposerController($)?.richTextWebController;
-      debugPrintSynchronously(
-        '[CODE VIEW STATE] $when: codeViewEnabled=${richText?.codeViewEnabled} '
-        'toggleInFlight=${richText?.isCodeViewToggleInFlight}',
-      );
-      final iframes = web.document.querySelectorAll('iframe');
-      for (var i = 0; i < iframes.length; i++) {
-        final document = (iframes.item(i) as web.HTMLIFrameElement).contentDocument;
-        final textarea = document?.querySelector('textarea.note-codable') as web.HTMLTextAreaElement?;
-        final box = textarea?.getBoundingClientRect();
-        debugPrintSynchronously(
-          '[CODE VIEW STATE] iframe[$i] of ${iframes.length}: '
-          'textarea=${textarea != null} visible=${textarea?.offsetParent != null} '
-          'size=${box?.width}x${box?.height} disabled=${textarea?.disabled} '
-          'readOnly=${textarea?.readOnly} '
-          'codeviewClass=${document?.querySelector('.note-editor.codeview') != null} '
-          'toolbarButtons=${document?.querySelectorAll('.note-toolbar button').length}',
-        );
-      }
-    } catch (e) {
-      debugPrintSynchronously('[CODE VIEW STATE] dump failed: $e');
-    }
   }
 
   String? _codeViewText() {
