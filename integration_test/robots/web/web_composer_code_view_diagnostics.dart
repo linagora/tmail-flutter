@@ -96,7 +96,7 @@ class WebComposerCodeViewDiagnostics {
         subtree: true,
       ),
     );
-    _cleanups.add(observer.disconnect);
+    _cleanups.add(() => observer.disconnect());
   }
 
   bool _isCodeView(web.Document? document) =>
