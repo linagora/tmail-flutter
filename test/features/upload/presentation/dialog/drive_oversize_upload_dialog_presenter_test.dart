@@ -93,12 +93,18 @@ void main() {
     });
 
     for (final layoutCase in [
-      (isWeb: true, layout: LinagoraFileTransferLayout.wide),
-      (isWeb: false, layout: LinagoraFileTransferLayout.compact),
+      (isWeb: true, width: 1280.0, layout: LinagoraFileTransferLayout.wide),
+      (isWeb: true, width: 600.0, layout: LinagoraFileTransferLayout.wide),
+      (isWeb: true, width: 599.0, layout: LinagoraFileTransferLayout.compact),
+      (isWeb: true, width: 390.0, layout: LinagoraFileTransferLayout.compact),
+      (isWeb: false, width: 1280.0, layout: LinagoraFileTransferLayout.compact),
     ]) {
-      testWidgets('show uses the ${layoutCase.layout.name} layout when isWeb is ${layoutCase.isWeb}', (tester) async {
+      testWidgets('show uses the ${layoutCase.layout.name} layout when isWeb is ${layoutCase.isWeb} at ${layoutCase.width}px', (tester) async {
         PlatformInfo.isTestingForWeb = layoutCase.isWeb;
         addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = Size(layoutCase.width, 800);
+        addTearDown(tester.view.reset);
         await _pumpHost(tester, container);
 
         await _showDialog(tester, container);
@@ -106,9 +112,63 @@ void main() {
         final surface = tester.widget<LinagoraFileTransferSurface>(find.byType(LinagoraFileTransferSurface));
         final view = tester.widget<DriveOversizeUploadDialogView>(_dialogView);
         expect(surface.layout, equals(layoutCase.layout));
-        expect(view.isWebLayout, equals(layoutCase.isWeb));
+        expect(view.isWebLayout, equals(layoutCase.layout == LinagoraFileTransferLayout.wide));
       });
     }
+
+    testWidgets('narrowing the web window to mobile width swaps the open dialog to the sheet', (tester) async {
+      PlatformInfo.isTestingForWeb = true;
+      addTearDown(() => PlatformInfo.isTestingForWeb = false);
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(1280, 800);
+      addTearDown(tester.view.reset);
+      await _pumpHost(tester, container);
+      await _showDialog(tester, container);
+      expect(
+        tester.widget<LinagoraFileTransferSurface>(find.byType(LinagoraFileTransferSurface)).layout,
+        equals(LinagoraFileTransferLayout.wide),
+      );
+
+      tester.view.physicalSize = const Size(320, 800);
+      await tester.pump();
+
+      expect(
+        tester.widget<LinagoraFileTransferSurface>(find.byType(LinagoraFileTransferSurface)).layout,
+        equals(LinagoraFileTransferLayout.compact),
+      );
+      expect(_dialogView, findsOneWidget);
+
+      // Rebuilt compact dialog still wires Cancel to the same batch.
+      await tester.tap(find.byKey(LinagoraFileTransferDialog.cancelAllButtonKey));
+      await tester.pump();
+      expect(
+        container.read(driveOversizeTransferProvider).every((item) => item.status.settled),
+        isTrue,
+      );
+    });
+
+    testWidgets('widening the web window from mobile width swaps the open sheet to the card', (tester) async {
+      PlatformInfo.isTestingForWeb = true;
+      addTearDown(() => PlatformInfo.isTestingForWeb = false);
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(320, 800);
+      addTearDown(tester.view.reset);
+      await _pumpHost(tester, container);
+      await _showDialog(tester, container);
+      expect(
+        tester.widget<LinagoraFileTransferSurface>(find.byType(LinagoraFileTransferSurface)).layout,
+        equals(LinagoraFileTransferLayout.compact),
+      );
+
+      tester.view.physicalSize = const Size(1280, 800);
+      await tester.pump();
+
+      expect(
+        tester.widget<LinagoraFileTransferSurface>(find.byType(LinagoraFileTransferSurface)).layout,
+        equals(LinagoraFileTransferLayout.wide),
+      );
+      expect(_dialogView, findsOneWidget);
+    });
 
     testWidgets('the compact sheet background reaches the bottom edge while its content clears the inset', (tester) async {
       tester.view.devicePixelRatio = 1;
@@ -125,6 +185,48 @@ void main() {
       ).first;
       expect(tester.getBottomLeft(background).dy, equals(screenHeight));
       expect(tester.getBottomLeft(_dialogView).dy, lessThanOrEqualTo(screenHeight - 34));
+    });
+
+    testWidgets('narrow web compact sheet background reaches the bottom edge with inset', (tester) async {
+      PlatformInfo.isTestingForWeb = true;
+      addTearDown(() => PlatformInfo.isTestingForWeb = false);
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(390, 800);
+      tester.view.padding = const FakeViewPadding(top: 44, bottom: 34);
+      addTearDown(tester.view.reset);
+      await _pumpHost(tester, container);
+      await _showDialog(tester, container);
+
+      final screenHeight = tester.view.physicalSize.height;
+      final background = find.descendant(
+        of: find.byType(LinagoraFileTransferSurface),
+        matching: find.byType(DecoratedBox),
+      ).first;
+      expect(tester.getBottomLeft(background).dy, equals(screenHeight));
+      expect(tester.getBottomLeft(_dialogView).dy, lessThanOrEqualTo(screenHeight - 34));
+    });
+
+    testWidgets('wide web card clears every inset', (tester) async {
+      PlatformInfo.isTestingForWeb = true;
+      addTearDown(() => PlatformInfo.isTestingForWeb = false);
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(1280, 800);
+      tester.view.padding = const FakeViewPadding(top: 44, bottom: 34, left: 20, right: 20);
+      addTearDown(tester.view.reset);
+      await _pumpHost(tester, container);
+      await _showDialog(tester, container);
+
+      expect(
+        tester.widget<LinagoraFileTransferSurface>(find.byType(LinagoraFileTransferSurface)).layout,
+        equals(LinagoraFileTransferLayout.wide),
+      );
+      // The card's own SafeArea consumes the insets, so nothing inside it lays out under them.
+      expect(MediaQuery.paddingOf(tester.element(_dialogView)), equals(EdgeInsets.zero));
+      final card = tester.getRect(find.byType(LinagoraFileTransferSurface));
+      expect(card.top, greaterThanOrEqualTo(44));
+      expect(card.bottom, lessThanOrEqualTo(800 - 34));
+      expect(card.left, greaterThanOrEqualTo(20));
+      expect(card.right, lessThanOrEqualTo(1280 - 20));
     });
 
     testWidgets('the compact sheet background reaches the side edges while its content clears the side insets', (tester) async {
