@@ -4,6 +4,11 @@ set -e
 echo "Prebuild started..."
 prebuild_started=$SECONDS
 
+# Flutter 3.47 SwiftPM plugin copy uses rsync, which can't create this parent after `flutter clean` on macOS.
+if [ "$(uname -s)" = "Darwin" ]; then
+  mkdir -p build/ios/SourcePackages
+fi
+
 # Single pub get resolves the entire workspace (Dart pub workspaces)
 step_started=$SECONDS
 flutter pub get > /dev/null
