@@ -2082,6 +2082,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void goToSettings() async {
+    if (!shownAccountCapabilities.canOpenSettings) return;
     closeMailboxMenuDrawer();
     BackButtonInterceptor.removeByName(AppRoutes.dashboard);
     final result = await push(
@@ -2163,6 +2164,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void goToVacationSetting() async {
+    if (!shownAccountCapabilities.canOpenSettings) return;
     BackButtonInterceptor.removeByName(AppRoutes.dashboard);
     final result = await push(
       AppRoutes.settings,
