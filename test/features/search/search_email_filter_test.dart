@@ -853,6 +853,17 @@ void main() {
       });
     });
 
+    group('isFromMeFilter::test', () {
+      const me = 'me@example.com';
+      const alias = 'alias@example.com';
+
+      test('stays true WHEN identities add aliases after the from-me filter was set', () {
+        final filter = SearchEmailFilter(from: {me});
+
+        expect(filter.isFromMeFilter({me, alias}), isTrue);
+      });
+    });
+
     group('sort-order change clears load-more cursors::test', () {
       UTCDate? extractAfterFromFilter(Object? filter) {
         if (filter is EmailFilterCondition) return filter.after;

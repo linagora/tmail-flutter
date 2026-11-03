@@ -210,11 +210,24 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   @override
   Session? get sessionCurrent => currentSession;
 
-  @override
-  RxString get ownEmailAddress => SessionFixtures.aliceSession.getOwnEmailAddressOrEmpty().obs;
+  final RxString _ownEmailAddress =
+      SessionFixtures.aliceSession.getOwnEmailAddressOrEmpty().obs;
+
+  /// When set, the session owner of the shown mailbox (empty for username-only).
+  String? sessionOwnerEmailAddress;
 
   @override
-  String get ownerEmailAddress => ownEmailAddress.value;
+  RxString get ownEmailAddress => _ownEmailAddress;
+
+  @override
+  String get ownerEmailAddress {
+    final shown = sessionOwnerEmailAddress ?? _ownEmailAddress.value;
+    if (shown.isNotEmpty) return shown;
+    if (activeAccountId == null || activeAccountId == accountId.value) {
+      return _ownEmailAddress.value;
+    }
+    return '';
+  }
 
   @override
   Set<String> get ownerEmailAddresses {
@@ -627,6 +640,9 @@ void main() {
     // Mock Getx controllers
     // Reset the shared drag state so it does not leak between tests.
     mockMailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.inActive;
+    mockMailboxDashBoardController.sessionOwnerEmailAddress = null;
+    mockMailboxDashBoardController.ownEmailAddress.value =
+        SessionFixtures.aliceSession.getOwnEmailAddressOrEmpty();
     Get.put<MailboxDashBoardController>(mockMailboxDashBoardController);
     Get.put<NetworkConnectionController>(mockNetworkConnectionController);
     Get.put<BeforeReconnectManager>(mockBeforeReconnectManager);
@@ -658,6 +674,16 @@ void main() {
     Get.reset();
     composerController = null;
   });
+
+  test(
+    'ownEmailAddress falls back to the identity-derived address when the session username is not an email',
+    () {
+      mockMailboxDashBoardController.sessionOwnerEmailAddress = '';
+      mockMailboxDashBoardController.ownEmailAddress.value = 'alice@domain.tld';
+
+      expect(composerController!.ownEmailAddress, 'alice@domain.tld');
+    },
+  );
 
   group('ComposerController test:', () {
     group('hash draft email test:', () {

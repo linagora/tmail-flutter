@@ -165,6 +165,7 @@ EcosystemCalendarEventCardWidget _card({
     ),
     viewState: const CalendarEventCardViewState(
       ownEmailAddress: 'reader@example.invalid',
+      ownerEmailAddresses: {'reader@example.invalid'},
       listEmailAddressSender: [],
       replying: false,
       hasScheduleConflict: false,

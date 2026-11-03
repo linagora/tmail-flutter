@@ -141,7 +141,7 @@ class ThreadDetailController extends BaseController
     PresentationMailbox.roleSent,
   );
 
-  String get ownEmailAddress => ownerEmailAddress;
+  String get ownEmailAddress => mailboxDashBoardController.ownerEmailAddress;
 
   Set<String> get ownerEmailAddresses =>
       mailboxDashBoardController.ownerEmailAddresses;
@@ -235,7 +235,7 @@ class ThreadDetailController extends BaseController
         session != null &&
         accountId != null &&
         sentMailboxId != null &&
-        ownEmailAddress.isNotEmpty &&
+        ownerEmailAddresses.isNotEmpty &&
         networkConnected &&
         isThreadDetailEnabled;
   }
