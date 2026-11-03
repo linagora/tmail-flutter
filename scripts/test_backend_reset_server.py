@@ -6,6 +6,7 @@ import json
 import os
 import re
 import shutil
+import subprocess
 import tempfile
 import threading
 import time
@@ -227,6 +228,31 @@ class RecycleAfterStopTest(unittest.TestCase):
             server._compose, server._save_logs, server.provision = saved
             server._stopping.clear()
         self.assertEqual(calls, ["up", "down"])
+
+
+class RunTimeoutTest(unittest.TestCase):
+    def test_hung_command_raises_timeout(self):
+        with self.assertRaises(subprocess.TimeoutExpired):
+            server._run(["sleep", "5"], timeout=0.2)
+
+    def test_stop_all_cleans_every_slot_when_one_call_hangs(self):
+        downs = []
+
+        def compose(n, *args):
+            if n == 0:
+                raise subprocess.TimeoutExpired("docker", 1)
+            downs.append(n)
+
+        try:
+            with mock.patch.object(server, "_compose", compose), \
+                    mock.patch.object(server, "_save_logs", lambda n: None), \
+                    mock.patch.object(server, "_stopped", False), \
+                    mock.patch.object(server, "_slot_dir", None), \
+                    contextlib.redirect_stderr(io.StringIO()):
+                server.stop_all()
+        finally:
+            server._stopping.clear()
+        self.assertEqual(downs, [1])
 
 
 class HttpTest(unittest.TestCase):

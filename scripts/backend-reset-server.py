@@ -28,6 +28,7 @@ Environment variables:
   LEASE_TTL                 Seconds after which an unreleased lease is reclaimed (default: 600)
   LEASE_TIMEOUT             Seconds a /lease waits for a free backend; under the client's 3 min (default: 150)
   POOL_READY_TIMEOUT        Seconds startup waits for POOL_MIN_FREE free slots (default: 300)
+  RUN_TIMEOUT               Seconds one docker or curl call may take before the attempt fails (default: 300)
   WORK_DIR                  Repo root, used to resolve the compose file (default: cwd)
   BACKUP_ZIP                Path to backup.zip on the host (default: provisioning/... relative to WORK_DIR)
 """
@@ -60,6 +61,7 @@ BOOT_TIMEOUT            = float(os.environ.get("BOOT_TIMEOUT", "180"))
 LEASE_TTL               = float(os.environ.get("LEASE_TTL", "600"))
 LEASE_TIMEOUT           = float(os.environ.get("LEASE_TIMEOUT", "150"))
 POOL_READY_TIMEOUT      = float(os.environ.get("POOL_READY_TIMEOUT", "300"))
+RUN_TIMEOUT             = float(os.environ.get("RUN_TIMEOUT", "300"))
 WORK_DIR                = os.environ.get("WORK_DIR", os.getcwd())
 POOL_LOG_DIR            = os.environ.get("POOL_LOG_DIR", os.getcwd())
 BACKUP_ZIP              = os.environ.get(
@@ -83,8 +85,10 @@ _stop_lock = threading.Lock()
 _stopped = False
 
 
-def _run(cmd: List[str], check: bool = False, env: Optional[dict] = None) -> subprocess.CompletedProcess:
-    return subprocess.run(cmd, check=check, capture_output=True, text=True, env=env)
+def _run(cmd: List[str], check: bool = False, env: Optional[dict] = None,
+         timeout: float = RUN_TIMEOUT) -> subprocess.CompletedProcess:
+    # A hung call raises TimeoutExpired, so Pool._reset retries then drops the slot.
+    return subprocess.run(cmd, check=check, capture_output=True, text=True, env=env, timeout=timeout)
 
 
 def _webadmin(port: int, method: str, path: str, data: Optional[str] = None) -> dict:
@@ -312,6 +316,13 @@ class Pool:
             self._cond.notify_all()
 
 
+def _best_effort(n: int, fn: Callable[..., object], *args) -> None:
+    try:
+        fn(*args)
+    except (subprocess.SubprocessError, OSError) as exc:
+        print(f"[reset-server] ERROR slot {n} cleanup: {exc}", file=sys.stderr, flush=True)
+
+
 def stop_all(pool: Optional[Pool] = None) -> None:
     """Stop admitting replacements, wait for running ones, then remove every container once."""
     global _stopped
@@ -323,8 +334,8 @@ def stop_all(pool: Optional[Pool] = None) -> None:
     if pool is not None:
         pool.join(200)
     for n in range(len(POOL_URLS)):
-        _save_logs(n)
-        _compose(n, "down", "--remove-orphans")
+        _best_effort(n, _save_logs, n)
+        _best_effort(n, _compose, n, "down", "--remove-orphans")
     if _slot_dir is not None:
         shutil.rmtree(_slot_dir, ignore_errors=True)
 
