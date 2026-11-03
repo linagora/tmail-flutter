@@ -3,12 +3,15 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/shown_account_reload_notifier.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/providers/shown_account_load_tracker_provider.dart';
 
-/// Forwards [ActiveAccountSource] and [ActiveAccountWriter] to the delegation providers, the single
-/// source of truth. It keeps no state of its own.
-class RiverpodActiveAccountSource implements ActiveAccountSource, ActiveAccountWriter {
+/// Forwards to the delegation providers, the single source of truth, and keeps no state of its own.
+class RiverpodActiveAccountSource
+    implements ActiveAccountSource, ActiveAccountWriter, ShownAccountLoadReporter {
   final ProviderContainer _container;
 
   RiverpodActiveAccountSource(this._container) {
@@ -31,8 +34,12 @@ class RiverpodActiveAccountSource implements ActiveAccountSource, ActiveAccountW
   }
 
   /// Invalidates rather than sets the state: the dashboard clears in onInit, inside the route build, where Riverpod forbids notifying.
+  /// Also drops the loads a switch waited for, so none outlives the dashboard.
   @override
-  void clear() => _container.invalidate(activeAccountProvider);
+  void clear() {
+    _container.invalidate(activeAccountProvider);
+    _container.invalidate(shownAccountLoadTrackerProvider);
+  }
 
   @override
   CancelShownAccountWatch watchShown(OnShownAccount onShown) {
@@ -44,5 +51,28 @@ class RiverpodActiveAccountSource implements ActiveAccountSource, ActiveAccountW
       fireImmediately: true,
     );
     return subscription.close;
+  }
+
+  @override
+  CancelShownAccountWatch watchShownReload(OnShownAccount onReload) {
+    final subscription = _container.listen<int?>(
+      shownAccountReloadProvider,
+      (_, switchAttemptId) {
+        final shownAccountId = accountId;
+        if (switchAttemptId != null && shownAccountId != null) onReload(shownAccountId);
+      },
+    );
+    return subscription.close;
+  }
+
+  @override
+  void reportLoad(ShownAccountLoadKind kind, ShownAccountLoad load) {
+    final tracker = _container.read(shownAccountLoadTrackerProvider);
+    switch (kind) {
+      case ShownAccountLoadKind.folders:
+        tracker.reportFolders(load);
+      case ShownAccountLoadKind.emailList:
+        tracker.reportEmailList(load);
+    }
   }
 }

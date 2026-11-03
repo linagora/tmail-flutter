@@ -24,11 +24,10 @@ class FakeAccountSwitchView implements AccountSwitchView {
   final List<String> calls = [];
   final List<Completer<void>> loadings = [];
   Object? errorThrownByLoadAccount;
-  Object? errorThrownByRestoreSelectionAndSearch;
   Object? errorThrownByCatchUpAccount;
   Object? errorThrownByUnblockInput;
   ViewStepCallback? onBlockInput;
-  ViewStepCallback? onKeepSelectionAndSearch;
+  ViewStepCallback? onClearSelectionAndSearch;
 
   @override
   void blockInput() {
@@ -44,16 +43,9 @@ class FakeAccountSwitchView implements AccountSwitchView {
   }
 
   @override
-  void keepSelectionAndSearch() {
-    calls.add('keepSelectionAndSearch');
-    onKeepSelectionAndSearch?.call();
-  }
-
-  @override
-  void restoreSelectionAndSearch() {
-    calls.add('restoreSelectionAndSearch');
-    final error = errorThrownByRestoreSelectionAndSearch;
-    if (error != null) throw error;
+  void clearSelectionAndSearch() {
+    calls.add('clearSelectionAndSearch');
+    onClearSelectionAndSearch?.call();
   }
 
   @override
@@ -136,7 +128,7 @@ void main() {
       expect(shownAccountOf(), ActiveAccount.delegated(session, bob));
       expect(view.calls, [
         'blockInput',
-        'keepSelectionAndSearch',
+        'clearSelectionAndSearch',
         'loadAccount(bob-account-id, 1)',
         'unblockInput',
       ]);
@@ -229,7 +221,7 @@ void main() {
   });
 
   group('switchTo: rollback to the previous account', () {
-    test('on failure: restores my account, its selection and search, then catches up with a new attempt', () async {
+    test('on failure: shows my account again on its Inbox, then catches up with a new attempt', () async {
       final error = Exception('load failed');
       final switching = switchNotifierOf().switchTo(bob, view);
       view.loadings.single.completeError(error);
@@ -241,9 +233,8 @@ void main() {
       expect(switchStateOf(), const AccountSwitchIdle(lastAttemptId: 2));
       expect(view.calls, [
         'blockInput',
-        'keepSelectionAndSearch',
+        'clearSelectionAndSearch',
         'loadAccount(bob-account-id, 1)',
-        'restoreSelectionAndSearch',
         'catchUpAccount(${alice.id.value}, 2)',
         'unblockInput',
       ]);
@@ -259,7 +250,7 @@ void main() {
       expect(view.calls.last, 'unblockInput');
     });
 
-    test('when blocking input throws: fails without selecting the target or restoring a selection never kept', () async {
+    test('when blocking input throws: fails without selecting the target', () async {
       final error = StateError('cannot block input');
       view.onBlockInput = () => throw error;
 
@@ -270,14 +261,14 @@ void main() {
       );
     });
 
-    test('when keeping the selection throws: fails without selecting the target or restoring a selection never kept', () async {
+    test('when clearing the selection throws: fails without selecting the target', () async {
       final error = StateError('cannot keep the selection');
-      view.onKeepSelectionAndSearch = () => throw error;
+      view.onClearSelectionAndSearch = () => throw error;
 
       await expectSwitchEndsOnMyAccountInViewSteps(
         bob,
         result: isA<AccountSwitchFailed>().having((failed) => failed.error, 'error', error),
-        viewStepCalls: ['blockInput', 'keepSelectionAndSearch'],
+        viewStepCalls: ['blockInput', 'clearSelectionAndSearch'],
       );
     });
 
@@ -292,8 +283,13 @@ void main() {
       expect(result, const AccountSwitchCancelled());
       expect(shownAccountOf(), ActiveAccount.personal(session));
       expect(switchStateOf(), const AccountSwitchIdle(lastAttemptId: 2));
-      expect(view.calls, contains('restoreSelectionAndSearch'));
-      expect(view.calls.last, 'unblockInput');
+      expect(view.calls, [
+        'blockInput',
+        'clearSelectionAndSearch',
+        'loadAccount(bob-account-id, 1)',
+        'catchUpAccount(${alice.id.value}, 2)',
+        'unblockInput',
+      ]);
     });
 
     test('on timeout after 30 s, and not before', () {
@@ -314,24 +310,6 @@ void main() {
         async.flushMicrotasks();
         expect(shownAccountOf(), ActiveAccount.personal(session));
       });
-    });
-
-    test('when restoring the selection throws: still catches up and returns the failure', () async {
-      final error = Exception('load failed');
-      view.errorThrownByRestoreSelectionAndSearch = StateError('cannot restore');
-      final switching = switchNotifierOf().switchTo(bob, view);
-      view.loadings.single.completeError(error);
-
-      final result = await switching;
-
-      expect(result, isA<AccountSwitchFailed>().having((failed) => failed.error, 'error', error));
-      expect(shownAccountOf(), ActiveAccount.personal(session));
-      expect(switchStateOf(), const AccountSwitchIdle(lastAttemptId: 2));
-      expect(view.calls, containsAllInOrder([
-        'restoreSelectionAndSearch',
-        'catchUpAccount(${alice.id.value}, 2)',
-        'unblockInput',
-      ]));
     });
 
     test('when catching up throws: still returns the cancel and unblocks input', () async {
@@ -355,9 +333,8 @@ void main() {
       expect(shownAccountOf(), ActiveAccount.delegated(session, bob));
       expect(view.calls, [
         'blockInput',
-        'keepSelectionAndSearch',
+        'clearSelectionAndSearch',
         'loadAccount(carol-account-id, 2)',
-        'restoreSelectionAndSearch',
         'catchUpAccount(bob-account-id, 3)',
         'unblockInput',
       ]);
@@ -373,7 +350,6 @@ void main() {
       await toCarol;
 
       expect(shownAccountOf(), ActiveAccount.personal(sessionWithoutBob));
-      expect(view.calls, isNot(contains('restoreSelectionAndSearch')));
       expect(
         view.calls,
         contains('catchUpAccount(${alice.id.value}, 3)'),
@@ -382,7 +358,7 @@ void main() {
   });
 
   group('switchTo: to my own account never rolls back to a delegated one', () {
-    test('on failure: stays on my account and catches it up with a new attempt, without restoring the selection', () async {
+    test('on failure: stays on my account and catches it up with a new attempt', () async {
       await showBobMailbox();
 
       final toAlice = switchNotifierOf().switchTo(alice, view);
@@ -394,7 +370,7 @@ void main() {
       expect(switchStateOf(), const AccountSwitchIdle(lastAttemptId: 3));
       expect(view.calls, [
         'blockInput',
-        'keepSelectionAndSearch',
+        'clearSelectionAndSearch',
         'loadAccount(${alice.id.value}, 2)',
         'catchUpAccount(${alice.id.value}, 3)',
         'unblockInput',
@@ -412,10 +388,9 @@ void main() {
       expect(result, const AccountSwitchCancelled());
       expect(shownAccountOf(), ActiveAccount.personal(session));
       expect(switchStateOf().currentAttemptId, 3);
-      expect(view.calls, isNot(contains('restoreSelectionAndSearch')));
     });
 
-    test('when a view step throws: shows my account and catches it up, without restoring the selection', () async {
+    test('when a view step throws: shows my account and catches it up', () async {
       await showBobMailbox();
       view.onBlockInput = () => throw StateError('cannot block input');
 
@@ -433,7 +408,7 @@ void main() {
       await expectSwitchEndsOnMyAccountInViewSteps(
         alice,
         result: equals(const AccountSwitchCancelled()),
-        viewStepCalls: ['blockInput', 'keepSelectionAndSearch'],
+        viewStepCalls: ['blockInput', 'clearSelectionAndSearch'],
       );
     });
 
@@ -470,12 +445,18 @@ void main() {
       expect(result, const AccountSwitchCancelled());
       expect(shownAccountOf(), ActiveAccount.delegated(sessionWithoutCarol, bob));
       expect(switchStateOf().currentAttemptId, 3);
-      expect(view.calls, containsAllInOrder(['restoreSelectionAndSearch', 'catchUpAccount(bob-account-id, 3)']));
+      expect(view.calls, [
+        'blockInput',
+        'clearSelectionAndSearch',
+        'loadAccount(carol-account-id, 2)',
+        'catchUpAccount(bob-account-id, 3)',
+        'unblockInput',
+      ]);
     });
 
     test('a target that leaves during the view steps is not loaded and the switch is cancelled at once', () async {
       final sessionWithoutBob = DelegationFixtures.session(listsBob: false, state: 'state-2');
-      view.onKeepSelectionAndSearch = () => activeAccountNotifierOf().applySession(sessionWithoutBob);
+      view.onClearSelectionAndSearch = () => activeAccountNotifierOf().applySession(sessionWithoutBob);
 
       final result = await switchNotifierOf().switchTo(bob, view);
 
@@ -484,8 +465,7 @@ void main() {
       expect(switchStateOf(), const AccountSwitchIdle(lastAttemptId: 2));
       expect(view.calls, [
         'blockInput',
-        'keepSelectionAndSearch',
-        'restoreSelectionAndSearch',
+        'clearSelectionAndSearch',
         'catchUpAccount(${alice.id.value}, 2)',
         'unblockInput',
       ]);
@@ -608,8 +588,8 @@ void main() {
 
     test('a switch asked from inside a view step is refused as already running', () async {
       AccountSwitchResult? innerResult;
-      view.onKeepSelectionAndSearch = () {
-        view.onKeepSelectionAndSearch = null;
+      view.onClearSelectionAndSearch = () {
+        view.onClearSelectionAndSearch = null;
         switchNotifierOf().switchTo(carol, view).then((value) => innerResult = value);
       };
 
@@ -635,11 +615,11 @@ void main() {
 
       expect(view.calls, [
         'blockInput',
-        'keepSelectionAndSearch',
+        'clearSelectionAndSearch',
         'loadAccount(bob-account-id, 1)',
         'unblockInput',
         'blockInput',
-        'keepSelectionAndSearch',
+        'clearSelectionAndSearch',
         'loadAccount(carol-account-id, 2)',
       ]);
       view.loadings.last.complete();
@@ -666,8 +646,7 @@ void main() {
       expect(shownAccountOf(), ActiveAccount.personal(session));
       expect(view.calls, [
         'blockInput',
-        'keepSelectionAndSearch',
-        'restoreSelectionAndSearch',
+        'clearSelectionAndSearch',
         'catchUpAccount(${alice.id.value}, 2)',
         'unblockInput',
       ]);
@@ -703,7 +682,6 @@ void main() {
         expect(result, const AccountSwitchCancelled());
         expect(shownAccountOf(), isNull);
         expect(switchStateOf(), const AccountSwitchIdle(lastAttemptId: 2));
-        expect(view.calls, isNot(contains('restoreSelectionAndSearch')));
         expect(
           view.calls.where((call) => call.startsWith('catchUpAccount')),
           isEmpty,

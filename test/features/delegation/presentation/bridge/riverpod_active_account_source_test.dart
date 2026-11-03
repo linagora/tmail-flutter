@@ -3,9 +3,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/riverpod_active_account_source.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/shown_account_reload_notifier.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/providers/shown_account_load_tracker_provider.dart';
 
 import '../../../../fixtures/delegation_fixtures.dart';
+
+ShownAccountLoad _loadOf(int attemptId) =>
+    ShownAccountLoad(attemptId: attemptId, result: Future.value(const ShownAccountLoaded()));
 
 void main() {
   late ProviderContainer container;
@@ -179,6 +185,69 @@ void main() {
       source.applySession(DelegationFixtures.session(state: 'state-2'));
 
       expect(source.currentSwitchAttemptId, attemptBefore);
+    });
+  });
+
+  group('watchShownReload:', () {
+    test('calls back with the shown account when a switch attempt asks for a reload', () {
+      source.applySession(DelegationFixtures.session());
+      select(DelegationFixtures.bobAccountId);
+      final reloadedAccountIds = <AccountId>[];
+      addTearDown(source.watchShownReload(reloadedAccountIds.add));
+
+      container.read(shownAccountReloadProvider.notifier).request(3);
+
+      expect(reloadedAccountIds, [DelegationFixtures.bobAccountId]);
+    });
+
+    test('does not call back at once', () {
+      source.applySession(DelegationFixtures.session());
+      final reloadedAccountIds = <AccountId>[];
+      addTearDown(source.watchShownReload(reloadedAccountIds.add));
+
+      expect(reloadedAccountIds, isEmpty);
+    });
+
+    test('does not call back while no account is shown', () {
+      final reloadedAccountIds = <AccountId>[];
+      addTearDown(source.watchShownReload(reloadedAccountIds.add));
+
+      container.read(shownAccountReloadProvider.notifier).request(1);
+
+      expect(reloadedAccountIds, isEmpty);
+    });
+
+    test('stops calling back once cancelled', () {
+      source.applySession(DelegationFixtures.session());
+      final reloadedAccountIds = <AccountId>[];
+      final cancel = source.watchShownReload(reloadedAccountIds.add);
+
+      cancel();
+      container.read(shownAccountReloadProvider.notifier).request(1);
+
+      expect(reloadedAccountIds, isEmpty);
+    });
+  });
+
+  group('reportLoad:', () {
+    test('a folder load is tracked for its attempt', () {
+      source.reportLoad(ShownAccountLoadKind.folders, _loadOf(2));
+
+      expect(container.read(shownAccountLoadTrackerProvider).hasFoldersLoad(2), isTrue);
+    });
+
+    test('an email list load is not a folder load', () {
+      source.reportLoad(ShownAccountLoadKind.emailList, _loadOf(2));
+
+      expect(container.read(shownAccountLoadTrackerProvider).hasFoldersLoad(2), isFalse);
+    });
+
+    test('clear forgets every tracked load', () {
+      source.reportLoad(ShownAccountLoadKind.folders, _loadOf(2));
+
+      source.clear();
+
+      expect(container.read(shownAccountLoadTrackerProvider).hasFoldersLoad(2), isFalse);
     });
   });
 }
