@@ -124,7 +124,8 @@ dependencies:
 
   external_app_launcher: 4.0.3
 
-  # enough_platform_widgets 1.1.2 (Flutter 3.47 fix) needs cupertino_icons ^1.0.8.
+  # Pinned enough_platform_widgets (see dependency_overrides) pulls
+  # flutter_platform_widgets 9.0.0, which needs cupertino_icons ^1.0.8.
   cupertino_icons: 1.0.8
 
   get: 4.6.6
@@ -369,9 +370,9 @@ dependency_overrides:
   # but super_dns_client 0.3.8 pins ^2.4.4. freezed_annotation is annotation-only
   # (no behavioral difference between 2.x and 3.x) so overriding is safe.
   freezed_annotation: ^3.0.0
-  # enough_html_editor pulls enough_platform_widgets 1.0.0, which breaks on
-  # Flutter 3.47 (bool? autofocus). pub 1.1.2 still lacks the fix; use the
-  # upstream commit that coerces autofocus with `?? false`.
+  # linagora/enough_html_editor pulls enough_platform_widgets; pub 1.1.2 breaks on
+  # Flutter 3.47 (bool? autofocus). Pin upstream 1843df5 (v1.1.2 + `?? false` fix).
+  # Remove once pub.dev has enough_platform_widgets > 1.1.2.
   enough_platform_widgets:
     git:
       url: https://github.com/Enough-Software/enough_platform_widgets.git
