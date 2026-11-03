@@ -46,6 +46,35 @@ tabs_unreadable() {
     ! grep -q '^TABS' <<< "$1" || grep -E '^(SKIP|TIMEOUT)' <<< "$1" | grep -qv 'DevToolsActivePort'
 }
 
+# The browser main process carries --user-data-dir=<dir>; renderers and GPU are its descendants.
+unreachable_browser_ps() {
+    local main pids
+    main=$(pgrep -o -f -- "--user-data-dir=$1")
+    if [ -z "$main" ]; then
+        echo "$1: no browser process"
+        return
+    fi
+    pids=$(ps -eo pid=,ppid= | awk -v root="$main" '
+        { parent[$1] = $2 }
+        END {
+            for (p in parent) {
+                q = p; n = 0
+                while (q != root && q > 1 && (q in parent) && n++ < 64) q = parent[q]
+                if (q == root) print p
+            }
+        }' | paste -sd, -)
+    if [ -z "$pids" ]; then
+        echo "$1: browser pid $main exited"
+        return
+    fi
+    echo "$1: browser pid $main at $(date -u +%T)"
+    ps -o pid=,ppid=,stat=,etime=,pcpu=,rss=,nlwp=,wchan:20=,args= -p "$pids" 2>/dev/null | awk '{
+        type = "browser"
+        for (i = 9; i <= NF; i++) if ($i ~ /^--type=/) { type = substr($i, 8); break }
+        print $1, $2, $3, $4, $5, $6, $7, $8, type
+    }'
+}
+
 dump_state() {
     local pages="$1" src
     {
@@ -58,6 +87,10 @@ dump_state() {
         free -m
         echo "--- processes by cpu"
         ps -eo pid,ppid,stat,etime,pcpu,pmem,rss,comm --sort=-pcpu | head -25
+        echo "--- unreachable browser processes (pid ppid stat etime pcpu rss nlwp wchan type)"
+        while IFS= read -r dir; do
+            unreachable_browser_ps "$dir"
+        done < <(printf '%s\n' "$pages" | sed -n 's/^SKIP \(\/[^ ]*playwright_chromiumdev_profile-[^ ]*\) browserType\.connectOverCDP.*/\1/p' | sort -u) || true
         echo "--- browser and dev server processes"
         echo "chrome processes: $(pgrep -fc 'chrom.*(headless|--remote-debugging)')"
         ps -o pid,stat,etime,pcpu,rss,args -p "$(pgrep -f 'flutter_tools.*snapshot.*run' | paste -sd, -)" 2>/dev/null | cut -c1-200

@@ -1,12 +1,13 @@
 // Usage: node scripts/ci-web-boot-stall-pages.js <web-runner-dir>
 const fs = require('fs');
+const http = require('http');
 const os = require('os');
 const path = require('path');
 
 setTimeout(() => {
-  console.log('TIMEOUT CDP diagnostics exceeded 30s');
+  console.log('TIMEOUT CDP diagnostics exceeded 38s');
   process.exit(0);
-}, 30000);
+}, 38000);
 
 const reason = (error) => String(error.message || error).split(/\r?\n/)[0];
 
@@ -30,6 +31,43 @@ function readPort(dir) {
   const value = /^\d+$/.test(port) ? Number(port) : 0;
   if (value < 1 || value > 65535) throw new Error('invalid DevToolsActivePort');
   return value;
+}
+
+// Absolute 2s deadline: a socket timeout alone lets a trickling or half-closed response hang.
+function getJson(port, route) {
+  return new Promise((resolve, reject) => {
+    const started = Date.now();
+    const req = http.get({ host: '127.0.0.1', port, path: route });
+    const timer = setTimeout(() => req.destroy(new Error(`${route} no answer in 2000ms`)), 2000);
+    const fail = (error) => { clearTimeout(timer); reject(error); };
+    req.on('error', fail);
+    req.on('response', (res) => {
+      let body = '';
+      res.setEncoding('utf8');
+      res.on('data', (chunk) => { body += chunk; });
+      res.on('error', fail);
+      res.on('aborted', () => fail(new Error(`${route} response aborted`)));
+      res.on('end', () => {
+        clearTimeout(timer);
+        if (res.statusCode !== 200) return reject(new Error(`${route} http=${res.statusCode}`));
+        try { resolve({ json: JSON.parse(body), ms: Date.now() - started }); } catch (error) { reject(error); }
+      });
+    });
+  });
+}
+
+// connectOverCDP attaches every target; the plain HTTP endpoints tell a hung browser from a slow attach.
+async function describeUnreachable(dir, port) {
+  try {
+    const version = await getJson(port, '/json/version');
+    console.log(`BROWSER_HTTP ${dir} ok ms=${version.ms} browser=${version.json.Browser}`);
+    const list = await getJson(port, '/json/list');
+    const targets = Array.isArray(list.json) ? list.json : [];
+    console.log(`TARGETS ${dir} ms=${list.ms} total=${targets.length}`);
+    targets.forEach((target) => console.log(`TARGET ${dir} id=${target.id} type=${target.type} url=${target.url}`));
+  } catch (error) {
+    console.log(`BROWSER_HTTP ${dir} fail ${reason(error)}`);
+  }
 }
 
 // Runs in the page: null once Flutter has a view, else what the boot still waits on.
@@ -72,13 +110,16 @@ async function inspectPage(dir, page) {
 }
 
 async function inspectProfile(chromium, dir) {
+  let port = 0;
   try {
-    const browser = await chromium.connectOverCDP(`http://127.0.0.1:${readPort(dir)}`, { timeout: 5000 });
+    port = readPort(dir);
+    const browser = await chromium.connectOverCDP(`http://127.0.0.1:${port}`, { timeout: 5000 });
     const pages = browser.contexts().flatMap((context) => context.pages());
     console.log(`TABS ${dir} total=${pages.length}`);
     for (const page of pages) await inspectPage(dir, page);
   } catch (error) {
     console.log(`SKIP ${dir} ${reason(error)}`);
+    if (port) await describeUnreachable(dir, port);
   }
 }
 
