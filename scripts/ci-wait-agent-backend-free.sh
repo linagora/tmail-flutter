@@ -17,10 +17,13 @@ agent_busy() {
 }
 
 # An aborted job whose workspace is gone leaves no one to remove its backend.
-# Owner is <workspace-root>/<job>/backend-docker; the visible root proves we see the same filesystem.
+# Only containers labelled with this Jenkins node are ours; owner is <workspace-root>/<job>/backend-docker.
 remove_orphaned_backend() {
-    local id owner job_dir
+    local id owner node job_dir
+    [ -n "${NODE_NAME:-}" ] || return 0
     for id in tmail-backend $(docker ps -aq --filter label=tmail.ci.pool=1 2>/dev/null); do
+        node=$(docker inspect "$id" --format '{{ index .Config.Labels "tmail.ci.node" }}' 2>/dev/null) || continue
+        [ "$node" = "$NODE_NAME" ] || continue
         owner=$(docker inspect "$id" --format '{{ index .Config.Labels "com.docker.compose.project.working_dir" }}' 2>/dev/null) || continue
         [ -n "$owner" ] || continue
         job_dir=$(dirname "$owner")

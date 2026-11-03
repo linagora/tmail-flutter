@@ -4,6 +4,7 @@ services:
     image: linagora/tmail-backend:memory-1.0.22.2
     labels:
       - tmail.ci.pool=1
+      - tmail.ci.node=${NODE_NAME:-}
     volumes:
       - ${SLOT_JMAP_PROPERTIES}:/root/conf/jmap.properties
       - ./jwt_publickey:/root/conf/jwt_publickey

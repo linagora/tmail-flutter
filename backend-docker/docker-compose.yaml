@@ -4,6 +4,8 @@ services:
   tmail-backend:
     image: linagora/tmail-backend:memory-1.0.22.2
     container_name: tmail-backend
+    labels:
+      - tmail.ci.node=${NODE_NAME:-}
     volumes:
       - ./jwt_publickey:/root/conf/jwt_publickey
       - ./jwt_privatekey:/root/conf/jwt_privatekey
