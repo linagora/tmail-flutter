@@ -2,21 +2,29 @@
 const fs = require('fs');
 const path = require('path');
 
-function findReports(dir, reports) {
-  let entries;
+const REPORT_NAMES = ['results.json', 'report.json'];
+
+function readEntries(dir) {
   try {
-    entries = fs.readdirSync(dir, { withFileTypes: true });
+    return fs.readdirSync(dir, { withFileTypes: true });
   } catch (_) {
-    return;
+    return [];
   }
-  for (const entry of entries) {
+}
+
+const isReportFile = (entry) => entry.isFile() && REPORT_NAMES.includes(entry.name);
+
+function addReport(file, reports) {
+  try {
+    reports.set(file, fs.statSync(file).mtimeMs);
+  } catch (_) {}
+}
+
+function findReports(dir, reports) {
+  for (const entry of readEntries(dir)) {
     const file = path.join(dir, entry.name);
     if (entry.isDirectory()) findReports(file, reports);
-    else if (entry.isFile() && ['results.json', 'report.json'].includes(entry.name)) {
-      try {
-        reports.set(file, fs.statSync(file).mtimeMs);
-      } catch (_) {}
-    }
+    else if (isReportFile(entry)) addReport(file, reports);
   }
 }
 
@@ -58,8 +66,7 @@ function printSuite(suite, titles = []) {
   for (const child of suite.suites || []) printSuite(child, prefix);
 }
 
-try {
-  const dir = process.argv[2];
+function newestReport(dir) {
   if (!dir) throw new Error('web-results-dir missing');
   const reports = new Map();
   findReports(path.resolve(dir), reports);
@@ -69,11 +76,19 @@ try {
   if (!newest) throw new Error(`no results.json or report.json found in ${dir} or sibling playwright-report`);
   const report = JSON.parse(fs.readFileSync(newest[0], 'utf8'));
   if (!Array.isArray(report.suites) || !report.stats) throw new Error(`invalid Playwright report: ${newest[0]}`);
+  return report;
+}
+
+function printReport(report) {
   for (const error of report.errors || []) console.log(`error ${firstLine(error.message || error.value || error)}`);
   for (const suite of report.suites) printSuite(suite);
   const stats = report.stats;
   const total = ['expected', 'unexpected', 'flaky', 'skipped'].reduce((sum, key) => sum + (Number(stats[key]) || 0), 0);
   console.log(`Playwright: total=${total} unexpected=${Number(stats.unexpected) || 0}`);
+}
+
+try {
+  printReport(newestReport(process.argv[2]));
 } catch (error) {
   console.log(`Playwright report unavailable: ${firstLine(error.message)}`);
 }
