@@ -1,8 +1,13 @@
 ARG FLUTTER_VERSION=3.47.9
 
-# instrumentisto/flutter is archived and has no 3.47.9 tag; gmeligio tracks current stable.
-# Digest pins the linux/amd64 manifest (digest wins over the tag).
+# instrumentisto/flutter is archived; gmeligio/flutter-web tracks Flutter stable.
+# Digest pins linux/amd64 and wins over the tag. To bump: change FLUTTER_VERSION
+# here, in .github/workflows/*.yaml and Jenkinsfile*, then take the amd64 digest from
+# `docker buildx imagetools inspect ghcr.io/gmeligio/flutter-web:<version>`.
 FROM --platform=amd64 ghcr.io/gmeligio/flutter-web:${FLUTTER_VERSION}@sha256:8af1fcd0a7f7e84580f30d7f915f44237bb7a032bd8f4e3135a64fbec1ce1756 AS build-env
+
+# Base image SHELL enables -x, which would print SENTRY_AUTH_TOKEN in build logs.
+SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
 
 ARG SENTRY_ORG
 ARG SENTRY_PROJECT
