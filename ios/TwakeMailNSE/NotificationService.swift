@@ -108,27 +108,39 @@ class NotificationService: UNNotificationServiceExtension {
                 tokenEndpointUrl: keychainSharingSession.tokenEndpoint,
                 oidcScopes: keychainSharingSession.oidcScopes,
                 isTWP: keychainSharingSession.isTWP,
-                onComplete: { (emails, errors) in
-                    errors.forEach { SentryManager.shared.capture(error: $0) }
+                onComplete: { result in
+                    result.errors.forEach { SentryManager.shared.capture(error: $0) }
 
-                    if emails.isEmpty {
-                        SentryManager.shared.capture(message: "NSE: getNewEmails returned empty list")
+                    let bookmark = DeliveryBookmarkUpdate.resolve(
+                        failed: result.failed || !result.errors.isEmpty,
+                        hasMoreChanges: result.hasMoreChanges,
+                        payloadState: newEmailDeliveryState,
+                        latestState: result.latestState
+                    )
+                    if case .write(let state) = bookmark {
+                        self.keychainController.updateEmailDeliveryStateToKeychain(
+                            accountId: keychainSharingSession.accountId,
+                            newEmailDeliveryState: state
+                        )
+                    }
+
+                    if result.emails.isEmpty {
+                        if case .write = bookmark {
+                            SentryManager.shared.addBreadcrumb(message: "NSE: getNewEmails returned empty list")
+                        } else {
+                            SentryManager.shared.capture(message: "NSE: getNewEmails returned empty list")
+                        }
                         self.showDefaultNotification(message: NSLocalizedString(self.newEmailDefaultMessageKey, comment: "Localizable"))
                         return self.notify()
                     }
 
-                    self.keychainController.updateEmailDeliveryStateToKeychain(
-                        accountId: keychainSharingSession.accountId,
-                        newEmailDeliveryState: newEmailDeliveryState
-                    )
-
                     let mailboxIdsBlockNotification = keychainSharingSession.mailboxIdsBlockNotification ?? []
 
                     if mailboxIdsBlockNotification.isEmpty {
-                        return self.showListNotification(emails: emails)
+                        return self.showListNotification(emails: result.emails)
                     } else {
                         let emailFiltered = self.filterEmailsToPushNotification(
-                            emails: emails,
+                            emails: result.emails,
                             mailboxIdsBlockNotification: mailboxIdsBlockNotification)
                         return self.showListNotification(emails: emailFiltered)
                     }

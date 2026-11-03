@@ -10,9 +10,7 @@ class JmapClient {
     private var tokenRefreshManager: TokenRefreshManager?
     private var authenticationInterceptor: AuthenticationInterceptor?
     
-    private var hasMoreChanges: Bool = true
-    private var currentSinceState: String?
-    private var totalListEmails = [Email]()
+    private var walker = EmailChangesWalker(sinceState: "")
     private var listErrors = [Error]()
 
     func getNewEmails(
@@ -25,7 +23,7 @@ class JmapClient {
         tokenEndpointUrl: String?,
         oidcScopes: [String]?,
         isTWP: Bool?,
-        onComplete: @escaping ([Email], [Error]) -> Void
+        onComplete: @escaping (NewEmailFetchResult) -> Void
     ) {
         if (authenticationType == AuthenticationType.basic) {
             authentication = AuthenticationCredential(
@@ -54,9 +52,7 @@ class JmapClient {
             tokenRefreshManager: tokenRefreshManager
         )
         
-        hasMoreChanges = true
-        currentSinceState = sinceState
-        totalListEmails = [Email]()
+        walker = EmailChangesWalker(sinceState: sinceState)
         listErrors = [Error]()
         
         self.handleGetEmailChanges(
@@ -66,18 +62,16 @@ class JmapClient {
         )
     }
     
-    private func handleGetEmailChanges(apiUrl: String, 
+    private func handleGetEmailChanges(apiUrl: String,
                                        accountId: String,
-                                       onComplete: @escaping ([Email], [Error]) -> Void) {
-        guard hasMoreChanges, let sinceState = currentSinceState else {
-            if !self.totalListEmails.isEmpty {
-                let sortedListEmails = self.sortListEmails(currentListEmails: self.totalListEmails)
-                self.totalListEmails = sortedListEmails
-            }
-            
-            return onComplete(self.totalListEmails, self.listErrors)
+                                       onComplete: @escaping (NewEmailFetchResult) -> Void) {
+        guard walker.shouldFetch else {
+            return finish(onComplete)
         }
-        
+
+        let sinceState = walker.sinceState
+        walker.beginPage()
+
         let jmapRequestObject = JmapRequestGenerator.shared.createEmailChangesRequest(
             accountId: accountId,
             sinceState: sinceState
@@ -89,41 +83,38 @@ class JmapClient {
             headers: HTTPHeaders([jmapHeader]),
             interceptor: authenticationInterceptor,
             onSuccess: { (data: JmapResponseObject<Email>) in
-                if let response = data.parsing(methodName: JmapConstants.EMAIL_GET_METHOD_NAME, methodCallId: "c1") {
-                    if let listEmail = response.list, 
-                       !listEmail.isEmpty {
-                        self.totalListEmails.append(contentsOf: listEmail)
-                    }
-                    self.hasMoreChanges = response.hasMoreChanges ?? false
-                    self.currentSinceState = response.newState
-                    
+                guard let page = data.emailChangesPage() else {
+                    self.listErrors.append(JmapExceptions.notFoundNewEmails)
+                    self.walker.fail()
+                    return self.finish(onComplete)
+                }
+                let fetchAnotherPage = self.walker.apply(page)
+                if fetchAnotherPage {
                     self.handleGetEmailChanges(apiUrl: apiUrl, accountId: accountId, onComplete: onComplete)
                 } else {
-                    self.listErrors.append(JmapExceptions.notFoundNewEmails)
-                    self.hasMoreChanges = false
-                    self.currentSinceState = nil
-                    
-                    if !self.totalListEmails.isEmpty {
-                        let sortedListEmails = self.sortListEmails(currentListEmails: self.totalListEmails)
-                        self.totalListEmails = sortedListEmails
-                    }
-                    
-                    onComplete(self.totalListEmails, self.listErrors)
+                    self.finish(onComplete)
                 }
             },
             onFailure: { error in
                 self.listErrors.append(error)
-                self.hasMoreChanges = false
-                self.currentSinceState = nil
-                
-                if !self.totalListEmails.isEmpty {
-                    let sortedListEmails = self.sortListEmails(currentListEmails: self.totalListEmails)
-                    self.totalListEmails = sortedListEmails
-                }
-                
-                onComplete(self.totalListEmails, self.listErrors)
+                self.walker.fail()
+                self.finish(onComplete)
             }
         )
+    }
+
+    private func finish(_ onComplete: @escaping (NewEmailFetchResult) -> Void) {
+        var emails = walker.emails
+        if !emails.isEmpty {
+            emails = sortListEmails(currentListEmails: emails)
+        }
+        onComplete(NewEmailFetchResult(
+            emails: emails,
+            errors: listErrors,
+            latestState: walker.latestState,
+            hasMoreChanges: walker.hasMoreChanges,
+            failed: walker.failed
+        ))
     }
     
     private func sortListEmails(currentListEmails: [Email]) -> [Email] {
