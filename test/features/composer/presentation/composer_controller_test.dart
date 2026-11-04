@@ -23,10 +23,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/account/account.dart';
+import 'package:jmap_dart_client/jmap/core/capability/default_capability.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:server_settings/server_settings/capability_server_settings.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -73,7 +76,10 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_m
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_draft_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/refresh_composer_attachments_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_email_content_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_email_request_read_receipt_flag_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_selected_identity_extension.dart';
+import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_capabilities.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/drive_attachment_handler.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/web_composer_reload_cache_handler.dart';
@@ -105,6 +111,8 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oi
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/paywall_launcher.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/providers/premium_cta_provider.dart';
+import 'package:server_settings/server_settings/tmail_server_settings.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/state/get_server_setting_state.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_image_picker_interactor.dart';
@@ -133,6 +141,7 @@ import 'package:workplace/presentation/model/drive_pick_state.dart';
 
 import '../../../fixtures/account_fixtures.dart';
 import '../../../fixtures/capturing_log_handler.dart';
+import '../../../fixtures/delegation_fixtures.dart';
 import '../../../fixtures/recording_paywall_launcher.dart';
 import '../../../fixtures/session_fixtures.dart';
 import '../../../fixtures/widget_fixtures.dart';
@@ -200,6 +209,14 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   AccountId? currentAccountId = AccountFixtures.aliceAccountId;
   @override
   Session? currentSession = SessionFixtures.aliceSession;
+
+  /// Override instead of `when`: non-nullable mixin getter cannot be stubbed safely.
+  ShownAccountCapabilities shownAccountCapabilitiesOverride =
+      ShownAccountCapabilities.of(null);
+
+  @override
+  ShownAccountCapabilities get shownAccountCapabilities =>
+      shownAccountCapabilitiesOverride;
 
   @override
   Rxn<AccountId> get accountId => Rxn(currentAccountId);
@@ -3668,6 +3685,99 @@ void main() {
             .deleteEmailPermanentlyInBackground(null))
             .called(2);
       });
+    });
+
+    group('setupEmailRequestReadReceiptFlag:', () {
+      // Extension reads capabilityServerSettings off the session (not a mockable member).
+      Session sessionWithServerSettings() {
+        final base = SessionFixtures.aliceSession;
+        final alice = base.accounts[AccountFixtures.aliceAccountId]!;
+        return Session(
+          {
+            ...base.capabilities,
+            capabilityServerSettings: DefaultCapability(<String, dynamic>{}),
+          },
+          {
+            AccountFixtures.aliceAccountId: Account(
+              alice.name,
+              alice.isPersonal,
+              alice.isReadOnly,
+              {
+                ...alice.accountCapabilities,
+                capabilityServerSettings: DefaultCapability(<String, dynamic>{}),
+              },
+            ),
+          },
+          {
+            ...base.primaryAccounts,
+            capabilityServerSettings: AccountFixtures.aliceAccountId,
+          },
+          base.username,
+          base.apiUrl,
+          base.downloadUrl,
+          base.uploadUrl,
+          base.eventSourceUrl,
+          base.state,
+        );
+      }
+
+      setUp(() {
+        mockMailboxDashBoardController.currentSession = sessionWithServerSettings();
+        when(mockComposerRepository.removeCollapsedExpandedSignatureEffect(
+          emailContent: anyNamed('emailContent'),
+        )).thenAnswer((_) async => '');
+        when(mockUploadController.attachmentsUploaded).thenReturn([]);
+        composerController!.currentEmailActionType = EmailActionType.compose;
+        composerController!.hasRequestReadReceipt.value = false;
+      });
+
+      test(
+        'SHOULD NOT call getServerSettingInteractor and keep hasRequestReadReceipt false '
+        'WHEN a delegated account is shown',
+        () async {
+          mockMailboxDashBoardController.shownAccountCapabilitiesOverride =
+              ShownAccountCapabilities.of(ActiveAccount.delegated(
+            DelegationFixtures.session(),
+            DelegationFixtures.bobAccountId,
+          ));
+
+          composerController!.setupEmailRequestReadReceiptFlag(
+            ComposerArguments(emailActionType: EmailActionType.compose),
+          );
+          await pumpEventQueue();
+
+          verifyNever(mockGetServerSettingInteractor.execute(any));
+          expect(composerController!.hasRequestReadReceipt.value, isFalse);
+        },
+      );
+
+      test(
+        'SHOULD call getServerSettingInteractor with Alice accountId and follow the setting '
+        'WHEN my own account is shown',
+        () async {
+          mockMailboxDashBoardController.shownAccountCapabilitiesOverride =
+              ShownAccountCapabilities.of(
+            ActiveAccount.personal(DelegationFixtures.session()),
+          );
+          when(mockGetServerSettingInteractor.execute(any)).thenAnswer(
+            (_) => Stream.fromIterable([
+              Right(GettingServerSetting()),
+              Right(GetServerSettingSuccess(
+                TMailServerSettingOptions(alwaysReadReceipts: true),
+              )),
+            ]),
+          );
+
+          composerController!.setupEmailRequestReadReceiptFlag(
+            ComposerArguments(emailActionType: EmailActionType.compose),
+          );
+          await pumpEventQueue();
+
+          verify(mockGetServerSettingInteractor.execute(DelegationFixtures.aliceAccountId))
+              .called(1);
+          expect(composerController!.hasRequestReadReceipt.value, isTrue);
+        },
+      );
     });
   });
 }
