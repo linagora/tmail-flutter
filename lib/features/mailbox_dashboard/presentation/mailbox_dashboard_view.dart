@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailb
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/mailbox_dashboard_provider_listener_delegate_factories.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/riverpod_widgets/mailbox_dashboard_provider_listener_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/view/account_switch_loading_dialog_host.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/shown_account_input_blocker.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/sending_queue_view.dart';
@@ -76,7 +77,12 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
     return MailboxDashboardProviderListenerWidget(
       delegateFactories: mailboxDashboardProviderListenerDelegateFactories,
-      child: ShownAccountInputBlocker(child: child),
+      child: Stack(
+        children: [
+          ShownAccountInputBlocker(child: child),
+          const AccountSwitchLoadingDialogHost(),
+        ],
+      ),
     );
   }
 }

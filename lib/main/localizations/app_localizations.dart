@@ -6224,4 +6224,12 @@ class AppLocalizations {
       args: [count],
     );
   }
+
+  String openingOwnerMailbox(String name) {
+    return Intl.message(
+      "Opening $name's mailbox…",
+      name: 'openingOwnerMailbox',
+      args: [name],
+    );
+  }
 }

@@ -5857,5 +5857,15 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "openingOwnerMailbox": "Opening {name}'s mailbox…",
+  "@openingOwnerMailbox": {
+    "type": "text",
+    "placeholders_order": [
+      "name"
+    ],
+    "placeholders": {
+      "name": {}
+    }
   }
 }
