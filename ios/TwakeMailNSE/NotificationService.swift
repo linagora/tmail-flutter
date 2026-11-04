@@ -135,13 +135,13 @@ class NotificationService: UNNotificationServiceExtension {
         persist(bookmark, session: session)
 
         // A failed fetch keeps the bookmark, so presenting its partial emails would repeat them on the next push.
-        guard !result.failed, !result.emails.isEmpty else {
+        guard !result.presentableEmails.isEmpty else {
             reportEmptyResult(result, bookmark: bookmark)
             return presentDefaultNewEmail()
         }
 
         let emailFiltered = filterEmailsToPushNotification(
-            emails: result.emails,
+            emails: result.presentableEmails,
             mailboxIdsBlockNotification: session.mailboxIdsBlockNotification ?? []
         )
         showListNotification(emails: emailFiltered)

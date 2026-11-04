@@ -55,6 +55,9 @@ struct NewEmailFetchResult {
     let latestState: String?
     let hasMoreChanges: Bool
     let failed: Bool
+
+    /// A failed fetch keeps the bookmark, so its partial emails would repeat on the next push.
+    var presentableEmails: [Email] { failed ? [] : emails }
 }
 
 enum DeliveryBookmarkUpdate: Equatable {
@@ -97,10 +100,19 @@ extension JmapResponseObject where T == Email {
         !newState.isEmpty else {
             return nil
         }
+        // Every created id must come back in the list or notFound, or the bookmark would skip it.
+        guard Self.accountsForCreated(changes.created, emails: emailList, notFound: emailGet.notFound) else {
+            return nil
+        }
         return EmailChangesPage(
             emails: emailList,
             hasMoreChanges: hasMoreChanges,
             newState: newState
         )
+    }
+
+    private static func accountsForCreated(_ created: [String]?, emails: [Email], notFound: [String]?) -> Bool {
+        let returned = Set(emails.map(\.id)).union(notFound ?? [])
+        return Set(created ?? []).isSubset(of: returned)
     }
 }

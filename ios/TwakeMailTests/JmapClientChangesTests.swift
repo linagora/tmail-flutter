@@ -150,6 +150,37 @@ final class JmapClientChangesTests: XCTestCase {
         XCTAssertNil(try makeResponse(changes: changes).emailChangesPage())
     }
 
+    func testEmailChangesWithoutHasMoreChangesReturnsNilPage() throws {
+        let changes = Self.changesArgs(hasMoreChanges: nil)
+        XCTAssertNil(try makeResponse(changes: changes).emailChangesPage())
+    }
+
+    func testEmailChangesWithoutNewStateReturnsNilPage() throws {
+        let changes = Self.changesArgs(newState: nil)
+        XCTAssertNil(try makeResponse(changes: changes).emailChangesPage())
+    }
+
+    func testCreatedIdMissingFromListAndNotFoundReturnsNilPage() throws {
+        let changes = Self.changesArgs(created: ["e1", "e2"])
+        let emailGet = Self.emailGetArgs(list: [["id": "e1"]])
+        XCTAssertNil(try makeResponse(changes: changes, emailGet: emailGet).emailChangesPage())
+    }
+
+    func testCreatedIdInNotFoundKeepsPage() throws {
+        let changes = Self.changesArgs(created: ["e1", "e2"])
+        let emailGet = Self.emailGetArgs(list: [["id": "e1"]], notFound: ["e2"])
+        let page = try XCTUnwrap(try makeResponse(changes: changes, emailGet: emailGet).emailChangesPage())
+        XCTAssertEqual(page.emails.map(\.id), ["e1"])
+    }
+
+    func testFailedResultHasNoPresentableEmails() {
+        let email = Email(id: "e1", subject: "Hi", preview: nil, from: nil, receivedAt: nil, mailboxIds: nil)
+        let failed = NewEmailFetchResult(emails: [email], errors: [], latestState: "s1", hasMoreChanges: false, failed: true)
+        let succeeded = NewEmailFetchResult(emails: [email], errors: [], latestState: "s1", hasMoreChanges: false, failed: false)
+        XCTAssertTrue(failed.presentableEmails.isEmpty)
+        XCTAssertEqual(succeeded.presentableEmails.map(\.id), ["e1"])
+    }
+
     func testEmptyNewStateReturnsNilPage() throws {
         let changes = Self.changesArgs(newState: "")
         XCTAssertNil(try makeResponse(changes: changes).emailChangesPage())
@@ -207,16 +238,20 @@ final class JmapClientChangesTests: XCTestCase {
     }
 
     /// Email/changes arguments; a nil value omits that key.
-    private static func changesArgs(newState: String? = "s1", hasMoreChanges: Bool? = false) -> [String: Any] {
-        var args: [String: Any] = ["accountId": "acc", "oldState": "s0", "created": []]
+    private static func changesArgs(
+        newState: String? = "s1",
+        hasMoreChanges: Bool? = false,
+        created: [String] = []
+    ) -> [String: Any] {
+        var args: [String: Any] = ["accountId": "acc", "oldState": "s0", "created": created]
         args["newState"] = newState
         args["hasMoreChanges"] = hasMoreChanges
         return args
     }
 
     /// Email/get arguments; a nil list omits the key.
-    private static func emailGetArgs(list: [[String: Any]]? = []) -> [String: Any] {
-        var args: [String: Any] = ["accountId": "acc", "state": "s1"]
+    private static func emailGetArgs(list: [[String: Any]]? = [], notFound: [String] = []) -> [String: Any] {
+        var args: [String: Any] = ["accountId": "acc", "state": "s1", "notFound": notFound]
         args["list"] = list
         return args
     }
