@@ -16,11 +16,11 @@ ARG SENTRY_RELEASE
 ARG VCS_REF
 ARG GITHUB_SHA
 
-# Image defaults to user flutter; root only for COPY ownership.
+# Image defaults to user flutter; root only to chown the WORKDIR, which Docker creates as root.
 USER root
 WORKDIR /app
-COPY . .
-RUN chown -R flutter:flutter /app
+COPY --chown=flutter:flutter . .
+RUN chown flutter:flutter /app
 
 USER flutter
 
