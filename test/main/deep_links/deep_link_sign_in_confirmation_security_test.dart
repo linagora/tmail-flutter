@@ -4,10 +4,11 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Response;
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token_oidc.dart';
@@ -32,26 +33,43 @@ class _RecordingAppToast extends Fake implements AppToast {
   }
 }
 
-/// Stands in for the JMAP session request: the server reports [identities]
+/// Stands in for the JMAP session request: the server reports [username]
 /// as the account of the link token.
 class _FakeAccountVerifier extends DeepLinkAccountVerifier {
-  _FakeAccountVerifier(this.identities);
+  _FakeAccountVerifier(this.username);
 
-  final List<String> identities;
+  final String username;
   int calls = 0;
 
   @override
-  Future<List<String>> getAccountIdentities(OpenAppDeepLinkData data) async {
+  Future<String> getAccountUsername(OpenAppDeepLinkData data) async {
     calls++;
-    return identities;
+    return username;
   }
 }
 
+/// Fails with [errors] in turn, then reports alice@twake.app.
 class _FailingAccountVerifier extends DeepLinkAccountVerifier {
+  _FailingAccountVerifier(this.errors);
+
+  final List<Object> errors;
+  int calls = 0;
+
   @override
-  Future<List<String>> getAccountIdentities(OpenAppDeepLinkData data) =>
-      Future.error(Exception('network down'));
+  Future<String> getAccountUsername(OpenAppDeepLinkData data) async {
+    calls++;
+    if (errors.isNotEmpty) throw errors.removeAt(0);
+    return 'alice@twake.app';
+  }
 }
+
+DioException _dioError(DioExceptionType type, {int? statusCode}) => DioException(
+  requestOptions: RequestOptions(path: '/.well-known/jmap'),
+  type: type,
+  response: statusCode == null
+      ? null
+      : Response(requestOptions: RequestOptions(path: '/.well-known/jmap'), statusCode: statusCode),
+);
 
 class _CountingAutoSignInInteractor extends Fake implements AutoSignInViaDeepLinkInteractor {
   int calls = 0;
@@ -91,7 +109,7 @@ void main() {
     Get.put(ImagePaths());
     Get.put<AppToast>(toast);
     Get.put<AutoSignInViaDeepLinkInteractor>(interactor);
-    Get.put<DeepLinkAccountVerifier>(_FakeAccountVerifier(['alice@twake.app']));
+    Get.put<DeepLinkAccountVerifier>(_FakeAccountVerifier('alice@twake.app'));
   });
 
   tearDown(Get.reset);
@@ -194,7 +212,7 @@ void main() {
     testWidgets(
       'SHOULD refuse the link WHEN its username is not the account of its token',
       (tester) async {
-        Get.replace<DeepLinkAccountVerifier>(_FakeAccountVerifier(['attacker@twake.app']));
+        Get.replace<DeepLinkAccountVerifier>(_FakeAccountVerifier('attacker@twake.app'));
         await pumpApp(tester);
         var failed = false;
 
@@ -213,7 +231,7 @@ void main() {
     );
 
     testWidgets('SHOULD refuse the link WHEN the server cannot be reached', (tester) async {
-      Get.replace<DeepLinkAccountVerifier>(_FailingAccountVerifier());
+      Get.replace<DeepLinkAccountVerifier>(_FailingAccountVerifier([Exception('network down')]));
       await pumpApp(tester);
       var failed = false;
 
@@ -228,6 +246,63 @@ void main() {
       expect(interactor.calls, 0);
       expect(failed, isTrue);
     });
+
+    testWidgets(
+      'SHOULD ask again for the same link WHEN the account check failed for a transient reason',
+      (tester) async {
+        final verifier = _FailingAccountVerifier([_dioError(DioExceptionType.connectionTimeout)]);
+        Get.replace<DeepLinkAccountVerifier>(verifier);
+        await pumpApp(tester);
+
+        deepLinkManager.handleOpenAppDeepLinks(openAppDeepLinkData: _link(), isSignedIn: false);
+        await tester.pumpAndSettle();
+        expect(signInDialog, findsNothing);
+
+        deepLinkManager.handleOpenAppDeepLinks(openAppDeepLinkData: _link(), isSignedIn: false);
+        await tester.pumpAndSettle();
+
+        expect(verifier.calls, 2);
+        expect(signInDialog, findsOneWidget);
+        expect(interactor.calls, 0);
+      },
+    );
+
+    testWidgets(
+      'SHOULD NOT check again a link whose token the server refused',
+      (tester) async {
+        final verifier = _FailingAccountVerifier([
+          _dioError(DioExceptionType.badResponse, statusCode: 401),
+        ]);
+        Get.replace<DeepLinkAccountVerifier>(verifier);
+        await pumpApp(tester);
+
+        deepLinkManager.handleOpenAppDeepLinks(openAppDeepLinkData: _link(), isSignedIn: false);
+        await tester.pumpAndSettle();
+        deepLinkManager.handleOpenAppDeepLinks(openAppDeepLinkData: _link(), isSignedIn: false);
+        await tester.pumpAndSettle();
+
+        expect(verifier.calls, 1);
+        expect(toast.errors, hasLength(1));
+        expect(signInDialog, findsNothing);
+      },
+    );
+
+    testWidgets(
+      'SHOULD NOT check again a link whose username is not the account of its token',
+      (tester) async {
+        final verifier = _FakeAccountVerifier('attacker@twake.app');
+        Get.replace<DeepLinkAccountVerifier>(verifier);
+        await pumpApp(tester);
+
+        deepLinkManager.handleOpenAppDeepLinks(openAppDeepLinkData: _link(), isSignedIn: false);
+        await tester.pumpAndSettle();
+        deepLinkManager.handleOpenAppDeepLinks(openAppDeepLinkData: _link(), isSignedIn: false);
+        await tester.pumpAndSettle();
+
+        expect(verifier.calls, 1);
+        expect(toast.errors, hasLength(1));
+      },
+    );
 
     testWidgets(
       'SHOULD NOT prompt again for a link the user already cancelled',
@@ -283,7 +358,7 @@ void main() {
       'SHOULD NOT offer a switch WHEN the link account only differs by hidden characters',
       (tester) async {
         const lookalike = 'alice@twake.app‎';
-        Get.replace<DeepLinkAccountVerifier>(_FakeAccountVerifier([lookalike]));
+        Get.replace<DeepLinkAccountVerifier>(_FakeAccountVerifier(lookalike));
         await pumpApp(tester);
         var ignored = false;
 
@@ -302,7 +377,7 @@ void main() {
     testWidgets(
       'SHOULD ask the account reported by the server in the switch dialog',
       (tester) async {
-        Get.replace<DeepLinkAccountVerifier>(_FakeAccountVerifier(['bob@twake.app']));
+        Get.replace<DeepLinkAccountVerifier>(_FakeAccountVerifier('bob@twake.app'));
         await pumpApp(tester);
 
         deepLinkManager.handleOpenAppDeepLinks(

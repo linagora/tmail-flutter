@@ -36,7 +36,7 @@ class _RecordingAppToast extends AppToast {
 /// The server reports the link username as the account of the link token.
 class _LinkUsernameAccountVerifier extends DeepLinkAccountVerifier {
   @override
-  Future<List<String>> getAccountIdentities(OpenAppDeepLinkData data) async => [data.username];
+  Future<String> getAccountUsername(OpenAppDeepLinkData data) async => data.username;
 }
 
 class _FakeAutoSignInInteractor extends Fake implements AutoSignInViaDeepLinkInteractor {

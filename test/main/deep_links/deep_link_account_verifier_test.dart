@@ -23,7 +23,7 @@ void main() {
   });
 
   test(
-    'SHOULD return the session username then the account names '
+    'SHOULD return the session username, not the names of the other accounts, '
     'WHEN the server accepts the link token',
     () async {
       adapter.onGet(
@@ -38,12 +38,18 @@ void main() {
         headers: {'Authorization': 'Bearer link-token'},
       );
 
-      final identities = await verifier.getAccountIdentities(link);
+      final username = await verifier.getAccountUsername(link);
 
-      expect(identities, ['alice@twake.app', 'alice@twake.app', 'team@twake.app']);
+      expect(username, 'alice@twake.app');
       expect(dio.options.baseUrl, 'https://jmap.twake.app');
     },
   );
+
+  test('SHOULD throw WHEN the session has no username', () async {
+    adapter.onGet('/.well-known/jmap', (server) => server.reply(200, {'accounts': {}}));
+
+    expect(() => verifier.getAccountUsername(link), throwsA(isA<StateError>()));
+  });
 
   test('SHOULD throw WHEN the server refuses the link token', () async {
     adapter.onGet(
@@ -51,6 +57,6 @@ void main() {
       (server) => server.reply(401, {'error': 'unauthorized'}),
     );
 
-    expect(() => verifier.getAccountIdentities(link), throwsA(isA<DioException>()));
+    expect(() => verifier.getAccountUsername(link), throwsA(isA<DioException>()));
   });
 }

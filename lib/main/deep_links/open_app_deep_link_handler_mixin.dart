@@ -3,6 +3,7 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/string_convert.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
@@ -98,6 +99,9 @@ mixin OpenAppDeepLinkHandlerMixin {
         onFailureCallback?.call();
         return;
       }
+      // From here every outcome is the user's decision (or an account already
+      // signed in): the link must not prompt again when Home re-reads it.
+      _markSignInLinkHandled(openAppDeepLinkData);
 
       if (isSignedIn) {
         if (username == null ||
@@ -164,13 +168,13 @@ mixin OpenAppDeepLinkHandlerMixin {
     }
   }
 
-  /// One sign-in link at a time, and each link only once per process.
+  /// One sign-in link at a time, and a link already decided is not handled again.
   bool _claimSignInLink(OpenAppDeepLinkData openAppDeepLinkData) {
     if (_isSignInLinkInProgress) {
       logWarning('DeepLinksManager::_claimSignInLink: another sign-in link is being confirmed');
       return false;
     }
-    if (!_handledSignInLinkTokens.add(openAppDeepLinkData.accessToken)) {
+    if (_handledSignInLinkTokens.contains(openAppDeepLinkData.accessToken)) {
       log('DeepLinksManager::_claimSignInLink: sign-in link already handled');
       return false;
     }
@@ -178,18 +182,27 @@ mixin OpenAppDeepLinkHandlerMixin {
     return true;
   }
 
-  /// Returns the server identity matching the link username, or null when the
-  /// server can't be reached or the token belongs to another account.
+  /// A link is handled for good once the user decided, or once the server
+  /// refused it for good. A transient failure leaves it retryable.
+  void _markSignInLinkHandled(OpenAppDeepLinkData openAppDeepLinkData) {
+    _handledSignInLinkTokens.add(openAppDeepLinkData.accessToken);
+  }
+
+  /// Returns the server account of the link token when it is the link
+  /// username, or null when the server can't be reached or the token belongs
+  /// to another account.
   Future<String?> _verifyLinkAccount(OpenAppDeepLinkData openAppDeepLinkData) async {
     try {
       final verifier = Get.find<DeepLinkAccountVerifier>();
-      final identities = await verifier.getAccountIdentities(openAppDeepLinkData);
-      final matchingIdentity = identities.firstWhereOrNull(
-        (identity) => OpenAppDeepLinkData.isSameUsername(identity, openAppDeepLinkData.username),
-      );
-      if (matchingIdentity != null) return matchingIdentity;
-
+      final accountUsername = await verifier.getAccountUsername(openAppDeepLinkData);
+      if (OpenAppDeepLinkData.isSameUsername(accountUsername, openAppDeepLinkData.username)) {
+        return accountUsername;
+      }
       logWarning('DeepLinksManager::_verifyLinkAccount: the link username is not the account of its token');
+      _markSignInLinkHandled(openAppDeepLinkData);
+    } on DioException catch (e) {
+      logWarning('DeepLinksManager::_verifyLinkAccount:DioException = ${e.type} ${e.response?.statusCode}');
+      if (_isTokenRefused(e)) _markSignInLinkHandled(openAppDeepLinkData);
     } catch (e) {
       logWarning('DeepLinksManager::_verifyLinkAccount:Exception = $e');
     }
@@ -197,6 +210,10 @@ mixin OpenAppDeepLinkHandlerMixin {
     _showErrorToast((localizations) => localizations.deepLinkAccountCannotBeVerified);
     return null;
   }
+
+  /// The server answered that the token is not valid: retrying can't help.
+  static bool _isTokenRefused(DioException exception) =>
+      const {401, 403}.contains(exception.response?.statusCode);
 
   void _notifyLinkRefused(OpenAppDeepLinkData openAppDeepLinkData) {
     // A bare openapp link (web "Open in app" banner) only brings the app up.

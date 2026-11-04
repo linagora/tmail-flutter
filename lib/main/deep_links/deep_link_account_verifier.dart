@@ -18,9 +18,13 @@ class DeepLinkAccountVerifier {
   DeepLinkAccountVerifier({Dio Function()? createDio})
       : _createDio = createDio ?? Dio.new;
 
-  /// Returns the identities the server reports for the link token: the session
-  /// `username` first, then the names of the accounts it can access.
-  Future<List<String>> getAccountIdentities(OpenAppDeepLinkData data) async {
+  /// Returns the `username` of the JMAP session of the link token: the
+  /// account a sign-in with this token opens. Throws when the server refuses
+  /// the token, can't be reached, or sends no username.
+  ///
+  /// Only the session username counts: the names of the other accounts the
+  /// token can access (team mailboxes) are not who the user signs in as.
+  Future<String> getAccountUsername(OpenAppDeepLinkData data) async {
     final dio = _createDio()
       ..options = BaseOptions(
         baseUrl: data.jmapUrl,
@@ -34,24 +38,13 @@ class DeepLinkAccountVerifier {
 
     try {
       final response = await dio.get<Map<String, dynamic>>(_sessionPath);
-      return _identitiesOf(response.data ?? const {});
+      final username = response.data?['username'];
+      if (username is! String || username.trim().isEmpty) {
+        throw StateError('The JMAP session has no username');
+      }
+      return username;
     } finally {
       dio.close(force: true);
     }
-  }
-
-  static List<String> _identitiesOf(Map<String, dynamic> session) {
-    final accounts = session['accounts'];
-    final accountNames = accounts is Map
-        ? accounts.values
-            .whereType<Map>()
-            .map((account) => account['name'])
-            .whereType<String>()
-        : const <String>[];
-
-    return [
-      if (session['username'] is String) session['username'] as String,
-      ...accountNames,
-    ].where((identity) => identity.trim().isNotEmpty).toList();
   }
 }
