@@ -79,10 +79,12 @@ enum DeliveryBookmarkUpdate: Equatable {
 
 extension JmapResponseObject where T == Email {
     func emailChangesPage() -> EmailChangesPage? {
+        // A missing Email/get list must also fail the page, or the bookmark skips the created emails.
         guard let emailGet = parsing(
             methodName: JmapConstants.EMAIL_GET_METHOD_NAME,
             methodCallId: "c1"
-        ) else {
+        ),
+        let emailList = emailGet.list else {
             return nil
         }
         // An incomplete Email/changes must fail the page so the bookmark is kept.
@@ -96,7 +98,7 @@ extension JmapResponseObject where T == Email {
             return nil
         }
         return EmailChangesPage(
-            emails: emailGet.list ?? [],
+            emails: emailList,
             hasMoreChanges: hasMoreChanges,
             newState: newState
         )

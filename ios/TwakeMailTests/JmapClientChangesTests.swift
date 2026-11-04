@@ -142,88 +142,31 @@ final class JmapClientChangesTests: XCTestCase {
     }
 
     func testMissingEmailChangesReturnsNilPage() throws {
-        let response = try decode("""
-        {
-          "sessionState": "session",
-          "methodResponses": [
-            ["Email/get", {"accountId": "acc", "state": "s1", "list": []}, "c1"]
-          ]
-        }
-        """)
-        XCTAssertNil(response.emailChangesPage())
+        XCTAssertNil(try makeResponse(changes: nil).emailChangesPage())
     }
 
     func testEmailChangesWithoutStateFieldsReturnsNilPage() throws {
-        let response = try decode("""
-        {
-          "sessionState": "session",
-          "methodResponses": [
-            ["Email/changes", {"accountId": "acc", "oldState": "s0", "created": []}, "c0"],
-            ["Email/get", {"accountId": "acc", "state": "s1", "list": []}, "c1"]
-          ]
-        }
-        """)
-        XCTAssertNil(response.emailChangesPage())
+        let changes = Self.changesArgs(newState: nil, hasMoreChanges: nil)
+        XCTAssertNil(try makeResponse(changes: changes).emailChangesPage())
     }
 
     func testEmptyNewStateReturnsNilPage() throws {
-        let response = try decode("""
-        {
-          "sessionState": "session",
-          "methodResponses": [
-            ["Email/changes", {
-              "accountId": "acc",
-              "oldState": "s0",
-              "newState": "",
-              "hasMoreChanges": false,
-              "created": []
-            }, "c0"],
-            ["Email/get", {"accountId": "acc", "state": "s1", "list": []}, "c1"]
-          ]
-        }
-        """)
-        XCTAssertNil(response.emailChangesPage())
+        let changes = Self.changesArgs(newState: "")
+        XCTAssertNil(try makeResponse(changes: changes).emailChangesPage())
     }
 
     func testMissingEmailGetReturnsNilPage() throws {
-        let response = try decode("""
-        {
-          "sessionState": "session",
-          "methodResponses": [
-            ["Email/changes", {
-              "accountId": "acc",
-              "oldState": "s0",
-              "newState": "s1",
-              "hasMoreChanges": false,
-              "created": []
-            }, "c0"]
-          ]
-        }
-        """)
-        XCTAssertNil(response.emailChangesPage())
+        XCTAssertNil(try makeResponse(emailGet: nil).emailChangesPage())
+    }
+
+    func testEmailGetWithoutListReturnsNilPage() throws {
+        let emailGet = Self.emailGetArgs(list: nil)
+        XCTAssertNil(try makeResponse(emailGet: emailGet).emailChangesPage())
     }
 
     func testParsesNonEmptyEmailGetList() throws {
-        let response = try decode("""
-        {
-          "sessionState": "session",
-          "methodResponses": [
-            ["Email/changes", {
-              "accountId": "acc",
-              "oldState": "s0",
-              "newState": "s1",
-              "hasMoreChanges": false,
-              "created": ["e1"]
-            }, "c0"],
-            ["Email/get", {
-              "accountId": "acc",
-              "state": "s1",
-              "list": [{"id": "e1", "subject": "Hi"}]
-            }, "c1"]
-          ]
-        }
-        """)
-        let page = try XCTUnwrap(response.emailChangesPage())
+        let emailGet = Self.emailGetArgs(list: [["id": "e1", "subject": "Hi"]])
+        let page = try XCTUnwrap(try makeResponse(emailGet: emailGet).emailChangesPage())
         XCTAssertEqual(page.emails.map(\.id), ["e1"])
         XCTAssertEqual(page.newState, "s1")
         XCTAssertFalse(page.hasMoreChanges)
@@ -250,7 +193,31 @@ final class JmapClientChangesTests: XCTestCase {
         XCTAssertEqual(walker.latestState, "s1")
     }
 
-    private func decode(_ json: String) throws -> JmapResponseObject<Email> {
-        try JSONDecoder().decode(JmapResponseObject<Email>.self, from: Data(json.utf8))
+    /// Builds an Email/changes (c0) + Email/get (c1) response; a nil argument omits that invocation.
+    private func makeResponse(
+        changes: [String: Any]? = JmapClientChangesTests.changesArgs(),
+        emailGet: [String: Any]? = JmapClientChangesTests.emailGetArgs()
+    ) throws -> JmapResponseObject<Email> {
+        var invocations: [[Any]] = []
+        if let changes { invocations.append(["Email/changes", changes, "c0"]) }
+        if let emailGet { invocations.append(["Email/get", emailGet, "c1"]) }
+        let json: [String: Any] = ["sessionState": "session", "methodResponses": invocations]
+        let data = try JSONSerialization.data(withJSONObject: json)
+        return try JSONDecoder().decode(JmapResponseObject<Email>.self, from: data)
+    }
+
+    /// Email/changes arguments; a nil value omits that key.
+    private static func changesArgs(newState: String? = "s1", hasMoreChanges: Bool? = false) -> [String: Any] {
+        var args: [String: Any] = ["accountId": "acc", "oldState": "s0", "created": []]
+        args["newState"] = newState
+        args["hasMoreChanges"] = hasMoreChanges
+        return args
+    }
+
+    /// Email/get arguments; a nil list omits the key.
+    private static func emailGetArgs(list: [[String: Any]]? = []) -> [String: Any] {
+        var args: [String: Any] = ["accountId": "acc", "state": "s1"]
+        args["list"] = list
+        return args
     }
 }

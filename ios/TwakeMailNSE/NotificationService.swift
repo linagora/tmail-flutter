@@ -154,6 +154,7 @@ class NotificationService: UNNotificationServiceExtension {
             accountId: session.accountId,
             newEmailDeliveryState: state
         )
+        // On failure the emails are still presented: a possible repeat on the next push beats losing a new-mail alert.
         if !persisted {
             SentryManager.shared.capture(message: "NSE: Failed to persist emailDelivery state")
         }
