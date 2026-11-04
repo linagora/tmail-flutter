@@ -124,7 +124,7 @@ extension HandleRefreshThreadDetailAction on ThreadDetailController {
     }
 
     return ownerEmailAddresses.isNotEmpty &&
-        (!email.fromMeAddresses(ownerEmailAddresses) ||
-            !email.recipientsHasMeAddresses(ownerEmailAddresses));
+        (!email.fromShownAddresses(ownerEmailAddresses) ||
+            !email.recipientsIncludeShownAddresses(ownerEmailAddresses));
   }
 }
