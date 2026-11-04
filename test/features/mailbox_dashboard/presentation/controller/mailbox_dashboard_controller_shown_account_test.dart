@@ -59,7 +59,10 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:model/extensions/account_id_extensions.dart';
 import 'package:rxdart/subjects.dart';
+import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/labels/domain/model/open_edit_label_modal_params.dart';
 import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
@@ -67,17 +70,22 @@ import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_la
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/labels/label_method_action_define.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/composer_session_cache_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/composer_cache_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_all_composer_cache_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/quick_search_email_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_composer_cache_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/getx_account_switch_dashboard.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_type_for_email_selection.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:model/extensions/mailbox_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
+import 'package:universal_html/html.dart' as html;
 
 import 'mailbox_dashboard_controller_test.mocks.dart';
 
@@ -681,6 +689,112 @@ void main() {
         verifyNever(composerManager.addListComposer(any));
       },
     );
+
+    ({ComposerSessionCacheDatasourceImpl datasource, FakeActiveAccountSource source})
+        useRealWebComposerCache() {
+      PlatformInfo.isTestingForWeb = true;
+      html.window.sessionStorage.clear();
+      addTearDown(() {
+        PlatformInfo.isTestingForWeb = false;
+        html.window.sessionStorage.clear();
+      });
+      final datasource = ComposerSessionCacheDatasourceImpl(CacheExceptionThrower());
+      when(getAllComposerCacheInteractor.execute(any, any)).thenAnswer(
+        (inv) => GetAllComposerCacheInteractor(ComposerCacheRepositoryImpl(datasource))
+            .execute(inv.positionalArguments[0], inv.positionalArguments[1]),
+      );
+      when(mockTwakeAppManager.hasComposer).thenReturn(false);
+      clearInteractions(composerManager);
+      final source = ActiveAccountSourceFixtures.putShowing(null);
+      Get.put(mailboxDashboardController);
+      mailboxDashboardController.sessionCurrent = DelegationFixtures.session();
+      // The session owner stays Alice while Bob's mailbox is shown.
+      mailboxDashboardController.accountId.value = DelegationFixtures.aliceAccountId;
+      return (datasource: datasource, source: source);
+    }
+
+    String composerCacheKey(AccountId accountId, String composerId) => TupleKey(
+          EmailActionType.reopenComposerBrowser.name,
+          accountId.asString,
+          DelegationFixtures.session().username.value,
+          composerId,
+        ).toString();
+
+    test(
+      'a read while another account is shown misses the stored composer cache and keeps it',
+      () async {
+        final (:datasource, :source) = useRealWebComposerCache();
+        const aliceComposerId = 'alice-composer';
+        await datasource.saveComposerCache(
+          DelegationFixtures.aliceAccountId,
+          DelegationFixtures.session().username,
+          ComposerCache(composerId: aliceComposerId, composerIndex: 0),
+        );
+        final aliceKey = composerCacheKey(DelegationFixtures.aliceAccountId, aliceComposerId);
+
+        source.show(
+          DelegationFixtures.bobAccountId,
+          ActiveAccount.delegated(
+            DelegationFixtures.session(),
+            DelegationFixtures.bobAccountId,
+          ),
+        );
+        await pumpEventQueue();
+
+        verifyNever(composerManager.addListComposer(any));
+        expect(html.window.sessionStorage.containsKey(aliceKey), isTrue);
+      },
+    );
+
+    test('the shown account reopens its own composer cache', () async {
+      final (:datasource, :source) = useRealWebComposerCache();
+      const bobComposerId = 'bob-composer';
+      await datasource.saveComposerCache(
+        DelegationFixtures.bobAccountId,
+        DelegationFixtures.session().username,
+        ComposerCache(composerId: bobComposerId, composerIndex: 0),
+      );
+
+      source.show(
+        DelegationFixtures.bobAccountId,
+        ActiveAccount.delegated(
+          DelegationFixtures.session(),
+          DelegationFixtures.bobAccountId,
+        ),
+      );
+      await pumpEventQueue();
+
+      final reopened = verify(composerManager.addListComposer(captureAny))
+          .captured
+          .single as List<ComposerArguments>;
+      expect(reopened.map((arguments) => arguments.composerId), [bobComposerId]);
+    });
+
+    test('a reload on the same shown account restores its composer cache', () async {
+      final (:datasource, :source) = useRealWebComposerCache();
+      const aliceComposerId = 'alice-reload-composer';
+
+      source.show(
+        DelegationFixtures.aliceAccountId,
+        ActiveAccount.personal(DelegationFixtures.session()),
+      );
+      await pumpEventQueue();
+
+      await datasource.saveComposerCache(
+        DelegationFixtures.aliceAccountId,
+        DelegationFixtures.session().username,
+        ComposerCache(composerId: aliceComposerId, composerIndex: 0),
+      );
+      clearInteractions(composerManager);
+
+      mailboxDashboardController.handleReloaded(DelegationFixtures.session());
+      await pumpEventQueue();
+
+      final reopened = verify(composerManager.addListComposer(captureAny))
+          .captured
+          .single as List<ComposerArguments>;
+      expect(reopened.map((arguments) => arguments.composerId), [aliceComposerId]);
+    });
   });
 
   group('Settings entries:', () {
