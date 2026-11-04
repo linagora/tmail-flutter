@@ -36,13 +36,17 @@ extension HandleMailShortcutActionsExtension on ThreadDetailController {
   void onKeyboardShortcutInit() {
     if (PlatformInfo.isWeb) {
       keyboardShortcutFocusNode = FocusNode();
-      shortcutActionEventController =
-          StreamController<MailViewShortcutActionViewEvent>();
-      shortcutActionEventSubscription = shortcutActionEventController
-          ?.stream
-          .debounceTime(const Duration(milliseconds: 300))
-          .listen(_onShortcutActionViewEvent);
+      _listenShortcutActionEvents();
     }
+  }
+
+  void _listenShortcutActionEvents() {
+    shortcutActionEventController =
+        StreamController<MailViewShortcutActionViewEvent>.broadcast();
+    shortcutActionEventSubscription = shortcutActionEventController
+        ?.stream
+        .debounceTime(const Duration(milliseconds: 300))
+        .listen(_onShortcutActionViewEvent);
   }
 
   void _onShortcutActionViewEvent(MailViewShortcutActionViewEvent event) {
@@ -91,6 +95,14 @@ extension HandleMailShortcutActionsExtension on ThreadDetailController {
     if (keyboardShortcutFocusNode?.hasFocus == true) {
       keyboardShortcutFocusNode?.unfocus();
     }
+  }
+
+  /// A switch starts after a key may already sit in the debounce window.
+  void dropPendingShortcutActions() {
+    if (!PlatformInfo.isWeb) return;
+    shortcutActionEventSubscription?.cancel();
+    shortcutActionEventController?.close();
+    _listenShortcutActionEvents();
   }
 
   void refocusMailShortcutFocus() {
