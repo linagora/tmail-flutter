@@ -5752,6 +5752,54 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "deepLinkAccountCannotBeVerified": "We couldn't verify this sign-in link. Please sign in from the app.",
+  "@deepLinkAccountCannotBeVerified": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signInWithLinkTitle": "Sign in with this link?",
+  "@signInWithLinkTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signInWithLinkAccountPrefix": "This link signs you in as",
+  "@signInWithLinkAccountPrefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signInWithLinkWarning": "Only continue if you asked to sign in.",
+  "@signInWithLinkWarning": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discoveredServerTitle": "Confirm your mail server",
+  "@discoveredServerTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discoveredServerPrefix": "Mail server found for",
+  "@discoveredServerPrefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discoveredServerHint": "Continue only if you recognize this server.",
+  "@discoveredServerHint": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discoveredServerOutsideDomainWarning": "This server is not part of your email domain. Continue only if your administrator told you to use it.",
+  "@discoveredServerOutsideDomainWarning": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "pdfPasswordRequired": "Password-protected PDF",
   "@pdfPasswordRequired": {
     "type": "text",

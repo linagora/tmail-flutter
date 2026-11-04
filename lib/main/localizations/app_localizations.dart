@@ -6116,6 +6116,62 @@ class AppLocalizations {
     );
   }
 
+  String get deepLinkAccountCannotBeVerified {
+    return Intl.message(
+      'We couldn\'t verify this sign-in link. Please sign in from the app.',
+      name: 'deepLinkAccountCannotBeVerified',
+    );
+  }
+
+  String get signInWithLinkTitle {
+    return Intl.message(
+      'Sign in with this link?',
+      name: 'signInWithLinkTitle',
+    );
+  }
+
+  String get signInWithLinkAccountPrefix {
+    return Intl.message(
+      'This link signs you in as',
+      name: 'signInWithLinkAccountPrefix',
+    );
+  }
+
+  String get signInWithLinkWarning {
+    return Intl.message(
+      'Only continue if you asked to sign in.',
+      name: 'signInWithLinkWarning',
+    );
+  }
+
+  String get discoveredServerTitle {
+    return Intl.message(
+      'Confirm your mail server',
+      name: 'discoveredServerTitle',
+    );
+  }
+
+  String get discoveredServerPrefix {
+    return Intl.message(
+      'Mail server found for',
+      name: 'discoveredServerPrefix',
+    );
+  }
+
+  String get discoveredServerHint {
+    return Intl.message(
+      'Continue only if you recognize this server.',
+      name: 'discoveredServerHint',
+    );
+  }
+
+  String get discoveredServerOutsideDomainWarning {
+    return Intl.message(
+      'This server is not part of your email domain. Continue only if your administrator told you to use it.',
+      name: 'discoveredServerOutsideDomainWarning',
+    );
+  }
+
   String get linkTypeNotAllowed {
     return Intl.message(
       'This type of link is not allowed!',

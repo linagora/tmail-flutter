@@ -301,12 +301,12 @@ class LoginController extends ReloadableController {
       onSuccessCallback: (deepLinkData) {
         if (deepLinkData is! OpenAppDeepLinkData) return;
 
-        if (currentContext != null) {
-          SmartDialog.showLoading(msg: AppLocalizations.of(currentContext!).loadingPleaseWait);
-        }
+        // A loading overlay would hide the sign-in confirmation dialog.
+        SmartDialog.dismiss();
 
-        _deepLinksManager?.autoSignInViaDeepLink(
+        _deepLinksManager?.handleOpenAppDeepLinks(
           openAppDeepLinkData: deepLinkData,
+          isSignedIn: false,
           onAutoSignInSuccessCallback: _handleAutoSignInViaDeepLinkSuccess,
           onFailureCallback: SmartDialog.dismiss,
         );
@@ -315,6 +315,9 @@ class LoginController extends ReloadableController {
   }
 
   void _handleAutoSignInViaDeepLinkSuccess(AutoSignInViaDeepLinkSuccess success) {
+    if (currentContext != null) {
+      SmartDialog.showLoading(msg: AppLocalizations.of(currentContext!).loadingPleaseWait);
+    }
     if (PlatformInfo.isMobile) {
       removeCompanyServerLoginInfo();
     }

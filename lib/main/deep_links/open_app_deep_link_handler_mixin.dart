@@ -9,12 +9,26 @@ import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/auto_sign_in_via_deep_link_interactor.dart';
+import 'package:tmail_ui_user/main/deep_links/deep_link_account_verifier.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_callback_action_define.dart';
 import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 mixin OpenAppDeepLinkHandlerMixin {
+  /// Access tokens of sign-in links already handled in this process. The
+  /// launch link stays readable for the whole process, so without this a
+  /// link the user refused would prompt again each time Home is rebuilt.
+  final Set<String> _handledSignInLinkTokens = {};
+
+  bool _isSignInLinkInProgress = false;
+
+  @visibleForTesting
+  void resetHandledSignInLinks() {
+    _handledSignInLinkTokens.clear();
+    _isSignInLinkInProgress = false;
+  }
+
   OpenAppDeepLinkData? parseOpenAppDeepLink(Uri uri) {
     try {
       final accessToken = uri.queryParameters['access_token'] ?? '';
@@ -48,47 +62,77 @@ mixin OpenAppDeepLinkHandlerMixin {
     }
   }
 
-  void handleOpenAppDeepLinks({
+  /// Single entry point for `openApp` sign-in links, signed in or not.
+  ///
+  /// The link comes from any web page or email, so nothing is stored until the
+  /// user confirmed the account the server reports for the link token.
+  Future<void> handleOpenAppDeepLinks({
     required OpenAppDeepLinkData openAppDeepLinkData,
     OnDeepLinkFailureCallback? onFailureCallback,
     OnAutoSignInViaDeepLinkSuccessCallback? onAutoSignInSuccessCallback,
     OnDeepLinkConfirmLogoutCallback<OpenAppDeepLinkData>? onConfirmLogoutCallback,
     UserName? username,
     bool isSignedIn = true,
-  }) {
+  }) async {
     if (!openAppDeepLinkData.isValidAuthentication()) {
       _notifyLinkRefused(openAppDeepLinkData);
       onFailureCallback?.call();
       return;
     }
 
-    if (isSignedIn) {
-      if (currentContext == null || username == null) {
+    if (!_claimSignInLink(openAppDeepLinkData)) {
+      onFailureCallback?.call();
+      return;
+    }
+
+    try {
+      final accountUsername = await _verifyLinkAccount(openAppDeepLinkData);
+      if (accountUsername == null) {
         onFailureCallback?.call();
         return;
       }
 
-      if (openAppDeepLinkData.isLoggedInWith(username.value)) {
+      final context = currentContext;
+      if (context == null || !context.mounted) {
+        logWarning('DeepLinksManager::handleOpenAppDeepLinks: no context to confirm the sign-in link');
         onFailureCallback?.call();
         return;
       }
 
-      _showConfirmDialogSwitchAccount(
-        context: currentContext!,
-        currentUsername: username.value,
-        newUsername: '${openAppDeepLinkData.username.replaceAll(RegExp(r'[\s\u0000-\u001F\u007F-\u009F\u061C\u200E\u200F\u202A-\u202E\u2066-\u2069]+'), ' ').trim()} (${openAppDeepLinkData.jmapHost})',
-        onConfirmAction: () => onConfirmLogoutCallback?.call(openAppDeepLinkData),
-        onCancelAction: () => onFailureCallback?.call()
-      );
-    } else {
-      autoSignInViaDeepLink(
-        openAppDeepLinkData: openAppDeepLinkData,
-        onAutoSignInSuccessCallback: (viewState) => onAutoSignInSuccessCallback?.call(viewState),
-        onFailureCallback: () => onFailureCallback?.call(),
-      );
+      if (isSignedIn) {
+        if (username == null ||
+            OpenAppDeepLinkData.isSameUsername(accountUsername, username.value)) {
+          onFailureCallback?.call();
+          return;
+        }
+
+        await _showConfirmDialogSwitchAccount(
+          context: context,
+          currentUsername: username.value,
+          newUsername: '${OpenAppDeepLinkData.displayUsernameOf(accountUsername)} (${openAppDeepLinkData.jmapHost})',
+          onConfirmAction: () => onConfirmLogoutCallback?.call(openAppDeepLinkData),
+          onCancelAction: () => onFailureCallback?.call(),
+        );
+      } else {
+        await _showConfirmDialogSignIn(
+          context,
+          '${OpenAppDeepLinkData.displayUsernameOf(accountUsername)} (${openAppDeepLinkData.jmapHost})',
+          onConfirmAction: () => autoSignInViaDeepLink(
+            openAppDeepLinkData: openAppDeepLinkData,
+            onAutoSignInSuccessCallback: (viewState) => onAutoSignInSuccessCallback?.call(viewState),
+            onFailureCallback: () => onFailureCallback?.call(),
+          ),
+          onCancelAction: () => onFailureCallback?.call(),
+        );
+      }
+    } finally {
+      _isSignInLinkInProgress = false;
     }
   }
 
+  /// Stores the link token as the session. Call it only after the user
+  /// confirmed the account: from [handleOpenAppDeepLinks], or after the
+  /// switch-account dialog and the logout that follows it.
   Future<void> autoSignInViaDeepLink({
     required OpenAppDeepLinkData openAppDeepLinkData,
     required OnAutoSignInViaDeepLinkSuccessCallback onAutoSignInSuccessCallback,
@@ -120,21 +164,115 @@ mixin OpenAppDeepLinkHandlerMixin {
     }
   }
 
+  /// One sign-in link at a time, and each link only once per process.
+  bool _claimSignInLink(OpenAppDeepLinkData openAppDeepLinkData) {
+    if (_isSignInLinkInProgress) {
+      logWarning('DeepLinksManager::_claimSignInLink: another sign-in link is being confirmed');
+      return false;
+    }
+    if (!_handledSignInLinkTokens.add(openAppDeepLinkData.accessToken)) {
+      log('DeepLinksManager::_claimSignInLink: sign-in link already handled');
+      return false;
+    }
+    _isSignInLinkInProgress = true;
+    return true;
+  }
+
+  /// Returns the server identity matching the link username, or null when the
+  /// server can't be reached or the token belongs to another account.
+  Future<String?> _verifyLinkAccount(OpenAppDeepLinkData openAppDeepLinkData) async {
+    try {
+      final verifier = Get.find<DeepLinkAccountVerifier>();
+      final identities = await verifier.getAccountIdentities(openAppDeepLinkData);
+      final matchingIdentity = identities.firstWhereOrNull(
+        (identity) => OpenAppDeepLinkData.isSameUsername(identity, openAppDeepLinkData.username),
+      );
+      if (matchingIdentity != null) return matchingIdentity;
+
+      logWarning('DeepLinksManager::_verifyLinkAccount: the link username is not the account of its token');
+    } catch (e) {
+      logWarning('DeepLinksManager::_verifyLinkAccount:Exception = $e');
+    }
+
+    _showErrorToast((localizations) => localizations.deepLinkAccountCannotBeVerified);
+    return null;
+  }
+
   void _notifyLinkRefused(OpenAppDeepLinkData openAppDeepLinkData) {
     // A bare openapp link (web "Open in app" banner) only brings the app up.
     if (openAppDeepLinkData.accessToken.isEmpty) return;
 
+    _showErrorToast((localizations) => localizations.deepLinkCannotBeOpened);
+  }
+
+  void _showErrorToast(String Function(AppLocalizations localizations) message) {
     final context = currentContext;
     final overlayContext = currentOverlayContext;
     if (context == null || overlayContext == null || !Get.isRegistered<AppToast>()) return;
 
     Get.find<AppToast>().showToastErrorMessage(
       overlayContext,
-      AppLocalizations.of(context).deepLinkCannotBeOpened,
+      message(AppLocalizations.of(context)),
     );
   }
 
-  void _showConfirmDialogSwitchAccount({
+  /// Runs exactly one of [onConfirmAction] / [onCancelAction]: closing the
+  /// dialog any other way (back button, route change) counts as a cancel.
+  Future<void> _awaitConfirmDialog({
+    required Future<void> Function(VoidCallback onConfirm, VoidCallback onCancel) showDialog,
+    required Function onConfirmAction,
+    required Function onCancelAction,
+  }) async {
+    var isDecided = false;
+    await showDialog(
+      () {
+        isDecided = true;
+        onConfirmAction();
+      },
+      () {
+        isDecided = true;
+        onCancelAction();
+      },
+    );
+    if (!isDecided) onCancelAction();
+  }
+
+  Future<void> _showConfirmDialogSignIn(
+    BuildContext context,
+    String account, {
+    required Function onConfirmAction,
+    required Function onCancelAction,
+  }) {
+    final appLocalizations = AppLocalizations.of(context);
+
+    return _awaitConfirmDialog(
+      onConfirmAction: onConfirmAction,
+      onCancelAction: onCancelAction,
+      showDialog: (onConfirm, onCancel) => MessageDialogActionManager().showConfirmDialogAction(
+        context,
+        '',
+        appLocalizations.signIn,
+        key: const Key('confirm_sign_in_with_link_dialog'),
+        title: appLocalizations.signInWithLinkTitle,
+        alignCenter: true,
+        outsideDismissible: false,
+        listTextSpan: [
+          TextSpan(text: appLocalizations.signInWithLinkAccountPrefix),
+          TextSpan(
+            text: ' $account',
+            style: ThemeUtils.textStyleM3BodyMedium1.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          TextSpan(text: '. ${appLocalizations.signInWithLinkWarning}'),
+        ],
+        onConfirmAction: onConfirm,
+        onCancelAction: onCancel,
+      ),
+    );
+  }
+
+  Future<void> _showConfirmDialogSwitchAccount({
     required BuildContext context,
     required String currentUsername,
     required String newUsername,
@@ -143,33 +281,37 @@ mixin OpenAppDeepLinkHandlerMixin {
   }) {
     final appLocalizations = AppLocalizations.of(context);
 
-    MessageDialogActionManager().showConfirmDialogAction(
-      context,
-      '',
-      appLocalizations.yes,
-      title: appLocalizations.switchAccountConfirmation,
-      alignCenter: true,
-      outsideDismissible: false,
-      listTextSpan: [
-        TextSpan(text: appLocalizations.youAreCurrentlyLoggedInWith),
-        TextSpan(
-          text: ' $currentUsername',
-          style: ThemeUtils.textStyleM3BodyMedium1.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const TextSpan(text: '. '),
-        TextSpan(text: appLocalizations.doYouWantToLogOutAndSwitchTo),
-        TextSpan(
-          text: ' $newUsername',
-          style: ThemeUtils.textStyleM3BodyMedium1.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const TextSpan(text: '?'),
-      ],
+    return _awaitConfirmDialog(
       onConfirmAction: onConfirmAction,
       onCancelAction: onCancelAction,
+      showDialog: (onConfirm, onCancel) => MessageDialogActionManager().showConfirmDialogAction(
+        context,
+        '',
+        appLocalizations.yes,
+        title: appLocalizations.switchAccountConfirmation,
+        alignCenter: true,
+        outsideDismissible: false,
+        listTextSpan: [
+          TextSpan(text: appLocalizations.youAreCurrentlyLoggedInWith),
+          TextSpan(
+            text: ' $currentUsername',
+            style: ThemeUtils.textStyleM3BodyMedium1.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const TextSpan(text: '. '),
+          TextSpan(text: appLocalizations.doYouWantToLogOutAndSwitchTo),
+          TextSpan(
+            text: ' $newUsername',
+            style: ThemeUtils.textStyleM3BodyMedium1.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const TextSpan(text: '?'),
+        ],
+        onConfirmAction: onConfirm,
+        onCancelAction: onCancel,
+      ),
     );
   }
 }

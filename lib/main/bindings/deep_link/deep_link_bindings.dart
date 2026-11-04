@@ -4,6 +4,7 @@ import 'package:tmail_ui_user/features/home/domain/usecases/auto_sign_in_via_dee
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
+import 'package:tmail_ui_user/main/deep_links/deep_link_account_verifier.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
 
 class DeepLinkBindings extends Bindings {
@@ -15,6 +16,7 @@ class DeepLinkBindings extends Bindings {
       Get.find<AccountRepository>(),
       Get.find<CredentialRepository>(),
     ));
+    Get.put(DeepLinkAccountVerifier());
     Get.put(DeepLinksManager());
   }
 }

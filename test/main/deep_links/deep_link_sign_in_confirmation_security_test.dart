@@ -1,0 +1,323 @@
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/utils/app_toast.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:dartz/dartz.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/oidc/oidc_configuration.dart';
+import 'package:model/oidc/token_oidc.dart';
+import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
+import 'package:tmail_ui_user/features/home/domain/usecases/auto_sign_in_via_deep_link_interactor.dart';
+import 'package:tmail_ui_user/main/deep_links/deep_link_account_verifier.dart';
+import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
+import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
+import 'package:tmail_ui_user/main/localizations/localization_service.dart';
+
+/// Records the messages of error toasts.
+class _RecordingAppToast extends Fake implements AppToast {
+  final List<String> errors = [];
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    if (invocation.memberName == #showToastErrorMessage) {
+      errors.add(invocation.positionalArguments[1] as String);
+    }
+    return null;
+  }
+}
+
+/// Stands in for the JMAP session request: the server reports [identities]
+/// as the account of the link token.
+class _FakeAccountVerifier extends DeepLinkAccountVerifier {
+  _FakeAccountVerifier(this.identities);
+
+  final List<String> identities;
+  int calls = 0;
+
+  @override
+  Future<List<String>> getAccountIdentities(OpenAppDeepLinkData data) async {
+    calls++;
+    return identities;
+  }
+}
+
+class _FailingAccountVerifier extends DeepLinkAccountVerifier {
+  @override
+  Future<List<String>> getAccountIdentities(OpenAppDeepLinkData data) =>
+      Future.error(Exception('network down'));
+}
+
+class _CountingAutoSignInInteractor extends Fake implements AutoSignInViaDeepLinkInteractor {
+  int calls = 0;
+
+  @override
+  Stream<Either<Failure, Success>> execute({
+    required Uri baseUri,
+    required TokenOIDC tokenOIDC,
+    required OIDCConfiguration oidcConfiguration,
+  }) {
+    calls++;
+    return Stream.value(Right<Failure, Success>(
+      AutoSignInViaDeepLinkSuccess(tokenOIDC, baseUri, oidcConfiguration)));
+  }
+}
+
+OpenAppDeepLinkData _link({
+  String username = 'alice@twake.app',
+  String accessToken = 'token-1',
+}) => OpenAppDeepLinkData(
+  registrationUrl: 'https://sign-up.twake.app',
+  jmapUrl: 'https://jmap.twake.app',
+  username: username,
+  accessToken: accessToken,
+);
+
+void main() {
+  late DeepLinksManager deepLinkManager;
+  late _CountingAutoSignInInteractor interactor;
+  late _RecordingAppToast toast;
+
+  setUp(() {
+    deepLinkManager = DeepLinksManager();
+    interactor = _CountingAutoSignInInteractor();
+    toast = _RecordingAppToast();
+    Get.put(ResponsiveUtils());
+    Get.put(ImagePaths());
+    Get.put<AppToast>(toast);
+    Get.put<AutoSignInViaDeepLinkInteractor>(interactor);
+    Get.put<DeepLinkAccountVerifier>(_FakeAccountVerifier(['alice@twake.app']));
+  });
+
+  tearDown(Get.reset);
+
+  Future<void> pumpApp(WidgetTester tester) async {
+    await tester.pumpWidget(const GetMaterialApp(
+      localizationsDelegates: [
+        AppLocalizationsDelegate(),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: LocalizationService.supportedLocales,
+      home: Scaffold(),
+    ));
+    await tester.pumpAndSettle();
+  }
+
+  final signInDialog = find.byKey(const Key('confirm_sign_in_with_link_dialog'));
+
+  group('signed out', () {
+    testWidgets(
+      'SHOULD ask for confirmation with the server account '
+      'and store nothing before the user confirms',
+      (tester) async {
+        await pumpApp(tester);
+
+        deepLinkManager.handleOpenAppDeepLinks(
+          openAppDeepLinkData: _link(),
+          isSignedIn: false,
+        );
+        await tester.pumpAndSettle();
+
+        expect(signInDialog, findsOneWidget);
+        expect(
+          find.byWidgetPredicate((widget) =>
+            widget is RichText &&
+            widget.text.toPlainText().contains('alice@twake.app (jmap.twake.app)')),
+          findsOneWidget,
+        );
+        expect(interactor.calls, 0);
+      },
+    );
+
+    testWidgets('SHOULD sign in once WHEN the user confirms', (tester) async {
+      await pumpApp(tester);
+      AutoSignInViaDeepLinkSuccess? signedIn;
+
+      deepLinkManager.handleOpenAppDeepLinks(
+        openAppDeepLinkData: _link(),
+        isSignedIn: false,
+        onAutoSignInSuccessCallback: (success) => signedIn = success,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Sign In'));
+      await tester.pumpAndSettle();
+
+      expect(interactor.calls, 1);
+      expect(signedIn?.tokenOIDC.token, 'token-1');
+    });
+
+    testWidgets('SHOULD store nothing WHEN the user cancels', (tester) async {
+      await pumpApp(tester);
+      var failed = false;
+
+      deepLinkManager.handleOpenAppDeepLinks(
+        openAppDeepLinkData: _link(),
+        isSignedIn: false,
+        onFailureCallback: () => failed = true,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+
+      expect(interactor.calls, 0);
+      expect(failed, isTrue);
+    });
+
+    testWidgets(
+      'SHOULD treat closing the dialog without a button as a cancel',
+      (tester) async {
+        await pumpApp(tester);
+        var failed = false;
+
+        deepLinkManager.handleOpenAppDeepLinks(
+          openAppDeepLinkData: _link(),
+          isSignedIn: false,
+          onFailureCallback: () => failed = true,
+        );
+        await tester.pumpAndSettle();
+        await tester.binding.handlePopRoute();
+        await tester.pumpAndSettle();
+
+        expect(signInDialog, findsNothing);
+        expect(interactor.calls, 0);
+        expect(failed, isTrue);
+      },
+    );
+
+    testWidgets(
+      'SHOULD refuse the link WHEN its username is not the account of its token',
+      (tester) async {
+        Get.replace<DeepLinkAccountVerifier>(_FakeAccountVerifier(['attacker@twake.app']));
+        await pumpApp(tester);
+        var failed = false;
+
+        deepLinkManager.handleOpenAppDeepLinks(
+          openAppDeepLinkData: _link(username: 'alice@twake.app'),
+          isSignedIn: false,
+          onFailureCallback: () => failed = true,
+        );
+        await tester.pumpAndSettle();
+
+        expect(signInDialog, findsNothing);
+        expect(interactor.calls, 0);
+        expect(failed, isTrue);
+        expect(toast.errors, ['We couldn\'t verify this sign-in link. Please sign in from the app.']);
+      },
+    );
+
+    testWidgets('SHOULD refuse the link WHEN the server cannot be reached', (tester) async {
+      Get.replace<DeepLinkAccountVerifier>(_FailingAccountVerifier());
+      await pumpApp(tester);
+      var failed = false;
+
+      deepLinkManager.handleOpenAppDeepLinks(
+        openAppDeepLinkData: _link(),
+        isSignedIn: false,
+        onFailureCallback: () => failed = true,
+      );
+      await tester.pumpAndSettle();
+
+      expect(signInDialog, findsNothing);
+      expect(interactor.calls, 0);
+      expect(failed, isTrue);
+    });
+
+    testWidgets(
+      'SHOULD NOT prompt again for a link the user already cancelled',
+      (tester) async {
+        await pumpApp(tester);
+        var failures = 0;
+
+        deepLinkManager.handleOpenAppDeepLinks(
+          openAppDeepLinkData: _link(),
+          isSignedIn: false,
+          onFailureCallback: () => failures++,
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Cancel'));
+        await tester.pumpAndSettle();
+
+        // Home is rebuilt and reads the same launch link again.
+        deepLinkManager.handleOpenAppDeepLinks(
+          openAppDeepLinkData: _link(),
+          isSignedIn: false,
+          onFailureCallback: () => failures++,
+        );
+        await tester.pumpAndSettle();
+
+        expect(signInDialog, findsNothing);
+        expect(interactor.calls, 0);
+        expect(failures, 2);
+      },
+    );
+
+    testWidgets(
+      'SHOULD show one dialog WHEN a second link arrives while confirming',
+      (tester) async {
+        await pumpApp(tester);
+
+        deepLinkManager.handleOpenAppDeepLinks(
+          openAppDeepLinkData: _link(),
+          isSignedIn: false,
+        );
+        deepLinkManager.handleOpenAppDeepLinks(
+          openAppDeepLinkData: _link(accessToken: 'token-2'),
+          isSignedIn: false,
+        );
+        await tester.pumpAndSettle();
+
+        expect(signInDialog, findsOneWidget);
+      },
+    );
+  });
+
+  group('signed in', () {
+    testWidgets(
+      'SHOULD NOT offer a switch WHEN the link account only differs by hidden characters',
+      (tester) async {
+        const lookalike = 'alice@twake.app‎';
+        Get.replace<DeepLinkAccountVerifier>(_FakeAccountVerifier([lookalike]));
+        await pumpApp(tester);
+        var ignored = false;
+
+        deepLinkManager.handleOpenAppDeepLinks(
+          openAppDeepLinkData: _link(username: lookalike),
+          username: UserName('alice@twake.app'),
+          onFailureCallback: () => ignored = true,
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.byType(Dialog), findsNothing);
+        expect(ignored, isTrue);
+      },
+    );
+
+    testWidgets(
+      'SHOULD ask the account reported by the server in the switch dialog',
+      (tester) async {
+        Get.replace<DeepLinkAccountVerifier>(_FakeAccountVerifier(['bob@twake.app']));
+        await pumpApp(tester);
+
+        deepLinkManager.handleOpenAppDeepLinks(
+          openAppDeepLinkData: _link(username: 'BOB@twake.app'),
+          username: UserName('alice@twake.app'),
+        );
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byWidgetPredicate((widget) =>
+            widget is RichText &&
+            widget.text.toPlainText().contains(' bob@twake.app (jmap.twake.app)?')),
+          findsOneWidget,
+        );
+      },
+    );
+  });
+}
