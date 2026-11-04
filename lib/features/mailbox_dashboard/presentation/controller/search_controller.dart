@@ -211,12 +211,12 @@ class SearchController extends BaseController with DateRangePickerMixin {
           );
         }
         break;
-      case QuickSearchFilter.fromMe:
+      case QuickSearchFilter.fromShown:
         if (ownerEmailAddresses.isEmpty) return;
         // Selecting sets `from` to every "me" address; deselecting clears a from-me filter.
         updateFilterEmail(
           fromOption: Some(
-            current.isFromMeFilter(ownerEmailAddresses)
+            current.isFromShownFilter(ownerEmailAddresses)
                 ? const <String>{}
                 : ownerEmailAddresses,
           ),

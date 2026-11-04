@@ -860,7 +860,7 @@ void main() {
       isCleared: (filter) => filter.from.isEmpty,
     ),
     (
-      quickFilter: QuickSearchFilter.fromMe,
+      quickFilter: QuickSearchFilter.fromShown,
       initialFilter: SearchEmailFilter(from: const {'alice@example.com'}),
       isCleared: (filter) => filter.from.isEmpty,
     ),

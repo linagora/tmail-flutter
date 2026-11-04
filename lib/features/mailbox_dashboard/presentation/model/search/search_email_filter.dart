@@ -128,7 +128,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
 
   /// True when every `from` address is one of [addresses]. Keeps the "From me" chip
   /// selected after identities add aliases the filter has not picked up yet.
-  bool isFromMeFilter(Set<String> addresses) {
+  bool isFromShownFilter(Set<String> addresses) {
     final me = addresses.where((address) => address.isNotEmpty).toSet();
     return from.isNotEmpty && me.containsAll(from);
   }

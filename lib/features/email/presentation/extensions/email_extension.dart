@@ -34,34 +34,29 @@ extension EmailExtension on Email {
 
   bool checkEmailValidForThreadDetailAddresses(
     MailboxId sentMailboxId,
-    Set<String> meAddresses,
+    Set<String> shownAddresses,
   ) {
     return id != null &&
         (!inSentMailbox(sentMailboxId) ||
-            !fromMeAddresses(meAddresses) ||
-            !recipientsHasMeAddresses(meAddresses));
+            !fromShownAddresses(shownAddresses) ||
+            !recipientsIncludeShownAddresses(shownAddresses));
   }
 
   bool inSentMailbox(MailboxId sentMailboxId) {
     return mailboxIds?[sentMailboxId] == true;
   }
 
-  bool fromMe(String ownEmailAddress) => fromMeAddresses({ownEmailAddress});
-
-  bool fromMeAddresses(Set<String> meAddresses) {
-    return from?.any((emailAddress) => meAddresses.contains(emailAddress.emailAddress)) == true;
+  bool fromShownAddresses(Set<String> shownAddresses) {
+    return from?.any((emailAddress) => shownAddresses.contains(emailAddress.emailAddress)) == true;
   }
 
-  bool recipientsHasMe(String ownEmailAddress) =>
-      recipientsHasMeAddresses({ownEmailAddress});
-
-  bool recipientsHasMeAddresses(Set<String> meAddresses) {
+  bool recipientsIncludeShownAddresses(Set<String> shownAddresses) {
     final recipients = {
       ...to ?? {},
       ...cc ?? {},
       ...bcc ?? {},
     };
-    return recipients.any((emailAddress) => meAddresses.contains(emailAddress.emailAddress)) ==
+    return recipients.any((emailAddress) => shownAddresses.contains(emailAddress.emailAddress)) ==
         true;
   }
 
