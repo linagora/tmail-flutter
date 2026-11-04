@@ -594,9 +594,10 @@ class LoginController extends ReloadableController {
       const DiscoveredServerConfirmDialog();
 
   Future<void> _handleDNSLookupToGetJmapUrlSuccess(DNSLookupToGetJmapUrlSuccess success) async {
-    if (!success.isEncryptedSource && !await _confirmDiscoveredServer(success.jmapUrl)) {
-      _baseUri = null;
-      clearState();
+    if (!success.isEncryptedSource && !await _confirmDiscoveredServer(success)) {
+      // An unconfirmed server never becomes the base URL: a base URL set by
+      // now comes from a newer answer, which a decline must not tear down.
+      if (_baseUri == null) clearState();
       return;
     }
     onBaseUrlChange(success.jmapUrl);
@@ -606,14 +607,15 @@ class LoginController extends ReloadableController {
   /// A server found over plaintext DNS can be spoofed: the base URL stays
   /// unset until the user confirms it, so no webfinger, OIDC or password
   /// request reaches an unconfirmed server. A late answer, after the user left
-  /// the email form, is dropped.
-  Future<bool> _confirmDiscoveredServer(String jmapUrl) async {
+  /// the email form, or for an email edited since the lookup started, is dropped.
+  Future<bool> _confirmDiscoveredServer(DNSLookupToGetJmapUrlSuccess success) async {
     if (!_isOnEmailForm) return false;
 
     final isConfirmed = await discoveredServerConfirmDialog.confirm(
       currentContext,
-      email: _username?.value,
-      jmapUrl: jmapUrl,
+      email: success.email,
+      currentEmail: () => _username?.value,
+      jmapUrl: success.jmapUrl,
     );
     return isConfirmed && _isOnEmailForm;
   }

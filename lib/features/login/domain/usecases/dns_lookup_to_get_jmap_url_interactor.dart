@@ -15,6 +15,7 @@ class DNSLookupToGetJmapUrlInteractor {
       final result = await _loginRepository.dnsLookupToGetJmapUrl(emailAddress);
       yield Right<Failure, Success>(DNSLookupToGetJmapUrlSuccess(
         result.target,
+        email: emailAddress,
         isEncryptedSource: result.isEncrypted,
       ));
     } catch (e) {

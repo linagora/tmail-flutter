@@ -13,22 +13,26 @@ class DiscoveredServerConfirmDialog {
   const DiscoveredServerConfirmDialog();
 
   /// Shows the dialog for the server [jmapUrl] found for [email]. Returns
-  /// false without asking when there is no screen to ask on or no email
-  /// domain to compare with.
+  /// false without asking when [currentEmail] is no longer [email] (the field
+  /// was edited after the lookup started), when there is no screen to ask on,
+  /// or when [email] has no domain; and false when [currentEmail] changed
+  /// while the dialog was open.
   Future<bool> confirm(
     BuildContext? context, {
-    required String? email,
+    required String email,
+    required String? Function() currentEmail,
     required String jmapUrl,
   }) async {
-    final emailDomain = email?.split('@').last ?? '';
-    if (emailDomain.isEmpty) return false;
+    final emailDomain = email.split('@').last;
+    if (currentEmail() != email || emailDomain.isEmpty) return false;
     if (context?.mounted != true) return false;
 
-    return show(
+    final isConfirmed = await show(
       context!,
       emailDomain: emailDomain,
       serverHost: Uri.tryParse(jmapUrl.formatURLValid())?.host ?? jmapUrl,
     );
+    return isConfirmed && currentEmail() == email;
   }
 
   Future<bool> show(

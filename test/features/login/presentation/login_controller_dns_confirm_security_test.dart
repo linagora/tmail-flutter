@@ -115,7 +115,7 @@ void main() {
       await pumpApp(tester);
 
       loginController.handleSuccessViewState(
-        DNSLookupToGetJmapUrlSuccess('mail.corp.example'),
+        DNSLookupToGetJmapUrlSuccess('mail.corp.example', email: 'bob@corp.example', isEncryptedSource: true),
       );
       await tester.pump();
 
@@ -130,7 +130,7 @@ void main() {
       await pumpApp(tester);
 
       loginController.handleSuccessViewState(
-        DNSLookupToGetJmapUrlSuccess('mail.attacker.example', isEncryptedSource: false),
+        DNSLookupToGetJmapUrlSuccess('mail.attacker.example', email: 'bob@corp.example', isEncryptedSource: false),
       );
       await tester.pump();
 
@@ -147,7 +147,7 @@ void main() {
       await pumpApp(tester);
 
       loginController.handleSuccessViewState(
-        DNSLookupToGetJmapUrlSuccess('mail.corp.example', isEncryptedSource: false),
+        DNSLookupToGetJmapUrlSuccess('mail.corp.example', email: 'bob@corp.example', isEncryptedSource: false),
       );
       await tester.pump();
       confirmDialog.answer.complete(true);
@@ -164,7 +164,7 @@ void main() {
       await pumpApp(tester);
 
       loginController.handleSuccessViewState(
-        DNSLookupToGetJmapUrlSuccess('mail.attacker.example', isEncryptedSource: false),
+        DNSLookupToGetJmapUrlSuccess('mail.attacker.example', email: 'bob@corp.example', isEncryptedSource: false),
       );
       await tester.pump();
       confirmDialog.answer.complete(false);
@@ -183,7 +183,7 @@ void main() {
       loginController.loginFormType.value = LoginFormType.baseUrlForm;
 
       loginController.handleSuccessViewState(
-        DNSLookupToGetJmapUrlSuccess('mail.attacker.example', isEncryptedSource: false),
+        DNSLookupToGetJmapUrlSuccess('mail.attacker.example', email: 'bob@corp.example', isEncryptedSource: false),
       );
       await tester.pump();
 
@@ -198,7 +198,7 @@ void main() {
       await pumpApp(tester);
 
       loginController.handleSuccessViewState(
-        DNSLookupToGetJmapUrlSuccess('mail.corp.example', isEncryptedSource: false),
+        DNSLookupToGetJmapUrlSuccess('mail.corp.example', email: 'bob@corp.example', isEncryptedSource: false),
       );
       await tester.pump();
       loginController.loginFormType.value = LoginFormType.baseUrlForm;
@@ -206,6 +206,78 @@ void main() {
       await tester.pump();
 
       verifyNever(checkOIDCIsAvailableInteractor.execute(any));
+    },
+  );
+
+  testWidgets(
+    'SHOULD ask for a server found WHEN the answer does not say how it was found',
+    (tester) async {
+      await pumpApp(tester);
+
+      loginController.handleSuccessViewState(
+        DNSLookupToGetJmapUrlSuccess('mail.corp.example', email: 'bob@corp.example'),
+      );
+      await tester.pump();
+
+      expect(confirmDialog.shown, hasLength(1));
+      verifyNever(checkOIDCIsAvailableInteractor.execute(any));
+    },
+  );
+
+  testWidgets(
+    'SHOULD drop a plaintext DNS answer WHEN the email was edited after the lookup started',
+    (tester) async {
+      await pumpApp(tester);
+      loginController.onUsernameChange('bob@other.example');
+
+      loginController.handleSuccessViewState(
+        DNSLookupToGetJmapUrlSuccess('mail.corp.example', email: 'bob@corp.example', isEncryptedSource: false),
+      );
+      await tester.pump();
+
+      expect(confirmDialog.shown, isEmpty);
+      verifyNever(checkOIDCIsAvailableInteractor.execute(any));
+    },
+  );
+
+  testWidgets(
+    'SHOULD NOT use the confirmed server WHEN the email was edited while the dialog was open',
+    (tester) async {
+      await pumpApp(tester);
+
+      loginController.handleSuccessViewState(
+        DNSLookupToGetJmapUrlSuccess('mail.corp.example', email: 'bob@corp.example', isEncryptedSource: false),
+      );
+      await tester.pump();
+      expect(confirmDialog.shown.single.emailDomain, 'corp.example');
+      loginController.onUsernameChange('bob@other.example');
+      confirmDialog.answer.complete(true);
+      await tester.pump();
+
+      verifyNever(checkOIDCIsAvailableInteractor.execute(any));
+    },
+  );
+
+  testWidgets(
+    'SHOULD keep a newer DNS-over-HTTPS server WHEN the user declines an older plaintext one',
+    (tester) async {
+      await pumpApp(tester);
+
+      loginController.handleSuccessViewState(
+        DNSLookupToGetJmapUrlSuccess('mail.attacker.example', email: 'bob@corp.example', isEncryptedSource: false),
+      );
+      await tester.pump();
+      loginController.handleSuccessViewState(
+        DNSLookupToGetJmapUrlSuccess('mail.corp.example', email: 'bob@corp.example', isEncryptedSource: true),
+      );
+      await tester.pump();
+      confirmDialog.answer.complete(false);
+      await tester.pump();
+      // Retrying uses the base URL still held: the newer server, not nothing.
+      loginController.retryCheckOidc();
+      await tester.pump();
+
+      verify(checkOIDCIsAvailableInteractor.execute(any)).called(2);
     },
   );
 
