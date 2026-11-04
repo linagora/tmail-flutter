@@ -510,8 +510,9 @@ class MailboxDashBoardController extends ReloadableController
         sessionCurrent!.username));
   }
 
-  /// Identity-cache restore opens Settings on mine only (ADR-0114).
+  /// Restoring opens Settings, so a delegated shown account keeps my saved form for later.
   void _handleIdentityCache() async {
+    if (!shownAccountCapabilities.canOpenSettings) return;
     if (accountId.value == null || sessionCurrent == null) return;
 
     consumeState(
