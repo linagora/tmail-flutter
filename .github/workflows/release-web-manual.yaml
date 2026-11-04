@@ -115,8 +115,8 @@ jobs:
             type=gha
           secrets: |
             sentry_auth_token=${{ secrets.SENTRY_AUTH_TOKEN }}
+          # No FLUTTER_VERSION: each tag builds with its own Dockerfile default (old base images lack newer tags).
           build-args: |
-            FLUTTER_VERSION=3.47.9
             SENTRY_UPLOAD=1
             SENTRY_ORG=${{ secrets.SENTRY_ORG }}
             SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}
