@@ -324,6 +324,28 @@ void main() {
     );
 
     testWidgets(
+      'rejects an enabled vacation whose web editor only holds an empty line',
+      (tester) async {
+        PlatformInfo.isTestingForWeb = true;
+        final context = await pumpApp(tester);
+        setUpVacation(
+          status: VacationResponderStatus.activated,
+          editorHtml: '<div>Back on Monday</div>',
+        );
+        vacationController.updateMessageHtmlText('<div><br></div>');
+
+        vacationController.saveVacation(context);
+        await tester.pumpAndSettle();
+
+        verify(appToast.showToastErrorMessage(
+          any,
+          AppLocalizations.of(context).errorMessageWhenMessageVacationIsEmpty,
+        )).called(1);
+        verifyNever(mockUpdateVacationInteractor.execute(any, any));
+      },
+    );
+
+    testWidgets(
       'rejects an empty mobile editor even when the view unmounts while reading it',
       (tester) async {
         final context = await pumpApp(tester);
