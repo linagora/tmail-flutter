@@ -6,10 +6,14 @@ class DNSLookupToGetJmapUrlLoading extends LoadingState {}
 class DNSLookupToGetJmapUrlSuccess extends UIState {
   final String jmapUrl;
 
-  DNSLookupToGetJmapUrlSuccess(this.jmapUrl);
+  /// False when the server came from a plaintext resolver: the user must
+  /// confirm it before the app contacts it.
+  final bool isEncryptedSource;
+
+  DNSLookupToGetJmapUrlSuccess(this.jmapUrl, {this.isEncryptedSource = true});
 
   @override
-  List<Object> get props => [jmapUrl];
+  List<Object> get props => [jmapUrl, isEncryptedSource];
 }
 
 class DNSLookupToGetJmapUrlFailure extends FeatureFailure {

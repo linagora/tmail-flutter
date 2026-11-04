@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/features/login/data/model/recent_login_url_cache.d
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_username.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
+import 'package:tmail_ui_user/features/login/domain/model/dns_lookup_result.dart';
 
 class HiveLoginDataSourceImpl implements LoginDataSource {
   
@@ -57,7 +58,7 @@ class HiveLoginDataSourceImpl implements LoginDataSource {
   }
 
   @override
-  Future<String> dnsLookupToGetJmapUrl(String emailAddress) {
+  Future<DnsLookupResult> dnsLookupToGetJmapUrl(String emailAddress) {
     throw UnimplementedError();
   }
 }
