@@ -58,3 +58,6 @@ class LoadThreadDetailAfterSelectedEmailAction extends ThreadDetailUIAction {
 class ReclaimMailViewKeyboardShortcutFocusAction extends ThreadDetailUIAction {}
 
 class ClearMailViewKeyboardShortcutFocusAction extends ThreadDetailUIAction {}
+
+/// Drops an opened-email shortcut already in the debounce window when an account switch starts.
+class DropPendingMailViewShortcutsAction extends ThreadDetailUIAction {}
