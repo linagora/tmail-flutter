@@ -795,6 +795,61 @@ void main() {
           .single as List<ComposerArguments>;
       expect(reopened.map((arguments) => arguments.composerId), [aliceComposerId]);
     });
+
+    test(
+      'SHOULD NOT call getIdentityCacheOnWebInteractor '
+      'WHEN composer cache lookup fails while a delegated account is shown',
+      () async {
+        final (:datasource, :source) = useRealWebComposerCache();
+        when(getIdentityCacheOnWebInteractor.execute(any, any))
+            .thenAnswer((_) => const Stream.empty());
+        clearInteractions(getIdentityCacheOnWebInteractor);
+
+        source.show(
+          DelegationFixtures.bobAccountId,
+          ActiveAccount.delegated(
+            DelegationFixtures.session(),
+            DelegationFixtures.bobAccountId,
+          ),
+        );
+        await pumpEventQueue();
+        clearInteractions(getIdentityCacheOnWebInteractor);
+
+        mailboxDashboardController.handleFailureViewState(
+          GetAllComposerCacheFailure(Exception('miss')),
+        );
+        await pumpEventQueue();
+
+        verifyNever(getIdentityCacheOnWebInteractor.execute(any, any));
+      },
+    );
+
+    test(
+      'SHOULD call getIdentityCacheOnWebInteractor with Alice accountId '
+      'WHEN composer cache lookup fails while my own account is shown',
+      () async {
+        final (:datasource, :source) = useRealWebComposerCache();
+        when(getIdentityCacheOnWebInteractor.execute(any, any))
+            .thenAnswer((_) => const Stream.empty());
+
+        source.show(
+          DelegationFixtures.aliceAccountId,
+          ActiveAccount.personal(DelegationFixtures.session()),
+        );
+        await pumpEventQueue();
+        clearInteractions(getIdentityCacheOnWebInteractor);
+
+        mailboxDashboardController.handleFailureViewState(
+          GetAllComposerCacheFailure(Exception('miss')),
+        );
+        await pumpEventQueue();
+
+        verify(getIdentityCacheOnWebInteractor.execute(
+          DelegationFixtures.aliceAccountId,
+          DelegationFixtures.session().username,
+        )).called(1);
+      },
+    );
   });
 
   group('Settings entries:', () {
