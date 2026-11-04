@@ -322,6 +322,8 @@ class SearchEmailController extends BaseController
               ..endDateOption = optionOf(action.endDate?.toUTCDate()),
           );
           mailboxDashBoardController.clearDashBoardAction();
+        } else if (action is DropPendingMailListShortcutsAction) {
+          dropPendingShortcutActions();
         }
       }
     );

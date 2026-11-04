@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:fake_async/fake_async.dart';
+import 'package:rxdart/rxdart.dart' hide Rx;
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
@@ -814,6 +816,97 @@ void main() {
           expect(sentEvents, isEmpty);
         });
       }
+
+      test('a focus move away from the list still lets a pending shortcut fire', () {
+        fakeAsync((async) {
+          PlatformInfo.isTestingForWeb = true;
+          addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+          final fired = <MailListShortcutActionViewEvent>[];
+          threadController.shortcutActionEventController =
+              StreamController<MailListShortcutActionViewEvent>.broadcast();
+          threadController.shortcutActionEventSubscription = threadController
+              .shortcutActionEventController!
+              .stream
+              .debounceTime(const Duration(milliseconds: 300))
+              .listen(fired.add);
+
+          when(mockMailboxDashBoardController.selectedMailbox)
+              .thenReturn(Rxn(PresentationMailbox(MailboxId(Id('inbox-id')))));
+          threadController.handleMailListShortcutAction(MailListActionShortcutType.delete);
+          threadController.clearMailShortcutFocus();
+          async.elapse(const Duration(milliseconds: 300));
+
+          expect(fired, hasLength(1));
+        });
+      });
+
+      test('DropPendingMailListShortcutsAction drops a pending shortcut and keeps later ones', () {
+        fakeAsync((async) {
+          PlatformInfo.isTestingForWeb = true;
+          addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+          final dashBoardAction = Rxn<UIAction>();
+          final controller = ThreadController(
+            mockGetEmailsInMailboxInteractor,
+            mockRefreshChangesEmailsInMailboxInteractor,
+            mockLoadMoreEmailsInMailboxInteractor,
+            mockGetEmailByIdInteractor,
+            mockCleanAndGetEmailsInMailboxInteractor,
+          );
+          addTearDown(controller.onClose);
+
+          when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
+          when(mockMailboxDashBoardController.accountId).thenReturn(Rxn(AccountFixtures.aliceAccountId));
+          when(mockMailboxDashBoardController.selectedMailbox)
+              .thenReturn(Rxn(PresentationMailbox(MailboxId(Id('inbox-id')))));
+          when(mockMailboxDashBoardController.searchController).thenReturn(mockSearchController);
+          when(mockMailboxDashBoardController.dashBoardAction).thenReturn(dashBoardAction);
+          when(mockMailboxDashBoardController.emailUIAction).thenReturn(Rxn());
+          when(mockMailboxDashBoardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+          when(mockMailboxDashBoardController.emailsInCurrentMailbox).thenReturn(RxList([
+            PresentationEmail(id: EmailId(Id('email-of-old-account')), selectMode: SelectMode.ACTIVE),
+            PresentationEmail(
+              id: EmailId(Id('read-email-of-old-account')),
+              keywords: {KeyWordIdentifier.emailSeen: true},
+              selectMode: SelectMode.ACTIVE,
+            ),
+          ]));
+          when(mockMailboxDashBoardController.listEmailSelected).thenReturn(RxList());
+          when(mockMailboxDashBoardController.currentSelectMode).thenReturn(Rx(SelectMode.INACTIVE));
+          when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
+          when(mockMailboxDashBoardController.clearDashBoardAction()).thenAnswer((_) {
+            dashBoardAction.value = null;
+          });
+
+          controller.onInit();
+          controller.onKeyboardShortcutInit();
+
+          final fired = <MailListShortcutActionViewEvent>[];
+          controller.shortcutActionEventSubscription?.cancel();
+          controller.shortcutActionEventSubscription = controller
+              .shortcutActionEventController!
+              .stream
+              .debounceTime(const Duration(milliseconds: 300))
+              .listen(fired.add);
+
+          controller.handleMailListShortcutAction(MailListActionShortcutType.delete);
+          dashBoardAction.value = DropPendingMailListShortcutsAction();
+          async.elapse(Duration.zero);
+          async.elapse(const Duration(milliseconds: 300));
+          expect(fired, isEmpty);
+
+          // Production re-listened on a fresh broadcast stream after the drop.
+          final later = <MailListShortcutActionViewEvent>[];
+          final laterSub = controller.shortcutActionEventController!.stream
+              .debounceTime(const Duration(milliseconds: 300))
+              .listen(later.add);
+          controller.handleMailListShortcutAction(MailListActionShortcutType.delete);
+          async.elapse(const Duration(milliseconds: 300));
+          laterSub.cancel();
+          expect(later, hasLength(1));
+        });
+      });
     });
 
     group('email actions in the shown account:', () {
