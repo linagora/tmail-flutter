@@ -63,6 +63,7 @@ import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filte
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/view/account_switch_loading_dialog_host.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/shown_account_input_blocker.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/dashboard_vacation_banner.dart';
 
@@ -322,7 +323,12 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     );
     return MailboxDashboardProviderListenerWidget(
       delegateFactories: mailboxDashboardProviderListenerDelegateFactories,
-      child: ShownAccountInputBlocker(child: child),
+      child: Stack(
+        children: [
+          ShownAccountInputBlocker(child: child),
+          const AccountSwitchLoadingDialogHost(),
+        ],
+      ),
     );
   }
 
