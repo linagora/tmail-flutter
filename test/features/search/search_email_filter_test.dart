@@ -840,27 +840,27 @@ void main() {
       const me = 'me@example.com';
       const alias = 'alias@example.com';
 
-      test('SHOULD return true WHEN from equals the me addresses', () {
+      test('SHOULD return true WHEN from equals the shown addresses', () {
         final filter = SearchEmailFilter(from: {me, alias});
 
         expect(filter.isOnlySenders({me, alias}), isTrue);
       });
 
-      test('SHOULD return false WHEN from is a proper subset of the me addresses', () {
+      test('SHOULD return false WHEN from is a proper subset of the shown addresses', () {
         final filter = SearchEmailFilter(from: {me});
 
         expect(filter.isOnlySenders({me, alias}), isFalse);
       });
     });
 
-    group('isFromMeFilter::test', () {
+    group('isFromShownFilter::test', () {
       const me = 'me@example.com';
       const alias = 'alias@example.com';
 
       test('stays true WHEN identities add aliases after the from-me filter was set', () {
         final filter = SearchEmailFilter(from: {me});
 
-        expect(filter.isFromMeFilter({me, alias}), isTrue);
+        expect(filter.isFromShownFilter({me, alias}), isTrue);
       });
     });
 

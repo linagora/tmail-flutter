@@ -324,12 +324,12 @@ extension CalendarEventExtension on CalendarEvent {
   bool isDisplayedEventReplyAction(String ownerEmailAddress) =>
       isDisplayedEventReplyActionAddresses({ownerEmailAddress});
 
-  bool isDisplayedEventReplyActionAddresses(Set<String> meAddresses) =>
+  bool isDisplayedEventReplyActionAddresses(Set<String> shownAddresses) =>
       method != null &&
       _methodIsRepliable &&
       organizer != null &&
       participants?.isNotEmpty == true &&
-      userIsListedInParticipantsAddresses(meAddresses);
+      userIsListedInParticipantsAddresses(shownAddresses);
 
   bool get _methodIsRepliable => 
     method == EventMethod.request ||
@@ -339,25 +339,25 @@ extension CalendarEventExtension on CalendarEvent {
   bool userIsListedInParticipants(String ownEmailAddress) =>
       userIsListedInParticipantsAddresses({ownEmailAddress});
 
-  bool userIsListedInParticipantsAddresses(Set<String> meAddresses) {
+  bool userIsListedInParticipantsAddresses(Set<String> shownAddresses) {
     final participant = participants?.firstWhereOrNull((participant) =>
-        meAddresses.contains(participant.mailto?.mailAddress.value));
+        shownAddresses.contains(participant.mailto?.mailAddress.value));
     return participant != null;
   }
 
   bool userIsOrganizer(String ownEmailAddress) =>
       userIsOrganizerAddresses({ownEmailAddress});
 
-  bool userIsOrganizerAddresses(Set<String> meAddresses) {
-    return meAddresses.contains(organizer?.mailto?.value);
+  bool userIsOrganizerAddresses(Set<String> shownAddresses) {
+    return shownAddresses.contains(organizer?.mailto?.value);
   }
 
   bool isDisplayedWarningMessage(String ownerEmailAddress) =>
       isDisplayedWarningMessageAddresses({ownerEmailAddress});
 
-  bool isDisplayedWarningMessageAddresses(Set<String> meAddresses) {
-    return !userIsListedInParticipantsAddresses(meAddresses) &&
-        !userIsOrganizerAddresses(meAddresses);
+  bool isDisplayedWarningMessageAddresses(Set<String> shownAddresses) {
+    return !userIsListedInParticipantsAddresses(shownAddresses) &&
+        !userIsOrganizerAddresses(shownAddresses);
   }
 
   bool get isDisplayedMailToAttendees =>
@@ -369,9 +369,9 @@ extension CalendarEventExtension on CalendarEvent {
       getEventActionTypesIsDisplayedAddresses({ownerEmailAddress});
 
   List<EventActionType> getEventActionTypesIsDisplayedAddresses(
-    Set<String> meAddresses,
+    Set<String> shownAddresses,
   ) {
-    if (isDisplayedEventReplyActionAddresses(meAddresses)) {
+    if (isDisplayedEventReplyActionAddresses(shownAddresses)) {
       return [
         if (method == EventMethod.counter)
           EventActionType.acceptCounter

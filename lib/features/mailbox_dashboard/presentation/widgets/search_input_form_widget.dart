@@ -77,7 +77,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         listActionButton: const [
           QuickSearchFilter.hasAttachment,
           QuickSearchFilter.last7Days,
-          QuickSearchFilter.fromMe,
+          QuickSearchFilter.fromShown,
           QuickSearchFilter.starred,
         ],
         actionButtonBuilder: (context, filterAction, suggestionsListState) {

@@ -524,7 +524,7 @@ class EmailActionReactor with LabelSubMenuMixin, ActiveAccountReader {
         EmailActionType.reply,
       if (additionalActions.contains(EmailActionType.forward))
         EmailActionType.forward,
-      if (presentationEmail.getCountMailAddressWithoutMeAddresses(ownerEmailAddresses) > 1 &&
+      if (presentationEmail.getCountMailAddressWithoutShownAddresses(ownerEmailAddresses) > 1 &&
           additionalActions.contains(EmailActionType.replyAll))
         EmailActionType.replyAll,
       if (EmailUtils.isReplyToListEnabled(presentationEmail.listPost ?? '') &&

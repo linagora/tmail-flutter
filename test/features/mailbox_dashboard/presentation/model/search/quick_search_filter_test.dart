@@ -8,7 +8,7 @@ void main() {
   const me = 'me@example.com';
 
   // isSelected is pure logic but requires a BuildContext, so capture one.
-  Future<bool> isFromMeSelected(
+  Future<bool> isFromShownSelected(
     WidgetTester tester,
     SearchEmailFilter filter, {
     Set<String>? ownerEmailAddresses = const {me},
@@ -16,7 +16,7 @@ void main() {
     late bool result;
     await tester.pumpWidget(Builder(
       builder: (context) {
-        result = QuickSearchFilter.fromMe.isSelected(
+        result = QuickSearchFilter.fromShown.isSelected(
           context,
           filter,
           EmailSortOrderType.relevance,
@@ -28,10 +28,10 @@ void main() {
     return result;
   }
 
-  group('QuickSearchFilter.fromMe.isSelected::test', () {
+  group('QuickSearchFilter.fromShown.isSelected::test', () {
     testWidgets('SHOULD be selected WHEN from holds only the current user',
         (tester) async {
-      final selected = await isFromMeSelected(
+      final selected = await isFromShownSelected(
         tester,
         SearchEmailFilter(from: {me}),
       );
@@ -39,10 +39,10 @@ void main() {
       expect(selected, isTrue);
     });
 
-    testWidgets('SHOULD be selected WHEN from equals every me address',
+    testWidgets('SHOULD be selected WHEN from equals every shown address',
         (tester) async {
       const alias = 'alias@example.com';
-      final selected = await isFromMeSelected(
+      final selected = await isFromShownSelected(
         tester,
         SearchEmailFilter(from: {me, alias}),
         ownerEmailAddresses: {me, alias},
@@ -53,7 +53,7 @@ void main() {
 
     testWidgets('SHOULD NOT be selected WHEN from holds the user plus others',
         (tester) async {
-      final selected = await isFromMeSelected(
+      final selected = await isFromShownSelected(
         tester,
         SearchEmailFilter(from: {me, 'other@example.com'}),
       );
@@ -62,7 +62,7 @@ void main() {
     });
 
     testWidgets('SHOULD NOT be selected WHEN from is empty', (tester) async {
-      final selected = await isFromMeSelected(
+      final selected = await isFromShownSelected(
         tester,
         SearchEmailFilter.initial(),
       );
@@ -70,9 +70,9 @@ void main() {
       expect(selected, isFalse);
     });
 
-    testWidgets('SHOULD NOT be selected WHEN the me addresses are null',
+    testWidgets('SHOULD NOT be selected WHEN the shown addresses are null',
         (tester) async {
-      final selected = await isFromMeSelected(
+      final selected = await isFromShownSelected(
         tester,
         SearchEmailFilter(from: {me}),
         ownerEmailAddresses: null,

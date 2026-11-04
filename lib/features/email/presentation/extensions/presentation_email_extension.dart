@@ -17,10 +17,10 @@ extension PresentationEmailExtension on PresentationEmail {
     required EmailActionType emailActionType,
     bool isSender = false,
     String? userName,
-    Set<String>? meAddresses,
+    Set<String>? shownAddresses,
     String? listPost,
   }) {
-    final me = meAddresses ?? (userName == null ? const <String>{} : {userName});
+    final shown = shownAddresses ?? (userName == null ? const <String>{} : {userName});
     final newFromAddress = from.removeDuplicateEmails();
     final newToAddress = to.removeDuplicateEmails();
     final newCcAddress = cc.removeDuplicateEmails();
@@ -35,12 +35,12 @@ extension PresentationEmailExtension on PresentationEmail {
           newFromAddress: newFromAddress,
           newBccAddress: newBccAddress,
           newReplyToAddress: newReplyToAddress,
-          meAddresses: me,
+          shownAddresses: shown,
           listPost: listPost,
         );
 
       case EmailActionType.replyToList:
-        return _handleReplyToList(listPost, me);
+        return _handleReplyToList(listPost, shown);
 
       case EmailActionType.replyAll:
         return _handleReplyAll(
@@ -50,7 +50,7 @@ extension PresentationEmailExtension on PresentationEmail {
           newBccAddress: newBccAddress,
           newReplyToAddress: newReplyToAddress,
           newFromAddress: newFromAddress,
-          meAddresses: me,
+          shownAddresses: shown,
           listPost: listPost,
         );
 
@@ -75,7 +75,7 @@ extension PresentationEmailExtension on PresentationEmail {
     required List<EmailAddress> newFromAddress,
     required List<EmailAddress> newBccAddress,
     required List<EmailAddress> newReplyToAddress,
-    required Set<String> meAddresses,
+    required Set<String> shownAddresses,
     String? listPost,
   }) {
     if (isSender) return (to: newToAddress, cc: [], bcc: [], replyTo: []);
@@ -83,12 +83,12 @@ extension PresentationEmailExtension on PresentationEmail {
     final isReplyToListEnabled = EmailUtils.isReplyToListEnabled(listPost ?? '');
     List<EmailAddress> listToAddress = [];
     if (isReplyToListEnabled) {
-      listToAddress = newFromAddress.withoutMeAddresses(meAddresses);
+      listToAddress = newFromAddress.withoutShownAddresses(shownAddresses);
     } else {
       listToAddress = (newReplyToAddress.isNotEmpty
         ? newReplyToAddress
         : newFromAddress
-      ).withoutMeAddresses(meAddresses);
+      ).withoutShownAddresses(shownAddresses);
     }
 
     return (to: listToAddress, cc: [], bcc: [], replyTo: []);
@@ -99,13 +99,13 @@ extension PresentationEmailExtension on PresentationEmail {
     List<EmailAddress> cc,
     List<EmailAddress> bcc,
     List<EmailAddress> replyTo,
-  }) _handleReplyToList(String? listPost, Set<String> meAddresses) {
+  }) _handleReplyToList(String? listPost, Set<String> shownAddresses) {
     final recipientRecord = EmailUtils.extractRecipientsFromListPost(listPost ?? '');
 
     return (
-      to: recipientRecord.toMailAddresses.removeDuplicateEmails().withoutMeAddresses(meAddresses),
-      cc: recipientRecord.ccMailAddresses.removeDuplicateEmails().withoutMeAddresses(meAddresses),
-      bcc: recipientRecord.bccMailAddresses.removeDuplicateEmails().withoutMeAddresses(meAddresses),
+      to: recipientRecord.toMailAddresses.removeDuplicateEmails().withoutShownAddresses(shownAddresses),
+      cc: recipientRecord.ccMailAddresses.removeDuplicateEmails().withoutShownAddresses(shownAddresses),
+      bcc: recipientRecord.bccMailAddresses.removeDuplicateEmails().withoutShownAddresses(shownAddresses),
       replyTo: [],
     );
   }
@@ -122,7 +122,7 @@ extension PresentationEmailExtension on PresentationEmail {
     required List<EmailAddress> newBccAddress,
     required List<EmailAddress> newReplyToAddress,
     required List<EmailAddress> newFromAddress,
-    required Set<String> meAddresses,
+    required Set<String> shownAddresses,
     String? listPost,
   }) {
     if (isSender) {
@@ -142,19 +142,19 @@ extension PresentationEmailExtension on PresentationEmail {
         ...newReplyToAddress,
         ...newFromAddress,
         ...newToAddress,
-      }.removeDuplicateEmails().withoutMeAddresses(meAddresses);
+      }.removeDuplicateEmails().withoutShownAddresses(shownAddresses);
 
     } else {
       listToAddress = {
         ...(newReplyToAddress.isNotEmpty ? newReplyToAddress : newFromAddress),
         ...newToAddress,
-      }.removeDuplicateEmails().withoutMeAddresses(meAddresses);
+      }.removeDuplicateEmails().withoutShownAddresses(shownAddresses);
     }
 
     return (
       to: listToAddress,
-      cc: newCcAddress.withoutMeAddresses(meAddresses),
-      bcc: newBccAddress.withoutMeAddresses(meAddresses),
+      cc: newCcAddress.withoutShownAddresses(shownAddresses),
+      bcc: newBccAddress.withoutShownAddresses(shownAddresses),
       replyTo: [],
     );
   }

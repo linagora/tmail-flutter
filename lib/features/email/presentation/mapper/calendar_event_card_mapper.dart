@@ -281,7 +281,7 @@ class CalendarEventCardMapper {
       value?.trim().isNotEmpty == true ? value : null;
 
   List<EventActionType> get _eventActionTypes =>
-      event.getEventActionTypesIsDisplayedAddresses(viewState.meAddresses);
+      event.getEventActionTypesIsDisplayedAddresses(viewState.shownAddresses);
 
   /// The invitation answers and the optional action beside them.
   LinagoraEventAttending? get attending {
@@ -335,7 +335,7 @@ class CalendarEventCardMapper {
   }
 
   LinagoraEventAction? get calendarAction {
-    if (event.isDisplayedWarningMessageAddresses(viewState.meAddresses)) {
+    if (event.isDisplayedWarningMessageAddresses(viewState.shownAddresses)) {
       return null;
     }
 
@@ -354,7 +354,7 @@ class CalendarEventCardMapper {
   }
 
   LinagoraEventStatus? get status {
-    if (!event.isDisplayedWarningMessageAddresses(viewState.meAddresses)) {
+    if (!event.isDisplayedWarningMessageAddresses(viewState.shownAddresses)) {
       return null;
     }
 

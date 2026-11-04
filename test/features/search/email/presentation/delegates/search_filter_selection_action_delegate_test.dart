@@ -110,8 +110,8 @@ void main() {
       verifyZeroInteractions(controller);
     });
 
-    testWidgets('fromMe is a no-op on the controller', (tester) async {
-      await dispatch(tester, QuickSearchFilter.fromMe);
+    testWidgets('fromShown is a no-op on the controller', (tester) async {
+      await dispatch(tester, QuickSearchFilter.fromShown);
 
       verifyZeroInteractions(controller);
     });

@@ -30,5 +30,5 @@ class CalendarEventCardViewState {
     this.hasScheduleConflict = false,
   });
 
-  Set<String> get meAddresses => ownerEmailAddresses;
+  Set<String> get shownAddresses => ownerEmailAddresses;
 }

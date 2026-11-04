@@ -73,7 +73,7 @@ class SearchFilterSelectionActionDelegate {
         _selectLabelsSearchFilter(request);
         break;
       case QuickSearchFilter.last7Days:
-      case QuickSearchFilter.fromMe:
+      case QuickSearchFilter.fromShown:
         break;
     }
   }
