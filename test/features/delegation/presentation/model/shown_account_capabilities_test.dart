@@ -15,10 +15,12 @@ void main() {
           canCreateFilter,
           canCreateDefaultFolders,
           canUseNotificationKeychain,
+          canApplyMyComposerSettings,
         ) in [
       (
         'my own account',
         ActiveAccount.personal(session),
+        true,
         true,
         true,
         true,
@@ -31,6 +33,7 @@ void main() {
         false,
         false,
         false,
+        false,
       ),
       (
         'no account yet',
@@ -39,13 +42,15 @@ void main() {
         true,
         false,
         false,
+        true,
       ),
     ]) {
       test(
         '${canOpenSettings ? 'opens' : 'does not open'} Settings, '
         '${canCreateFilter ? 'allows' : 'does not allow'} creating a filter, '
-        '${canCreateDefaultFolders ? 'creates' : 'does not create'} default folders and '
-        '${canUseNotificationKeychain ? 'writes' : 'does not write'} the notification keychain '
+        '${canCreateDefaultFolders ? 'creates' : 'does not create'} default folders, '
+        '${canUseNotificationKeychain ? 'writes' : 'does not write'} the notification keychain and '
+        '${canApplyMyComposerSettings ? 'applies' : 'does not apply'} my composer settings '
         'while $shown is shown',
         () {
           final capabilities = ShownAccountCapabilities.of(shownAccount);
@@ -54,6 +59,7 @@ void main() {
           expect(capabilities.canCreateFilter, canCreateFilter);
           expect(capabilities.canCreateDefaultFolders, canCreateDefaultFolders);
           expect(capabilities.canUseNotificationKeychain, canUseNotificationKeychain);
+          expect(capabilities.canApplyMyComposerSettings, canApplyMyComposerSettings);
         },
       );
     }

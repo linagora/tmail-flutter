@@ -19,11 +19,16 @@ class ShownAccountCapabilities with EquatableMixin {
   /// The iOS notification keychain is written only while my own account is shown.
   final bool canUseNotificationKeychain;
 
+  /// My composer preferences (e.g. always request a read receipt) stay off while a delegated
+  /// account is shown, so mail sent from it never picks up my setting.
+  final bool canApplyMyComposerSettings;
+
   const ShownAccountCapabilities._({
     required this.canOpenSettings,
     required this.canCreateFilter,
     required this.canCreateDefaultFolders,
     required this.canUseNotificationKeychain,
+    required this.canApplyMyComposerSettings,
   });
 
   factory ShownAccountCapabilities.of(ActiveAccount? shownAccount) {
@@ -34,6 +39,7 @@ class ShownAccountCapabilities with EquatableMixin {
       canCreateFilter: !delegatedShown,
       canCreateDefaultFolders: personalShown,
       canUseNotificationKeychain: personalShown,
+      canApplyMyComposerSettings: !delegatedShown,
     );
   }
 
@@ -43,5 +49,6 @@ class ShownAccountCapabilities with EquatableMixin {
         canCreateFilter,
         canCreateDefaultFolders,
         canUseNotificationKeychain,
+        canApplyMyComposerSettings,
       ];
 }
