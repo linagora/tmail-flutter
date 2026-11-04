@@ -21,8 +21,6 @@ class SaveVacationWithEmptyMessageScenario extends BaseTestScenario {
     await vacationRobot.pickStartTime();
     await vacationRobot.tapSave();
 
-    await vacationAssertionRobot.expectEmptyMessageToastVisible();
-    vacationAssertionRobot.expectSavedToastAbsent();
-    vacationAssertionRobot.expectResponderNotEnabled();
+    await vacationAssertionRobot.expectSaveRejected();
   }
 }

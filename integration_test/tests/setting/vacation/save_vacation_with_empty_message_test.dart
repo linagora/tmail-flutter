@@ -4,7 +4,7 @@ import '../../../scenarios/setting/vacation/save_vacation_with_empty_message_sce
 
 void main() {
   TestBase().runPatrolTest(
-    description: 'Should show the empty message toast and save nothing when saving an enabled vacation with an empty message',
+    description: 'Should refuse to save an enabled vacation with an empty message',
     scenarioBuilder: ($, robots) => SaveVacationWithEmptyMessageScenario($, robots),
     tags: [TestTags.android, TestTags.ios],
   );

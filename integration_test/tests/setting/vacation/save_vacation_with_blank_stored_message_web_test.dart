@@ -4,7 +4,7 @@ import '../../../scenarios/setting/vacation/save_vacation_with_blank_stored_mess
 
 void main() {
   TestBase().runPatrolTest(
-    description: 'Should show the empty message toast when saving an enabled vacation whose stored message is blank on web',
+    description: 'Should refuse to save an enabled vacation whose stored message is blank on web',
     scenarioBuilder: ($, robots) => SaveVacationWithBlankStoredMessageScenario($, robots),
     tags: [TestTags.web],
   );
