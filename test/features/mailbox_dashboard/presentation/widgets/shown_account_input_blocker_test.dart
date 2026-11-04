@@ -2,8 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
+import 'package:mockito/mockito.dart';
+import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/shown_account_input_block_notifier.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/shown_account_input_blocker.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
+
+class _RecordingMailboxDashBoardController extends Mock implements MailboxDashBoardController {
+  final actions = <UIAction>[];
+  final threadDetailActions = <ThreadDetailUIAction>[];
+
+  @override
+  InternalFinalCallback<void> get onStart => InternalFinalCallback<void>(callback: () {});
+
+  @override
+  InternalFinalCallback<void> get onDelete => InternalFinalCallback<void>(callback: () {});
+
+  @override
+  void dispatchAction(UIAction action) => actions.add(action);
+
+  @override
+  void dispatchThreadDetailUIAction(ThreadDetailUIAction action) => threadDetailActions.add(action);
+}
 
 const _buttonKey = Key('shown-mailbox-button');
 
@@ -130,5 +153,49 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.keyN);
 
     expect(taps.count, 1);
+  });
+
+  testWidgets('a button focused before the switch is not activated by Enter during it', (tester) async {
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          home: ShownAccountInputBlocker(
+            child: TextButton(
+              key: _buttonKey,
+              autofocus: true,
+              onPressed: taps.record,
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(FocusManager.instance.primaryFocus?.hasFocus, isTrue);
+
+    container.read(shownAccountInputBlockProvider.notifier).block();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.sendKeyEvent(LogicalKeyboardKey.space);
+
+    expect(taps.count, 0);
+  });
+
+  testWidgets('asks the dashboard to drop debounced mail-list shortcuts when a switch blocks',
+      (tester) async {
+    final dashboard = _RecordingMailboxDashBoardController();
+    Get.put<MailboxDashBoardController>(dashboard);
+    addTearDown(Get.reset);
+
+    await tester.pumpWidget(_dashboard(container, taps.record));
+    container.read(shownAccountInputBlockProvider.notifier).block();
+    await tester.pump();
+
+    expect(
+      dashboard.actions.whereType<DropPendingMailListShortcutsAction>(),
+      hasLength(1),
+    );
+    expect(dashboard.threadDetailActions.whereType<DropPendingMailViewShortcutsAction>(), hasLength(1));
   });
 }

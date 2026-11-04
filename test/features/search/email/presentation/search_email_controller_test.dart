@@ -6,11 +6,17 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart' hide State;
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:rxdart/rxdart.dart' hide Rx;
+import 'package:tmail_ui_user/features/search/email/presentation/extension/handle_keyboard_shortcut_actions_extension.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/model/mail_searched_list_shortcut_action_view_event.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/mail_list_shortcut_action_view_event.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -1267,5 +1273,49 @@ void main() {
     await tester.pumpAndSettle();
 
     expect((recorder.arguments as ContactArguments).accountId, DelegationFixtures.bobAccountId);
+  });
+
+  test('DropPendingMailListShortcutsAction drops a pending search shortcut and keeps later ones', () {
+    fakeAsync((async) {
+      PlatformInfo.isTestingForWeb = true;
+      addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+      controller.onKeyboardShortcutInit();
+
+      final fired = <MailListShortcutActionViewEvent>[];
+      controller.shortcutActionEventSubscription?.cancel();
+      controller.shortcutActionEventSubscription = controller
+          .shortcutActionEventController!
+          .stream
+          .debounceTime(const Duration(milliseconds: 300))
+          .listen(fired.add);
+
+      controller.shortcutActionEventController!.add(
+        MailSearchedListShortcutActionViewEvent(
+          EmailActionType.markAsRead,
+          [email('search-email-1')],
+        ),
+      );
+      mailboxDashBoardController.dashBoardAction.value =
+          DropPendingMailListShortcutsAction();
+      async.elapse(Duration.zero);
+      async.elapse(const Duration(milliseconds: 300));
+      expect(fired, isEmpty);
+
+      // Production re-listened on a fresh broadcast stream after the drop.
+      final later = <MailListShortcutActionViewEvent>[];
+      final laterSub = controller.shortcutActionEventController!.stream
+          .debounceTime(const Duration(milliseconds: 300))
+          .listen(later.add);
+      controller.shortcutActionEventController!.add(
+        MailSearchedListShortcutActionViewEvent(
+          EmailActionType.markAsStarred,
+          [email('search-email-2')],
+        ),
+      );
+      async.elapse(const Duration(milliseconds: 300));
+      laterSub.cancel();
+      expect(later, hasLength(1));
+    });
   });
 }

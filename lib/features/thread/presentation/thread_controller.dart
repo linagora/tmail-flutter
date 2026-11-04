@@ -412,6 +412,9 @@ class ThreadController extends BaseController
       } else if (action is ClearMailListKeyboardShortcutFocusAction) {
         clearMailShortcutFocus();
         mailboxDashBoardController.clearDashBoardAction();
+      } else if (action is DropPendingMailListShortcutsAction) {
+        dropPendingShortcutActions();
+        mailboxDashBoardController.clearDashBoardAction();
       } else if (action is RestoreMailboxEmailListAfterSearchAction) {
         restoreMailboxEmailListAfterSearch(force: action.force);
         mailboxDashBoardController.clearDashBoardAction();

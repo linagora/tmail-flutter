@@ -210,6 +210,8 @@ class ThreadDetailController extends BaseController
         refocusMailShortcutFocus();
       } else if (action is ClearMailViewKeyboardShortcutFocusAction) {
         clearMailShortcutFocus();
+      } else if (action is DropPendingMailViewShortcutsAction) {
+        dropPendingShortcutActions();
       } else if (action is ResyncThreadDetailWhenSettingChangedAction) {
         resyncThreadDetailWhenSettingChanged();
       }

@@ -163,3 +163,6 @@ class SynchronizeEmailSortOrderAction extends DashBoardAction {
 class ReclaimMailListKeyboardShortcutFocusAction extends DashBoardAction {}
 
 class ClearMailListKeyboardShortcutFocusAction extends DashBoardAction {}
+
+/// Drops a mail-list shortcut already in the debounce window when an account switch starts.
+class DropPendingMailListShortcutsAction extends DashBoardAction {}
