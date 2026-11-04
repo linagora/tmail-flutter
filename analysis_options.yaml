@@ -16,12 +16,6 @@ analyzer:
     - ios/**
     - web/**
     - lib/l10n/messages_*.dart
-  # Dart 3.13 deprecates legacy analyzer plugins; keep riverpod_lint until
-  # custom_lint migration, and silence the upgrade warning that fails CI.
-  errors:
-    analysis_options_deprecated_plugins: ignore
-  plugins:
-    - riverpod_lint
 
 linter:
   rules:
