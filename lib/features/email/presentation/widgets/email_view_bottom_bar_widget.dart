@@ -39,7 +39,7 @@ class EmailViewBottomBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final countMailAddress =
-        presentationEmail.getCountMailAddressWithoutMeAddresses(ownerEmailAddresses);
+        presentationEmail.getCountMailAddressWithoutShownAddresses(ownerEmailAddresses);
     final isReplyToListEnabled = EmailUtils.isReplyToListEnabled(
       emailLoaded.emailCurrent?.listPost ?? '',
     );

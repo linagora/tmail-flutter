@@ -1039,7 +1039,7 @@ class SearchEmailController extends BaseController
         QuickSearchFilter.last7Days: _resetReceiveTimeSearchFilter,
         QuickSearchFilter.sortBy: _resetSortOrderSearchFilter,
         QuickSearchFilter.from: _clearSenderSearchFilter,
-        QuickSearchFilter.fromMe: _clearSenderSearchFilter,
+        QuickSearchFilter.fromShown: _clearSenderSearchFilter,
         QuickSearchFilter.hasAttachment: _clearHasAttachmentSearchFilter,
         QuickSearchFilter.to: _clearRecipientSearchFilter,
         QuickSearchFilter.folder: _clearMailboxSearchFilter,

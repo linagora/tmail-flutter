@@ -48,11 +48,9 @@ extension SetEmailAddressExtension on Set<EmailAddress>? {
       : List.empty();
   }
 
-  Set<EmailAddress> withoutMe(String userName) => withoutMeAddresses({userName});
-
-  Set<EmailAddress> withoutMeAddresses(Set<String> meAddresses) {
+  Set<EmailAddress> withoutShownAddresses(Set<String> shownAddresses) {
     return this
-            ?.where((emailAddress) => !meAddresses.contains(emailAddress.emailAddress))
+            ?.where((emailAddress) => !shownAddresses.contains(emailAddress.emailAddress))
             .toSet() ??
         {};
   }
@@ -80,22 +78,19 @@ extension ListEmailAddressExtension on List<EmailAddress> {
   List<EmailAddress> removeInvalidEmails(String username) =>
       removeInvalidEmailsAddresses({username});
 
-  List<EmailAddress> removeInvalidEmailsAddresses(Set<String> meAddresses) {
+  List<EmailAddress> removeInvalidEmailsAddresses(Set<String> shownAddresses) {
     final Set<String> seenEmails = {};
     return where((email) {
       if (email.emailAddress.isEmpty) return false;
-      if (meAddresses.contains(email.emailAddress)) return false;
+      if (shownAddresses.contains(email.emailAddress)) return false;
       return seenEmails.add(email.emailAddress);
     }).toList();
   }
 
-  List<EmailAddress> withoutMe(String? userName) =>
-      withoutMeAddresses(userName == null ? const {} : {userName});
+  List<EmailAddress> withoutShownAddresses(Set<String> shownAddresses) {
+    if (shownAddresses.isEmpty) return this;
 
-  List<EmailAddress> withoutMeAddresses(Set<String> meAddresses) {
-    if (meAddresses.isEmpty) return this;
-
-    return where((emailAddress) => !meAddresses.contains(emailAddress.emailAddress))
+    return where((emailAddress) => !shownAddresses.contains(emailAddress.emailAddress))
         .toList();
   }
 

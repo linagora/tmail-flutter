@@ -4,7 +4,7 @@ import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/email/presentation_email.dart';
 
 void main() {
-  group('PresentationEmailExtension::getCountMailAddressWithoutMe::', () {
+  group('PresentationEmailExtension::getCountMailAddressWithoutShown::', () {
     test('Should return the correct count of email addresses excluding the user', () {
       // Arrange
       final email = PresentationEmail(
@@ -15,7 +15,7 @@ void main() {
       );
 
       // Act
-      final count = email.getCountMailAddressWithoutMe('user@example.com');
+      final count = email.getCountMailAddressWithoutShown('user@example.com');
 
       // Assert
       expect(count, 3);
@@ -31,7 +31,7 @@ void main() {
       );
 
       // Act
-      final count = email.getCountMailAddressWithoutMe('user@example.com');
+      final count = email.getCountMailAddressWithoutShown('user@example.com');
 
       // Assert
       expect(count, 0);
@@ -56,7 +56,7 @@ void main() {
       );
 
       // Act
-      final count = email.getCountMailAddressWithoutMe('user@example.com');
+      final count = email.getCountMailAddressWithoutShown('user@example.com');
 
       // Assert
       expect(count, 2);

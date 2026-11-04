@@ -17,7 +17,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 enum QuickSearchFilter {
   hasAttachment,
   last7Days,
-  fromMe,
+  fromShown,
   starred,
   unread,
   events,
@@ -45,7 +45,7 @@ enum QuickSearchFilter {
         return AppLocalizations.of(context).hasAttachment;
       case QuickSearchFilter.last7Days:
         return AppLocalizations.of(context).last7Days;
-      case QuickSearchFilter.fromMe:
+      case QuickSearchFilter.fromShown:
         return AppLocalizations.of(context).fromMe;
       case QuickSearchFilter.sortBy:
         return sortOrderType?.getTitle(context)
@@ -79,7 +79,7 @@ enum QuickSearchFilter {
         return isSelected ? imagePaths.icSelectedSB : imagePaths.icAttachmentSB;
       case QuickSearchFilter.last7Days:
         return isSelected ? imagePaths.icSelectedSB : imagePaths.icCalendarSB;
-      case QuickSearchFilter.fromMe:
+      case QuickSearchFilter.fromShown:
         return isSelected ? imagePaths.icSelectedSB : imagePaths.icUserSB;
       case QuickSearchFilter.sortBy:
         return imagePaths.icFilterSB;
@@ -147,9 +147,9 @@ enum QuickSearchFilter {
         return searchFilter.hasAttachment;
       case QuickSearchFilter.last7Days:
         return searchFilter.emailReceiveTimeType == EmailReceiveTimeType.last7Days;
-      case QuickSearchFilter.fromMe:
+      case QuickSearchFilter.fromShown:
         return ownerEmailAddresses != null &&
-            searchFilter.isFromMeFilter(ownerEmailAddresses);
+            searchFilter.isFromShownFilter(ownerEmailAddresses);
       case QuickSearchFilter.sortBy:
         return sortOrderType != SearchEmailFilter.defaultSortOrder;
       case QuickSearchFilter.dateTime:

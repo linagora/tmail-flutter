@@ -762,17 +762,17 @@ class ComposerController extends BaseController
     required EmailActionType actionType,
     String? listPost,
   }) {
-    final meAddresses = mailboxDashBoardController.ownerEmailAddresses;
+    final shownAddresses = mailboxDashBoardController.ownerEmailAddresses;
     final isSender = presentationEmail.from
       .asList()
       .any((element) =>
           element.emailAddress.isNotEmpty &&
-          meAddresses.contains(element.emailAddress));
+          shownAddresses.contains(element.emailAddress));
 
     final recipients = presentationEmail.generateRecipientsEmailAddressForComposer(
       emailActionType: actionType,
       isSender: isSender,
-      meAddresses: meAddresses,
+      shownAddresses: shownAddresses,
       listPost: listPost,
     );
 
