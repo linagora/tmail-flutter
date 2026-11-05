@@ -280,6 +280,7 @@ class HomeController extends ReloadableController {
             _deepLinksManager!.handleOpenAppDeepLinks(
               openAppDeepLinkData: deepLinkData,
               isSignedIn: false,
+              isCallerActive: () => !isClosed,
               onFailureCallback: goToLogin,
               onAutoSignInSuccessCallback: _handleAutoSignInViaDeepLinkSuccess
             );
@@ -316,6 +317,7 @@ class HomeController extends ReloadableController {
             _deepLinksManager!.handleOpenAppDeepLinks(
               openAppDeepLinkData: deepLinkData,
               isSignedIn: true,
+              isCallerActive: () => !isClosed,
               username: personalAccount?.userName,
               onConfirmLogoutCallback: (openAppDeepLinkData) => _handleLogOutAndSignInNewAccount(
                 authenticationViewStateSuccess: success,

@@ -1,8 +1,34 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_account_verifier.dart';
 import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
+
+class _RedirectedSessionAdapter implements HttpClientAdapter {
+  _RedirectedSessionAdapter(this.location);
+
+  final String location;
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async => ResponseBody.fromString(
+    jsonEncode({'username': 'alice@twake.app'}),
+    200,
+    headers: {
+      Headers.contentTypeHeader: [Headers.jsonContentType],
+    },
+    isRedirect: true,
+  )..redirects = [RedirectRecord(302, 'GET', Uri.parse(location))];
+
+  @override
+  void close({bool force = false}) {}
+}
 
 void main() {
   final link = OpenAppDeepLinkData(
@@ -77,4 +103,22 @@ void main() {
 
     expect(() => verifier.getAccountUsername(link), throwsA(isA<DioException>()));
   });
+
+  test(
+    'SHOULD return the session username WHEN the session is answered after a redirect on the same host',
+    () async {
+      dio.httpClientAdapter = _RedirectedSessionAdapter('https://jmap.twake.app/jmap/session');
+
+      expect(await verifier.getAccountUsername(link), 'alice@twake.app');
+    },
+  );
+
+  test(
+    'SHOULD throw WHEN the session is answered after a redirect to a host that is not allowed',
+    () async {
+      dio.httpClientAdapter = _RedirectedSessionAdapter('https://evil.example/jmap/session');
+
+      expect(() => verifier.getAccountUsername(link), throwsA(isA<StateError>()));
+    },
+  );
 }

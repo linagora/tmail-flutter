@@ -75,6 +75,7 @@ class TwakeWelcomeController extends ReloadableController {
         _deepLinksManager?.handleOpenAppDeepLinks(
           openAppDeepLinkData: deepLinkData,
           isSignedIn: false,
+          isCallerActive: () => !isClosed,
           onAutoSignInSuccessCallback: _handleAutoSignInViaDeepLinkSuccess,
           onFailureCallback: SmartDialog.dismiss,
         );

@@ -308,6 +308,7 @@ class LoginController extends ReloadableController {
         _deepLinksManager?.handleOpenAppDeepLinks(
           openAppDeepLinkData: deepLinkData,
           isSignedIn: false,
+          isCallerActive: () => !isClosed,
           onAutoSignInSuccessCallback: _handleAutoSignInViaDeepLinkSuccess,
           onFailureCallback: SmartDialog.dismiss,
         );
@@ -595,8 +596,9 @@ class LoginController extends ReloadableController {
 
   Future<void> _handleDNSLookupToGetJmapUrlSuccess(DNSLookupToGetJmapUrlSuccess success) async {
     if (!success.isEncryptedSource && !await _confirmDiscoveredServer(success)) {
-      // An unconfirmed server never becomes the base URL: a base URL set by
-      // now comes from a newer answer, which a decline must not tear down.
+      // An unconfirmed server never becomes the base URL. A base URL still
+      // set here (a newer answer, or one kept from a retry) is left as is;
+      // only a decline with no base URL resets the view state.
       if (_baseUri == null) clearState();
       return;
     }

@@ -781,6 +781,7 @@ class MailboxDashBoardController extends ReloadableController
         _deepLinksManager?.handleOpenAppDeepLinks(
           openAppDeepLinkData: deepLinkData,
           isSignedIn: true,
+          isCallerActive: () => !isClosed,
           username: sessionCurrent?.username,
           onConfirmLogoutCallback: _handleLogOutAndSignInNewAccount,
         );

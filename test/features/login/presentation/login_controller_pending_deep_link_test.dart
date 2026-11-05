@@ -44,6 +44,7 @@ class _RecordingDeepLinksManager extends Fake implements DeepLinksManager {
   int openAppCalls = 0;
   int autoSignInCalls = 0;
   bool? signedIn;
+  bool Function()? isCallerActive;
   OpenAppDeepLinkData? opened;
   OnAutoSignInViaDeepLinkSuccessCallback? onAutoSignInSuccess;
 
@@ -75,8 +76,10 @@ class _RecordingDeepLinksManager extends Fake implements DeepLinksManager {
     onConfirmLogoutCallback,
     UserName? username,
     bool isSignedIn = true,
+    bool Function()? isCallerActive,
   }) async {
     openAppCalls++;
+    this.isCallerActive = isCallerActive;
     opened = openAppDeepLinkData;
     signedIn = isSignedIn;
     onAutoSignInSuccess = onAutoSignInSuccessCallback;
@@ -198,6 +201,7 @@ void main() {
         expect(manager.openAppCalls, 1);
         expect(manager.opened, same(link));
         expect(manager.signedIn, isFalse);
+        expect(manager.isCallerActive?.call(), isTrue);
         expect(manager.autoSignInCalls, 0);
         expect(find.text('Loading... Please wait!'), findsNothing);
 

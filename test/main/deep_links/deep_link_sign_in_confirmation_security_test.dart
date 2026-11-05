@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -100,6 +102,19 @@ class _FailingAutoSignInInteractor extends Fake implements AutoSignInViaDeepLink
     return Stream.value(Left<Failure, Success>(
       AutoSignInViaDeepLinkFailure('sign-in failed')));
   }
+}
+
+class _PendingAutoSignInInteractor extends Fake implements AutoSignInViaDeepLinkInteractor {
+  final Completer<Either<Failure, Success>> _result = Completer();
+
+  void complete() => _result.complete(Left(AutoSignInViaDeepLinkFailure('sign-in failed')));
+
+  @override
+  Stream<Either<Failure, Success>> execute({
+    required Uri baseUri,
+    required TokenOIDC tokenOIDC,
+    required OIDCConfiguration oidcConfiguration,
+  }) => Stream.fromFuture(_result.future);
 }
 
 OpenAppDeepLinkData _link({
@@ -473,6 +488,54 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(signInDialog, findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'SHOULD drop the link silently WHEN the caller closed while the link was verified',
+      (tester) async {
+        await pumpApp(tester);
+        var failed = false;
+
+        deepLinkManager.handleOpenAppDeepLinks(
+          openAppDeepLinkData: _link(),
+          isSignedIn: false,
+          isCallerActive: () => false,
+          onFailureCallback: () => failed = true,
+        );
+        await tester.pumpAndSettle();
+        await tester.pump(const Duration(milliseconds: 300));
+
+        expect(signInDialog, findsNothing);
+        expect(interactor.calls, 0);
+        expect(failed, isFalse);
+      },
+    );
+
+    testWidgets(
+      'SHOULD refuse a second link WHEN the confirmed sign-in is still running',
+      (tester) async {
+        final pending = _PendingAutoSignInInteractor();
+        Get.replace<AutoSignInViaDeepLinkInteractor>(pending);
+        await pumpApp(tester);
+
+        deepLinkManager.handleOpenAppDeepLinks(openAppDeepLinkData: _link(), isSignedIn: false);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Sign In'));
+        await tester.pumpAndSettle();
+
+        deepLinkManager.handleOpenAppDeepLinks(
+          openAppDeepLinkData: _link(accessToken: 'token-2'),
+          isSignedIn: false,
+        );
+        await tester.pumpAndSettle();
+
+        expect(Get.find<DeepLinkAccountVerifier>(), isA<_FakeAccountVerifier>()
+          .having((verifier) => verifier.calls, 'calls', 1));
+        expect(signInDialog, findsNothing);
+
+        pending.complete();
+        await tester.pumpAndSettle();
       },
     );
   });

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 /// Asks the JMAP server which account a sign-in link's access token belongs to.
 ///
@@ -38,6 +39,9 @@ class DeepLinkAccountVerifier {
 
     try {
       final response = await dio.get<Map<String, dynamic>>(_sessionPath);
+      if (!_isAllowedOrigin(response.realUri)) {
+        throw StateError('The JMAP session was answered by a host that is not allowed');
+      }
       final username = response.data?['username'];
       if (username is! String || username.trim().isEmpty) {
         throw StateError('The JMAP session has no username');
@@ -47,4 +51,7 @@ class DeepLinkAccountVerifier {
       dio.close(force: true);
     }
   }
+
+  static bool _isAllowedOrigin(Uri uri) =>
+      uri.isScheme('https') && AppConfig.deepLinkAllowedHosts.contains(uri.host);
 }

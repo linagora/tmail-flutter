@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/presentation/extensions/either_view_state_extension.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
@@ -75,6 +77,7 @@ mixin OpenAppDeepLinkHandlerMixin {
     OnDeepLinkConfirmLogoutCallback<OpenAppDeepLinkData>? onConfirmLogoutCallback,
     UserName? username,
     bool isSignedIn = true,
+    bool Function()? isCallerActive,
   }) async {
     if (!openAppDeepLinkData.isValidAuthentication()) {
       _notifyLinkRefused(openAppDeepLinkData);
@@ -93,6 +96,11 @@ mixin OpenAppDeepLinkHandlerMixin {
       );
       if (accountUsername == null) {
         onFailureCallback?.call();
+        return;
+      }
+
+      if (isCallerActive?.call() == false) {
+        logWarning('DeepLinksManager::handleOpenAppDeepLinks: the caller closed while the link was verified');
         return;
       }
 
@@ -253,14 +261,15 @@ mixin OpenAppDeepLinkHandlerMixin {
   /// dialog any other way (back button, route change) counts as a cancel.
   Future<void> _awaitConfirmDialog({
     required Future<void> Function(VoidCallback onConfirm, VoidCallback onCancel) showDialog,
-    required Function onConfirmAction,
+    required FutureOr<void> Function() onConfirmAction,
     required Function onCancelAction,
   }) async {
     var isDecided = false;
+    Future<void>? confirmedAction;
     await showDialog(
       () {
         isDecided = true;
-        onConfirmAction();
+        confirmedAction = Future.sync(onConfirmAction);
       },
       () {
         isDecided = true;
@@ -268,12 +277,13 @@ mixin OpenAppDeepLinkHandlerMixin {
       },
     );
     if (!isDecided) onCancelAction();
+    await confirmedAction;
   }
 
   Future<void> _showConfirmDialogSignIn(
     BuildContext context,
     String account, {
-    required Function onConfirmAction,
+    required FutureOr<void> Function() onConfirmAction,
     required Function onCancelAction,
   }) {
     final appLocalizations = AppLocalizations.of(context);
@@ -309,7 +319,7 @@ mixin OpenAppDeepLinkHandlerMixin {
     required BuildContext context,
     required String currentUsername,
     required String newUsername,
-    required Function onConfirmAction,
+    required FutureOr<void> Function() onConfirmAction,
     required Function onCancelAction,
   }) {
     final appLocalizations = AppLocalizations.of(context);

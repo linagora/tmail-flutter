@@ -68,9 +68,6 @@ class OpenAppDeepLinkData extends DeepLinkData {
         : null;
   }
 
-  bool isLoggedInWith(String currentUsername) =>
-      isSameUsername(username, currentUsername);
-
   TokenOIDC get tokenOIDC {
     return TokenOIDC(
       accessToken,
