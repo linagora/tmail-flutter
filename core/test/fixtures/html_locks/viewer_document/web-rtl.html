@@ -136,10 +136,10 @@
       <div class="tmail-content"><p>مرحبا بالعالم</p></div>
       <style>html, body { height: auto !important; }</style>
             <script type="text/javascript">
-        window.parent.addEventListener('message', handleMessage, false);
+        window.addEventListener('message', handleMessage, false);
         window.addEventListener('load', handleOnLoad);
         window.addEventListener('pagehide', (event) => {
-          window.parent.removeEventListener('message', handleMessage, false);
+          window.removeEventListener('message', handleMessage, false);
           window.removeEventListener('load', handleOnLoad);
                       clearTimeout(_resizeDebounceTimer);
             if (typeof resizeObserver !== 'undefined') resizeObserver.disconnect();
@@ -147,7 +147,13 @@
         });
       
         function handleMessage(e) {
-          if (e && e.data && typeof e.data === 'string' && e.data.includes("toIframe:")) {
+          if (!e || e.source !== window.parent) return;
+          if (e.data === '{"type":"toIframe: clearSelection"}') {
+            var selection = window.getSelection();
+            if (selection) selection.removeAllRanges();
+            return;
+          }
+          if (e.data && typeof e.data === 'string' && e.data.includes("toIframe:")) {
             var data;
             try {
               data = JSON.parse(e.data);
@@ -203,8 +209,8 @@
         
         function handleOnLoad() {
           window.parent.postMessage(JSON.stringify({"view": "lockViewId", "message": "iframeHasBeenLoaded"}), "*");
-          window.parent.postMessage(JSON.stringify({"view": "lockViewId", "type": "toIframe: getHeight"}), "*");
-          window.parent.postMessage(JSON.stringify({"view": "lockViewId", "type": "toIframe: getWidth"}), "*");
+          window.parent.postMessage(JSON.stringify({"view": "lockViewId", "type": "toDart: htmlHeight", "height": document.body.scrollHeight}), "*");
+          window.parent.postMessage(JSON.stringify({"view": "lockViewId", "type": "toDart: htmlWidth", "width": document.body.scrollWidth}), "*");
           
           
           

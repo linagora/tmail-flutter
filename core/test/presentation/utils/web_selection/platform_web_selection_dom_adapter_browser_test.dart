@@ -4,6 +4,8 @@ import 'dart:async';
 import 'dart:js_interop';
 
 import 'package:core/presentation/utils/web_selection/platform_web_selection_dom_adapter.dart';
+import 'package:core/presentation/views/html_viewer/html_iframe_widget.dart';
+import 'package:core/presentation/views/html_viewer/html_viewer_document_builder.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:web/web.dart' as web;
 
@@ -164,4 +166,60 @@ void main() {
     expect(adapter.clearIframeSelections, returnsNormally);
     expect(connectedSelection.rangeCount, 0);
   });
+
+  test('clears a sandboxed viewer iframe selection via postMessage', () async {
+    final messages = StreamController<String>.broadcast();
+    final listener = ((web.MessageEvent event) {
+      final data = event.data;
+      if (data.isA<JSString>()) messages.add((data as JSString).toDart);
+    }).toJS;
+    web.window.addEventListener('message', listener);
+    addTearDown(() {
+      web.window.removeEventListener('message', listener);
+      messages.close();
+    });
+
+    final selected = messages.stream.firstWhere((m) => m == 'selected');
+    final iframe = web.HTMLIFrameElement()
+      ..setAttribute('sandbox', HtmlIframeWidget.sandboxPolicy)
+      ..srcdoc = HtmlViewerDocumentBuilder.buildWebDocument(
+        const HtmlWebViewerDocumentInput(
+          content: _selectableContent,
+          viewId: 'selection-test',
+          widthContent: 300,
+          minHeight: 50,
+          minWidth: 50,
+        ),
+      ).toJS;
+    web.document.body!.append(iframe);
+    fixtures.add(iframe);
+    await selected.timeout(const Duration(seconds: 2));
+
+    final emptied = messages.stream.firstWhere((m) => m == 'empty');
+    adapter.clearIframeSelections();
+
+    await emptied.timeout(const Duration(seconds: 2));
+  });
 }
+
+/// Selects its text on load and reports selection changes to the parent.
+const _selectableContent = '''
+<p id="t">text</p>
+<script>
+  var selectionDone = false;
+  window.addEventListener('load', function () {
+    var range = document.createRange();
+    range.selectNodeContents(document.getElementById('t'));
+    var selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    selectionDone = true;
+    window.parent.postMessage('selected', '*');
+  });
+  document.addEventListener('selectionchange', function () {
+    if (selectionDone && window.getSelection().rangeCount === 0) {
+      window.parent.postMessage('empty', '*');
+    }
+  });
+</script>
+''';

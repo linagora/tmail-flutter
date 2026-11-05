@@ -22,6 +22,25 @@ void main() {
     'SHOULD leave out the scripts of callbacks and options it is not given',
     _expectDocumentWithoutOptions,
   );
+
+  test('SHOULD run its bridge without reading the parent window', () {
+    final document = HtmlViewerDocumentBuilder.buildWebDocument(
+      const HtmlWebViewerDocumentInput(
+        content: _html,
+        viewId: 'view1',
+        widthContent: 390,
+        minHeight: 100,
+        minWidth: 100,
+      ),
+    );
+
+    expect(document, contains("window.addEventListener('message', handleMessage"));
+    expect(document, contains('toIframe: clearSelection'));
+    expect(document, contains('e.source !== window.parent'));
+    expect(document, isNot(contains('window.parent.addEventListener')));
+    expect(document, isNot(contains('window.parent.removeEventListener')));
+    expect(document, isNot(contains('toIframe: getHeight')));
+  });
 }
 
 const _html = '<p>مرحبا</p><blockquote><p>quoted</p></blockquote>';

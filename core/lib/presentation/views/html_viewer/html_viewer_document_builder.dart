@@ -188,15 +188,15 @@ class HtmlViewerDocumentBuilder {
               onScrollChangedEvent: onScrollChangedEvent,
             );
 
-  /// The iframe side of the postMessage bridge with the web viewer widget.
+  /// The iframe side of the postMessage bridge; runs in a sandboxed, opaque-origin frame.
   static String _webActionScripts(HtmlWebViewerDocumentInput input) {
     final viewId = input.viewId;
     return '''
       <script type="text/javascript">
-        window.parent.addEventListener('message', handleMessage, false);
+        window.addEventListener('message', handleMessage, false);
         window.addEventListener('load', handleOnLoad);
         window.addEventListener('pagehide', (event) => {
-          window.parent.removeEventListener('message', handleMessage, false);
+          window.removeEventListener('message', handleMessage, false);
           window.removeEventListener('load', handleOnLoad);
           ${_webStopResizeObserver(input)}
         });
@@ -213,8 +213,8 @@ ${_webHandleMessage(viewId)}
         
         function handleOnLoad() {
           window.parent.postMessage(JSON.stringify({"view": "$viewId", "message": "$iframeOnLoadMessage"}), "*");
-          window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toIframe: getHeight"}), "*");
-          window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toIframe: getWidth"}), "*");
+          window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toDart: htmlHeight", "height": document.body.scrollHeight}), "*");
+          window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toDart: htmlWidth", "width": document.body.scrollWidth}), "*");
           
           ${_webListenLinks(input, _WebLinkScript.hyperLink)}
           
@@ -282,7 +282,13 @@ ${_webHandleMessage(viewId)}
   /// Answers the height, width and `execCommand` requests Dart posts to the iframe.
   static String _webHandleMessage(String viewId) => '''
         function handleMessage(e) {
-          if (e && e.data && typeof e.data === 'string' && e.data.includes("toIframe:")) {
+          if (!e || e.source !== window.parent) return;
+          if (e.data === '{"type":"toIframe: clearSelection"}') {
+            var selection = window.getSelection();
+            if (selection) selection.removeAllRanges();
+            return;
+          }
+          if (e.data && typeof e.data === 'string' && e.data.includes("toIframe:")) {
             var data;
             try {
               data = JSON.parse(e.data);
