@@ -6,6 +6,10 @@
 set -uo pipefail
 
 PLATFORM="${1:?usage: memory-leak-check.sh <web|android>}"
+if [ "$PLATFORM" = android ] && [ "${BASH_VERSINFO[0]}" -lt 4 ]; then
+    echo "Android needs Bash 4+: Bash 3.2 (macOS /bin/bash) reports a read timeout as EOF, so the hang watchdog never fires." >&2
+    exit 2
+fi
 ROOT_DIR="$PWD"
 CI_LOGS="${CI_LOGS:-$ROOT_DIR/ci-logs}"
 MEMORY_DIR="$CI_LOGS/memory"
