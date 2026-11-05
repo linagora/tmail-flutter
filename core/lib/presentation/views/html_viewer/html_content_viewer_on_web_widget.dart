@@ -484,6 +484,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
                 final htmlView = HtmlIframeWidget(
                   key: ValueKey('$_htmlData-${widget.key}'),
                   srcdoc: _htmlData,
+                  sandbox: HtmlIframeWidget.sandboxPolicy,
                   width: _actualWidth.toString(),
                   height: _actualHeight.toString(),
                 );

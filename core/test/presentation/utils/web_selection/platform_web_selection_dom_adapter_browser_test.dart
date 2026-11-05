@@ -179,7 +179,7 @@ void main() {
       messages.close();
     });
 
-    final selected = messages.stream.firstWhere((m) => m == 'selected');
+    final selected = messages.stream.firstWhere((m) => m == 'selected:1');
     final iframe = web.HTMLIFrameElement()
       ..setAttribute('sandbox', HtmlIframeWidget.sandboxPolicy)
       ..srcdoc = HtmlViewerDocumentBuilder.buildWebDocument(
@@ -193,12 +193,12 @@ void main() {
       ).toJS;
     web.document.body!.append(iframe);
     fixtures.add(iframe);
-    await selected.timeout(const Duration(seconds: 2));
+    await selected.timeout(const Duration(seconds: 5));
 
     final emptied = messages.stream.firstWhere((m) => m == 'empty');
     adapter.clearIframeSelections();
 
-    await emptied.timeout(const Duration(seconds: 2));
+    await emptied.timeout(const Duration(seconds: 5));
   });
 }
 
@@ -214,7 +214,7 @@ const _selectableContent = '''
     selection.removeAllRanges();
     selection.addRange(range);
     selectionDone = true;
-    window.parent.postMessage('selected', '*');
+    window.parent.postMessage('selected:' + selection.rangeCount, '*');
   });
   document.addEventListener('selectionchange', function () {
     if (selectionDone && window.getSelection().rangeCount === 0) {

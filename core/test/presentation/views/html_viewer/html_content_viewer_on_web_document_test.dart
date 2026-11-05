@@ -23,6 +23,18 @@ void main() {
     _expectDocumentWithoutOptions,
   );
 
+  testWidgets('SHOULD sandbox the iframe it renders mail in', (tester) async {
+    await _loadedDocument(
+      tester,
+      const HtmlContentViewerOnWeb(contentHtml: _html, widthContent: 390),
+    );
+
+    expect(
+      tester.widget<HtmlIframeWidget>(find.byType(HtmlIframeWidget)).sandbox,
+      HtmlIframeWidget.sandboxPolicy,
+    );
+  });
+
   test('SHOULD run its bridge without reading the parent window', () {
     final document = HtmlViewerDocumentBuilder.buildWebDocument(
       const HtmlWebViewerDocumentInput(

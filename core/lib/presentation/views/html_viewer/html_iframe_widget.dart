@@ -10,11 +10,15 @@ class HtmlIframeWidget extends StatelessWidget {
     this.borderRadius,
     this.src,
     this.srcdoc,
+    this.sandbox,
   });
 
   final void Function(IFrameElement iframe)? onIframeCreated;
   final String? width, height, src, srcdoc;
   final double? borderRadius;
+
+  /// Sandbox attribute value; null leaves the frame unsandboxed (trusted apps).
+  final String? sandbox;
 
   /// Opaque origin: mail content cannot reach the app window, DOM or storage.
   static const String sandboxPolicy =
@@ -27,7 +31,7 @@ class HtmlIframeWidget extends StatelessWidget {
       tagName: 'iframe',
       onElementCreated: (element) {
         final iframe = element as IFrameElement;
-        iframe.setAttribute('sandbox', sandboxPolicy);
+        if (sandbox != null) iframe.setAttribute('sandbox', sandbox!);
         onIframeCreated?.call(iframe);
         iframe
           ..width = width
