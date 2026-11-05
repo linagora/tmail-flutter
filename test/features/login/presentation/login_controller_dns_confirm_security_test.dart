@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,8 +14,12 @@ import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
+import 'package:tmail_ui_user/features/login/domain/model/dns_lookup_result.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/login_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/dns_lookup_to_get_jmap_url_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/dns_lookup_to_get_jmap_url_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_user_info_interactor.dart';
@@ -31,6 +37,15 @@ import 'package:uuid/uuid.dart';
 import 'login_controller_test.mocks.dart';
 
 /// Records the server shown to the user and answers when the test says so.
+class _DnsLoginRepository extends Fake implements LoginRepository {
+  _DnsLoginRepository(this.result);
+
+  final DnsLookupResult result;
+
+  @override
+  Future<DnsLookupResult> dnsLookupToGetJmapUrl(String emailAddress) async => result;
+}
+
 class _FakeDiscoveredServerConfirmDialog extends DiscoveredServerConfirmDialog {
   final List<({String emailDomain, String serverHost})> shown = [];
   Completer<bool> answer = Completer<bool>();
@@ -163,9 +178,9 @@ void main() {
     (tester) async {
       await pumpApp(tester);
 
-      loginController.handleSuccessViewState(
+      loginController.onData(Right(
         DNSLookupToGetJmapUrlSuccess('mail.attacker.example', email: 'bob@corp.example', isEncryptedSource: false),
-      );
+      ));
       await tester.pump();
       confirmDialog.answer.complete(false);
       await tester.pump();
@@ -173,6 +188,10 @@ void main() {
       verifyNever(checkOIDCIsAvailableInteractor.execute(any));
       expect(loginController.urlInputController.text, isEmpty);
       expect(loginController.loginFormType.value, LoginFormType.dnsLookupForm);
+      expect(
+        loginController.viewState.value.fold((failure) => failure, (success) => success),
+        UIState.idle,
+      );
     },
   );
 
@@ -262,6 +281,9 @@ void main() {
     'SHOULD keep a newer DNS-over-HTTPS server WHEN the user declines an older plaintext one',
     (tester) async {
       await pumpApp(tester);
+      when(checkOIDCIsAvailableInteractor.execute(any)).thenAnswer(
+        (_) => Stream.value(Right(CheckOIDCIsAvailableLoading())),
+      );
 
       loginController.handleSuccessViewState(
         DNSLookupToGetJmapUrlSuccess('mail.attacker.example', email: 'bob@corp.example', isEncryptedSource: false),
@@ -273,6 +295,10 @@ void main() {
       await tester.pump();
       confirmDialog.answer.complete(false);
       await tester.pump();
+      expect(
+        loginController.viewState.value.fold((failure) => failure, (success) => success),
+        isA<CheckOIDCIsAvailableLoading>(),
+      );
       // Retrying uses the base URL still held: the newer server, not nothing.
       loginController.retryCheckOidc();
       await tester.pump();
@@ -280,6 +306,26 @@ void main() {
       verify(checkOIDCIsAvailableInteractor.execute(any)).called(2);
     },
   );
+
+  test('SHOULD report the looked-up email WHEN DNS returns a server', () async {
+    final interactor = DNSLookupToGetJmapUrlInteractor(_DnsLoginRepository(
+      const DnsLookupResult(target: 'mail.corp.example', isEncrypted: false),
+    ));
+
+    final success = await interactor
+        .execute('bob@corp.example')
+        .last
+        .then((state) => state.getOrElse(() => UIState.idle));
+
+    expect(
+      success,
+      DNSLookupToGetJmapUrlSuccess(
+        'mail.corp.example',
+        email: 'bob@corp.example',
+        isEncryptedSource: false,
+      ),
+    );
+  });
 
   group('DiscoveredServerConfirmDialog.isInEmailDomain', () {
     test('SHOULD accept the email domain and its subdomains', () {

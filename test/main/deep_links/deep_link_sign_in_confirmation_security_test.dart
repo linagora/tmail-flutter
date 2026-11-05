@@ -86,6 +86,21 @@ class _CountingAutoSignInInteractor extends Fake implements AutoSignInViaDeepLin
   }
 }
 
+class _FailingAutoSignInInteractor extends Fake implements AutoSignInViaDeepLinkInteractor {
+  int calls = 0;
+
+  @override
+  Stream<Either<Failure, Success>> execute({
+    required Uri baseUri,
+    required TokenOIDC tokenOIDC,
+    required OIDCConfiguration oidcConfiguration,
+  }) {
+    calls++;
+    return Stream.value(Left<Failure, Success>(
+      AutoSignInViaDeepLinkFailure('sign-in failed')));
+  }
+}
+
 OpenAppDeepLinkData _link({
   String username = 'alice@twake.app',
   String accessToken = 'token-1',
@@ -170,6 +185,28 @@ void main() {
       expect(interactor.calls, 1);
       expect(signedIn?.tokenOIDC.token, 'token-1');
     });
+
+    testWidgets(
+      'SHOULD report the failure WHEN the user confirms and sign-in fails',
+      (tester) async {
+        final failing = _FailingAutoSignInInteractor();
+        Get.replace<AutoSignInViaDeepLinkInteractor>(failing);
+        await pumpApp(tester);
+        var failures = 0;
+
+        deepLinkManager.handleOpenAppDeepLinks(
+          openAppDeepLinkData: _link(),
+          isSignedIn: false,
+          onFailureCallback: () => failures++,
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Sign In'));
+        await tester.pumpAndSettle();
+
+        expect(failing.calls, 1);
+        expect(failures, 1);
+      },
+    );
 
     testWidgets('SHOULD store nothing WHEN the user cancels', (tester) async {
       await pumpApp(tester);
@@ -258,6 +295,89 @@ void main() {
         await tester.pumpAndSettle();
         expect(signInDialog, findsNothing);
 
+        deepLinkManager.handleOpenAppDeepLinks(openAppDeepLinkData: _link(), isSignedIn: false);
+        await tester.pumpAndSettle();
+
+        expect(verifier.calls, 2);
+        expect(signInDialog, findsOneWidget);
+        expect(interactor.calls, 0);
+      },
+    );
+
+    testWidgets('SHOULD NOT check again a link WHEN the server answered 403', (tester) async {
+      final verifier = _FailingAccountVerifier([
+        _dioError(DioExceptionType.badResponse, statusCode: 403),
+      ]);
+      Get.replace<DeepLinkAccountVerifier>(verifier);
+      await pumpApp(tester);
+
+      deepLinkManager.handleOpenAppDeepLinks(openAppDeepLinkData: _link(), isSignedIn: false);
+      await tester.pumpAndSettle();
+      deepLinkManager.handleOpenAppDeepLinks(openAppDeepLinkData: _link(), isSignedIn: false);
+      await tester.pumpAndSettle();
+
+      expect(verifier.calls, 1);
+      expect(toast.errors, hasLength(1));
+      expect(signInDialog, findsNothing);
+    });
+
+    testWidgets(
+      'SHOULD ask again for the same link WHEN the server answered 500',
+      (tester) async {
+        final verifier = _FailingAccountVerifier([
+          _dioError(DioExceptionType.badResponse, statusCode: 500),
+        ]);
+        Get.replace<DeepLinkAccountVerifier>(verifier);
+        await pumpApp(tester);
+
+        deepLinkManager.handleOpenAppDeepLinks(openAppDeepLinkData: _link(), isSignedIn: false);
+        await tester.pumpAndSettle();
+        expect(signInDialog, findsNothing);
+
+        deepLinkManager.handleOpenAppDeepLinks(openAppDeepLinkData: _link(), isSignedIn: false);
+        await tester.pumpAndSettle();
+
+        expect(verifier.calls, 2);
+        expect(signInDialog, findsOneWidget);
+        expect(interactor.calls, 0);
+      },
+    );
+
+    testWidgets(
+      'SHOULD ask again for the same link WHEN the session had no username',
+      (tester) async {
+        final verifier = _FailingAccountVerifier([
+          StateError('The JMAP session has no username'),
+        ]);
+        Get.replace<DeepLinkAccountVerifier>(verifier);
+        await pumpApp(tester);
+
+        deepLinkManager.handleOpenAppDeepLinks(openAppDeepLinkData: _link(), isSignedIn: false);
+        await tester.pumpAndSettle();
+        expect(signInDialog, findsNothing);
+
+        deepLinkManager.handleOpenAppDeepLinks(openAppDeepLinkData: _link(), isSignedIn: false);
+        await tester.pumpAndSettle();
+
+        expect(verifier.calls, 2);
+        expect(signInDialog, findsOneWidget);
+        expect(interactor.calls, 0);
+      },
+    );
+
+    testWidgets(
+      'SHOULD ask again for the same link WHEN there was no screen to confirm on',
+      (tester) async {
+        final verifier = _FakeAccountVerifier('alice@twake.app');
+        Get.replace<DeepLinkAccountVerifier>(verifier);
+
+        // Get.context is null until a screen is mounted, so this attempt cannot confirm.
+        await deepLinkManager.handleOpenAppDeepLinks(
+          openAppDeepLinkData: _link(),
+          isSignedIn: false,
+        );
+
+        await pumpApp(tester);
         deepLinkManager.handleOpenAppDeepLinks(openAppDeepLinkData: _link(), isSignedIn: false);
         await tester.pumpAndSettle();
 
@@ -394,5 +514,51 @@ void main() {
         );
       },
     );
+
+    testWidgets(
+      'SHOULD log out to the link WHEN the user confirms the switch',
+      (tester) async {
+        Get.replace<DeepLinkAccountVerifier>(_FakeAccountVerifier('bob@twake.app'));
+        await pumpApp(tester);
+        final link = _link(username: 'bob@twake.app');
+        var failures = 0;
+        OpenAppDeepLinkData? loggedOut;
+
+        deepLinkManager.handleOpenAppDeepLinks(
+          openAppDeepLinkData: link,
+          username: UserName('alice@twake.app'),
+          onConfirmLogoutCallback: (data) => loggedOut = data,
+          onFailureCallback: () => failures++,
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Yes'));
+        await tester.pumpAndSettle();
+
+        expect(loggedOut, same(link));
+        expect(failures, 0);
+        expect(interactor.calls, 0);
+      },
+    );
+
+    testWidgets('SHOULD stay signed in WHEN the user cancels the switch', (tester) async {
+      Get.replace<DeepLinkAccountVerifier>(_FakeAccountVerifier('bob@twake.app'));
+      await pumpApp(tester);
+      var failures = 0;
+      var loggedOut = 0;
+
+      deepLinkManager.handleOpenAppDeepLinks(
+        openAppDeepLinkData: _link(username: 'bob@twake.app'),
+        username: UserName('alice@twake.app'),
+        onConfirmLogoutCallback: (_) => loggedOut++,
+        onFailureCallback: () => failures++,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+
+      expect(failures, 1);
+      expect(loggedOut, 0);
+      expect(interactor.calls, 0);
+    });
   });
 }

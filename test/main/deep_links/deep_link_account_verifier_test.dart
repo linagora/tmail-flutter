@@ -51,6 +51,24 @@ void main() {
     expect(() => verifier.getAccountUsername(link), throwsA(isA<StateError>()));
   });
 
+  test('SHOULD throw WHEN the session username is blank', () async {
+    adapter.onGet(
+      '/.well-known/jmap',
+      (server) => server.reply(200, {'username': '   '}),
+    );
+
+    expect(() => verifier.getAccountUsername(link), throwsA(isA<StateError>()));
+  });
+
+  test('SHOULD throw WHEN the session username is not a string', () async {
+    adapter.onGet(
+      '/.well-known/jmap',
+      (server) => server.reply(200, {'username': 42}),
+    );
+
+    expect(() => verifier.getAccountUsername(link), throwsA(isA<StateError>()));
+  });
+
   test('SHOULD throw WHEN the server refuses the link token', () async {
     adapter.onGet(
       '/.well-known/jmap',
