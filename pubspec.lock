@@ -2131,8 +2131,8 @@ packages:
     dependency: transitive
     description:
       path: sanitize_html
-      ref: "0f8cd939219b4f2260ef5b4be284377a399e84c4"
-      resolved-ref: "0f8cd939219b4f2260ef5b4be284377a399e84c4"
+      ref: b30215935eb0ca33ed31b6d705edc4dbb317c839
+      resolved-ref: b30215935eb0ca33ed31b6d705edc4dbb317c839
       url: "https://github.com/linagora/dart-neats.git"
     source: git
     version: "3.0.3"
