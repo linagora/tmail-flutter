@@ -1,20 +1,20 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/extensions/composer_toolbar_button_style.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:scribe/scribe/ai/localizations/scribe_localizations.dart';
 import 'package:scribe/scribe/ai/presentation/widgets/button/ai_assistant_button.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
-import 'package:tmail_ui_user/features/base/widget/highlight_svg_icon_on_hover.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
-import 'package:tmail_ui_user/features/base/widget/popup_menu_overlay_widget.dart';
+import 'package:tmail_ui_user/features/composer/presentation/providers/composer_attachment_extension_registry_provider.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/mobile_app_bar_composer_widget_style.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/web/external_attachment_composer_button.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/composer_overflow_action_bar.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/more_options_menu_composer_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
+class MobileResponsiveAppBarComposerWidget extends ConsumerWidget {
 
   final ImagePaths imagePaths;
   final bool isCodeViewEnabled;
@@ -66,7 +66,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       height: MobileAppBarComposerWidgetStyle.height,
       color: MobileAppBarComposerWidgetStyle.backgroundColor,
@@ -82,16 +82,84 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
             iconColor: MobileAppBarComposerWidgetStyle.iconColor,
             onTapActionCallback: onCloseViewAction
           ),
-          const Spacer(),
-          if (onOpenAiAssistantModal != null)
-            AiAssistantButton(
-              imagePaths: imagePaths,
-              margin: const EdgeInsetsDirectional.only(
-                end: MobileAppBarComposerWidgetStyle.space,
+          Expanded(
+            child: ComposerOverflowActionBar(
+              actions: _buildOverflowActions(context, ref),
+              slotWidth: MobileAppBarComposerWidgetStyle.actionSlotWidth,
+              reservedWidth: MobileAppBarComposerWidgetStyle.trailingReservedWidth,
+              trailingBuilder: (overflowMenuItems) => Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
+                  TMailButtonWidget.fromIcon(
+                    key: const ValueKey(UiKeys.sendEmailButton),
+                    icon: isSendButtonEnabled
+                      ? imagePaths.icSendMobile
+                      : imagePaths.icSendDisable,
+                    backgroundColor: Colors.transparent,
+                    padding: MobileAppBarComposerWidgetStyle.iconPadding,
+                    iconSize: MobileAppBarComposerWidgetStyle.sendButtonIconSize,
+                    tooltipMessage: AppLocalizations.of(context).send,
+                    onTapActionCallback: sendMessageAction,
+                  ),
+                  const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
+                  MoreOptionsMenuComposerWidget(
+                    imagePaths: imagePaths,
+                    menuController: menuMoreOptionController,
+                    overflowMenuItems: overflowMenuItems,
+                    isCodeViewEnabled: isCodeViewEnabled,
+                    hasRequestReadReceipt: hasRequestReadReceipt,
+                    isMarkAsImportant: isMarkAsImportant,
+                    isEmailChanged: isEmailChanged,
+                    toggleCodeViewAction: toggleCodeViewAction,
+                    toggleRequestReadReceiptAction: toggleRequestReadReceiptAction,
+                    printDraftAction: printDraftAction,
+                    saveToDraftsAction: saveToDraftsAction,
+                    saveToTemplateAction: saveToTemplateAction,
+                    deleteComposerAction: deleteComposerAction,
+                    toggleMarkAsImportantAction: toggleMarkAsImportantAction,
+                  ),
+                ],
               ),
-              onOpenAiAssistantModal: onOpenAiAssistantModal!,
             ),
-          TMailButtonWidget.fromIcon(
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<ComposerOverflowAction> _buildOverflowActions(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    final appLocalizations = AppLocalizations.of(context);
+    final plugins = ref
+        .watch(composerAttachmentExtensionRegistryProvider)
+        .extensions;
+    return [
+      if (onOpenAiAssistantModal != null)
+        ComposerOverflowAction(
+          button: AiAssistantButton(
+            imagePaths: imagePaths,
+            margin: const EdgeInsetsDirectional.only(
+              end: MobileAppBarComposerWidgetStyle.space,
+            ),
+            onOpenAiAssistantModal: onOpenAiAssistantModal!,
+          ),
+          menuItem: _buildMenuItem(
+            icon: imagePaths.icGradientSparkle,
+            label: ScribeLocalizations.of(context).aiAssistant,
+            iconColor: null,
+            // No anchor inside the menu; the modal uses its default placement.
+            onTap: () => onOpenAiAssistantModal!(null, null),
+          ),
+        ),
+      ComposerOverflowAction(
+        button: Padding(
+          padding: const EdgeInsetsDirectional.only(
+            end: MobileAppBarComposerWidgetStyle.space,
+          ),
+          child: TMailButtonWidget.fromIcon(
             icon: imagePaths.icRichToolbar,
             padding: MobileAppBarComposerWidgetStyle.richTextIconPadding,
             backgroundColor: isFormattingOptionsEnabled
@@ -101,23 +169,40 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
             iconColor: isFormattingOptionsEnabled
               ? MobileAppBarComposerWidgetStyle.selectedIconColor
               : MobileAppBarComposerWidgetStyle.iconColor,
-            tooltipMessage: AppLocalizations.of(context).formattingOptions,
+            tooltipMessage: appLocalizations.formattingOptions,
             onTapActionCallback: openRichToolbarAction,
           ),
-          const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
-          TMailButtonWidget.fromIcon(
-            icon: imagePaths.icAttachFile,
-            iconColor: MobileAppBarComposerWidgetStyle.iconColor,
-            backgroundColor: Colors.transparent,
-            iconSize: MobileAppBarComposerWidgetStyle.iconSize,
-            tooltipMessage: AppLocalizations.of(context).attach_file,
-            onTapActionCallback: attachFileAction,
-          ),
-          ExternalAttachmentComposerButton(
+        ),
+        menuItem: _buildMenuItem(
+          icon: imagePaths.icRichToolbar,
+          label: appLocalizations.formattingOptions,
+          isSelected: isFormattingOptionsEnabled,
+          onTap: openRichToolbarAction,
+        ),
+      ),
+      ComposerOverflowAction(
+        button: TMailButtonWidget.fromIcon(
+          icon: imagePaths.icAttachFile,
+          iconColor: MobileAppBarComposerWidgetStyle.iconColor,
+          backgroundColor: Colors.transparent,
+          iconSize: MobileAppBarComposerWidgetStyle.iconSize,
+          tooltipMessage: appLocalizations.attach_file,
+          onTapActionCallback: attachFileAction,
+        ),
+        menuItem: _buildMenuItem(
+          icon: imagePaths.icAttachFile,
+          label: appLocalizations.attach_file,
+          onTap: attachFileAction,
+        ),
+      ),
+      for (final plugin in plugins)
+        ComposerOverflowAction(
+          button: plugin.buildToolbarButton(
+            context,
             composerId: composerId ?? '',
             imagePaths: imagePaths,
             style: ComposerToolbarButtonStyle(
-              tooltipLabel: AppLocalizations.of(context).attach_file,
+              tooltipLabel: appLocalizations.attach_file,
               iconColor: MobileAppBarComposerWidgetStyle.iconColor,
               iconSize: MobileAppBarComposerWidgetStyle.iconSize,
               margin: const EdgeInsetsDirectional.only(
@@ -125,135 +210,56 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
-          if (!isCodeViewEnabled)
-            TMailButtonWidget.fromIcon(
+          menuItem: plugin.buildContextMenuTile(
+            context,
+            imagePaths: imagePaths,
+            composerId: composerId,
+            onDismiss: menuMoreOptionController.hideMenu,
+          ),
+        ),
+      if (!isCodeViewEnabled)
+        ComposerOverflowAction(
+          button: Padding(
+            padding: const EdgeInsetsDirectional.only(
+              start: MobileAppBarComposerWidgetStyle.space,
+            ),
+            child: TMailButtonWidget.fromIcon(
               icon: imagePaths.icInsertImage,
               iconColor: MobileAppBarComposerWidgetStyle.iconColor,
               backgroundColor: Colors.transparent,
               iconSize: MobileAppBarComposerWidgetStyle.iconSize,
-              tooltipMessage: AppLocalizations.of(context).insertImage,
+              tooltipMessage: appLocalizations.insertImage,
               onTapActionCallback: insertImageAction,
             ),
-          const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
-          TMailButtonWidget.fromIcon(
-            key: const ValueKey(UiKeys.sendEmailButton),
-            icon: isSendButtonEnabled
-              ? imagePaths.icSendMobile
-              : imagePaths.icSendDisable,
-            backgroundColor: Colors.transparent,
-            padding: MobileAppBarComposerWidgetStyle.iconPadding,
-            iconSize: MobileAppBarComposerWidgetStyle.sendButtonIconSize,
-            tooltipMessage: AppLocalizations.of(context).send,
-            onTapActionCallback: sendMessageAction,
           ),
-          const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
-          PopupMenuOverlayWidget(
-            controller: menuMoreOptionController,
-            iconButton: HighlightSVGIconOnHover(
-              icon: imagePaths.icMore,
-              size: MobileAppBarComposerWidgetStyle.iconSize,
-              iconColor: MobileAppBarComposerWidgetStyle.iconColor,
-              tooltipMessage: AppLocalizations.of(context).more,
-            ),
-            listButtonAction: [
-              PopupItemWidget(
-                iconAction: imagePaths.icMarkAsImportant,
-                nameAction: AppLocalizations.of(context).markAsImportant,
-                styleName: MobileAppBarComposerWidgetStyle.popupItemTextStyle,
-                padding: MobileAppBarComposerWidgetStyle.popupItemPadding,
-                colorIcon: MobileAppBarComposerWidgetStyle.popupItemIconColor,
-                selectedIcon: imagePaths.icFilterSelected,
-                isSelected: isMarkAsImportant,
-                onCallbackAction: () {
-                  menuMoreOptionController.hideMenu();
-                  toggleMarkAsImportantAction();
-                },
-              ),
-              PopupItemWidget(
-                  iconAction: imagePaths.icStyleCodeView,
-                  nameAction: AppLocalizations.of(context).embedCode,
-                  styleName: MobileAppBarComposerWidgetStyle.popupItemTextStyle,
-                  colorIcon: MobileAppBarComposerWidgetStyle.iconColor,
-                  padding: MobileAppBarComposerWidgetStyle.popupItemPadding,
-                  selectedIcon: imagePaths.icFilterSelected,
-                  isSelected: isCodeViewEnabled,
-                  onCallbackAction: () {
-                    menuMoreOptionController.hideMenu();
-                    toggleCodeViewAction();
-                  },
-              ),
-              PopupItemWidget(
-                  iconAction: imagePaths.icReadReceipt,
-                  nameAction: AppLocalizations.of(context).requestReadReceipt,
-                  styleName: MobileAppBarComposerWidgetStyle.popupItemTextStyle,
-                  padding: MobileAppBarComposerWidgetStyle.popupItemPadding,
-                  colorIcon: MobileAppBarComposerWidgetStyle.popupItemIconColor,
-                  selectedIcon: imagePaths.icFilterSelected,
-                  isSelected: hasRequestReadReceipt,
-                  onCallbackAction: () {
-                    menuMoreOptionController.hideMenu();
-                    toggleRequestReadReceiptAction();
-                  },
-              ),
-              if (_isPrintEnabled)
-                PopupItemWidget(
-                  iconAction: imagePaths.icPrinter,
-                  nameAction: AppLocalizations.of(context).print,
-                  colorIcon: MobileAppBarComposerWidgetStyle.popupItemIconColor,
-                  styleName: MobileAppBarComposerWidgetStyle.popupItemTextStyle,
-                  padding: MobileAppBarComposerWidgetStyle.popupItemPadding,
-                  onCallbackAction: () {
-                    menuMoreOptionController.hideMenu();
-                    printDraftAction();
-                  },
-                ),
-              PopupItemWidget(
-                  key: const Key(UiKeys.saveDraftPopupItem),
-                  iconAction: imagePaths.icSaveToDraft,
-                  nameAction: AppLocalizations.of(context).saveAsDraft,
-                  colorIcon: MobileAppBarComposerWidgetStyle.popupItemIconColor,
-                  styleName: MobileAppBarComposerWidgetStyle.popupItemTextStyle,
-                  padding: MobileAppBarComposerWidgetStyle.popupItemPadding,
-                  onCallbackAction: () {
-                    menuMoreOptionController.hideMenu();
-                    saveToDraftsAction();
-                  },
-              ),
-              PopupItemWidget(
-                key: const Key(UiKeys.saveTemplatePopupItem),
-                iconAction: imagePaths.icSaveToDraft,
-                nameAction: AppLocalizations.of(context).saveAsTemplate,
-                colorIcon: MobileAppBarComposerWidgetStyle.popupItemIconColor,
-                styleName: MobileAppBarComposerWidgetStyle.popupItemTextStyle,
-                padding: MobileAppBarComposerWidgetStyle.popupItemPadding,
-                onCallbackAction: () {
-                  menuMoreOptionController.hideMenu();
-                  saveToTemplateAction();
-                },
-              ),
-              PopupItemWidget(
-                iconAction: imagePaths.icDeleteMailbox,
-                nameAction: AppLocalizations.of(context).delete,
-                colorIcon: AppColor.redFF3347,
-                styleName: MobileAppBarComposerWidgetStyle
-                  .popupItemTextStyle
-                  .copyWith(color: AppColor.redFF3347),
-                padding: MobileAppBarComposerWidgetStyle.popupItemPadding,
-                onCallbackAction: () {
-                  menuMoreOptionController.hideMenu();
-                  deleteComposerAction();
-                },
-              ),
-            ],
-            arrangeAsList: true,
-            position: null,
+          menuItem: _buildMenuItem(
+            icon: imagePaths.icInsertImage,
+            label: appLocalizations.insertImage,
+            onTap: insertImageAction,
           ),
-        ],
-      ),
-    );
+        ),
+    ];
   }
 
-  bool get _isPrintEnabled =>
-      isEmailChanged && PlatformInfo.isWeb && PlatformInfo.isCanvasKit;
+  Widget _buildMenuItem({
+    required String icon,
+    required String label,
+    required VoidCallback onTap,
+    Color? iconColor = MobileAppBarComposerWidgetStyle.popupItemIconColor,
+    bool isSelected = false,
+  }) {
+    return PopupItemWidget(
+      iconAction: icon,
+      nameAction: label,
+      styleName: MobileAppBarComposerWidgetStyle.popupItemTextStyle,
+      padding: MobileAppBarComposerWidgetStyle.popupItemPadding,
+      colorIcon: iconColor,
+      selectedIcon: imagePaths.icFilterSelected,
+      isSelected: isSelected,
+      onCallbackAction: () {
+        menuMoreOptionController.hideMenu();
+        onTap();
+      },
+    );
+  }
 }
