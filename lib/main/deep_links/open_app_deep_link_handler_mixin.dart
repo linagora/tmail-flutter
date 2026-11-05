@@ -5,6 +5,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/string_convert.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
@@ -87,7 +88,9 @@ mixin OpenAppDeepLinkHandlerMixin {
     }
 
     try {
-      final accountUsername = await _verifyLinkAccount(openAppDeepLinkData);
+      final accountUsername = await _withLoading(
+        () => _verifyLinkAccount(openAppDeepLinkData),
+      );
       if (accountUsername == null) {
         onFailureCallback?.call();
         return;
@@ -165,6 +168,19 @@ mixin OpenAppDeepLinkHandlerMixin {
     } catch (e) {
       logWarning('DeepLinksManager::_autoSignInViaDeepLink:Exception = $e');
       onFailureCallback.call();
+    }
+  }
+
+  Future<T> _withLoading<T>(Future<T> Function() action) async {
+    final context = currentContext;
+    final isLoadingShown = context != null && context.mounted;
+    if (isLoadingShown) {
+      SmartDialog.showLoading(msg: AppLocalizations.of(context).loadingPleaseWait);
+    }
+    try {
+      return await action();
+    } finally {
+      if (isLoadingShown) await SmartDialog.dismiss(status: SmartStatus.loading);
     }
   }
 

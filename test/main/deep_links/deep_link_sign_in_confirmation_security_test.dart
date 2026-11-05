@@ -6,6 +6,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart' hide Response;
@@ -130,15 +131,16 @@ void main() {
   tearDown(Get.reset);
 
   Future<void> pumpApp(WidgetTester tester) async {
-    await tester.pumpWidget(const GetMaterialApp(
-      localizationsDelegates: [
+    await tester.pumpWidget(GetMaterialApp(
+      localizationsDelegates: const [
         AppLocalizationsDelegate(),
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: LocalizationService.supportedLocales,
-      home: Scaffold(),
+      home: const Scaffold(),
+      builder: FlutterSmartDialog.init(),
     ));
     await tester.pumpAndSettle();
   }
@@ -259,6 +261,7 @@ void main() {
           onFailureCallback: () => failed = true,
         );
         await tester.pumpAndSettle();
+        await tester.pump(const Duration(milliseconds: 300));
 
         expect(signInDialog, findsNothing);
         expect(interactor.calls, 0);
@@ -278,6 +281,7 @@ void main() {
         onFailureCallback: () => failed = true,
       );
       await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 300));
 
       expect(signInDialog, findsNothing);
       expect(interactor.calls, 0);
@@ -488,6 +492,7 @@ void main() {
           onFailureCallback: () => ignored = true,
         );
         await tester.pumpAndSettle();
+        await tester.pump(const Duration(milliseconds: 300));
 
         expect(find.byType(Dialog), findsNothing);
         expect(ignored, isTrue);

@@ -5,6 +5,7 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -325,15 +326,16 @@ void main() {
     tearDown(Get.reset);
 
     Future<void> pumpApp(WidgetTester tester) async {
-      await tester.pumpWidget(const GetMaterialApp(
-        localizationsDelegates: [
+      await tester.pumpWidget(GetMaterialApp(
+        localizationsDelegates: const [
           AppLocalizationsDelegate(),
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: LocalizationService.supportedLocales,
-        home: Scaffold(),
+        home: const Scaffold(),
+        builder: FlutterSmartDialog.init(),
       ));
       await tester.pumpAndSettle();
     }
