@@ -167,6 +167,41 @@ void main() {
     expect(connectedSelection.rangeCount, 0);
   });
 
+  test(
+    'SHOULD NOT clear the selection on a clearSelection message that does not come from the parent',
+    () async {
+      final messages = StreamController<String>.broadcast();
+      final listener = ((web.MessageEvent event) {
+        final data = event.data;
+        if (data.isA<JSString>()) messages.add((data as JSString).toDart);
+      }).toJS;
+      web.window.addEventListener('message', listener);
+      addTearDown(() {
+        web.window.removeEventListener('message', listener);
+        messages.close();
+      });
+
+      final counted = messages.stream.firstWhere(
+        (message) => message.startsWith('count:'),
+      );
+      final iframe = web.HTMLIFrameElement()
+        ..setAttribute('sandbox', HtmlIframeWidget.sandboxPolicy)
+        ..srcdoc = HtmlViewerDocumentBuilder.buildWebDocument(
+          const HtmlWebViewerDocumentInput(
+            content: _selfPostedClearSelection,
+            viewId: 'selection-test',
+            widthContent: 300,
+            minHeight: 50,
+            minWidth: 50,
+          ),
+        ).toJS;
+      web.document.body!.append(iframe);
+      fixtures.add(iframe);
+
+      expect(await counted.timeout(const Duration(seconds: 5)), 'count:1');
+    },
+  );
+
   test('clears a sandboxed viewer iframe selection via postMessage', () async {
     final messages = StreamController<String>.broadcast();
     final listener = ((web.MessageEvent event) {
@@ -201,6 +236,28 @@ void main() {
     await emptied.timeout(const Duration(seconds: 5));
   });
 }
+
+/// Selects its text and posts clearSelection to itself. The count is sent from
+/// that message event's next task, after every listener of the event has run.
+const _selfPostedClearSelection = '''
+<p id="t">text</p>
+<script>
+  window.addEventListener('message', function (e) {
+    if (e.data !== '{"type":"toIframe: clearSelection"}') return;
+    setTimeout(function () {
+      window.parent.postMessage('count:' + window.getSelection().rangeCount, '*');
+    }, 0);
+  });
+  window.addEventListener('load', function () {
+    var range = document.createRange();
+    range.selectNodeContents(document.getElementById('t'));
+    var selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    window.postMessage('{"type":"toIframe: clearSelection"}', '*');
+  });
+</script>
+''';
 
 /// Selects its text on load and reports selection changes to the parent.
 const _selectableContent = '''
