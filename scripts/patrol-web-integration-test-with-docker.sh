@@ -40,10 +40,8 @@ cleanup() {
     kill "$VMSTAT_PID" 2>/dev/null || true
     kill "${RESET_SERVER_PID:-}" 2>/dev/null || true
     kill "${WATCHDOG_PID:-}" 2>/dev/null || true
-    kill "${KEEPER_PID:-}" 2>/dev/null || true
-    kill "${BOOT_PROBE_PID:-}" 2>/dev/null || true
     # Reap them so their ports are free before the agent lock is released.
-    wait "$VMSTAT_PID" "${RESET_SERVER_PID:-}" "${WATCHDOG_PID:-}" "${KEEPER_PID:-}" "${BOOT_PROBE_PID:-}" 2>/dev/null || true
+    wait "$VMSTAT_PID" "${RESET_SERVER_PID:-}" "${WATCHDOG_PID:-}" 2>/dev/null || true
     rm -f "$BACKEND_READY_FIFO"
     [ -z "${BACKEND_READY_DIR:-}" ] || rmdir "$BACKEND_READY_DIR"
     bash "$ROOT_DIR/scripts/ci-backend-teardown.sh" "$CI_LOGS/backend.log"
@@ -102,8 +100,8 @@ echo "Copying integration_test/integration_test_env.file to env.file..."
 cp integration_test/integration_test_env.file env.file || exit 1
 
 echo "Building the app and running tests..."
-# Keeper must hold a page before Patrol's setup page leaves; Patrol installs these only after the dev server is up
-WEB_RUNNER_DIR=$(node scripts/ci-web-dev-server-keeper.js --web-runner-dir "$ROOT_DIR") || { echo "web_runner lookup failed"; exit 1; }
+# Patrol installs web_runner deps only after the dev server is up; pre-install them here.
+WEB_RUNNER_DIR=$(node -e 'const fs=require("fs"),path=require("path"),{pathToFileURL,fileURLToPath}=require("url");const d=path.join(process.argv[1],".dart_tool");const p=JSON.parse(fs.readFileSync(path.join(d,"package_config.json"),"utf8")).packages.find(x=>x.name==="patrol");if(!p)throw new Error("patrol not in package_config.json");console.log(path.join(fileURLToPath(new URL(p.rootUri,pathToFileURL(d+path.sep))),"web_runner"))' "$ROOT_DIR") || { echo "web_runner lookup failed"; exit 1; }
 [ -d "$WEB_RUNNER_DIR" ] || { echo "web_runner dir missing: '$WEB_RUNNER_DIR'"; exit 1; }
 echo "Pre-installing Patrol web_runner deps in $WEB_RUNNER_DIR..."
 timing "web_runner dependencies install started"
@@ -131,12 +129,8 @@ timing "backend pool ready"
 : > "$PATROL_LOG"
 bash scripts/ci-web-stall-watchdog.sh "$PATROL_LOG" "$CI_LOGS/stall-dump.log" "$$" "$RESET_SERVER_LOG" &
 WATCHDOG_PID=$!
-WEB_RUNNER_DIR="$WEB_RUNNER_DIR" bash scripts/ci-web-boot-stall-probe.sh "$PATROL_LOG" "$CI_LOGS/boot-stall-dump.log" "http://localhost:3000" &
-BOOT_PROBE_PID=$!
 
-WEB_BROWSER_ARGS='["--disable-web-security","--disable-dev-shm-usage","--disable-gpu","--lang=en-US","--accept-lang=en-US,en","--remote-debugging-port=0"]'
-node scripts/ci-web-dev-server-keeper.js "http://localhost:3000" "$ROOT_DIR" "$WEB_BROWSER_ARGS" "$PATROL_LOG" > "$CI_LOGS/dev-server-keeper.log" 2>&1 &
-KEEPER_PID=$!
+WEB_BROWSER_ARGS='["--disable-web-security","--disable-dev-shm-usage","--disable-gpu","--lang=en-US","--accept-lang=en-US,en"]'
 
 # Full output goes to $PATROL_LOG (archived as patrol-console.log.gz); the console drops repetitive lines (scripts/ci-console-filter.pl) and ends with what it dropped.
 # The timestamped log is written by a pipeline stage, so it is complete before cleanup gzips it.

@@ -32,11 +32,6 @@ jobs:
           channel: "stable"
           cache: true
 
-      # Native stacks of a frozen browser (scripts/ci-web-boot-stall-native.sh); the probe reports gdb as missing if this fails.
-      - name: Install gdb for stall stacks
-        continue-on-error: true
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends gdb
-
       - name: Test CI scripts
         run: python3 -m unittest discover -s scripts -p 'test_*.py'
 
