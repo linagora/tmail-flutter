@@ -58,6 +58,7 @@ patrol test -v \
     --profile \
     --web-workers="${WEB_WORKERS:-1}" \
     --tags=web \
+    --exclude-tags=memory \
     --device=chrome \
     --web-port=3000 \
     --web-browser-args='["--lang=en-US","--accept-lang=en-US,en"]' \

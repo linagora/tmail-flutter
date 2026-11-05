@@ -7,6 +7,8 @@ class ProvisioningEmail {
   final String content;
   final List<String> attachmentPaths;
   final List<FileInfo> fileInfos;
+  // Referenced from [content] as `cid:{{inline0}}`, `cid:{{inline1}}`, ...
+  final List<FileInfo> inlineFileInfos;
   final List<Label> labels;
 
   ProvisioningEmail({
@@ -15,6 +17,7 @@ class ProvisioningEmail {
     required this.content,
     this.attachmentPaths = const [],
     this.fileInfos = const [],
+    this.inlineFileInfos = const [],
     this.labels = const [],
   });
 }
