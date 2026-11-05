@@ -120,13 +120,6 @@ class JmapClient {
     }
     
     private func sortListEmails(currentListEmails: [Email]) -> [Email] {
-        let sortedListEmails = currentListEmails.sorted(by: { (email1, email2) -> Bool in
-            if let date1 = email1.receivedAt?.convertUTCDateToLocalDate(),
-               let date2 = email2.receivedAt?.convertUTCDateToLocalDate() {
-                return date1 < date2
-            }
-            return false
-        })
-        return sortedListEmails
+        emailsSortedByReceivedAt(currentListEmails)
     }
 }

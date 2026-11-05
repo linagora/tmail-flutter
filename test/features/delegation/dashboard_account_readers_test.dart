@@ -57,7 +57,7 @@ const _dashboardPersonalAccountReaders = <String, int>{
   '_setUpMinInputLengthAutocomplete': 2,
   'selectFromSearchFilter': 2,
   'selectToSearchFilter': 2,
-  // Notification taps: my own account until T-09.
+  // Notification taps stay on my own account until delegated accounts are included.
   '_handleNotificationMessageFromEmailId': 1,
   // Username-only personal: session owner empty, identities fill ownEmailAddress.
   'ownerEmailAddress': 1,

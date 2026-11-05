@@ -102,7 +102,9 @@ class EmailChangeListener extends ChangeListener {
     required GetMailboxesNotPutNotificationsInteractor
         getMailboxesNotPutNotificationsInteractor,
     required PresentLocalPushEmails presentLocalPush,
+    MailboxDashBoardController? dashBoardController,
   })  : _presentLocalPush = presentLocalPush,
+        _dashBoardController = dashBoardController,
         _getStoredEmailDeliveryStateInteractor =
             getStoredEmailDeliveryStateInteractor,
         _storeEmailDeliveryStateInteractor = storeEmailDeliveryStateInteractor,
@@ -229,8 +231,9 @@ class EmailChangeListener extends ChangeListener {
     jmap.State state,
     AccountId? accountId,
     Session? session,
-    UserName? userName,
-  ) {
+    UserName? userName, {
+    jmap.State? deliveryState,
+  }) {
     final interactor = _getEmailChangesToPushNotificationInteractor;
     if (interactor == null || accountId == null || session == null || userName == null) {
       return;
@@ -244,6 +247,7 @@ class EmailChangeListener extends ChangeListener {
         session,
         accountId,
       ),
+      deliveryState: deliveryState,
     ));
   }
 
@@ -286,6 +290,7 @@ class EmailChangeListener extends ChangeListener {
         success.accountId,
         _sessionByAccount[_accountKey(success.accountId)] ?? _session,
         success.userName,
+        deliveryState: _newStateEmailDeliveryByAccount[_accountKey(success.accountId)],
       );
     } else if (success is GetEmailChangesToPushNotificationSuccess) {
       _handleGetEmailChangesToPushNotificationSuccess(success);
@@ -322,18 +327,26 @@ class EmailChangeListener extends ChangeListener {
       success.accountId,
       _sessionByAccount[key] ?? _session,
       success.userName,
+      deliveryState: newState,
     );
   }
 
   void _handleGetEmailChangesToPushNotificationSuccess(GetEmailChangesToPushNotificationSuccess success) {
-    final newState = _newStateEmailDeliveryByAccount[_accountKey(success.accountId)];
-    if (newState == null) return;
+    final key = _accountKey(success.accountId);
+    final latest = _newStateEmailDeliveryByAccount[key];
+    final reached = success.deliveryState ?? latest;
+    if (reached == null) return;
 
-    _storeEmailDeliveryStateAction(
-      success.accountId,
-      success.userName,
-      newState,
-    );
+    final newerPushOwnsCursor = success.deliveryState != null &&
+        latest != null &&
+        success.deliveryState != latest;
+    if (!newerPushOwnsCursor) {
+      _storeEmailDeliveryStateAction(
+        success.accountId,
+        success.userName,
+        reached,
+      );
+    }
 
     if (PlatformInfo.isAndroid) {
       _handleListEmailToPushNotification(
@@ -344,13 +357,30 @@ class EmailChangeListener extends ChangeListener {
     }
   }
 
+  void _rememberEmailsAwaitingMailboxFilter(
+    String key,
+    List<PresentationEmail> emailList,
+  ) {
+    final existing = _emailsAvailablePushNotificationByAccount[key];
+    if (existing == null) {
+      _emailsAvailablePushNotificationByAccount[key] = List.of(emailList);
+      return;
+    }
+    final knownIds = existing.map((email) => email.id).whereType<EmailId>().toSet();
+    for (final email in emailList) {
+      final id = email.id;
+      if (id != null && !knownIds.add(id)) continue;
+      existing.add(email);
+    }
+  }
+
   void _handleListEmailToPushNotification({
     required AccountId accountId,
     required UserName userName,
     required List<PresentationEmail> emailList,
   }) {
     final key = _accountKey(accountId);
-    _emailsAvailablePushNotificationByAccount[key] = emailList;
+    _rememberEmailsAwaitingMailboxFilter(key, emailList);
     final session = _sessionByAccount[key] ?? _session;
     final interactor = _getMailboxesNotPutNotificationsInteractor;
     if (interactor != null && session != null) {

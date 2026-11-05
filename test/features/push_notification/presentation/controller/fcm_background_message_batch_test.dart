@@ -88,4 +88,55 @@ void main() {
       });
     },
   );
+
+  test(
+    'a sustained burst flushes once the max wait elapses',
+    () {
+      fakeAsync((async) {
+        FcmService.instance.initialStreamController();
+        final batches = <List<Map<String, dynamic>>>[];
+        final subscription = listenDebouncedBackgroundMessageBatches(
+          FcmService.instance.backgroundMessageStreamController!.stream,
+          batches.add,
+          (e, st) => fail('$e\n$st'),
+        );
+        addTearDown(subscription.cancel);
+
+        FcmService.instance.backgroundMessageStreamController!.add(
+          payloadFor(accountA, 'state-a1'),
+        );
+        async.elapse(const Duration(seconds: 10));
+        FcmService.instance.backgroundMessageStreamController!.add(
+          payloadFor(accountA, 'state-a2'),
+        );
+        async.elapse(const Duration(seconds: 10));
+        FcmService.instance.backgroundMessageStreamController!.add(
+          payloadFor(accountB, 'state-b1'),
+        );
+
+        expect(batches, isEmpty);
+        async.elapse(const Duration(seconds: 10));
+        expect(batches, hasLength(1));
+        expect(batches.single, [
+          payloadFor(accountA, 'state-a1'),
+          payloadFor(accountA, 'state-a2'),
+          payloadFor(accountB, 'state-b1'),
+        ]);
+      });
+    },
+  );
+
+  test(
+    'one malformed payload does not drop the other payloads in the batch',
+    () {
+      final merged = mergeBackgroundMessagePayloads([
+        {'data': 'not-a-map'},
+        payloadFor(accountA, 'state-a1'),
+      ]);
+
+      expect(merged, isNotNull);
+      expect(merged!.changed.keys, {accountA});
+      expect(merged.changed[accountA]!.typeState['Email'], 'state-a1');
+    },
+  );
 }
