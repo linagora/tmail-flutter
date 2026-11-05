@@ -376,6 +376,64 @@ void main() {
       expect(receivedId, isNull);
       expect(receivedState, equals(fakeState));
     });
+
+    testWidgets('forwards onDismiss to the tile', (tester) async {
+      final notifier = ValueNotifier<Uri?>(_platformUri);
+      final ext = _makeExtension(notifier);
+      void dismiss() {}
+
+      await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(
+            builder: (ctx) => ext.buildContextMenuTile(
+              ctx,
+              imagePaths: imagePaths,
+              onDismiss: dismiss,
+            ),
+          ),
+        ),
+      ));
+
+      final tile = tester.widget<DriveAttachmentContextMenuTile>(
+        find.byType(DriveAttachmentContextMenuTile),
+      );
+      expect(tile.onDismiss, same(dismiss));
+    });
+
+    testWidgets('onPickCallback forwards the given composerId', (tester) async {
+      final notifier = ValueNotifier<Uri?>(_platformUri);
+      String? receivedId;
+
+      final ext = _makeExtension(
+        notifier,
+        onPickState: (id, state) async {
+          receivedId = id;
+        },
+      );
+
+      await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(
+            builder: (ctx) => ext.buildContextMenuTile(
+              ctx,
+              imagePaths: imagePaths,
+              composerId: _composerId,
+            ),
+          ),
+        ),
+      ));
+
+      final tile = tester.widget<DriveAttachmentContextMenuTile>(
+        find.byType(DriveAttachmentContextMenuTile),
+      );
+      await tile.onPickCallback!(DrivePickFailure(Exception('test')));
+
+      expect(receivedId, _composerId);
+    });
   });
 
   // ── Group 3: _fetchIntent delegates to WorkplaceAccessModeRunner ───────────
