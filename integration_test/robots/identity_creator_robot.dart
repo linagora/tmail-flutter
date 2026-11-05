@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -86,29 +85,12 @@ class IdentityCreatorRobot extends CoreRobot {
   Future<void> _waitForNewSignatureImage(
     IdentityCreatorController controller,
     int imagesBefore,
-  ) async {
-    try {
-      await waitForCondition(
+  ) =>
+      waitForCondition(
         () async => await _signatureImageCount(controller) > imagesBefore,
         timeout: TestTimeouts.long,
+        reason: 'The signature should contain the inserted image',
       );
-    } on TimeoutException {
-      fail(
-        'The signature should contain the inserted image within '
-        '${TestTimeouts.long.inSeconds} seconds (${await _insertDiagnostics(controller)})',
-      );
-    }
-  }
-
-  // Shown only when the insert never lands: tells a failed pick, compression or
-  // upload (nothing uploading, no asset) from an editor that dropped the HTML.
-  Future<String> _insertDiagnostics(IdentityCreatorController controller) async {
-    final publicAssets = controller.publicAssetController;
-    final html = await _signatureHtml(controller);
-    return 'uploading: ${publicAssets?.isUploading.value}, '
-        'new assets: ${publicAssets?.newlyPickedPublicAssetIds.length}, '
-        'signature html: ${html.length > 200 ? html.substring(0, 200) : html}';
-  }
 
   Future<String> _signatureHtml(IdentityCreatorController controller) async {
     if (PlatformInfo.isWeb) {
