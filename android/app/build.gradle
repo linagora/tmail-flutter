@@ -88,10 +88,21 @@ android {
                 }
             }
         }
+        profile {
+            // Release signing has no keystore in CI
+            signingConfig signingConfigs.debug
+        }
     }
 
     testOptions {
         execution "ANDROIDX_TEST_ORCHESTRATOR"
+    }
+
+    testBuildType System.getenv('ANDROID_TEST_BUILD_TYPE') ?: 'debug'
+
+    // KeyboardTestActivity only exists in the debug source set
+    if (System.getenv('ANDROID_TEST_BUILD_TYPE') == 'profile') {
+        sourceSets.androidTest.java.filter.exclude '**/WebViewKeyboardTest.java'
     }
 
     namespace "com.linagora.android.tmail"
