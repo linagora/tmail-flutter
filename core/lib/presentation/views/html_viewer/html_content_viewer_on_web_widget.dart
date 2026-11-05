@@ -10,6 +10,7 @@ import 'package:core/presentation/views/html_viewer/iframe_message_source.dart';
 import 'package:core/presentation/views/shortcut/key_shortcut.dart';
 import 'package:core/presentation/views/tooltip/iframe_tooltip_overlay.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/html/host_script_nonce.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
@@ -456,6 +457,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
           useLinkTooltipOverlay: widget.useLinkTooltipOverlay,
           isWebTouchDevice: PlatformInfo.isWebTouchDevice,
           isWebDesktop: PlatformInfo.isWebDesktop,
+          scriptNonce: HostScriptNonce.read(),
         ),
       );
 

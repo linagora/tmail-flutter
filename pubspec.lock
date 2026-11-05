@@ -623,10 +623,10 @@ packages:
     dependency: "direct main"
     description:
       name: file_picker_web
-      sha256: a2288008280aabe371aff029466b3405e60838e0a1d714767488c59b926c8b8c
+      sha256: "50749a6da2984fc29609e102ad4d80fd1d07e6895150f8e4922086167d9d45d8"
       url: "https://pub.dev"
     source: hosted
-    version: "4.2.0"
+    version: "4.2.1"
   filesize:
     dependency: "direct main"
     description:
@@ -1301,8 +1301,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: c8df616d006c2e2673ead506bc3795cf36c5ca03
+      ref: "improvement/web-script-nonce"
+      resolved-ref: "6d297cd8fa89b1c4aecb3bc444b62dabb965b0d1"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "3.3.7"
@@ -1481,10 +1481,10 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: c11c22eb614ccad7762d9c36487c7af397f72e19
+      resolved-ref: "38b7be01cdd11e473be6249c4d5ac2f5e8f7cf34"
       url: "https://github.com/linagora/linagora-design-flutter.git"
     source: git
-    version: "0.4.2"
+    version: "0.3.4"
   linkify:
     dependency: transitive
     description:
@@ -2132,7 +2132,7 @@ packages:
     description:
       path: sanitize_html
       ref: support_mail
-      resolved-ref: "7e8bd3e8c5f7b5ab21f1ccc7324b41679778afbe"
+      resolved-ref: "5b0a4a21b033912a4dd23ad0891656bcbe7066c8"
       url: "https://github.com/linagora/dart-neats.git"
     source: git
     version: "3.0.3"
@@ -2499,7 +2499,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "103cfd3695929ad438a91bd601ca12afca6149bf"
+      resolved-ref: d0292f1532a66dd0382f29b9114411e26bd65dca
       url: "https://github.com/linagora/twake-previewer-flutter.git"
     source: git
     version: "0.1.1"

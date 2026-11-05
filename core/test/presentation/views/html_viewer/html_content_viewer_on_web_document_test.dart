@@ -8,6 +8,7 @@ import 'package:core/presentation/views/shortcut/key_shortcut.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:web/web.dart' as web;
 
 /// The viewer document locks build documents from chosen inputs; these tests
 /// pin that [HtmlContentViewerOnWeb] passes its own options to the builder
@@ -55,6 +56,11 @@ void main() {
     expect(document, isNot(contains('getWidth')));
     expect(document, isNot(contains('execCommand')));
   });
+
+  testWidgets(
+    'SHOULD stamp the host script nonce into the loaded document',
+    _expectDocumentCarriesHostNonce,
+  );
 }
 
 const _html = '<p>مرحبا</p><blockquote><p>quoted</p></blockquote>';
@@ -116,6 +122,28 @@ Future<void> _expectDocumentWithEveryOption(WidgetTester tester) async {
       ),
     ),
   );
+}
+
+Future<void> _expectDocumentCarriesHostNonce(WidgetTester tester) async {
+  final script = web.HTMLScriptElement()
+    ..setAttribute('nonce', '')
+    ..nonce = 'n1';
+  final head = web.document.head!;
+  head.insertBefore(script, head.firstChild);
+  addTearDown(() {
+    script.remove();
+  });
+
+  final document = await _loadedDocument(
+    tester,
+    const HtmlContentViewerOnWeb(
+      contentHtml: _html,
+      widthContent: 390,
+    ),
+  );
+
+  expect(script.getAttribute('nonce'), '');
+  expect(document, contains('nonce="n1"'));
 }
 
 Future<void> _expectDocumentWithoutOptions(WidgetTester tester) async {

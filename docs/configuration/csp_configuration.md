@@ -7,8 +7,10 @@
 - Deployments that embed Twake Mail (Twake Workplace / Cozy), use the Drive picker,
   load the Cozy bridge or use a non-https backend must list
   those origins with the variables below.
-- A second header, `Content-Security-Policy-Report-Only`, applies the same policy
-  without `'unsafe-inline'`. It blocks nothing; it only reports.
+- Enforcing `script-src` allows `'self'`, a per-request nonce and `'wasm-unsafe-eval'`.
+  Inline scripts must carry that nonce (Flutter bootstrap, composer, mail viewer, print).
+- `Content-Security-Policy-Report-Only` uses the same script nonce. It blocks nothing;
+  it only reports other violations (for example a missing `CSP_*` source).
 
 ### How to config
 Set environment variables on the web container. Each value is a space-separated list
@@ -65,7 +67,9 @@ Older images ignore `CSP_*`, so the variables can be added first.
   `/etc/nginx/csp-headers.conf` instead.
 - A mounted custom `nginx.conf` must keep `include /etc/nginx/csp-headers.conf;` in
   every `server` / `location` that declares its own `add_header`, or the page is
-  served without the policy.
-- `script-src` keeps `'unsafe-inline'` because the mail viewer and the composer
-  render through `srcdoc` iframes. The policy protects against clickjacking,
-  plugins, `<base>` and form exfiltration; it is not an XSS barrier.
+  served without the policy. It must also keep the exact `location = /index.html`
+  block that rewrites `__CSP_NONCE__` to `$request_id`.
+- Enforcing `script-src` uses a per-request nonce shared with `index.html`
+  (`__CSP_NONCE__` rewritten to `$request_id`). Do not serve a precompressed or
+  cached `index.html` that still holds an old placeholder.
+- `style-src` still allows `'unsafe-inline'`.
