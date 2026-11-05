@@ -1,0 +1,11 @@
+{
+  "tmailLibPrefixes": ["package:tmail_ui_user/", "package:core/", "package:model/", "package:contact/", "package:forward/", "package:rule_filter/", "package:fcm/", "package:email_recovery/", "package:server_settings/", "package:scribe/", "package:labels/", "package:cozy/", "package:workplace/"],
+  "bufferClasses": {"android": ["_Uint8List", "_ExternalUint8Array", "_OneByteString", "_TwoByteString"]},
+  "webBufferKeys": ["(string)", "(concatenated string)", "(sliced string)", "system / JSArrayBufferData"],
+  "defaults": {"maxTotalGrowthBytes": 4194304, "maxBufferGrowthBytes": 2621440, "maxTmailClassGrowthBytes": 1048576, "maxRssGrowthBytes": 31457280, "topN": 20},
+  "cases": {
+    "open_heavy_inline_email": {"mustReturnToBaseline": []},
+    "two_composers_heavy_send": {"mustReturnToBaseline": ["ComposerController"]},
+    "identity_heavy_inline": {"mustReturnToBaseline": ["IdentityCreatorController"]}
+  }
+}
