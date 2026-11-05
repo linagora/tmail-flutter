@@ -201,7 +201,7 @@ class HtmlViewerDocumentBuilder {
           ${_webStopResizeObserver(input)}
         });
       
-${_webHandleMessage(viewId)}
+${_webHandleMessage()}
 
         ${_webResizeObserver(input)}
         
@@ -282,42 +282,13 @@ ${_webHandleMessage(viewId)}
                 '''
               : '';
 
-  /// Answers the height, width and `execCommand` requests Dart posts to the iframe.
-  static String _webHandleMessage(String viewId) => '''
+  /// Clears the frame selection when the app window asks for it.
+  static String _webHandleMessage() => '''
         function handleMessage(e) {
           if (!e || e.source !== window.parent) return;
           if (e.data === '{"type":"toIframe: clearSelection"}') {
             var selection = window.getSelection();
             if (selection) selection.removeAllRanges();
-            return;
-          }
-          if (e.data && typeof e.data === 'string' && e.data.includes("toIframe:")) {
-            var data;
-            try {
-              data = JSON.parse(e.data);
-            } catch (error) {
-              return;
-            }
-            if (data
-                && typeof data["view"] === 'string'
-                && data["view"].includes("$viewId")
-                && typeof data["type"] === 'string') {
-              if (data["type"].includes("getHeight")) {
-                var height = document.body.scrollHeight;
-                window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toDart: htmlHeight", "height": height}), "*");
-              }
-              if (data["type"].includes("getWidth")) {
-                var width = document.body.scrollWidth;
-                window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toDart: htmlWidth", "width": width}), "*");
-              }
-              if (data["type"].includes("execCommand")) {
-                if (data["argument"] === null) {
-                  document.execCommand(data["command"], false);
-                } else {
-                  document.execCommand(data["command"], false, data["argument"]);
-                }
-              }
-            }
           }
         }''';
 }

@@ -51,7 +51,9 @@ void main() {
     expect(document, contains('e.source !== window.parent'));
     expect(document, isNot(contains('window.parent.addEventListener')));
     expect(document, isNot(contains('window.parent.removeEventListener')));
-    expect(document, isNot(contains('toIframe: getHeight')));
+    expect(document, isNot(contains('getHeight')));
+    expect(document, isNot(contains('getWidth')));
+    expect(document, isNot(contains('execCommand')));
   });
 }
 
