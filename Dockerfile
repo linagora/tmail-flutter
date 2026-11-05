@@ -38,6 +38,12 @@ RUN --mount=type=secret,id=sentry_auth_token \
 FROM nginx:alpine@sha256:df221db836e1754089190208cee7eeda94f233197056426eda74a43ab1abeac2
 RUN apk add gzip
 COPY --from=build-env /app/server/nginx.conf /etc/nginx
+COPY --from=build-env /app/server/csp-headers.conf.template /etc/nginx/csp-headers.conf.template
 COPY --from=build-env /app/build/web /usr/share/nginx/html
+ENV CSP_FRAME_ANCESTORS="'self'"
+ENV CSP_FRAME_SRC=""
+ENV CSP_SCRIPT_SRC=""
+ENV CSP_CONNECT_SRC=""
+RUN envsubst '${CSP_FRAME_ANCESTORS} ${CSP_FRAME_SRC} ${CSP_SCRIPT_SRC} ${CSP_CONNECT_SRC}' < /etc/nginx/csp-headers.conf.template > /etc/nginx/csp-headers.conf && nginx -t
 EXPOSE 80
-CMD gzip -k -r -f /usr/share/nginx/html/ && nginx -g 'daemon off;'
+CMD gzip -k -r -f /usr/share/nginx/html/ && envsubst '${CSP_FRAME_ANCESTORS} ${CSP_FRAME_SRC} ${CSP_SCRIPT_SRC} ${CSP_CONNECT_SRC}' < /etc/nginx/csp-headers.conf.template > /etc/nginx/csp-headers.conf && nginx -g 'daemon off;'

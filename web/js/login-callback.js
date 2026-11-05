@@ -1,0 +1,28 @@
+    const AUTH_DESTINATION_KEY = "auth_destination_url";
+    const AUTH_RESPONSE_KEY = "auth_info";
+
+    window.onload = function () {
+      try {
+        // Get the original page destination
+        const destination = sessionStorage.getItem(AUTH_DESTINATION_KEY) || "/";
+        sessionStorage.removeItem(AUTH_DESTINATION_KEY);
+
+        // Store the current window location that will be used to get the information for authentication
+        sessionStorage.setItem(AUTH_RESPONSE_KEY, window.location);
+
+        // Build the redirect URL
+        let redirectUrl;
+        if (destination.includes("/login")) {
+          redirectUrl = destination.replace("/login", "/dashboard?type=normal");
+        } else {
+          const separator = destination.endsWith("/") ? "" : "/";
+          redirectUrl = destination + separator + "dashboard?type=normal";
+        }
+
+        // Perform redirection
+        location.assign(redirectUrl);
+      } catch (error) {
+        console.error("[Auth Redirect] Redirection failed:", error);
+        location.assign("/");
+      }
+    };

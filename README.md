@@ -181,7 +181,7 @@ No we do not plan to support such extensions, that are currently not standardize
   Then you can just simply run your web-app like this:
 
   ```bash
-  docker run -d -ti -p 8080:80 --name web tmail-web:latest
+  docker run -d -ti -p 8080:80 -e CSP_CONNECT_SRC="http://localhost ws://localhost" --name web tmail-web:latest
   ```
 
   Then go to http://localhost:8080 and you should be able to login against your JMAP backend using the Twake Mail web-app.
@@ -198,10 +198,12 @@ No we do not plan to support such extensions, that are currently not standardize
   you want to connect to. Then, to mount it and override the default one while running the container:
 
   ```bash
-  docker run -d -ti -p 8080:80 --mount type=bind,source="$(pwd)"/env.dev.file,target=/usr/share/nginx/html/assets/env.file --name web tmail-web:latest
+  docker run -d -ti -p 8080:80 -e CSP_CONNECT_SRC="http://localhost ws://localhost" --mount type=bind,source="$(pwd)"/env.dev.file,target=/usr/share/nginx/html/assets/env.file --name web tmail-web:latest
   ```
 
   Then go to http://localhost:8080 and you should be able to login against your JMAP backend using the TMail web-app.
+
+  The web image applies a content policy. `CSP_FRAME_ANCESTORS` lists parent origins that may embed the app (default `'self'`), for example `"'self' https://*.mycozy.cloud"`. `CSP_FRAME_SRC` is appended to frame-src (default empty), for example the Drive picker `https://*.mycozy.cloud`. `CSP_SCRIPT_SRC` is appended to script-src (default empty), for example the bridge `https://cdn.jsdelivr.net/npm/cozy-external-bridge@<version>/`, or `CSP_SCRIPT_SRC="https://www.gstatic.com/firebasejs/"` when FCM is enabled on web. `CSP_CONNECT_SRC` is appended to connect-src (default empty), for example a local demo `http://localhost ws://localhost`. The `docker run` commands above pass `CSP_CONNECT_SRC` because this demo uses an http://localhost JMAP backend. A mounted custom nginx.conf must keep `include /etc/nginx/csp-headers.conf;` to get the headers.
 
   #### Using the docker-compose file
 
