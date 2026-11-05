@@ -1,5 +1,6 @@
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
 
 import '../../memory/heavy_png.dart';
 import '../../utils/send_and_wait_for_completion.dart';
@@ -49,5 +50,11 @@ class TwoComposersHeavySendMemoryScenario extends MemoryLeakScenario {
     );
     await composerRobot.waitForAttachmentsUploaded();
     await sendAndWaitForCompletion($, composerRobot);
+    // The next composer must not open while this one is still closing: its view
+    // rebuilds after the controller is disposed and throws a null check.
+    await waitForCondition(
+      () => !$(ComposerView).exists,
+      reason: 'The composer should close after sending',
+    );
   }
 }

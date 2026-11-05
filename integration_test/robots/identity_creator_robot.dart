@@ -86,8 +86,26 @@ class IdentityCreatorRobot extends CoreRobot {
       waitForCondition(
         () async => await _signatureImageCount(controller) > imagesBefore,
         timeout: TestTimeouts.long,
-        reason: 'The signature should contain the inserted image',
+        reason: 'The signature should contain the inserted image '
+            '(${_insertDiagnostics(controller)})',
       );
+
+  // Shown only when the insert never lands, to tell a missing editor from a toast error.
+  String _insertDiagnostics(IdentityCreatorController controller) {
+    final texts = $.tester
+        .widgetList<Text>(find.byType(Text))
+        .map((text) => text.data)
+        .whereType<String>()
+        .toList()
+        .reversed
+        .take(5)
+        .toList();
+    final editorReady = PlatformInfo.isWeb
+        ? controller.richTextWebController != null
+        : controller.richTextMobileTabletController?.htmlEditorApi != null;
+    return 'editor ready: $editorReady, publicAssets: '
+        '${controller.publicAssetController != null}, last texts: $texts';
+  }
 
   Future<String> _signatureHtml(IdentityCreatorController controller) async {
     if (PlatformInfo.isWeb) {
