@@ -135,10 +135,10 @@ WEB_BROWSER_ARGS='["--disable-web-security","--disable-dev-shm-usage","--disable
 # Full output goes to $PATROL_LOG (archived as patrol-console.log.gz); the console drops repetitive lines (scripts/ci-console-filter.pl) and ends with what it dropped.
 # The timestamped log is written by a pipeline stage, so it is complete before cleanup gzips it.
 timing "patrol tests started"
-# Allow page setup time so the Dart timeout can report first.
+# Playwright's test timeout also covers page load and Patrol init, so leave room past the 240 s Dart test.
 patrol test -v \
     --profile \
-    --web-timeout=300000 \
+    --web-timeout=540000 \
     --tags=web \
     --device=chrome \
     --web-port=3000 \
