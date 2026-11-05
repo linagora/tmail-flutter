@@ -100,10 +100,39 @@ if [ "$PLATFORM" = web ]; then
         ${EXTRA_PATROL_ARGS[@]+"${EXTRA_PATROL_ARGS[@]}"} "${DART_DEFINES[@]}"
 else
     export ANDROID_TEST_BUILD_TYPE=profile
-    patrol test -v --profile --tags=memory --device=emulator-5554 \
-        ${EXTRA_PATROL_ARGS[@]+"${EXTRA_PATROL_ARGS[@]}"} "${DART_DEFINES[@]}"
+    # A hung instrumentation prints nothing, so kill patrol on silence, not on a fixed budget.
+    # The Gradle build is silent for up to ~6 min; test steps print every few seconds.
+    BUILD_IDLE_LIMIT=600
+    TEST_IDLE_LIMIT=240
+    PID_FILE="$CI_LOGS/patrol.pid"
+    bash -c 'echo $$ > "$1"; shift; exec "$@"' _ "$PID_FILE" \
+        patrol test -v --profile --show-flutter-logs --tags=memory --device=emulator-5554 \
+        ${EXTRA_PATROL_ARGS[@]+"${EXTRA_PATROL_ARGS[@]}"} "${DART_DEFINES[@]}" 2>&1 |
+    {
+        limit=$BUILD_IDLE_LIMIT
+        while true; do
+            if IFS= read -r -t "$limit" line; then
+                printf '%s\n' "$line"
+                case "$line" in *"Starting "*" tests on"*) limit=$TEST_IDLE_LIMIT ;; esac
+            elif [ $? -gt 128 ]; then
+                echo "No patrol output for ${limit}s: killing the hung run"
+                patrol_pid=$(cat "$PID_FILE" 2>/dev/null)
+                if [ -n "$patrol_pid" ]; then
+                    pkill -TERM -P "$patrol_pid" 2>/dev/null
+                    kill -TERM "$patrol_pid" 2>/dev/null
+                fi
+                exit 124
+            else
+                break
+            fi
+        done
+    }
 fi
 PATROL_EXIT=$?
+
+if [ "$PLATFORM" = android ] && [ "$PATROL_EXIT" -ne 0 ]; then
+    adb -s emulator-5554 logcat -d -t 20000 > "$CI_LOGS/logcat.txt" 2>&1 || true
+fi
 
 python3 -I scripts/memory-leak-report.py "$MEMORY_DIR" integration_test/memory/memory_rules.json
 REPORT_EXIT=$?
