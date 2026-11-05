@@ -1,6 +1,7 @@
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
-import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart'
+    if (dart.library.js_interop) 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 
 import '../../memory/heavy_png.dart';
 import '../../utils/send_and_wait_for_completion.dart';
