@@ -166,8 +166,11 @@
         
         function handleOnLoad() {
           window.parent.postMessage(JSON.stringify({"view": "lockViewId", "message": "iframeHasBeenLoaded"}), "*");
-          window.parent.postMessage(JSON.stringify({"view": "lockViewId", "type": "toDart: htmlHeight", "height": document.body.scrollHeight}), "*");
-          window.parent.postMessage(JSON.stringify({"view": "lockViewId", "type": "toDart: htmlWidth", "width": document.body.scrollWidth}), "*");
+          // Measure after the other load handlers (image normalization) have run.
+          setTimeout(function() {
+            window.parent.postMessage(JSON.stringify({"view": "lockViewId", "type": "toDart: htmlHeight", "height": document.body.scrollHeight}), "*");
+            window.parent.postMessage(JSON.stringify({"view": "lockViewId", "type": "toDart: htmlWidth", "width": document.body.scrollWidth}), "*");
+          }, 0);
           
                             var hyperLinks = document.querySelectorAll('a');
                   for (var i=0; i < hyperLinks.length; i++){

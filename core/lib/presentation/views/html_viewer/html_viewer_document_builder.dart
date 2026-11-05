@@ -213,8 +213,11 @@ ${_webHandleMessage(viewId)}
         
         function handleOnLoad() {
           window.parent.postMessage(JSON.stringify({"view": "$viewId", "message": "$iframeOnLoadMessage"}), "*");
-          window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toDart: htmlHeight", "height": document.body.scrollHeight}), "*");
-          window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toDart: htmlWidth", "width": document.body.scrollWidth}), "*");
+          // Measure after the other load handlers (image normalization) have run.
+          setTimeout(function() {
+            window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toDart: htmlHeight", "height": document.body.scrollHeight}), "*");
+            window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toDart: htmlWidth", "width": document.body.scrollWidth}), "*");
+          }, 0);
           
           ${_webListenLinks(input, _WebLinkScript.hyperLink)}
           
