@@ -33,7 +33,7 @@
 - Before FTL starts, the tunnels are checked:
   - every supervisor is alive;
   - the reset tunnel answers an HTTP request through the relay;
-  - every slot whose backend answers on localhost also answers through the relay, because the reset server can lease it (a failed probe is retried every 5 s for up to `BORE_RECONNECT_WINDOW` seconds);
+  - every slot whose backend answers on localhost also answers through the relay, because the reset server can lease it (a failed tunnel probe is retried every 5 s, each tunnel for up to `BORE_RECONNECT_WINDOW` seconds of its own);
   - a slot whose backend is not up (dropped, or still booting) only logs a `WARN`;
   - at least `FTL_SHARDS` slot tunnels answer (the reset server also starts with that many free backends).
 - After FTL, `check_bore_supervisors` runs again and `bore_summary` prints one row per tunnel.
