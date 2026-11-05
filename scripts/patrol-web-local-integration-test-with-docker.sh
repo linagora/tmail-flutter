@@ -31,6 +31,15 @@ POOL_URLS=$(python3 -c 'import sys; print(",".join(f"http://localhost:{8100 + i}
 RESET_PORT="$RESET_PORT" POOL_SIZE="$POOL_SIZE" POOL_URLS="$POOL_URLS" POOL_LOG_DIR=/tmp WORK_DIR="$PWD" \
     python3 scripts/backend-reset-server.py > "$RESET_SERVER_LOG" 2>&1 &
 RESET_SERVER_PID=$!
+
+cleanup() {
+    echo "Cleaning up test environment..."
+    # SIGTERM makes the reset server remove its backend containers.
+    kill "$RESET_SERVER_PID" 2>/dev/null || true
+    wait "$RESET_SERVER_PID" 2>/dev/null || true
+}
+trap cleanup EXIT
+
 deadline=$(( SECONDS + 300 ))
 until grep -q "pool ready" "$RESET_SERVER_LOG"; do
     if ! kill -0 "$RESET_SERVER_PID" 2>/dev/null || (( SECONDS >= deadline )); then
@@ -40,14 +49,6 @@ until grep -q "pool ready" "$RESET_SERVER_LOG"; do
     fi
     sleep 1
 done
-
-cleanup() {
-    echo "Cleaning up test environment..."
-    # SIGTERM makes the reset server remove its backend containers.
-    kill "$RESET_SERVER_PID" 2>/dev/null || true
-    wait "$RESET_SERVER_PID" 2>/dev/null || true
-}
-trap cleanup EXIT
 
 echo "Copying integration_test/integration_test_env.file to env.file..."
 cp integration_test/integration_test_env.file env.file
