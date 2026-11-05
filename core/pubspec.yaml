@@ -32,10 +32,11 @@ dependencies:
   # Sanitize_html is restricting Tags and Attributes. So some of our own tags and attributes (signature, public asset,...) will be lost when sanitizing html.
   # TODO: We will change it when the PR in upstream repository will be merged
   # https://github.com/google/dart-neats/pull/259
+  # Pinned to linagora/dart-neats#9 until it merges into support_mail.
   sanitize_html:
     git:
       url: https://github.com/linagora/dart-neats.git
-      ref: support_mail
+      ref: 0f8cd939219b4f2260ef5b4be284377a399e84c4
       path: sanitize_html
 
   linagora_design_flutter:
