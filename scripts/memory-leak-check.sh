@@ -89,6 +89,38 @@ DART_DEFINES=(
 # Local debugging only, e.g. MEMORY_PATROL_ARGS="--show-flutter-logs --target integration_test/tests/memory/<test>.dart"
 read -r -a EXTRA_PATROL_ARGS <<< "${MEMORY_PATROL_ARGS:-}"
 
+# A hung instrumentation prints nothing, so kill patrol on silence, not on a fixed budget.
+# The Gradle build is silent for up to ~6 min; test steps print every few seconds.
+BUILD_IDLE_LIMIT=600
+TEST_IDLE_LIMIT=240
+run_android_test() {
+    local target="$1"
+    local pid_file="$CI_LOGS/patrol.pid"
+    : > "$CI_LOGS/patrol-android.log"
+    bash -c 'echo $$ > "$1"; shift; exec "$@"' _ "$pid_file" \
+        patrol test -v --profile --show-flutter-logs --target "$target" --device=emulator-5554 \
+        ${EXTRA_PATROL_ARGS[@]+"${EXTRA_PATROL_ARGS[@]}"} "${DART_DEFINES[@]}" 2>&1 |
+    {
+        local limit=$BUILD_IDLE_LIMIT line patrol_pid
+        while true; do
+            if IFS= read -r -t "$limit" line; then
+                printf '%s\n' "$line" | tee -a "$CI_LOGS/patrol-android.log"
+                case "$line" in *"Starting "*" tests on"*) limit=$TEST_IDLE_LIMIT ;; esac
+            elif [ $? -gt 128 ]; then
+                echo "No patrol output for ${limit}s: killing the hung run" | tee -a "$CI_LOGS/patrol-android.log"
+                patrol_pid=$(cat "$pid_file" 2>/dev/null)
+                if [ -n "$patrol_pid" ]; then
+                    pkill -TERM -P "$patrol_pid" 2>/dev/null
+                    kill -TERM "$patrol_pid" 2>/dev/null
+                fi
+                return 124
+            else
+                break
+            fi
+        done
+    }
+}
+
 if [ "$PLATFORM" = web ]; then
     cp integration_test/integration_test_env.file env.file
     # Fixed debug port: the sidecar finds the app tab over CDP.
@@ -98,37 +130,25 @@ if [ "$PLATFORM" = web ]; then
         --web-headless=true --web-server-timeout=300 --web-timeout=900000 \
         --web-global-timeout=3300000 --web-browser-args="$WEB_BROWSER_ARGS" \
         ${EXTRA_PATROL_ARGS[@]+"${EXTRA_PATROL_ARGS[@]}"} "${DART_DEFINES[@]}"
+    PATROL_EXIT=$?
 else
     export ANDROID_TEST_BUILD_TYPE=profile
-    # A hung instrumentation prints nothing, so kill patrol on silence, not on a fixed budget.
-    # The Gradle build is silent for up to ~6 min; test steps print every few seconds.
-    BUILD_IDLE_LIMIT=600
-    TEST_IDLE_LIMIT=240
-    PID_FILE="$CI_LOGS/patrol.pid"
-    bash -c 'echo $$ > "$1"; shift; exec "$@"' _ "$PID_FILE" \
-        patrol test -v --profile --show-flutter-logs --tags=memory --device=emulator-5554 \
-        ${EXTRA_PATROL_ARGS[@]+"${EXTRA_PATROL_ARGS[@]}"} "${DART_DEFINES[@]}" 2>&1 |
-    {
-        limit=$BUILD_IDLE_LIMIT
-        while true; do
-            if IFS= read -r -t "$limit" line; then
-                printf '%s\n' "$line"
-                case "$line" in *"Starting "*" tests on"*) limit=$TEST_IDLE_LIMIT ;; esac
-            elif [ $? -gt 128 ]; then
-                echo "No patrol output for ${limit}s: killing the hung run"
-                patrol_pid=$(cat "$PID_FILE" 2>/dev/null)
-                if [ -n "$patrol_pid" ]; then
-                    pkill -TERM -P "$patrol_pid" 2>/dev/null
-                    kill -TERM "$patrol_pid" 2>/dev/null
-                fi
-                exit 124
-            else
-                break
-            fi
+    PATROL_EXIT=0
+    # One patrol run per test: the Android orchestrator sometimes kills the next test's
+    # process while it removes the previous task, which hangs or crashes the whole run.
+    for target in integration_test/tests/memory/*_test.dart; do
+        for attempt in 1 2; do
+            run_android_test "$target"
+            exit_code=$?
+            [ "$exit_code" -eq 0 ] && break
+            # Retry only when the instrumentation died; a failed test keeps its failure.
+            grep -q -E "Test instrumentation process crashed|Test run failed to complete|killing the hung run" \
+                "$CI_LOGS/patrol-android.log" || break
+            echo "Instrumentation died during $target (attempt $attempt)"
         done
-    }
+        [ "$exit_code" -ne 0 ] && PATROL_EXIT=$exit_code
+    done
 fi
-PATROL_EXIT=$?
 
 if [ "$PLATFORM" = android ] && [ "$PATROL_EXIT" -ne 0 ]; then
     adb -s emulator-5554 logcat -d -t 20000 > "$CI_LOGS/logcat.txt" 2>&1 || true
