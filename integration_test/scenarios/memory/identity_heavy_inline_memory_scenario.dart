@@ -1,8 +1,12 @@
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 
+import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_view.dart';
+
 import '../../memory/heavy_png.dart';
 import '../../robots/identity_creator_robot.dart';
 import '../../robots/profiles_robot.dart';
+import '../../utils/test_timeouts.dart';
+import '../../utils/wait_for_condition.dart';
 import 'memory_leak_scenario.dart';
 
 /// Every cycle deletes the identity it created: a saved identity keeps its
@@ -33,6 +37,12 @@ class IdentityHeavyInlineMemoryScenario extends MemoryLeakScenario {
       'signature.png',
     );
     await identityCreatorRobot.tapSaveIdentityButton();
+    // The name also sits in the creator's text field, so wait for the creator to close.
+    await waitForCondition(
+      () => !$(IdentityCreatorView).exists,
+      timeout: TestTimeouts.long,
+      reason: 'The identity creator should close after saving',
+    );
     await expectViewVisible($(name));
 
     await profilesRobot.deleteIdentity(name);

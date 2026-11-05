@@ -4,6 +4,7 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart'
 
 import '../../memory/heavy_png.dart';
 import '../../utils/send_and_wait_for_completion.dart';
+import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
 import 'memory_leak_scenario.dart';
 
@@ -21,15 +22,25 @@ class TwoComposersHeavySendMemoryScenario extends MemoryLeakScenario {
   Future<void> runCycle(MemoryCycle cycle) async {
     final composers = cycle == MemoryCycle.measured ? 2 : 1;
     for (var index = 0; index < composers; index++) {
-      await _composeAndSend('Memory composer ${cycle.name} $index');
+      await _composeAndSend(
+        'Memory composer ${cycle.name} $index',
+        isFirstComposer: cycle == MemoryCycle.warmup && index == 0,
+      );
     }
   }
 
-  Future<void> _composeAndSend(String subject) async {
+  Future<void> _composeAndSend(
+    String subject, {
+    required bool isFirstComposer,
+  }) async {
     final composerRobot = robots.composerRobot();
     await robots.threadRobot().openComposer();
     await composerRobot.expectComposerViewVisible();
-    await composerRobot.grantContactPermission();
+    // The slow emulator can show the dialog late; a request left pending would
+    // make the next composer's request fail with "already running".
+    await composerRobot.grantContactPermission(
+      timeout: isFirstComposer ? TestTimeouts.medium : const Duration(seconds: 2),
+    );
     // Typing a free-text address creates no chip on headless web, and the
     // contact suggestion for this address is not reliable: the recipient is
     // set up through the controller, as the widget does when a chip is added.
