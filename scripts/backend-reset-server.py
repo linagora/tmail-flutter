@@ -382,8 +382,8 @@ class ResetHandler(http.server.BaseHTTPRequestHandler):
             return
         try:
             self._reply(200, json.dumps(leased).encode(), "application/json")
-        except (BrokenPipeError, ConnectionResetError):
-            # The client gave up while waiting; do not hold the slot until the TTL.
+        except OSError:
+            # The client may not have the token, so it cannot be trusted to release the slot.
             self.pool.release(leased["token"])
 
     def _handle_release(self):

@@ -1,4 +1,5 @@
 import contextlib
+import http.client
 import http.server
 import importlib.util
 import io
@@ -316,6 +317,21 @@ class HttpTest(unittest.TestCase):
         leased = json.loads(body)
         self.assertEqual(leased["url"], "http://h:1")
         self.assertEqual(self.post("/release", json.dumps({"token": leased["token"]}).encode())[0], 202)
+
+    def test_failed_lease_reply_releases_the_slot(self):
+        pool = self.start()
+        real_reply = server.ResetHandler._reply
+
+        def failing_reply(handler, code, *args):
+            if code == 200:
+                raise TimeoutError("reply failed")
+            return real_reply(handler, code, *args)
+
+        with mock.patch.object(server.ResetHandler, "_reply", failing_reply):
+            with self.assertRaises(http.client.RemoteDisconnected):
+                self.post("/lease")
+        replacement = pool.lease(2)
+        self.assertIsNotNone(replacement)
 
     def test_lease_answers_503_when_every_backend_is_dropped(self):
         def recycle(n):
