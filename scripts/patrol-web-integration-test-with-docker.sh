@@ -143,6 +143,7 @@ KEEPER_PID=$!
 timing "patrol tests started"
 # Allow page setup time so the Dart timeout can report first.
 patrol test -v \
+    --profile \
     --web-timeout=300000 \
     --tags=web \
     --device=chrome \
