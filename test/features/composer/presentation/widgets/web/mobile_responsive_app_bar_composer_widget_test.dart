@@ -6,6 +6,7 @@ import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu_overlay_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/providers/composer_attachment_extension_registry_provider.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/mobile_responsive_app_bar_composer_widget.dart';
@@ -13,6 +14,8 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/web/mobile_
 import '../../../../../fixtures/widget_fixtures.dart';
 
 const _insertImage = 'Insert image';
+const _formatting = 'Formatting options';
+const _fakePlugin = 'Fake plugin 1';
 
 class _FakePlugin implements ComposerAttachmentPlugin {
   final int index;
@@ -25,7 +28,11 @@ class _FakePlugin implements ComposerAttachmentPlugin {
     required String composerId,
     required ImagePaths imagePaths,
     ComposerToolbarButtonStyle style = const ComposerToolbarButtonStyle(),
-  }) => SizedBox(key: ValueKey('fake-plugin-button-$index'), width: 44, height: 40);
+  }) => SizedBox(
+    key: ValueKey('fake-plugin-button-$index'),
+    width: 44,
+    height: 40,
+  );
 
   @override
   Widget buildContextMenuTile(
@@ -59,14 +66,18 @@ void main() {
     menuController.dispose();
   });
 
-  Future<void> pumpBar(WidgetTester tester, double width) {
+  Future<void> pumpBar(
+    WidgetTester tester,
+    double width, {
+    bool isCodeViewEnabled = false,
+  }) {
     return WidgetFixtures.pumpResponsiveWidget(
       tester,
       WidgetFixtures.makeTestableWidget(
         providerContainer: container,
         child: MobileResponsiveAppBarComposerWidget(
           imagePaths: ImagePaths(),
-          isCodeViewEnabled: false,
+          isCodeViewEnabled: isCodeViewEnabled,
           isFormattingOptionsEnabled: false,
           isSendButtonEnabled: true,
           hasRequestReadReceipt: false,
@@ -105,7 +116,10 @@ void main() {
         lessThanOrEqualTo(320),
       );
       expect(find.byTooltip(_insertImage), findsNothing);
-      expect(find.byKey(const ValueKey('fake-plugin-button-1')), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('fake-plugin-button-1')),
+        findsOneWidget,
+      );
 
       await tester.tap(find.byType(PopupMenuOverlayWidget));
       await tester.pumpAndSettle();
@@ -114,19 +128,57 @@ void main() {
     },
   );
 
+  testWidgets('Should keep every action in the bar on a wide screen', (
+    tester,
+  ) async {
+    addTearDown(() => WidgetFixtures.resetResponsive(tester));
+
+    await pumpBar(tester, 1024);
+
+    expect(tester.takeException(), isNull);
+    expect(find.byTooltip(_insertImage), findsOneWidget);
+
+    await tester.tap(find.byType(PopupMenuOverlayWidget));
+    await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key(UiKeys.saveDraftPopupItem)), findsOneWidget);
+      expect(find.text(_insertImage), findsNothing);
+      expect(find.byType(Divider), findsNothing);
+  });
+
+  testWidgets('Should put a collapsed plugin tile in the More menu', (
+    tester,
+  ) async {
+    addTearDown(() => WidgetFixtures.resetResponsive(tester));
+
+    await pumpBar(tester, 200);
+
+    expect(tester.takeException(), isNull);
+    expect(find.byTooltip(_formatting), findsOneWidget);
+    expect(find.byKey(const ValueKey('fake-plugin-button-1')), findsNothing);
+
+    await tester.tap(find.byType(PopupMenuOverlayWidget));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_fakePlugin), findsOneWidget);
+    expect(find.byKey(const Key(UiKeys.saveDraftPopupItem)), findsOneWidget);
+    expect(find.byType(Divider), findsOneWidget);
+  });
+
   testWidgets(
-    'Should keep every action in the bar on a wide screen',
+    'Should omit insert image from the bar and the menu in code view',
     (tester) async {
       addTearDown(() => WidgetFixtures.resetResponsive(tester));
 
-      await pumpBar(tester, 1024);
+      await pumpBar(tester, 1024, isCodeViewEnabled: true);
 
       expect(tester.takeException(), isNull);
-      expect(find.byTooltip(_insertImage), findsOneWidget);
+      expect(find.byTooltip(_insertImage), findsNothing);
 
       await tester.tap(find.byType(PopupMenuOverlayWidget));
       await tester.pumpAndSettle();
 
+      expect(find.byKey(const Key(UiKeys.saveDraftPopupItem)), findsOneWidget);
       expect(find.text(_insertImage), findsNothing);
     },
   );
