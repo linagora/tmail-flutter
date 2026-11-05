@@ -28,7 +28,7 @@ def isPrImageEligible() {
         def commentsJson = readFile("/tmp/pr_comments_${CHANGE_ID}.json")
         def comments = new groovy.json.JsonSlurper().parseText(commentsJson)
         for (comment in comments) {
-          if (comment.body.trim().toLowerCase() == 'build this please') {
+          if (comment.body?.trim()?.toLowerCase() == 'build this please') {
             def commenter = comment.user.login
             def commenterStatus = sh(
               script: """curl -s -o /dev/null -w "%{http_code}" \
@@ -86,7 +86,15 @@ pipeline {
                     def buildPrImage = false
                     if (env.CHANGE_ID) {
                         withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GITHUB_CREDENTIAL_USR', passwordVariable: 'GITHUB_CREDENTIAL_PSW')]) {
-                            buildPrImage = isPrImageEligible()
+                            try {
+                                buildPrImage = isPrImageEligible()
+                            } catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException e) {
+                                throw e
+                            } catch (Exception e) {
+                                // A GitHub API failure must skip only the PR image, not the web tests.
+                                echo "PR image eligibility check failed: ${e.message}. Skipping PR image delivery."
+                                buildPrImage = false
+                            }
                         }
                     }
                     parallel(
