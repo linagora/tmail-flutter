@@ -6,6 +6,7 @@ import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/html_viewer/html_iframe_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_viewer_document_builder.dart';
+import 'package:core/presentation/views/html_viewer/iframe_message_source.dart';
 import 'package:core/presentation/views/shortcut/key_shortcut.dart';
 import 'package:core/presentation/views/tooltip/iframe_tooltip_overlay.dart';
 import 'package:core/utils/app_logger.dart';
@@ -125,6 +126,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
   late double minHeight;
   late final StreamSubscription<html.MessageEvent> _onMessageSubscription;
   bool _iframeLoaded = false;
+  html.IFrameElement? _iframe;
   static const String iframeOnLoadMessage =
       HtmlViewerDocumentBuilder.iframeOnLoadMessage;
   static const String onClickHyperLinkName =
@@ -153,6 +155,9 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
 
   void _handleMessageEvent(html.MessageEvent event) {
     try {
+      // The view id is readable inside the frame; only its own window may drive the viewer.
+      if (!isMessageFromIframe(event, _iframe)) return;
+
       final data = json.decode(event.data);
 
       final viewId = data['view'];
@@ -163,43 +168,49 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
         return;
       }
 
-      final type = data['type'];
-      if (_isScrollingIsAvailable && _isScrollChangedEventTriggered(type)) {
-        _handleIframeOnScrollChangedListener(data, widget.scrollController!);
-        return;
-      } else if (_isScrollingIsAvailable && _isScrollEndEventTriggered(type)) {
-        _handleIframeOnScrollEndListener(data, widget.scrollController!);
-        return;
-      } else if (_isIframeKeyboardEventTriggered(type)) {
-        _handleOnIFrameKeyboardEvent(data);
-        return;
-      } else if (_isIframeClickEventTriggered(type)) {
-        _handleOnIFrameClickEvent(data);
-        return;
-      } else if (_isIframeLinkHoverEventTriggered(type)) {
-        _handleOnIFrameLinkHoverEvent(data);
-        return;
-      } else if (_isIframeLinkOutEventTriggered(type)) {
-        _handleOnIFrameLinkOutEvent(data);
-        return;
-      }
-
-      if (data['message'] == iframeOnLoadMessage) {
-        _iframeLoaded = true;
-      }
-      if (!_iframeLoaded) return;
-
-      if (_isHtmlContentHeightEventTriggered(type)) {
-        _handleContentHeightEvent(data['height']);
-      } else if (_isHtmlContentWidthEventTriggered(type)) {
-        _handleContentWidthEvent(data['width']);
-      } else if (_isMailtoLinkEventTriggered(type)) {
-        _handleMailtoLinkEvent(data['url']);
-      } else if (_isHyperLinkEventTriggered(type)) {
-        _handleHyperLinkEvent(data['url']);
-      }
+      if (_handleInteractionMessage(data)) return;
+      _handleContentMessage(data);
     } catch (e) {
       logWarning('$runtimeType::_handleMessageEvent:Exception = $e');
+    }
+  }
+
+  /// Returns true when [data] is a scroll, keyboard, click or link-hover message.
+  bool _handleInteractionMessage(dynamic data) {
+    final type = data['type'];
+    if (_isScrollingIsAvailable && _isScrollChangedEventTriggered(type)) {
+      _handleIframeOnScrollChangedListener(data, widget.scrollController!);
+    } else if (_isScrollingIsAvailable && _isScrollEndEventTriggered(type)) {
+      _handleIframeOnScrollEndListener(data, widget.scrollController!);
+    } else if (_isIframeKeyboardEventTriggered(type)) {
+      _handleOnIFrameKeyboardEvent(data);
+    } else if (_isIframeClickEventTriggered(type)) {
+      _handleOnIFrameClickEvent(data);
+    } else if (_isIframeLinkHoverEventTriggered(type)) {
+      _handleOnIFrameLinkHoverEvent(data);
+    } else if (_isIframeLinkOutEventTriggered(type)) {
+      _handleOnIFrameLinkOutEvent(data);
+    } else {
+      return false;
+    }
+    return true;
+  }
+
+  void _handleContentMessage(dynamic data) {
+    if (data['message'] == iframeOnLoadMessage) {
+      _iframeLoaded = true;
+    }
+    if (!_iframeLoaded) return;
+
+    final type = data['type'];
+    if (_isHtmlContentHeightEventTriggered(type)) {
+      _handleContentHeightEvent(data['height']);
+    } else if (_isHtmlContentWidthEventTriggered(type)) {
+      _handleContentWidthEvent(data['width']);
+    } else if (_isMailtoLinkEventTriggered(type)) {
+      _handleMailtoLinkEvent(data['url']);
+    } else if (_isHyperLinkEventTriggered(type)) {
+      _handleHyperLinkEvent(data['url']);
     }
   }
 
@@ -484,6 +495,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
                   key: ValueKey('$_htmlData-${widget.key}'),
                   srcdoc: _htmlData,
                   sandbox: HtmlIframeWidget.sandboxPolicy,
+                  onIframeCreated: (iframe) => _iframe = iframe,
                   width: _actualWidth.toString(),
                   height: _actualHeight.toString(),
                 );
@@ -534,6 +546,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
   @override
   void dispose() {
     _htmlData = null;
+    _iframe = null;
     _onMessageSubscription.cancel();
     if (PlatformInfo.isWebDesktop) {
       _tooltipOverlay?.hide();
