@@ -83,6 +83,7 @@ WorkplaceComposerAttachmentExtension _makeExtension(
   String? Function()? oidcTokenGetter,
   num? maxAttachmentSizeBytes,
   num? remainingAttachmentCapacityBytes,
+  num? Function(String? composerId)? remainingAttachmentCapacityBytesGetter,
   OnDrivePickStateChanged? onPickState,
   ValueGetter<bool>? uploadFromUrlSupported,
   OidcRefreshTrigger? oidcRefreshTrigger,
@@ -93,7 +94,8 @@ WorkplaceComposerAttachmentExtension _makeExtension(
       oidcTokenGetter: oidcTokenGetter ?? () => oidcToken,
       oidcRefreshTrigger: oidcRefreshTrigger ?? () async => null,
       maxAttachmentSizeBytesGetter: () => maxAttachmentSizeBytes,
-      remainingAttachmentCapacityBytesGetter: (_) => remainingAttachmentCapacityBytes,
+      remainingAttachmentCapacityBytesGetter: remainingAttachmentCapacityBytesGetter ??
+          (_) => remainingAttachmentCapacityBytes,
       onPickState: onPickState,
     );
 
@@ -433,6 +435,39 @@ void main() {
       await tile.onPickCallback!(DrivePickFailure(Exception('test')));
 
       expect(receivedId, _composerId);
+    });
+
+    testWidgets('capacity getter receives the composerId', (tester) async {
+      final notifier = ValueNotifier<Uri?>(_platformUri);
+      String? seenId;
+
+      final ext = _makeExtension(
+        notifier,
+        remainingAttachmentCapacityBytesGetter: (id) {
+          seenId = id;
+          return 12;
+        },
+      );
+
+      await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(
+            builder: (ctx) => ext.buildContextMenuTile(
+              ctx,
+              imagePaths: imagePaths,
+              composerId: _composerId,
+            ),
+          ),
+        ),
+      ));
+
+      final tile = tester.widget<DriveAttachmentContextMenuTile>(
+        find.byType(DriveAttachmentContextMenuTile),
+      );
+      expect(tile.session.remainingAttachmentCapacityBytesGetter(), 12);
+      expect(seenId, _composerId);
     });
   });
 
