@@ -40,13 +40,19 @@ class KeychainController: KeychainControllerDelegate, SentryConfigProvider {
         }
     }
     
-    func updateEmailDeliveryStateToKeychain(accountId: String, newEmailDeliveryState: String) {
+    /// Returns false when the session is missing, cannot be encoded, or the keychain write throws.
+    @discardableResult
+    func updateEmailDeliveryStateToKeychain(accountId: String, newEmailDeliveryState: String) -> Bool {
+        guard let sharingSession = retrieveSharingSessionFromKeychain(accountId: accountId),
+              let newSharingSessionData = sharingSession.updateEmailDeliveryState(newEmailDeliveryState: newEmailDeliveryState).toData() else {
+            return false
+        }
         do {
-            if let sharingSession = retrieveSharingSessionFromKeychain(accountId: accountId),
-               let newSharingSessionData = sharingSession.updateEmailDeliveryState(newEmailDeliveryState: newEmailDeliveryState).toData() {
-                try keychain.set(newSharingSessionData, key: accountId)
-            }
-        } catch {}
+            try keychain.set(newSharingSessionData, key: accountId)
+            return true
+        } catch {
+            return false
+        }
     }
     
     func updateTokenOidc(accountId: String, newTokenOidc: TokenOidc) {

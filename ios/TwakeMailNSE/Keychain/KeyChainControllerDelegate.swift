@@ -8,5 +8,6 @@ struct KeychainCredentials {
 protocol KeychainControllerDelegate: AnyObject {
     func retrieveSharingSessionFromKeychain(accountId: String) -> KeychainSharingSession?
     func retrieveSharingSessions() -> [KeychainCredentials]
-    func updateEmailDeliveryStateToKeychain(accountId: String, newEmailDeliveryState: String)
+    @discardableResult
+    func updateEmailDeliveryStateToKeychain(accountId: String, newEmailDeliveryState: String) -> Bool
 }

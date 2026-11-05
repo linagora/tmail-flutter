@@ -108,35 +108,77 @@ class NotificationService: UNNotificationServiceExtension {
                 tokenEndpointUrl: keychainSharingSession.tokenEndpoint,
                 oidcScopes: keychainSharingSession.oidcScopes,
                 isTWP: keychainSharingSession.isTWP,
-                onComplete: { (emails, errors) in
-                    errors.forEach { SentryManager.shared.capture(error: $0) }
-
-                    if emails.isEmpty {
-                        SentryManager.shared.capture(message: "NSE: getNewEmails returned empty list")
-                        self.showDefaultNotification(message: NSLocalizedString(self.newEmailDefaultMessageKey, comment: "Localizable"))
-                        return self.notify()
-                    }
-
-                    self.keychainController.updateEmailDeliveryStateToKeychain(
-                        accountId: keychainSharingSession.accountId,
-                        newEmailDeliveryState: newEmailDeliveryState
+                onComplete: { result in
+                    self.handleFetchResult(
+                        result,
+                        payloadState: newEmailDeliveryState,
+                        session: keychainSharingSession
                     )
-
-                    let mailboxIdsBlockNotification = keychainSharingSession.mailboxIdsBlockNotification ?? []
-
-                    if mailboxIdsBlockNotification.isEmpty {
-                        return self.showListNotification(emails: emails)
-                    } else {
-                        let emailFiltered = self.filterEmailsToPushNotification(
-                            emails: emails,
-                            mailboxIdsBlockNotification: mailboxIdsBlockNotification)
-                        return self.showListNotification(emails: emailFiltered)
-                    }
                 }
             )
         }
     }
     
+    private func handleFetchResult(
+        _ result: NewEmailFetchResult,
+        payloadState: String,
+        session: KeychainSharingSession
+    ) {
+        result.errors.forEach { SentryManager.shared.capture(error: $0) }
+
+        let bookmark = DeliveryBookmarkUpdate.resolve(
+            failed: result.failed || !result.errors.isEmpty,
+            hasMoreChanges: result.hasMoreChanges,
+            payloadState: payloadState,
+            latestState: result.latestState
+        )
+        persist(bookmark, session: session)
+
+        // A failed fetch keeps the bookmark, so presenting its partial emails would repeat them on the next push.
+        guard !result.presentableEmails.isEmpty else {
+            reportEmptyResult(result, bookmark: bookmark)
+            return presentDefaultNewEmail()
+        }
+
+        let emailFiltered = filterEmailsToPushNotification(
+            emails: result.presentableEmails,
+            mailboxIdsBlockNotification: session.mailboxIdsBlockNotification ?? []
+        )
+        showListNotification(emails: emailFiltered)
+    }
+
+    private func persist(_ bookmark: DeliveryBookmarkUpdate, session: KeychainSharingSession) {
+        guard case .write(let state) = bookmark else { return }
+
+        let persisted = keychainController.updateEmailDeliveryStateToKeychain(
+            accountId: session.accountId,
+            newEmailDeliveryState: state
+        )
+        // On failure the emails are still presented: a possible repeat on the next push beats losing a new-mail alert.
+        if !persisted {
+            SentryManager.shared.capture(message: "NSE: Failed to persist emailDelivery state")
+        }
+    }
+
+    /// Sends at most one Sentry event per fetch: a failure whose cause was already captured only adds a breadcrumb.
+    private func reportEmptyResult(_ result: NewEmailFetchResult, bookmark: DeliveryBookmarkUpdate) {
+        if result.failed {
+            return result.errors.isEmpty
+                ? SentryManager.shared.capture(message: "NSE: getNewEmails failed without error")
+                : SentryManager.shared.addBreadcrumb(message: "NSE: getNewEmails failed")
+        }
+        if case .write = bookmark {
+            SentryManager.shared.addBreadcrumb(message: "NSE: getNewEmails returned empty list")
+        } else {
+            SentryManager.shared.capture(message: "NSE: getNewEmails returned empty list")
+        }
+    }
+
+    private func presentDefaultNewEmail() {
+        showDefaultNotification(message: NSLocalizedString(newEmailDefaultMessageKey, comment: "Localizable"))
+        notify()
+    }
+
     private func filterEmailsToPushNotification(emails: [Email], mailboxIdsBlockNotification: [String]) -> [Email] {
         return emails.filter { email in
             guard let mailboxIds = email.mailboxIds else { return true }
