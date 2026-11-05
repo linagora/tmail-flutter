@@ -13,11 +13,13 @@ until docker compose logs tmail-backend | grep -qi "JAMES server started"; do sl
 docker exec tmail-backend /root/conf/integration_test/provisioning.sh >/dev/null 2>&1
 cd ..
 RESET_PORT=9999 python3 scripts/backend-reset-server.py > /tmp/backend-reset-server.log 2>&1 &
+RESET_PID=$!
+trap 'kill "$RESET_PID" 2>/dev/null || true' EXIT
 export PATH="$PATH:$HOME/.pub-cache/bin"
 dart pub global activate patrol_cli 4.3.1
 export ANDROID_TEST_BUILD_TYPE=profile
-for target in integration_test/tests/spike/vm_service_spike_test.dart integration_test/tests/search/search_email_by_label_test.dart; do
-  patrol test --profile --device emulator-5554 --target "$target" \
+for target in integration_test/tests/spike/vm_service_spike_test.dart; do
+  timeout 900 patrol test --profile --device emulator-5554 --target "$target" \
     --dart-define=USERNAME=bob --dart-define=PASSWORD=bob \
     --dart-define=ADDITIONAL_MAIL_RECIPIENT=alice@example.com \
     --dart-define=BASIC_AUTH_EMAIL=bob@example.com \
