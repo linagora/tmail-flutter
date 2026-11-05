@@ -12,7 +12,8 @@ class RestoreComposerAfterReloadScenario extends BaseTestScenario {
   @override
   Future<void> runTestLogic() async {
     const recipient = String.fromEnvironment('BASIC_AUTH_EMAIL');
-    assert(recipient.isNotEmpty, 'BASIC_AUTH_EMAIL must not be empty');
+    // assert() is stripped in profile builds.
+    if (recipient.isEmpty) throw StateError('BASIC_AUTH_EMAIL must not be empty');
     final input = (
       subject: 'Reload subject ${DateTime.now().microsecondsSinceEpoch}',
       recipient: recipient,
