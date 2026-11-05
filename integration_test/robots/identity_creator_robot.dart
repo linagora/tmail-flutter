@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/utils/file_upload_model.dart';
+import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_view.dart';
 
@@ -69,6 +70,8 @@ class IdentityCreatorRobot extends CoreRobot {
     try {
       final file = await File('${dir.path}/$fileName').writeAsBytes(bytes);
       FilePickerPlatform.instance = FakeFilePicker([FakePlatformFile(file)]);
+      // Like a user, focus the signature first: the editor ignores inserts without a caret.
+      await $(IdentityCreatorView).$(HtmlEditor).$(InAppWebView).tap();
       controller.pickImage(context);
       await _waitForNewSignatureImage(controller, imagesBefore);
     } finally {
