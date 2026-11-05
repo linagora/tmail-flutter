@@ -224,6 +224,26 @@ final class JmapClientChangesTests: XCTestCase {
         XCTAssertEqual(walker.latestState, "s1")
     }
 
+    func testEmailsSortedByReceivedAtOrdersOldestFirst() {
+        let newer = Email(id: "account-a", subject: nil, preview: nil, from: nil, receivedAt: "2024-06-02T10:00:00Z", mailboxIds: nil)
+        let older = Email(id: "account-b", subject: nil, preview: nil, from: nil, receivedAt: "2024-06-01T10:00:00Z", mailboxIds: nil)
+
+        let sorted = emailsSortedByReceivedAt([newer, older])
+
+        XCTAssertEqual(sorted.map(\.id), ["account-b", "account-a"])
+    }
+
+    func testEmailsSortedByReceivedAtKeepsEmailMissingReceivedAt() {
+        let older = Email(id: "old", subject: nil, preview: nil, from: nil, receivedAt: "2024-06-01T10:00:00Z", mailboxIds: nil)
+        let missing = Email(id: "missing", subject: nil, preview: nil, from: nil, receivedAt: nil, mailboxIds: nil)
+        let newer = Email(id: "new", subject: nil, preview: nil, from: nil, receivedAt: "2024-06-02T10:00:00Z", mailboxIds: nil)
+
+        let sorted = emailsSortedByReceivedAt([newer, older, missing])
+
+        XCTAssertEqual(sorted.count, 3)
+        XCTAssertEqual(sorted.filter { $0.receivedAt != nil }.map(\.id), ["old", "new"])
+    }
+
     /// Builds an Email/changes (c0) + Email/get (c1) response; a nil argument omits that invocation.
     private func makeResponse(
         changes: [String: Any]? = JmapClientChangesTests.changesArgs(),

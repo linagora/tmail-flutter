@@ -43,25 +43,110 @@ import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-/// Accumulates payloads and emits one batch after the background debounce of quiet time.
+/// Accumulates payloads and emits one batch after [debounce] of quiet time.
+///
+/// A burst that never goes quiet still flushes [debounce] after the first
+/// payload of the window, so pending cannot grow without a bound.
 /// Prefer this over `buffer(debounce)`: that misses the first event on a broadcast stream.
 @visibleForTesting
-StreamSubscription<dynamic> listenDebouncedBackgroundMessageBatches(
+StreamSubscription<Map<String, dynamic>> listenDebouncedBackgroundMessageBatches(
   Stream<Map<String, dynamic>> source,
   void Function(List<Map<String, dynamic>> batch) onBatch,
-  void Function(Object error, StackTrace stackTrace) onError,
-) {
+  void Function(Object error, StackTrace stackTrace) onError, {
+  Duration debounce = const Duration(
+    milliseconds: FcmUtils.durationBackgroundMessageComing,
+  ),
+}) {
   final pending = <Map<String, dynamic>>[];
-  return source
-      .doOnData(pending.add)
-      .debounceTime(const Duration(
-        milliseconds: FcmUtils.durationBackgroundMessageComing,
-      ))
-      .listen((_) {
-        final batch = List.of(pending);
-        pending.clear();
-        onBatch(batch);
-      }, onError: onError);
+  Timer? trailing;
+  Timer? maxWait;
+
+  void flush() {
+    trailing?.cancel();
+    trailing = null;
+    maxWait?.cancel();
+    maxWait = null;
+    if (pending.isEmpty) return;
+    final batch = List.of(pending);
+    pending.clear();
+    onBatch(batch);
+  }
+
+  void cancelTimers() {
+    trailing?.cancel();
+    trailing = null;
+    maxWait?.cancel();
+    maxWait = null;
+  }
+
+  final subscription = source.listen((payload) {
+    pending.add(payload);
+    trailing?.cancel();
+    trailing = Timer(debounce, flush);
+    maxWait ??= Timer(debounce, flush);
+  }, onError: onError, onDone: cancelTimers);
+
+  return _OnCancelSubscription<Map<String, dynamic>>(subscription, cancelTimers);
+}
+
+class _OnCancelSubscription<T> implements StreamSubscription<T> {
+  _OnCancelSubscription(this._inner, this._onCancel);
+
+  final StreamSubscription<T> _inner;
+  final void Function() _onCancel;
+  var _didCancel = false;
+
+  @override
+  Future<void> cancel() {
+    if (!_didCancel) {
+      _didCancel = true;
+      _onCancel();
+    }
+    return _inner.cancel();
+  }
+
+  @override
+  void onData(void Function(T data)? handleData) => _inner.onData(handleData);
+
+  @override
+  void onError(Function? handleError) => _inner.onError(handleError);
+
+  @override
+  void onDone(void Function()? handleDone) => _inner.onDone(handleDone);
+
+  @override
+  void pause([Future<void>? resumeSignal]) => _inner.pause(resumeSignal);
+
+  @override
+  void resume() => _inner.resume();
+
+  @override
+  bool get isPaused => _inner.isPaused;
+
+  @override
+  Future<E> asFuture<E>([E? futureValue]) => _inner.asFuture<E>(futureValue);
+}
+
+/// Converts each payload on its own. One malformed payload does not drop the rest.
+@visibleForTesting
+StateChange? mergeBackgroundMessagePayloads(
+  List<Map<String, dynamic>> payloads,
+) {
+  return payloads
+      .map((payload) {
+        try {
+          return FcmUtils.instance.convertFirebaseDataMessageToStateChange(payload);
+        } catch (e, st) {
+          logError(
+            'FcmMessageController::_handleBackgroundMessageBatch',
+            exception: e,
+            stackTrace: st,
+          );
+          return null;
+        }
+      })
+      .whereType<StateChange>()
+      .mergeAll();
 }
 
 class FcmSentryRuntime {
@@ -158,10 +243,7 @@ class FcmMessageController extends PushBaseController {
 
   void _handleBackgroundMessageBatch(List<Map<String, dynamic>> payloads) async {
     logTrace('FcmMessageController::_handleBackgroundMessageBatch():payloads = ${payloads.length}');
-    final stateChange = payloads
-        .map(FcmUtils.instance.convertFirebaseDataMessageToStateChange)
-        .whereType<StateChange>()
-        .mergeAll();
+    final stateChange = mergeBackgroundMessagePayloads(payloads);
     if (stateChange == null) {
       logTrace('FcmMessageController::_handleBackgroundMessageBatch(): stateChange is null');
       return;
@@ -545,7 +627,7 @@ class FcmMessageController extends PushBaseController {
     required StateChange stateChange,
     Session? session
   }) {
-    // T-03: delegated entries are dropped. T-09 turns includeDelegated on with the toggle.
+    // Delegated entries are dropped until the delegation toggle turns includeDelegated on.
     final filter = StateChangeAccountFilter(personalAccountId: accountId);
     for (final changedAccountId in filter.accountsToProcess(stateChange)) {
       final mapTypeState = stateChange.getMapTypeState(changedAccountId);

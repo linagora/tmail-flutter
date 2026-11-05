@@ -115,6 +115,12 @@ void main() {
         expect(
           syncs
               .singleWhere((action) => action.accountId == owner)
+              .updateDeliveryAndNotifications,
+          isFalse,
+        );
+        expect(
+          syncs
+              .singleWhere((action) => action.accountId == owner)
               .storeOfflineBodies,
           isFalse,
         );
