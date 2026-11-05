@@ -40,6 +40,18 @@ void main() {
       );
     });
 
+    test('Should keep a partial slot out of the bar', () {
+      expect(
+        ComposerOverflowActionBar.visibleCount(
+          maxWidth: 80 + 44 + 43,
+          actionCount: 5,
+          slotWidth: 44,
+          reservedWidth: 80,
+        ),
+        1,
+      );
+    });
+
     test('Should show every action when the width is unbounded', () {
       expect(
         ComposerOverflowActionBar.visibleCount(
