@@ -57,6 +57,11 @@ class TestBase {
       ),
       framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive,
       ($) async {
+        // Profile builds drop text sent to client -1, so the mock input must own the connection.
+        if (!kDebugMode) {
+          $.tester.testTextInput.register();
+          addTearDown($.tester.testTextInput.unregister);
+        }
         try {
           final scenario = scenarioBuilder($, createRobotFactory($));
           await setupTest(scenario, envOverrides: envOverrides);

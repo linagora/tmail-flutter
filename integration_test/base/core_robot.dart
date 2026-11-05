@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:patrol/patrol.dart';
@@ -28,5 +29,7 @@ abstract class CoreRobot {
       timeout: TestTimeouts.short,
       reason: 'Keyboard was not hidden',
     );
+    // Profile builds need the mock input back before the next enterText.
+    if (!kDebugMode) $.tester.testTextInput.register();
   }
 }

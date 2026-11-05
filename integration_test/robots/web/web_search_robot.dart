@@ -101,7 +101,13 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
     // the "Showing results for:" InkWell unreliable to tap. Pressing Enter on the
     // focused search field triggers onSubmitted → _invokeSearchEmailAction which
     // commits the search and sets isSearchEmailRunning = true.
-    await $.platformAutomator.web.pressKeyCombo(keys: ['Enter']);
+    // Profile builds keep the mock text input registered, which swallows the browser's Enter.
+    if ($.tester.testTextInput.isRegistered) {
+      await $.tester.testTextInput.receiveAction(TextInputAction.done);
+    } else {
+      await $.platformAutomator.web.pressKeyCombo(keys: ['Enter']);
+    }
+    await $.pump();
   }
 
   bool get _isResponsiveSearchLayout =>
