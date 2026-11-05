@@ -20,10 +20,10 @@ class GetEmailChangesToPushNotificationInteractor {
     Session session,
     AccountId accountId,
     UserName userName,
-    jmap.State currentState,
-    {
+    jmap.State currentState, {
       Properties? propertiesCreated,
-      Properties? propertiesUpdated
+      Properties? propertiesUpdated,
+      jmap.State? deliveryState,
     }
   ) async* {
     try {
@@ -43,7 +43,12 @@ class GetEmailChangesToPushNotificationInteractor {
         ?.map((email) => email.toPresentationEmail())
         .toList() ?? [];
 
-      yield Right<Failure, Success>(GetEmailChangesToPushNotificationSuccess(accountId, userName, presentationEmailList));
+      yield Right<Failure, Success>(GetEmailChangesToPushNotificationSuccess(
+        accountId,
+        userName,
+        presentationEmailList,
+        deliveryState: deliveryState,
+      ));
     } catch (e) {
       yield Left<Failure, Success>(GetEmailChangesToPushNotificationFailure(e));
     }

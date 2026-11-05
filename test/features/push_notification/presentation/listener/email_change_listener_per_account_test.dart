@@ -10,6 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -71,18 +72,19 @@ class _RecordingGetEmailChangesInteractor
     extends GetEmailChangesToPushNotificationInteractor {
   _RecordingGetEmailChangesInteractor() : super(_UnusedFcmRepository());
 
-  final calls = <(AccountId, UserName, jmap.State)>[];
+  final calls = <(Session, AccountId, UserName, jmap.State, jmap.State?)>[];
 
   @override
   Stream<Either<Failure, Success>> execute(
-    session,
+    Session session,
     AccountId accountId,
     UserName userName,
     jmap.State currentState, {
     propertiesCreated,
     propertiesUpdated,
+    jmap.State? deliveryState,
   }) {
-    calls.add((accountId, userName, currentState));
+    calls.add((session, accountId, userName, currentState, deliveryState));
     return const Stream.empty();
   }
 }
@@ -106,7 +108,7 @@ class _RecordingGetMailboxesInteractor
   final calls = <AccountId>[];
 
   @override
-  Stream<Either<Failure, Success>> execute(session, AccountId accountId) {
+  Stream<Either<Failure, Success>> execute(Session session, AccountId accountId) {
     calls.add(accountId);
     return const Stream.empty();
   }
@@ -118,6 +120,7 @@ void main() {
   final userA = UserName('user-a@example.com');
   final userB = UserName('user-b@example.com');
   final session = SessionFixtures.aliceSession;
+  final sessionB = SessionFixtures.aliceSessionWithAICapability;
   final newStateA = jmap.State('new-a');
   final newStateB = jmap.State('new-b');
   final storedStateA = jmap.State('stored-a');
@@ -154,6 +157,7 @@ void main() {
       storeEmailDeliveryStateInteractor: store,
       getEmailChangesToPushNotificationInteractor: getChanges,
       getMailboxesNotPutNotificationsInteractor: getMailboxes,
+      dashBoardController: viewRefreshes,
       presentLocalPush: ({
         required UserName userName,
         required List<PresentationEmail> emailList,
@@ -181,7 +185,7 @@ void main() {
         PushNotificationAction(
           TypeName.emailDelivery,
           newStateB,
-          session,
+          sessionB,
           accountB,
           userB,
         ),
@@ -197,8 +201,8 @@ void main() {
       );
 
       expect(getChanges.calls, [
-        (accountA, userA, storedStateA),
-        (accountB, userB, storedStateB),
+        (session, accountA, userA, storedStateA, newStateA),
+        (sessionB, accountB, userB, storedStateB, newStateB),
       ]);
 
       listener.handleSuccessViewState(
@@ -270,9 +274,105 @@ void main() {
   );
 
   test(
+    'a second pending email list is kept until the mailbox lookup consumes both',
+    () {
+      final first = emailWithId('email-1');
+      final second = emailWithId('email-2');
+
+      listener.dispatchActions([
+        PushNotificationAction(
+          TypeName.emailDelivery,
+          newStateA,
+          session,
+          accountA,
+          userA,
+        ),
+      ]);
+      listener.handleSuccessViewState(
+        GetStoredEmailDeliveryStateSuccess(storedStateA, accountA, userA),
+      );
+      listener.handleSuccessViewState(
+        GetEmailChangesToPushNotificationSuccess(
+          accountA,
+          userA,
+          [first],
+          deliveryState: newStateA,
+        ),
+      );
+      listener.handleSuccessViewState(
+        GetEmailChangesToPushNotificationSuccess(
+          accountA,
+          userA,
+          [second],
+          deliveryState: newStateA,
+        ),
+      );
+
+      listener.handleSuccessViewState(
+        GetMailboxesNotPutNotificationsSuccess(const [], accountA, userA),
+      );
+
+      expect(pushed, hasLength(1));
+      expect(
+        pushed.single.$2.map((email) => email.id).toList(),
+        [first.id, second.id],
+      );
+    },
+  );
+
+  test(
+    'an older query does not store a delivery state a newer push already replaced',
+    () {
+      final newerState = jmap.State('new-a2');
+
+      listener.dispatchActions([
+        PushNotificationAction(
+          TypeName.emailDelivery,
+          newStateA,
+          session,
+          accountA,
+          userA,
+        ),
+      ]);
+      listener.handleSuccessViewState(
+        GetStoredEmailDeliveryStateSuccess(storedStateA, accountA, userA),
+      );
+      listener.dispatchActions([
+        PushNotificationAction(
+          TypeName.emailDelivery,
+          newerState,
+          session,
+          accountA,
+          userA,
+        ),
+      ]);
+
+      listener.handleSuccessViewState(
+        GetEmailChangesToPushNotificationSuccess(
+          accountA,
+          userA,
+          const [],
+          deliveryState: newStateA,
+        ),
+      );
+      expect(store.calls, isEmpty);
+
+      listener.handleSuccessViewState(
+        GetEmailChangesToPushNotificationSuccess(
+          accountA,
+          userA,
+          const [],
+          deliveryState: newerState,
+        ),
+      );
+      expect(store.calls, [(accountA, userA, newerState)]);
+    },
+  );
+
+  test(
     'foreground sync with refreshView false does not refresh the view',
     () {
-      EmailChangeListener.instance.dispatchActions([
+      listener.dispatchActions([
         SynchronizeEmailOnForegroundAction(
           TypeName.emailType,
           newStateA,
@@ -291,7 +391,7 @@ void main() {
   test(
     'foreground sync with refreshView true refreshes the view once',
     () {
-      EmailChangeListener.instance.dispatchActions([
+      listener.dispatchActions([
         SynchronizeEmailOnForegroundAction(
           TypeName.emailType,
           newStateA,
@@ -301,6 +401,30 @@ void main() {
         ),
       ]);
 
+      expect(
+        viewRefreshes.actions,
+        [RefreshChangeEmailAction(newState: newStateA)],
+      );
+    },
+  );
+
+  test(
+    'foreground sync for a delegated account with delivery updates off stores no delivery state and refreshes the view once',
+    () {
+      listener.dispatchActions([
+        SynchronizeEmailOnForegroundAction(
+          TypeName.emailType,
+          newStateA,
+          accountA,
+          session,
+          refreshView: true,
+          storeOfflineBodies: false,
+          updateDeliveryAndNotifications: false,
+        ),
+      ]);
+
+      expect(store.calls, isEmpty);
+      expect(getChanges.calls, isEmpty);
       expect(
         viewRefreshes.actions,
         [RefreshChangeEmailAction(newState: newStateA)],

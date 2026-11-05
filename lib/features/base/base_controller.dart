@@ -458,7 +458,7 @@ abstract class BaseController extends GetxController
       }
       WebSocketInteractorBindings().dependencies();
       WebSocketController.instance.initialize(
-        personalAccountId: personalAccountId,
+        accountId: personalAccountId,
         session: session,
         isLabelAvailable: isLabelAvailable,
       );

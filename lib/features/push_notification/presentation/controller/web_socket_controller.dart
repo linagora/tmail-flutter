@@ -130,13 +130,11 @@ class WebSocketController extends PushBaseController {
   @override
   void initialize({
     AccountId? accountId,
-    AccountId? personalAccountId,
     Session? session,
     bool isLabelAvailable = false,
   }) {
-    final boundPersonalAccountId = personalAccountId ?? accountId;
-    log('WebSocketController::initialize:personalAccountId = ${boundPersonalAccountId?.asString}, isLabelAvailable = $isLabelAvailable');
-    super.initialize(accountId: boundPersonalAccountId, session: session);
+    log('WebSocketController::initialize:personalAccountId = ${accountId?.asString}, isLabelAvailable = $isLabelAvailable');
+    super.initialize(accountId: accountId, session: session);
     _isLabelAvailable = isLabelAvailable;
     _connectWebSocket();
     _listenToAppLifeCycle();

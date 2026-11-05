@@ -25,8 +25,9 @@
 		B14E10092F70220000000009 /* KeychainSharingSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5630C7A2B2CE148003CC0FD /* KeychainSharingSession.swift */; };
 		B14E100A2F7022000000000A /* TokenOidc.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E892B2E4BB700051FD0 /* TokenOidc.swift */; };
 		B14E100B2F7022000000000B /* AuthenticationType.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E872B2E4B3B00051FD0 /* AuthenticationType.swift */; };
-		B14E100C2F7022000000000C /* Email.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E6B2B2E208C00051FD0 /* Email.swift */; };
-		B14E100D2F7022000000000D /* EmailAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E7B2B2E35CC00051FD0 /* EmailAddress.swift */; };
+		C14E20022F71000000000002 /* EmailSorting.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14E20012F71000000000001 /* EmailSorting.swift */; };
+		C14E20032F71000000000003 /* EmailSorting.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14E20012F71000000000001 /* EmailSorting.swift */; };
+		B14E10112F70220000000011 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E7D87B2B38764F0009BB8A /* StringExtensions.swift */; };
 		B14E100E2F7022000000000E /* MultiAccountEmailFetchBatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14E10032F70220000000003 /* MultiAccountEmailFetchBatch.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
@@ -187,6 +188,7 @@
 		F52F993D27FD733C00346091 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		F52F993E27FD741100346091 /* TeamMailShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TeamMailShareExtension.entitlements; sourceTree = "<group>"; };
 		F53D1E652B2DE8B800051FD0 /* AlamofireService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlamofireService.swift; sourceTree = "<group>"; };
+		C14E20012F71000000000001 /* EmailSorting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSorting.swift; sourceTree = "<group>"; };
 		F53D1E672B2E1CAE00051FD0 /* JmapClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JmapClient.swift; sourceTree = "<group>"; };
 		A5E61D012BE410C000000001 /* EmailChangesProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailChangesProgress.swift; sourceTree = "<group>"; };
 		A5E61D042BE410C000000001 /* JmapClientChangesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JmapClientChangesTests.swift; sourceTree = "<group>"; };
@@ -371,6 +373,7 @@
 			children = (
 				F53D1E842B2E3F5B00051FD0 /* Utils */,
 				F53D1E672B2E1CAE00051FD0 /* JmapClient.swift */,
+				C14E20012F71000000000001 /* EmailSorting.swift */,
 				A5E61D012BE410C000000001 /* EmailChangesProgress.swift */,
 				F53D1E6A2B2E1F6700051FD0 /* Model */,
 			);
@@ -923,8 +926,8 @@
 				B14E10092F70220000000009 /* KeychainSharingSession.swift in Sources */,
 				B14E100A2F7022000000000A /* TokenOidc.swift in Sources */,
 				B14E100B2F7022000000000B /* AuthenticationType.swift in Sources */,
-				B14E100C2F7022000000000C /* Email.swift in Sources */,
-				B14E100D2F7022000000000D /* EmailAddress.swift in Sources */,
+				C14E20032F71000000000003 /* EmailSorting.swift in Sources */,
+				B14E10112F70220000000011 /* StringExtensions.swift in Sources */,
 				B14E100E2F7022000000000E /* MultiAccountEmailFetchBatch.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -959,6 +962,7 @@
 				F5630C852B2CF50C003CC0FD /* TypeName.swift in Sources */,
 				F5630C7B2B2CE148003CC0FD /* KeychainSharingSession.swift in Sources */,
 				F53D1E682B2E1CAE00051FD0 /* JmapClient.swift in Sources */,
+				C14E20022F71000000000002 /* EmailSorting.swift in Sources */,
 				A5E61D022BE410C000000001 /* EmailChangesProgress.swift in Sources */,
 				F5BBBF552B2EEF3D007930E1 /* BundleExtension.swift in Sources */,
 				F53D1E7C2B2E35CC00051FD0 /* EmailAddress.swift in Sources */,

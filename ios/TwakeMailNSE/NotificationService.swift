@@ -9,12 +9,16 @@ class NotificationService: UNNotificationServiceExtension {
 
     private var handler: ((UNNotificationContent) -> Void)?
     private var modifiedContent: UNMutableNotificationContent?
+    private var activeBatch: MultiAccountEmailFetchBatch?
+    private var fetchChainStopped = false
     
     private lazy var keychainController = KeychainController(service: .sessions,
                                                              accessGroup: InfoPlistReader.main.keychainAccessGroupIdentifier)
     
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         
+        fetchChainStopped = false
+        activeBatch = nil
         SentryManager.shared.configure(with: keychainController)
         SentryManager.shared.clearUser()
 
@@ -51,7 +55,16 @@ class NotificationService: UNNotificationServiceExtension {
     override func serviceExtensionTimeWillExpire() {
         // Called just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
-        SentryManager.shared.capture(message: "NSE: Service Extension Time Expired (Timeout)", flushTimeout: 0.3)
+        fetchChainStopped = true
+        if handler != nil {
+            SentryManager.shared.capture(message: "NSE: Service Extension Time Expired (Timeout)", flushTimeout: 0.3)
+        }
+        if activeBatch?.finishEarly() == true {
+            return
+        }
+        if handler == nil {
+            return
+        }
         self.showDefaultNotification(message: NSLocalizedString(self.newNotificationDefaultMessageKey, comment: "Localizable"))
         self.notify()
     }
@@ -80,6 +93,7 @@ class NotificationService: UNNotificationServiceExtension {
                 hadMissingDelivery: hadMissingDelivery
             )
         }
+        activeBatch = batch
         fetchNextAccount(
             accountIds: accountIds,
             mapStateChanges: mapStateChanges,
@@ -94,6 +108,10 @@ class NotificationService: UNNotificationServiceExtension {
         index: Int,
         batch: MultiAccountEmailFetchBatch
     ) {
+        guard !fetchChainStopped else {
+            batch.finishEarly()
+            return
+        }
         guard index < accountIds.count else { return }
 
         let accountId = accountIds[index]
@@ -175,6 +193,7 @@ class NotificationService: UNNotificationServiceExtension {
             isTWP: personalSession.isTWP,
             keychainAccountId: resolved.personalAccountId,
             onComplete: { result in
+                guard !self.fetchChainStopped else { return }
                 result.errors.forEach { SentryManager.shared.capture(error: $0) }
 
                 let bookmark = DeliveryBookmarkUpdate.resolve(
@@ -210,7 +229,7 @@ class NotificationService: UNNotificationServiceExtension {
         hadMissingDelivery: Bool
     ) {
         if !emails.isEmpty {
-            showListNotification(emails: emails)
+            showListNotification(emails: emailsSortedByReceivedAt(emails))
             return
         }
 
@@ -222,7 +241,7 @@ class NotificationService: UNNotificationServiceExtension {
             return notify()
         }
 
-        // HEAD: fetched but all blocked → notify() with original content, no default banner.
+        // Emails were fetched but every one is in a blocked mailbox, so the original push content is kept instead of the default banner.
         if sawFetchedEmails {
             showListNotification(emails: [])
             return
@@ -376,6 +395,8 @@ class NotificationService: UNNotificationServiceExtension {
     }
     
     private func cleanUp() {
+        fetchChainStopped = true
+        activeBatch = nil
         SentryManager.shared.clearUser()
         handler = nil
         modifiedContent = nil

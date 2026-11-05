@@ -3,7 +3,7 @@ import 'package:jmap_dart_client/jmap/push/state_change.dart';
 
 /// Which accounts of a [StateChange] the push layer may handle (ADR-0114 Sync).
 ///
-/// T-03 drops delegated accounts. T-06 / T-09 turn [includeDelegated] on when
+/// Delegated accounts are dropped. [includeDelegated] turns on when
 /// `delegationEnabledProvider` is true and the session still lists them.
 class StateChangeAccountFilter {
   final AccountId personalAccountId;
