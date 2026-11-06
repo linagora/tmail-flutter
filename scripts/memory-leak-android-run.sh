@@ -7,6 +7,8 @@ ANDROID_SERIAL=emulator-5554
 ANDROID_PACKAGE=com.linagora.android.teammail
 APP_APK=build/app/outputs/apk/profile/app-profile.apk
 TEST_APK=build/app/outputs/apk/androidTest/profile/app-profile-androidTest.apk
+# Must match testInstrumentationRunner in android/app/build.gradle.
+TEST_RUNNER=com.linagora.android.tmail.ActivityDrainingPatrolJUnitRunner
 # The instrumentation prints nothing when hung; the app's flutter logs show test progress.
 TEST_IDLE_LIMIT=240
 # Cap for an app that keeps logging while wedged; above the 12 min Dart test timeout.
@@ -54,7 +56,7 @@ run_android_test() {
         adb -s "$ANDROID_SERIAL" logcat -v time flutter:I '*:S' &
         local logcat_pid=$!
         adb -s "$ANDROID_SERIAL" shell am instrument -w -e tests_regex "$name" \
-            "$ANDROID_PACKAGE.test/pl.leancode.patrol.PatrolJUnitRunner" < /dev/null
+            "$ANDROID_PACKAGE.test/$TEST_RUNNER" < /dev/null
         kill "$logcat_pid" 2>/dev/null
     } 2>&1 | watch_android_test
     grep -q "^OK (1 test)" "$CI_LOGS/patrol-android.log"
