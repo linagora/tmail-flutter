@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-10-01T11:49:34.038239",
+  "@@last_modified": "2026-11-04T10:09:40.401067",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1576,6 +1576,24 @@
   },
   "cannotPreviewPdf": "Cannot preview PDF",
   "@cannotPreviewPdf": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pdfPasswordRequired": "Password-protected PDF",
+  "@pdfPasswordRequired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "incorrectPdfPassword": "Incorrect password, please try again",
+  "@incorrectPdfPassword": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pdfPasswordNotProvided": "This PDF is password-protected. You can still download it.",
+  "@pdfPasswordNotProvided": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -5762,24 +5780,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "pdfPasswordRequired": "Password-protected PDF",
-  "@pdfPasswordRequired": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "incorrectPdfPassword": "Incorrect password, please try again",
-  "@incorrectPdfPassword": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "pdfPasswordNotProvided": "This PDF is password-protected. You can still download it.",
-  "@pdfPasswordNotProvided": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "linkTypeNotAllowed": "This type of link is not allowed!",
   "@linkTypeNotAllowed": {
     "type": "text",
@@ -5809,5 +5809,15 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "openingOwnerMailbox": "Opening {name}'s mailbox…",
+  "@openingOwnerMailbox": {
+    "type": "text",
+    "placeholders_order": [
+      "name"
+    ],
+    "placeholders": {
+      "name": {}
+    }
   }
 }

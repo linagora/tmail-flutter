@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:core/data/network/download/download_manager.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,7 +17,9 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:rxdart/rxdart.dart' hide Rx;
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
@@ -35,6 +38,8 @@ import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_emails_by_ids_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_mail_shortcut_actions_extension.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/model/mail_view_shortcut_action_view_event.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_manager.dart';
 
@@ -203,6 +208,111 @@ void main() {
       async.elapse(const Duration(seconds: 1));
 
       verify(getThreadByIdInteractor.execute(any, any, any, any, any, isSentMailbox: false)).called(1);
+    });
+  });
+
+  group('opened-email shortcuts during a switch:', () {
+    test('a focus move away from the opened email still lets a pending shortcut fire', () {
+      fakeAsync((async) {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+        final controller = ThreadDetailController(
+          MockGetThreadByIdInteractor(),
+          MockGetEmailsByIdsInteractor(),
+          MockMarkAsEmailReadInteractor(),
+          MockMarkAsStarEmailInteractor(),
+          MockPrintEmailInteractor(),
+          MockGetEmailContentInteractor(),
+          MockMarkAsStarMultipleEmailInteractor(),
+          MockMarkAsMultipleEmailReadInteractor(),
+          MockAddALabelToAThreadInteractor(),
+          MockRemoveALabelFromAThreadInteractor(),
+        );
+        final fired = <MailViewShortcutActionViewEvent>[];
+        controller.shortcutActionEventController =
+            StreamController<MailViewShortcutActionViewEvent>.broadcast();
+        controller.shortcutActionEventSubscription = controller
+            .shortcutActionEventController!
+            .stream
+            .debounceTime(const Duration(milliseconds: 300))
+            .listen(fired.add);
+
+        controller.shortcutActionEventController!.add(
+          MailViewShortcutActionViewEvent(
+            EmailActionType.markAsRead,
+            PresentationEmail(id: EmailId(Id('email-1'))),
+          ),
+        );
+        controller.clearMailShortcutFocus();
+        async.elapse(const Duration(milliseconds: 300));
+
+        expect(fired, hasLength(1));
+      });
+    });
+
+    test('DropPendingMailViewShortcutsAction drops a pending shortcut and keeps later ones', () {
+      fakeAsync((async) {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+        final threadDetailUIAction = Rxn<ThreadDetailUIAction>();
+        final dashboard = Get.find<MailboxDashBoardController>() as MockMailboxDashBoardController;
+        when(dashboard.accountId).thenReturn(Rxn());
+        when(dashboard.selectedEmail).thenReturn(Rxn());
+        when(dashboard.threadDetailUIAction).thenReturn(threadDetailUIAction);
+        when(dashboard.emailUIAction).thenReturn(Rxn());
+        when(dashboard.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
+        when(dashboard.ownEmailAddress).thenReturn(RxString(DelegationFixtures.bobAddress));
+
+        final controller = ThreadDetailController(
+          MockGetThreadByIdInteractor(),
+          MockGetEmailsByIdsInteractor(),
+          MockMarkAsEmailReadInteractor(),
+          MockMarkAsStarEmailInteractor(),
+          MockPrintEmailInteractor(),
+          MockGetEmailContentInteractor(),
+          MockMarkAsStarMultipleEmailInteractor(),
+          MockMarkAsMultipleEmailReadInteractor(),
+          MockAddALabelToAThreadInteractor(),
+          MockRemoveALabelFromAThreadInteractor(),
+        )..onInit();
+        controller.onKeyboardShortcutInit();
+
+        final fired = <MailViewShortcutActionViewEvent>[];
+        controller.shortcutActionEventSubscription?.cancel();
+        controller.shortcutActionEventSubscription = controller
+            .shortcutActionEventController!
+            .stream
+            .debounceTime(const Duration(milliseconds: 300))
+            .listen(fired.add);
+
+        controller.shortcutActionEventController!.add(
+          MailViewShortcutActionViewEvent(
+            EmailActionType.markAsRead,
+            PresentationEmail(id: EmailId(Id('email-1'))),
+          ),
+        );
+        threadDetailUIAction.value = DropPendingMailViewShortcutsAction();
+        async.elapse(Duration.zero);
+        async.elapse(const Duration(milliseconds: 300));
+        expect(fired, isEmpty);
+
+        // Production re-listened on a fresh broadcast stream after the drop.
+        final later = <MailViewShortcutActionViewEvent>[];
+        final laterSub = controller.shortcutActionEventController!.stream
+            .debounceTime(const Duration(milliseconds: 300))
+            .listen(later.add);
+        controller.shortcutActionEventController!.add(
+          MailViewShortcutActionViewEvent(
+            EmailActionType.markAsRead,
+            PresentationEmail(id: EmailId(Id('email-2'))),
+          ),
+        );
+        async.elapse(const Duration(milliseconds: 300));
+        laterSub.cancel();
+        expect(later, hasLength(1));
+      });
     });
   });
 }

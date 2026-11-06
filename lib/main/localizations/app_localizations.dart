@@ -6160,4 +6160,12 @@ class AppLocalizations {
       name: 'domainActivationPendingMessage',
     );
   }
+
+  String openingOwnerMailbox(String name) {
+    return Intl.message(
+      "Opening $name's mailbox…",
+      name: 'openingOwnerMailbox',
+      args: [name],
+    );
+  }
 }
