@@ -73,6 +73,8 @@ pipeline {
 
     environment {
         FLUTTER_VERSION = '3.47.9'
+        FLUTTER_ROOT    = "/opt/flutter-${FLUTTER_VERSION}"
+        PATH            = "${FLUTTER_ROOT}/bin:${env.PATH}"
         WEB_WORKERS = '4'
         PR_IMAGE_CPU_QUOTA = '100000'
     }

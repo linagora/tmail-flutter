@@ -11,6 +11,8 @@ pipeline {
 
     environment {
         FLUTTER_VERSION = '3.47.9'
+        FLUTTER_ROOT    = "/opt/flutter-${FLUTTER_VERSION}"
+        PATH            = "${FLUTTER_ROOT}/bin:${env.PATH}"
         FIREBASE_PROJECT_ID = 'twake-195010'
         RESULTS_BUCKET="flutter-test-results"
         PREBUILD_SKIP_WEB = '1'
