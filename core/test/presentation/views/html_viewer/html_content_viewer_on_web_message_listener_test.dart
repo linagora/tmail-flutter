@@ -45,6 +45,11 @@ void main() {
     'SHOULD NOT forward a link click posted by another iframe with its view id',
     _expectOtherIframeForgeryIgnored,
   );
+
+  testWidgets(
+    'SHOULD measure height after a later load handler grows the body',
+    _expectHeightMeasuredAfterLaterLoadGrowth,
+  );
 }
 
 const _ownUrl = 'https://own.example/a';
@@ -142,13 +147,106 @@ Future<void> _expectOtherIframeForgeryIgnored(WidgetTester tester) async {
   final viewId =
       await _pumpViewer(tester, contentHtml: _plainLink, onClick: clicks.add);
 
+  final expected = _forgedMessages(viewId).map(jsonEncode).toSet();
+  final seen = <String>{};
+  final subscription = html.window.onMessage.listen((event) {
+    final data = event.data;
+    if (data is String && expected.contains(data)) seen.add(data);
+  });
+  addTearDown(subscription.cancel);
+
   final attacker = html.IFrameElement()
     ..setAttribute('sandbox', 'allow-scripts')
     ..srcdoc = '<script>for (const m of ${jsonEncode(_forgedMessages(viewId))}) '
         'window.parent.postMessage(JSON.stringify(m), "*");</script>';
   html.document.body!.append(attacker);
   addTearDown(attacker.remove);
-  await tester.runAsync(() => Future<void>.delayed(_settle));
+  await tester.runAsync(() async {
+    final deadline = DateTime.now().add(_wait);
+    while (seen.length < expected.length) {
+      if (DateTime.now().isAfter(deadline)) {
+        throw TimeoutException(
+          'attacker frame never delivered forged messages',
+          _wait,
+        );
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+    }
+  });
 
   expect(clicks, isEmpty);
+}
+
+/// A short body, then a load listener registered after the viewer's own
+/// (from DOMContentLoaded, once the bridge script has subscribed) that
+/// appends a tall block. Height must be read after that listener.
+const _growsAfterViewerLoadHandler = '''
+<p>short</p>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    window.addEventListener('load', function () {
+      var tall = document.createElement('div');
+      tall.style.height = '800px';
+      document.body.appendChild(tall);
+      window.parent.postMessage('grew', '*');
+    });
+  });
+</script>
+''';
+
+Future<void> _expectHeightMeasuredAfterLaterLoadGrowth(
+  WidgetTester tester,
+) async {
+  final received = <String>[];
+  final subscription = html.window.onMessage.listen((event) {
+    final data = event.data;
+    if (data is String) received.add(data);
+  });
+  addTearDown(subscription.cancel);
+
+  await tester.pumpWidget(
+    const Directionality(
+      textDirection: TextDirection.ltr,
+      child: SizedBox(
+        width: 400,
+        height: 1200,
+        child: HtmlContentViewerOnWeb(
+          contentHtml: _growsAfterViewerLoadHandler,
+          widthContent: 390,
+          autoAdjustHeight: true,
+        ),
+      ),
+    ),
+  );
+  await tester.pump();
+  await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+  await tester.pump();
+  _attachFrameToDocument(tester);
+
+  await tester.runAsync(() async {
+    final deadline = DateTime.now().add(_wait);
+    while (true) {
+      final grewAt = received.indexOf('grew');
+      final heightAt = received.lastIndexWhere(
+        (message) => message.contains('"type":"toDart: htmlHeight"'),
+      );
+      if (grewAt != -1 && heightAt > grewAt) return;
+      if (DateTime.now().isAfter(deadline)) {
+        if (grewAt == -1) {
+          throw TimeoutException(
+            'timed out waiting for htmlHeight measured after the body grew',
+            _wait,
+          );
+        }
+        return;
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+    }
+  });
+
+  final heightMessage = received.lastWhere(
+    (message) => message.contains('"type":"toDart: htmlHeight"'),
+  );
+  final height = (jsonDecode(heightMessage) as Map<String, dynamic>)['height'];
+  expect(height, greaterThan(500));
 }
