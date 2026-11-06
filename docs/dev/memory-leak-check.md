@@ -39,6 +39,7 @@ Web totals exclude the CanvasKit WebAssembly heap.
 - Web: `bash scripts/memory-leak-check.sh web`
 - Android: boot an emulator (`emulator-5554`), then `bash scripts/memory-leak-check.sh android` (needs Bash 4+; on macOS install it with `brew install bash`)
 - Output goes to `$CI_LOGS` (default `./ci-logs`), report is printed at the end.
+- The report starts with a summary table. ⚠️ and a `::warning::` annotation mark a passing rule at ≥ 75% of its limit.
 
 Useful variables:
 

@@ -18,3 +18,4 @@ class RuleResult:
     values: tuple
     limit: str
     passed: bool
+    limit_bytes: int = 0

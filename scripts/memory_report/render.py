@@ -3,8 +3,12 @@ COVERAGE = """Class sizes are *self* sizes: a buffer held by a controller shows 
 Android class rows cover the Dart heap only; R5 (RSS) covers native memory.
 Web totals exclude the CanvasKit WebAssembly heap (wasmBytes shown per case).
 """
-RULE_HEADER = ["| Rule | Before | After | Δ | Limit | ✅/❌ |",
-               "| --- | ---: | ---: | ---: | --- | --- |"]
+MIB = 1024 * 1024
+NEAR_LIMIT = 0.75
+RULE_HEADER = ["| Rule | Before | After | Δ | Limit | % of limit | ✅/❌ |",
+               "| --- | ---: | ---: | ---: | --- | ---: | --- |"]
+SUMMARY_HEADER = ["| Flow | Platform | Result | Biggest growth |", "| --- | --- | --- | --- |"]
+RULE_NAMES = {"R2": "buffer", "R3": "heap", "R4": "class", "R5": "RSS"}
 CLASS_HEADER = ["", "| Class | tmail | Δcount | Δbytes | before | after |",
                 "| --- | --- | ---: | ---: | ---: | ---: |"]
 
@@ -13,10 +17,71 @@ def escape(value):
     return str(value).replace("|", "&#124;").replace("\n", "<br>").replace("\r", "")
 
 
+def mb(value):
+    return f"{value / MIB:.2f} MB"
+
+
+def signed_mb(value):
+    return f"{'+' if value >= 0 else '-'}{abs(value) / MIB:.2f} MB"
+
+
+def growth(result):
+    old, new = result.values
+    return new - old
+
+
+def limit_share(result):
+    return growth(result) / result.limit_bytes if result.limit_bytes else 0
+
+
+def is_near_limit(result):
+    return result.passed and limit_share(result) >= NEAR_LIMIT
+
+
+def mark(result):
+    if not result.passed:
+        return '❌'
+    return '⚠️' if is_near_limit(result) else '✅'
+
+
 def rule_row(result):
     old, new = result.values
-    mark = '✅' if result.passed else '❌'
-    return f"| {escape(result.label)} | {old} | {new} | {new - old} | {result.limit} | {mark} |"
+    if not result.limit_bytes:
+        return f"| {escape(result.label)} | {old} | {new} | {new - old} | {result.limit} |  | {mark(result)} |"
+    operator = result.limit.split()[0]
+    return (f"| {escape(result.label)} | {mb(old)} | {mb(new)} | {signed_mb(new - old)} | "
+            f"{operator} {mb(result.limit_bytes)} | {limit_share(result):.0%} | {mark(result)} |")
+
+
+def biggest_growth(results):
+    sized = [result for result in results if result.limit_bytes]
+    if not sized:
+        return ""
+    worst = max(sized, key=limit_share)
+    name = RULE_NAMES.get(worst.label.split()[0], worst.label)
+    return f"{escape(name)} {signed_mb(growth(worst))} ({limit_share(worst):.0%} of {mb(worst.limit_bytes)})"
+
+
+def verdict(results):
+    failed = sum(not result.passed for result in results)
+    if failed:
+        return f"❌ {failed} rule(s) failed"
+    return "⚠️ Pass, near limit" if any(is_near_limit(result) for result in results) else "✅ No leak"
+
+
+def summary_row(title, platform, result, growth_text=""):
+    return f"| {escape(title)} | {platform} | {result} | {growth_text} |"
+
+
+def one_line(value):
+    return str(value).replace("\r", " ").replace("\n", " ")
+
+
+def near_limit_warnings(case, platform, results):
+    # Workflow commands are line-based; a newline would cut the annotation.
+    return [f"::warning::{one_line(result.label)} {one_line(case)} ({platform}): {signed_mb(growth(result))} = "
+            f"{limit_share(result):.0%} of {mb(result.limit_bytes)}. Near the limit: may fail without a real leak."
+            for result in results if is_near_limit(result)]
 
 
 def contributor_row(row, platform):

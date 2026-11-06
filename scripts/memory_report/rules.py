@@ -35,7 +35,7 @@ def baseline_rules(context):
 def metric_rule(context, label, metric, setting):
     limit = context.config[setting]
     old, new = context.before[metric], context.after[metric]
-    return RuleResult(label, (old, new), f"< {limit}", new - old < limit)
+    return RuleResult(label, (old, new), f"< {limit}", new - old < limit, limit)
 
 
 def contributor_order(row):
@@ -58,7 +58,7 @@ def tmail_rule(context, contributors):
     old, new = (worst[1][1], worst[2][1]) if worst else (0, 0)
     limit = context.config["maxTmailClassGrowthBytes"]
     label = "R4" + (f" {worst[0][0]}" if worst else "")
-    return RuleResult(label, (old, new), f"<= {limit}", new - old <= limit)
+    return RuleResult(label, (old, new), f"<= {limit}", new - old <= limit, limit)
 
 
 def compare(context):
@@ -69,4 +69,4 @@ def compare(context):
     results.append(tmail_rule(context, contributors))
     if context.platform == "android":
         results.append(metric_rule(context, "R5", "rss", "maxRssGrowthBytes"))
-    return comparison_table(context, results, contributors, failed_names), sum(not result.passed for result in results)
+    return comparison_table(context, results, contributors, failed_names), results

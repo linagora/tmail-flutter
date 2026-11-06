@@ -4,8 +4,8 @@
   "webBufferKeys": ["(string)", "(concatenated string)", "(sliced string)", "system / JSArrayBufferData"],
   "defaults": {"maxTotalGrowthBytes": 4194304, "maxBufferGrowthBytes": 2621440, "maxTmailClassGrowthBytes": 1048576, "maxRssGrowthBytes": 31457280, "topN": 20},
   "cases": {
-    "open_heavy_inline_email": {"mustReturnToBaseline": ["SingleEmailController"]},
-    "two_composers_heavy_send": {"mustReturnToBaseline": ["ComposerController"]},
-    "identity_heavy_inline": {"mustReturnToBaseline": ["IdentityCreatorController"]}
+    "open_heavy_inline_email": {"title": "Open email with 5 MB inline image", "mustReturnToBaseline": ["SingleEmailController"]},
+    "two_composers_heavy_send": {"title": "Send 2 composers with heavy image", "mustReturnToBaseline": ["ComposerController"]},
+    "identity_heavy_inline": {"title": "Identity with heavy signature image", "mustReturnToBaseline": ["IdentityCreatorController"]}
   }
 }

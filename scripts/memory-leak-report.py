@@ -24,7 +24,7 @@ def generate_report(args):
     try:
         return build_report(args.samples_dir, load_json(args.rules), args.repo_root)
     except (OSError, ValueError, KeyError, TypeError) as error:
-        return COVERAGE + f"\nInvalid rules: {escape(error)}\n\nRESULT: FAIL (1 failed)\n", 1
+        return COVERAGE + f"\nInvalid rules: {escape(error)}\n\nRESULT: FAIL (1 failed)\n", 1, []
 
 
 def append_summary(markdown):
@@ -35,7 +35,9 @@ def append_summary(markdown):
 
 
 def main(argv=None):
-    markdown, failures = generate_report(arguments(argv))
+    markdown, failures, warnings = generate_report(arguments(argv))
+    for warning in warnings:
+        print(warning)
     print(markdown, end="")
     append_summary(markdown)
     return 0 if os.environ.get("MEMORY_REPORT_ONLY") == "1" else int(bool(failures))

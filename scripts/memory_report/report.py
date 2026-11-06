@@ -3,7 +3,8 @@ from .android import android_sample
 from .classes import scan_classes
 from .data import load_json
 from .model import Comparison
-from .render import COVERAGE, escape
+from .render import (COVERAGE, SUMMARY_HEADER, biggest_growth, escape, near_limit_warnings,
+                     summary_row, verdict)
 from .rules import compare
 from .snapshot import web_sample
 
@@ -15,17 +16,24 @@ class Report:
     def __init__(self, samples, rules, root):
         self.samples, self.rules, self.root = samples, rules, root
         self.names = None
-        self.lines, self.failures = [COVERAGE], 0
+        self.lines, self.failures = [], 0
+        self.summary, self.warnings = [], []
 
-    def compare_samples(self, paths, platform, config):
+    def fail_summary(self, case, platform, config, reason):
+        self.summary.append(summary_row(config.get("title", case), platform, f"❌ {reason}"))
+
+    def compare_samples(self, case, paths, platform, config):
         if platform == "web" and self.names is None:
             self.names = scan_classes(self.root)
         loader = PLATFORMS[platform][1]
         before, after = (loader(load_json(path), self.rules) for path in paths)
         context = Comparison(before, after, platform, self.rules, config, self.names or set())
-        tables, failed = compare(context)
+        tables, results = compare(context)
+        row = summary_row(config.get("title", case), platform, verdict(results), biggest_growth(results))
+        self.summary.append(row)
+        self.warnings.extend(near_limit_warnings(case, platform, results))
         self.lines.extend(tables + [""])
-        self.failures += failed
+        self.failures += sum(not result.passed for result in results)
 
     def sample_paths(self, case, platform):
         suffix = PLATFORMS[platform][0]
@@ -40,16 +48,18 @@ class Report:
         if not all(exists):
             label = "before" if not exists[0] else "after"
             self.lines.append(f"missing {label} sample\n")
+            self.fail_summary(case, platform, config, f"missing {label} sample")
             self.failures += 1
             return True
-        self.validated_comparison(paths, platform, config)
+        self.validated_comparison(case, paths, platform, config)
         return True
 
-    def validated_comparison(self, paths, platform, config):
+    def validated_comparison(self, case, paths, platform, config):
         try:
-            self.compare_samples(paths, platform, config)
+            self.compare_samples(case, paths, platform, config)
         except (OSError, ValueError, KeyError, TypeError, IndexError) as error:
             self.lines.append(f"invalid sample: {escape(error)}\n")
+            self.fail_summary(case, platform, config, "invalid sample")
             self.failures += 1
 
     def case_report(self, case, overrides):
@@ -57,13 +67,15 @@ class Report:
         found = [self.platform_report(case, platform, config) for platform in PLATFORMS]
         if not any(found):
             self.lines.extend([f"### {escape(case)}\n", "no sample\n"])
+            self.fail_summary(case, "-", config, "no sample")
             self.failures += 1
 
     def build(self):
         for case, overrides in self.rules["cases"].items():
             self.case_report(case, overrides)
-        self.lines.append(f"RESULT: FAIL ({self.failures} failed)" if self.failures else "RESULT: PASS")
-        return "\n".join(self.lines) + "\n", self.failures
+        result = f"RESULT: FAIL ({self.failures} failed)" if self.failures else "RESULT: PASS"
+        lines = SUMMARY_HEADER + self.summary + ["", COVERAGE] + self.lines + [result]
+        return "\n".join(lines) + "\n", self.failures, self.warnings
 
 
 def build_report(samples, rules, root):
