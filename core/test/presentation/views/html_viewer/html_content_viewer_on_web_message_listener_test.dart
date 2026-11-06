@@ -50,6 +50,16 @@ void main() {
     'SHOULD measure height after a later load handler grows the body',
     _expectHeightMeasuredAfterLaterLoadGrowth,
   );
+
+  testWidgets(
+    'SHOULD size a signature preview WHEN its frame is laid out after load',
+    _expectSignatureSizedAfterLateLayout,
+  );
+
+  testWidgets(
+    'SHOULD report a zero height WHEN the signature is empty',
+    _expectEmptySignatureReportsZero,
+  );
 }
 
 const _ownUrl = 'https://own.example/a';
@@ -100,12 +110,7 @@ Future<String> _pumpViewer(
 /// The test embedder leaves the platform view out of the document. Layout is
 /// flushed so the frame has a viewport when its load handlers measure it.
 void _attachFrameToDocument(WidgetTester tester) {
-  final platformViewId = tester
-      .widget<PlatformViewSurface>(find.byType(PlatformViewSurface))
-      .controller
-      .viewId;
-  final iframe = ui_web.platformViewRegistry.getViewById(platformViewId)
-      as html.IFrameElement;
+  final iframe = _viewerFrame(tester);
   if (iframe.isConnected != true) {
     html.document.body!.append(iframe);
     iframe.getBoundingClientRect();
@@ -249,4 +254,114 @@ Future<void> _expectHeightMeasuredAfterLaterLoadGrowth(
   });
 
   expect(height, greaterThan(500));
+}
+
+/// Pumps a viewer configured like the signature preview and returns its view id.
+Future<String> _pumpSignatureViewer(
+  WidgetTester tester,
+  String contentHtml,
+) async {
+  await tester.pumpWidget(
+    Directionality(
+      textDirection: TextDirection.ltr,
+      child: SizedBox(
+        width: 400,
+        height: 400,
+        child: HtmlContentViewerOnWeb(
+          contentHtml: contentHtml,
+          widthContent: 390,
+          contentPadding: 0,
+          htmlContentMinHeight: 0,
+          offsetHtmlContentHeight: 0,
+          autoAdjustHeight: true,
+        ),
+      ),
+    ),
+  );
+  await tester.pump();
+  await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+  await tester.pump();
+  final document =
+      tester.widget<HtmlIframeWidget>(find.byType(HtmlIframeWidget)).srcdoc!;
+  return RegExp(r'"view": "([^"]+)"').firstMatch(document)!.group(1)!;
+}
+
+html.IFrameElement _viewerFrame(WidgetTester tester) {
+  final platformViewId = tester
+      .widget<PlatformViewSurface>(find.byType(PlatformViewSurface))
+      .controller
+      .viewId;
+  return ui_web.platformViewRegistry.getViewById(platformViewId)
+      as html.IFrameElement;
+}
+
+/// Records the bridge messages of [viewId] only.
+List<Map<String, dynamic>> _recordViewMessages(String viewId) {
+  final received = <Map<String, dynamic>>[];
+  final subscription = html.window.onMessage.listen((event) {
+    final data = event.data;
+    if (data is! String || !data.startsWith('{')) return;
+    final message = jsonDecode(data) as Map<String, dynamic>;
+    if (message['view'] == viewId) received.add(message);
+  });
+  addTearDown(subscription.cancel);
+  return received;
+}
+
+Iterable<num> _heights(List<Map<String, dynamic>> received) => received
+    .where((m) => m['type'] == 'toDart: htmlHeight')
+    .map((m) => m['height'] as num);
+
+Future<void> _waitFor(bool Function() condition, String reason) async {
+  final deadline = DateTime.now().add(_wait);
+  while (!condition()) {
+    if (DateTime.now().isAfter(deadline)) throw TimeoutException(reason, _wait);
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+  }
+}
+
+bool _loaded(List<Map<String, dynamic>> received) =>
+    received.any((m) => m['message'] == 'iframeHasBeenLoaded');
+
+/// A frame with no viewport at load must still be sized once it is laid out.
+Future<void> _expectSignatureSizedAfterLateLayout(WidgetTester tester) async {
+  final viewId = await _pumpSignatureViewer(tester, '<p>signature</p>');
+  final received = _recordViewMessages(viewId);
+  final iframe = _viewerFrame(tester);
+  iframe.style.display = 'none';
+  html.document.body!.append(iframe);
+  addTearDown(iframe.remove);
+
+  await tester.runAsync(() async {
+    await _waitFor(() => _loaded(received), 'frame never loaded');
+    // Lets the load-time measurement run while the frame has no viewport.
+    await Future<void>.delayed(_settle);
+    expect(_heights(received).where((h) => h > 0), isEmpty);
+    iframe.style.display = 'block';
+    iframe.getBoundingClientRect();
+    await _waitFor(
+      () => _heights(received).any((h) => h > 0),
+      'no positive htmlHeight after layout',
+    );
+  });
+  await tester.pump();
+
+  expect(_heights(received).last, greaterThan(0));
+  final height =
+      tester.widget<HtmlIframeWidget>(find.byType(HtmlIframeWidget)).height;
+  expect(double.parse(height!), greaterThan(0));
+}
+
+/// An empty signature in a laid-out frame still reports, so loading ends.
+Future<void> _expectEmptySignatureReportsZero(WidgetTester tester) async {
+  final viewId = await _pumpSignatureViewer(tester, '');
+  final received = _recordViewMessages(viewId);
+  _attachFrameToDocument(tester);
+
+  await tester.runAsync(() => _waitFor(
+        () => _heights(received).isNotEmpty,
+        'empty signature never reported a height',
+      ));
+
+  expect(_heights(received).first, 0);
 }

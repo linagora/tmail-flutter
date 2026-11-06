@@ -199,6 +199,7 @@ class HtmlViewerDocumentBuilder {
           window.removeEventListener('message', handleMessage, false);
           window.removeEventListener('load', handleOnLoad);
           ${_webStopResizeObserver(input)}
+          if (_layoutObserver) _layoutObserver.disconnect();
         });
       
 ${_webHandleMessage()}
@@ -214,16 +215,31 @@ ${_webHandleMessage()}
         function handleOnLoad() {
           window.parent.postMessage(JSON.stringify({"view": "$viewId", "message": "$iframeOnLoadMessage"}), "*");
           // Measure after the other load handlers (image normalization) have run.
-          setTimeout(function() {
-            window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toDart: htmlHeight", "height": document.body.scrollHeight}), "*");
-            window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toDart: htmlWidth", "width": document.body.scrollWidth}), "*");
-          }, 0);
-          
+          setTimeout(reportSize, 0);
+
           ${_webListenLinks(input, _WebLinkScript.hyperLink)}
-          
+
           ${_webListenLinks(input, _WebLinkScript.mailto)}
-          
+
           ${!input.autoAdjustHeight ? 'resizeObserver.observe(document.body);' : ''}
+        }
+
+        var _layoutObserver;
+        function reportSize() {
+          // A frame without a viewport measures 0; wait for layout, not for content.
+          if (document.documentElement.clientWidth === 0) {
+            if (_layoutObserver) return;
+            _layoutObserver = new ResizeObserver(function() {
+              if (document.documentElement.clientWidth === 0) return;
+              _layoutObserver.disconnect();
+              _layoutObserver = undefined;
+              reportSize();
+            });
+            _layoutObserver.observe(document.documentElement);
+            return;
+          }
+          window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toDart: htmlHeight", "height": document.body.scrollHeight}), "*");
+          window.parent.postMessage(JSON.stringify({"view": "$viewId", "type": "toDart: htmlWidth", "width": document.body.scrollWidth}), "*");
         }
       </script>
     ''';
