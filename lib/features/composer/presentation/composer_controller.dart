@@ -162,6 +162,9 @@ class ComposerController extends BaseController
         EditorViewMixin,
         AiScribeMixin
     implements BeforeReconnectHandler {
+  // Throwaway: proves the memory check goes red on a leak.
+  static final List<Object> leakedForMemoryCheck = [];
+
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final networkConnectionController = Get.find<NetworkConnectionController>();
   final _beforeReconnectManager = Get.find<BeforeReconnectManager>();
@@ -388,6 +391,9 @@ class ComposerController extends BaseController
 
   @override
   void onClose() {
+    leakedForMemoryCheck
+      ..add(this)
+      ..add(Uint8List(5 * 1024 * 1024)..fillRange(0, 5 * 1024 * 1024, 1));
     _reloadCacheAction = null;
     _webBodyCache.setTrusted(null);
     savedActionType = null;
