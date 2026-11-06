@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_email_cac
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_url_cache_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_username_interactor.dart';
 import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_session_arguments.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/home/presentation/extensions/handle_web_finger_to_get_token_extension.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/logout_exception.dart';
@@ -85,7 +86,10 @@ class HomeController extends ReloadableController {
   void handleReloaded(Session session) {
     pushAndPopAll(
       RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
-      arguments: session);
+      arguments: DashboardSessionArguments(
+        session: session,
+        fromCache: sessionLoadedFromCache,
+      ));
   }
 
   @override

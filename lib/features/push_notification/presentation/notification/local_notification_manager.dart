@@ -185,6 +185,23 @@ class LocalNotificationManager {
     return '$email ($name)';
   }
 
+  Future<void> removeMatchingNotifications(
+    bool Function(String? payload, String? groupKey) matches,
+  ) async {
+    if (!PlatformInfo.isMobile) return;
+    try {
+      final active = await _localNotificationsPlugin.getActiveNotifications();
+      for (final notification in active) {
+        if (!matches(notification.payload, notification.groupKey)) continue;
+        final id = notification.id;
+        if (id == null) continue;
+        await _localNotificationsPlugin.cancel(id);
+      }
+    } catch (error) {
+      logWarning('LocalNotificationManager::removeMatchingNotifications: $error');
+    }
+  }
+
   Future<void> removeNotification(String id) async {
     try {
       await _localNotificationsPlugin.cancel(id.hashCode);

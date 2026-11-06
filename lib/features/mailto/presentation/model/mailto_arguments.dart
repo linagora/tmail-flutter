@@ -8,10 +8,17 @@ class MailtoArguments extends RouterArguments {
   final Session session;
   final String? mailtoUri;
 
-  MailtoArguments({required this.session, this.mailtoUri});
+  /// True when [session] is the stored session after a failed read.
+  final bool sessionFromCache;
+
+  MailtoArguments({
+    required this.session,
+    this.mailtoUri,
+    this.sessionFromCache = false,
+  });
 
   Map<String, dynamic> toMapRouter() => RouteUtils.parseMapMailtoFromUri(mailtoUri);
 
   @override
-  List<Object?> get props => [session, mailtoUri];
+  List<Object?> get props => [session, mailtoUri, sessionFromCache];
 }

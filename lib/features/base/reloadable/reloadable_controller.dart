@@ -36,6 +36,11 @@ abstract class ReloadableController extends BaseController {
   final UpdateAccountCacheInteractor _updateAccountCacheInteractor = Get.find<UpdateAccountCacheInteractor>();
   final GetOidcUserInfoInteractor _getOidcUserInfoInteractor = Get.find<GetOidcUserInfoInteractor>();
 
+  bool _sessionLoadedFromCache = false;
+
+  /// True when the session just applied was read from cache (ADR-0114 offline start).
+  bool get sessionLoadedFromCache => _sessionLoadedFromCache;
+
   @override
   void handleFailureViewState(Failure failure) {
     if (isNotSignedIn(failure)) {
@@ -68,6 +73,7 @@ abstract class ReloadableController extends BaseController {
       _handleGetStoredTokenOidcSuccess(success);
     } else if (success is GetSessionSuccess) {
       log('$runtimeType::handleSuccessViewState:Success = ${success.runtimeType}');
+      _sessionLoadedFromCache = success.fromCache;
       updateAccountCache(
         session: success.session,
         baseUrl: dynamicUrlInterceptors.baseUrl);

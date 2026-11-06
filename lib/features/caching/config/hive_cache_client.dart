@@ -5,6 +5,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
+import 'package:tmail_ui_user/features/caching/utils/cache_account_key.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 
 abstract class HiveCacheClient<T> {
@@ -411,6 +412,39 @@ abstract class HiveCacheClient<T> {
         return boxItem.deleteAll(listKeys);
       }
     });
+  }
+
+  Future<Set<String>> accountIdsForUser(String userName) async {
+    final accountIds = <String>{};
+    for (final key in await encodedKeys()) {
+      final decoded = CacheAccountKey.tryDecode(key);
+      if (decoded == null) continue;
+      final accountId = CacheAccountKey.accountIdOf(decoded, userName);
+      if (accountId != null) accountIds.add(accountId);
+    }
+    return accountIds;
+  }
+
+  Future<void> deleteKeysForAccount(String accountId, String userName) async {
+    final matching = <String>[];
+    for (final key in await encodedKeys()) {
+      final decoded = CacheAccountKey.tryDecode(key);
+      if (decoded == null) continue;
+      if (CacheAccountKey.belongsTo(
+        decoded: decoded,
+        accountId: accountId,
+        userName: userName,
+      )) {
+        matching.add(key);
+      }
+    }
+    if (matching.isEmpty) return;
+    await deleteMultipleItem(matching);
+  }
+
+  Future<List<String>> encodedKeys({bool isolated = true}) async {
+    final items = await getMapItems(isolated: isolated);
+    return items.keys.toList();
   }
 
   Future<void> closeBox({bool isolated = true}) async {

@@ -59,6 +59,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/compose_actio
 import 'package:tmail_ui_user/features/composer/presentation/widgets/domain_activation_pending_dialog.dart';
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/owner_email_addresses.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/cleanup_ended_delegations.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
@@ -166,6 +167,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/sentry_config_linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/sentry_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_session_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/refresh_action_view_event.dart';
@@ -502,6 +504,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _handleComposerCache() async {
+    // The shown account only. A delegated snapshot waits until that mailbox is shown.
     if (activeAccountId == null || sessionCurrent == null) return;
 
     consumeShownAccountState(
@@ -883,8 +886,13 @@ class MailboxDashBoardController extends ReloadableController
   void _handleArguments() {
     final arguments = Get.arguments;
     log('MailboxDashBoardController::_handleArguments():Arguments = ${arguments.runtimeType}');
-    if (arguments is Session) {
-      _handleSessionFromArguments(arguments);
+    if (arguments is DashboardSessionArguments) {
+      _handleSessionFromArguments(
+        arguments.session,
+        fromCache: arguments.fromCache,
+      );
+    } else if (arguments is Session) {
+      _handleSessionFromArguments(arguments, fromCache: false);
     } else if (arguments is MailtoArguments) {
       _handleMailtoURL(arguments);
     } else if (PlatformInfo.isWeb) {
@@ -922,9 +930,13 @@ class MailboxDashBoardController extends ReloadableController
     }
   }
 
-  void _handleSessionFromArguments(Session session) {
+  void _handleSessionFromArguments(
+    Session session, {
+    required bool fromCache,
+  }) {
     log('MailboxDashBoardController::_handleSession:');
     _setUpComponentsFromSession(session);
+    unawaited(_cleanupEndedDelegations(session, fromCache: fromCache));
 
     unawaited(checkAndRestoreComposerOnMobile());
 
@@ -932,6 +944,24 @@ class MailboxDashBoardController extends ReloadableController
       _handleClickNotificationOnAndroidInTerminated();
     } else {
       dispatchRoute(DashboardRoutes.thread);
+    }
+  }
+
+  Future<void> _cleanupEndedDelegations(
+    Session session, {
+    required bool fromCache,
+  }) async {
+    try {
+      final lost = await cleanupEndedDelegations(session, fromCache: fromCache);
+      if (lost <= 0) return;
+      final context = currentOverlayContext ?? currentContext;
+      if (context == null || !context.mounted) return;
+      appToast.showToastWarningMessage(
+        context,
+        AppLocalizations.of(context).endedDelegationLostItems(lost),
+      );
+    } catch (error) {
+      logWarning('MailboxDashBoardController::_cleanupEndedDelegations: $error');
     }
   }
 
@@ -989,7 +1019,10 @@ class MailboxDashBoardController extends ReloadableController
   void _handleMailtoURL(MailtoArguments arguments) {
     log('MailboxDashBoardController::_handleMailtoURL:');
     routerParameters.value = arguments.toMapRouter();
-    _handleSessionFromArguments(arguments.session);
+    _handleSessionFromArguments(
+      arguments.session,
+      fromCache: arguments.sessionFromCache,
+    );
   }
 
   void _getVacationResponse() {
@@ -1995,6 +2028,7 @@ class MailboxDashBoardController extends ReloadableController
 
     _getRouteParameters();
     _setUpComponentsFromSession(session);
+    unawaited(_cleanupEndedDelegations(session, fromCache: sessionLoadedFromCache));
     // Same shown accountId does not notify watchShown — refresh identities and web composer cache.
     _getAllIdentities();
     if (PlatformInfo.isWeb) {
