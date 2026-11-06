@@ -80,6 +80,12 @@ pipeline {
     }
 
     stages {
+        stage('Check Flutter version') {
+            steps {
+                sh './scripts/ci-assert-flutter-version.sh'
+            }
+        }
+
         stage('Run web tests and build PR image') {
             steps {
                 script {
