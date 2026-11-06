@@ -87,11 +87,14 @@ if [ "$PLATFORM" = web ]; then
     # Fixed debug port: the sidecar finds the app tab over CDP.
     WEB_BROWSER_ARGS='["--disable-web-security","--disable-dev-shm-usage","--disable-gpu","--lang=en-US","--accept-lang=en-US,en","--remote-debugging-port=9333"]'
     # Timeouts nest: Dart test 12 min < Playwright 15 min.
+    # Same flutter wrapper as the other web suites: CanvasKit is served locally, and the app logs reach $CI_LOGS.
     patrol test -v --profile --tags=memory --device=chrome --web-port=3000 \
         --web-headless=true --web-server-timeout=300 --web-timeout=900000 \
         --web-global-timeout=3300000 --web-browser-args="$WEB_BROWSER_ARGS" \
-        ${EXTRA_PATROL_ARGS[@]+"${EXTRA_PATROL_ARGS[@]}"} "${DART_DEFINES[@]}"
-    PATROL_EXIT=$?
+        --show-flutter-logs --flutter-command="bash scripts/ci-flutter-verbose-run.sh" \
+        ${EXTRA_PATROL_ARGS[@]+"${EXTRA_PATROL_ARGS[@]}"} "${DART_DEFINES[@]}" 2>&1 \
+        | tee "$CI_LOGS/patrol-web.log"
+    PATROL_EXIT=${PIPESTATUS[0]}
 else
     run_android_tests
 fi
