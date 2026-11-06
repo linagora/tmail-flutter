@@ -46,8 +46,9 @@ ENV CSP_FRAME_SRC=""
 ENV CSP_SCRIPT_SRC=""
 ENV CSP_CONNECT_SRC=""
 ENV CSP_IMG_SRC=""
+ENV CSP_REPORT_URI=""
 ENV NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx
 ENV NGINX_ENVSUBST_FILTER=^CSP_
-RUN /docker-entrypoint.d/20-envsubst-on-templates.sh && nginx -t
+RUN /docker-entrypoint.d/20-envsubst-on-templates.sh && /docker-entrypoint.d/25-csp-report-uri.sh && nginx -t
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
