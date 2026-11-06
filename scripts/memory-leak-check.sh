@@ -59,7 +59,9 @@ cd "$ROOT_DIR" || exit 1
 # Every test leases a fresh slot; the second slot boots while a test runs.
 POOL_SIZE=2
 POOL_URLS=$(python3 -c 'import sys; print(",".join(f"http://{sys.argv[1]}:{8100 + i}" for i in range(int(sys.argv[2]))))' "$HOST" "$POOL_SIZE") || exit 1
+# Four heavy sends (about 14 MB each) stay in bob's Sent folder; the default quota is 50 MB.
 RESET_PORT="$RESET_PORT" POOL_SIZE="$POOL_SIZE" POOL_URLS="$POOL_URLS" POOL_LOG_DIR="$CI_LOGS" WORK_DIR="$ROOT_DIR" \
+    POOL_BOB_QUOTA_BYTES=200000000 \
     python3 scripts/backend-reset-server.py > "$CI_LOGS/backend-reset-server.log" 2>&1 &
 RESET_SERVER_PID=$!
 node --experimental-websocket scripts/ci-memory-sidecar.js > "$CI_LOGS/memory-sidecar.log" 2>&1 &
