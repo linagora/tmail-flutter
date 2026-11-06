@@ -57,7 +57,7 @@ void main() {
         (server) => server.reply(200, {
           'username': 'alice@twake.app',
           'accounts': {
-            'a1': {'name': 'alice@twake.app', 'isPersonal': true},
+            'a1': {'name': 'personal@twake.app', 'isPersonal': true},
             'a2': {'name': 'team@twake.app', 'isPersonal': false},
           },
         }),

@@ -526,6 +526,34 @@ void main() {
     );
 
     testWidgets(
+      'SHOULD NOT ask WHEN the caller closed while a successful verification was pending',
+      (tester) async {
+        final verifier = _PendingAccountVerifier();
+        Get.replace<DeepLinkAccountVerifier>(verifier);
+        await pumpApp(tester);
+        var isCallerActive = true;
+        var failed = false;
+
+        deepLinkManager.handleOpenAppDeepLinks(
+          openAppDeepLinkData: _link(),
+          isSignedIn: false,
+          isCallerActive: () => isCallerActive,
+          onFailureCallback: () => failed = true,
+        );
+        await tester.pump();
+
+        isCallerActive = false;
+        verifier.succeed('alice@twake.app');
+        await tester.pumpAndSettle();
+        await tester.pump(const Duration(milliseconds: 300));
+
+        expect(signInDialog, findsNothing);
+        expect(interactor.calls, 0);
+        expect(failed, isFalse);
+      },
+    );
+
+    testWidgets(
       'SHOULD NOT run the failure callback WHEN the caller closed '
       'while a failing verification was pending',
       (tester) async {
