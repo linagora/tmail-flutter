@@ -141,28 +141,24 @@ void main() {
   });
 
   group('ended delegation notifications', () {
-    test('matches a payload of this user that names the account or one of its emails', () {
+    test('keeps the username group and a missing group key', () {
       expect(notificationGroupIsThisUser(DelegationFixtures.aliceAddress, DelegationFixtures.aliceAddress), isTrue);
       expect(notificationGroupIsThisUser(null, DelegationFixtures.aliceAddress), isTrue);
-      expect(
-        payloadNamesAccountOrEmail('{"accountId":"${gone.id.value}"}', gone.id.value, const {}),
-        isTrue,
-      );
-      expect(
-        payloadNamesAccountOrEmail('{"emailId":"email-1"}', gone.id.value, const {'email-1'}),
-        isTrue,
-      );
     });
 
-    test('keeps a notification of another user, of mine, or one without a payload', () {
+    test('payloadNamesEmail matches only an emailId contained in the set', () {
+      const emailIds = {'email-1'};
+      expect(payloadNamesEmail('{"emailId":"email-10"}', emailIds), isFalse);
+      expect(payloadNamesEmail('{"emailId":"email-1"}', emailIds), isTrue);
+      expect(payloadNamesEmail('{"newState":"email-1"}', emailIds), isFalse);
+      expect(payloadNamesEmail('not json', emailIds), isFalse);
+      expect(payloadNamesEmail(null, emailIds), isFalse);
+      expect(payloadNamesEmail('', emailIds), isFalse);
+    });
+
+    test('keeps a notification of another user', () {
       expect(notificationGroupIsThisUser('other@domain.tld', DelegationFixtures.aliceAddress), isFalse);
       expect(notificationGroupIsThisUser(DelegationFixtures.aliceAddress, ''), isFalse);
-      expect(
-        payloadNamesAccountOrEmail('{"emailId":"mine-email"}', gone.id.value, const {'email-1'}),
-        isFalse,
-      );
-      expect(payloadNamesAccountOrEmail(null, gone.id.value, const {'email-1'}), isFalse);
-      expect(payloadNamesAccountOrEmail('{"emailId":"email-1"}', '', const {'email-1'}), isFalse);
     });
   });
 }

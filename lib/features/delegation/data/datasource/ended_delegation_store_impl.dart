@@ -4,9 +4,9 @@ import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:meta/meta.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/extensions/account_id_extensions.dart';
-import 'package:model/extensions/email_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/clients/composer_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/email_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/fcm_cache_client.dart';
@@ -15,14 +15,12 @@ import 'package:tmail_ui_user/features/caching/clients/new_email_hive_cache_clie
 import 'package:tmail_ui_user/features/caching/clients/opened_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/sending_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/config/hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_account_key.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/composer_snapshot_policy.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/ended_delegation_cleanup.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/ended_delegation_notification.dart';
 import 'package:tmail_ui_user/features/delegation/domain/repository/ended_delegation_store.dart';
-import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
-import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
-import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/detailed_email_hive_cache.dart';
 import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
@@ -41,9 +39,6 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
   final SendingEmailHiveCacheClient _sendingEmailCacheClient;
   final FcmCacheClient _fcmCacheClient;
   final ComposerHiveCacheClient? _composerHiveCacheClient;
-  final EmailCacheManager _emailCacheManager;
-  final NewEmailCacheManager _newEmailCacheManager;
-  final OpenedEmailCacheManager _openedEmailCacheManager;
   final KeychainSharingManager _keychainSharingManager;
   final FileUtils _fileUtils;
 
@@ -55,9 +50,6 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
     required OpenedEmailHiveCacheClient openedEmailCacheClient,
     required SendingEmailHiveCacheClient sendingEmailCacheClient,
     required FcmCacheClient fcmCacheClient,
-    required EmailCacheManager emailCacheManager,
-    required NewEmailCacheManager newEmailCacheManager,
-    required OpenedEmailCacheManager openedEmailCacheManager,
     required KeychainSharingManager keychainSharingManager,
     required FileUtils fileUtils,
     ComposerHiveCacheClient? composerHiveCacheClient,
@@ -69,9 +61,6 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
         _sendingEmailCacheClient = sendingEmailCacheClient,
         _fcmCacheClient = fcmCacheClient,
         _composerHiveCacheClient = composerHiveCacheClient,
-        _emailCacheManager = emailCacheManager,
-        _newEmailCacheManager = newEmailCacheManager,
-        _openedEmailCacheManager = openedEmailCacheManager,
         _keychainSharingManager = keychainSharingManager,
         _fileUtils = fileUtils;
 
@@ -96,10 +85,12 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
       _KeyedBox(
         _newEmailCacheClient.accountIdsForUser,
         _newEmailCacheClient.deleteKeysForAccount,
+        keepsContentPaths: true,
       ),
       _KeyedBox(
         _openedEmailCacheClient.accountIdsForUser,
         _openedEmailCacheClient.deleteKeysForAccount,
+        keepsContentPaths: true,
       ),
       _KeyedBox(
         _sendingEmailCacheClient.accountIdsForUser,
@@ -158,16 +149,37 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
     // hive rows are not removed and then forgotten.
     await _removeKeychainItem(personalAccountId, accountId);
     final emailIds = await _emailIds(userName, accountId);
-    await _deleteContentFiles(userName, accountId);
+    final contentFailures = await _deleteContentFiles(userName, accountId);
+    final boxFailures = await _deleteAccountBoxes(
+      accountId.asString,
+      userName.value,
+      keepContentRows: contentFailures > 0,
+    );
+    await _deleteComposerSnapshots(userName, accountId);
+    await _removeNotifications(userName, emailIds);
+    final failedSteps = contentFailures + boxFailures;
+    if (failedSteps > 0) {
+      throw StateError('EndedDelegationStoreImpl::delete: $failedSteps failed');
+    }
+  }
+
+  /// Opened and new rows stay when a file step failed so the next scan can retry.
+  Future<int> _deleteAccountBoxes(
+    String accountId,
+    String userName, {
+    required bool keepContentRows,
+  }) async {
+    var failed = 0;
     for (final box in _boxes) {
+      if (keepContentRows && box.keepsContentPaths) continue;
       try {
-        await box.delete(accountId.asString, userName.value);
+        await box.delete(accountId, userName);
       } catch (error) {
-        logWarning('EndedDelegationStoreImpl::delete: $error');
+        failed++;
+        logWarning('EndedDelegationStoreImpl::delete: ${error.runtimeType}');
       }
     }
-    await _deleteComposerSnapshots(userName, accountId);
-    await _removeNotifications(userName, accountId, emailIds);
+    return failed;
   }
 
   @override
@@ -232,66 +244,98 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
     return count;
   }
 
+  /// Ids named when this account's notifications are removed.
+  @visibleForTesting
+  Future<Set<String>> notificationEmailIds(
+    UserName userName,
+    AccountId accountId,
+  ) => _emailIds(userName, accountId);
+
   Future<Set<String>> _emailIds(UserName userName, AccountId accountId) async {
     final emailIds = <String>{};
     try {
-      final emails = await _emailCacheManager.getAllEmail(accountId, userName);
-      for (final email in emails) {
-        final id = email.id?.asString;
-        if (id != null && id.isNotEmpty) emailIds.add(id);
-      }
+      final rows = await _rowsOf(
+        _emailCacheClient,
+        accountId.asString,
+        userName.value,
+      );
+      emailIds.addAll(rows.map((row) => row.id).where((id) => id.isNotEmpty));
     } catch (error) {
-      logWarning('EndedDelegationStoreImpl::_emailIds: list $error');
+      logWarning('EndedDelegationStoreImpl::_emailIds: list ${error.runtimeType}');
     }
     emailIds.addAll(await _contentEmailIds(
-      () => _openedEmailCacheManager.getAllDetailedEmails(accountId, userName),
+      _openedEmailCacheClient,
+      userName,
+      accountId,
     ));
     emailIds.addAll(await _contentEmailIds(
-      () => _newEmailCacheManager.getAllDetailedEmails(accountId, userName),
+      _newEmailCacheClient,
+      userName,
+      accountId,
     ));
     return emailIds;
   }
 
   Future<Set<String>> _contentEmailIds(
-    Future<List<DetailedEmailHiveCache>> Function() read,
+    HiveCacheClient<DetailedEmailHiveCache> client,
+    UserName userName,
+    AccountId accountId,
   ) async {
     try {
-      final emails = await read();
+      final emails = await _rowsOf(client, accountId.asString, userName.value);
       return emails.map((email) => email.emailId).where((id) => id.isNotEmpty).toSet();
     } catch (error) {
-      logWarning('EndedDelegationStoreImpl::_contentEmailIds: $error');
+      logWarning('EndedDelegationStoreImpl::_contentEmailIds: ${error.runtimeType}');
       return {};
     }
   }
 
-  Future<void> _deleteContentFiles(UserName userName, AccountId accountId) async {
-    await _deleteContentPaths(
-      () => _openedEmailCacheManager.getAllDetailedEmails(accountId, userName),
-    );
-    await _deleteContentPaths(
-      () => _newEmailCacheManager.getAllDetailedEmails(accountId, userName),
-    );
-  }
-
-  Future<void> _deleteContentPaths(
-    Future<List<DetailedEmailHiveCache>> Function() read,
-  ) async {
-    late final List<DetailedEmailHiveCache> emails;
-    try {
-      emails = await read();
-    } catch (error) {
-      logWarning('EndedDelegationStoreImpl::_deleteContentPaths: $error');
-      return;
+  Future<int> _deleteContentFiles(UserName userName, AccountId accountId) async {
+    var failed = 0;
+    final rows = <DetailedEmailHiveCache>[];
+    for (final client in [_openedEmailCacheClient, _newEmailCacheClient]) {
+      try {
+        rows.addAll(await _rowsOf(client, accountId.asString, userName.value));
+      } catch (error) {
+        failed++;
+        logWarning('EndedDelegationStoreImpl::_deleteContentFiles: ${error.runtimeType}');
+      }
     }
-    for (final email in emails) {
+    for (final email in rows) {
       final path = email.emailContentPath;
       if (path == null || path.isEmpty) continue;
       try {
         await _fileUtils.deleteFile(path);
       } catch (error) {
-        logWarning('EndedDelegationStoreImpl::_deleteContentPaths: file $error');
+        failed++;
+        logWarning(
+          'EndedDelegationStoreImpl::_deleteContentFiles: file ${error.runtimeType}',
+        );
       }
     }
+    return failed;
+  }
+
+  Future<List<T>> _rowsOf<T>(
+    HiveCacheClient<T> client,
+    String accountId,
+    String userName,
+  ) async {
+    final items = await client.getMapItems();
+    final rows = <T>[];
+    for (final entry in items.entries) {
+      final decoded = CacheAccountKey.tryDecode(entry.key);
+      if (decoded == null) continue;
+      if (!CacheAccountKey.belongsTo(
+        decoded: decoded,
+        accountId: accountId,
+        userName: userName,
+      )) {
+        continue;
+      }
+      rows.add(entry.value);
+    }
+    return rows;
   }
 
   Future<void> _deleteComposerSnapshots(
@@ -376,7 +420,6 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
 
   Future<void> _removeNotifications(
     UserName userName,
-    AccountId accountId,
     Set<String> emailIds,
   ) async {
     if (!PlatformInfo.isMobile) return;
@@ -384,7 +427,7 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
       await LocalNotificationManager.instance.removeMatchingNotifications(
         (payload, groupKey) =>
             notificationGroupIsThisUser(groupKey, userName.value) &&
-            payloadNamesAccountOrEmail(payload, accountId.asString, emailIds),
+            payloadNamesEmail(payload, emailIds),
       );
     } catch (error) {
       logWarning('EndedDelegationStoreImpl::_removeNotifications: $error');
@@ -395,6 +438,11 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
 class _KeyedBox {
   final Future<Set<String>> Function(String userName) accountIds;
   final Future<void> Function(String accountId, String userName) delete;
+  final bool keepsContentPaths;
 
-  _KeyedBox(this.accountIds, this.delete);
+  _KeyedBox(
+    this.accountIds,
+    this.delete, {
+    this.keepsContentPaths = false,
+  });
 }

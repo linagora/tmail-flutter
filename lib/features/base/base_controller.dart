@@ -562,6 +562,10 @@ abstract class BaseController extends GetxController
     required Function({Object? exception}) onFailureCallback,
   }) async {
     try {
+      await removeDelegatedComposerSnapshotsOnLogout(
+        session: session,
+        personalAccountId: accountId,
+      );
       _isFcmEnabled = _isFcmActivated(session, accountId);
 
       if (isAuthenticatedWithOidc) {

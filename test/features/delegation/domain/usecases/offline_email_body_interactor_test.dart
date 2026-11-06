@@ -43,14 +43,17 @@ void main() {
       final repository = _Emails();
       final interactor = StoreListNewEmailInteractor(repository);
 
+      final message = Email(id: email.emailId);
       final delegatedEvents = await interactor.execute(session, delegated, {}).toList();
-      final mineEvents = await interactor.execute(session, mine, {}).toList();
+      final mineEvents = await interactor.execute(session, mine, {message: email}).toList();
 
       expect(delegatedEvents, isEmpty);
       expect(
         mineEvents.map((event) => event.fold((_) => null, (success) => success)),
         contains(isA<StoreNewEmailSuccess>()),
       );
+      expect(repository.storedAccounts, [mine]);
+      expect(repository.storedNewAccounts, [mine]);
     });
 
     test('new-email download runs for mine and skips a delegated account', () async {
@@ -79,12 +82,36 @@ void main() {
         contains(isA<GetNewReceiveEmailFromNotificationFailure>()),
       );
     });
+
+    test('new-email download returns the ids when the stored state differs', () async {
+      final downloaded = EmailId(Id('email-9'));
+      final emails = _Emails()..emailState = jmap.State('state-1');
+      final pushes = _Pushes()..downloaded = [downloaded];
+      final interactor = GetNewReceiveEmailFromNotificationInteractor(pushes, emails);
+
+      final events = await interactor.execute(
+        session: session,
+        accountId: mine,
+        userName: session.username,
+        newState: jmap.State('state-2'),
+      ).toList();
+
+      expect(pushes.downloads, 1);
+      final success = events
+          .map((event) => event.fold((failure) => failure, (value) => value))
+          .whereType<GetNewReceiveEmailFromNotificationSuccess>()
+          .single;
+      expect(success.emailIds, [downloaded]);
+    });
   });
 }
 
 class _Emails extends Fake implements EmailRepository {
   int stores = 0;
   int stateReads = 0;
+  jmap.State? emailState;
+  final storedAccounts = <AccountId>[];
+  final storedNewAccounts = <AccountId>[];
 
   @override
   Future<void> storeOpenedEmail(
@@ -93,6 +120,20 @@ class _Emails extends Fake implements EmailRepository {
     DetailedEmail detailedEmail,
   ) async {
     stores++;
+  }
+
+  @override
+  Future<void> storeEmail(Session session, AccountId accountId, Email email) async {
+    storedAccounts.add(accountId);
+  }
+
+  @override
+  Future<void> storeDetailedNewEmail(
+    Session session,
+    AccountId accountId,
+    DetailedEmail detailedEmail,
+  ) async {
+    storedNewAccounts.add(accountId);
   }
 
   @override
@@ -105,14 +146,24 @@ class _Emails extends Fake implements EmailRepository {
   }
 
   @override
+  Future<DetailedEmail> getStoredNewEmail(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+  ) async {
+    throw StateError('missing');
+  }
+
+  @override
   Future<jmap.State?> getEmailState(Session session, AccountId accountId) async {
     stateReads++;
-    return null;
+    return emailState;
   }
 }
 
 class _Pushes extends Fake implements FCMRepository {
   int downloads = 0;
+  List<EmailId> downloaded = const [];
 
   @override
   Future<List<EmailId>> getNewReceiveEmailFromNotification(
@@ -121,6 +172,6 @@ class _Pushes extends Fake implements FCMRepository {
     jmap.State currentState,
   ) async {
     downloads++;
-    return const [];
+    return downloaded;
   }
 }

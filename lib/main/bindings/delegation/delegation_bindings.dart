@@ -13,10 +13,7 @@ import 'package:tmail_ui_user/features/delegation/domain/repository/ended_delega
 import 'package:tmail_ui_user/features/delegation/domain/usecases/cleanup_ended_delegations_interactor.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/riverpod_active_account_source.dart';
-import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
-import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_manager.dart';
-import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
 class DelegationBindings extends Bindings {
@@ -45,9 +42,6 @@ EndedDelegationStore _endedDelegationStore() {
     openedEmailCacheClient: Get.find<OpenedEmailHiveCacheClient>(),
     sendingEmailCacheClient: Get.find<SendingEmailHiveCacheClient>(),
     fcmCacheClient: Get.find<FcmCacheClient>(),
-    emailCacheManager: Get.find<EmailCacheManager>(),
-    newEmailCacheManager: Get.find<NewEmailCacheManager>(),
-    openedEmailCacheManager: Get.find<OpenedEmailCacheManager>(),
     keychainSharingManager: Get.find<KeychainSharingManager>(),
     fileUtils: Get.find<FileUtils>(),
     composerHiveCacheClient: Get.isRegistered<ComposerHiveCacheClient>()
