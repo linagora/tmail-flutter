@@ -1,9 +1,11 @@
 import 'package:core/utils/file_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/extensions/session_extension.dart';
+import 'package:tmail_ui_user/features/caching/clients/composer_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/email_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/fcm_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/mailbox_cache_client.dart';
@@ -216,10 +218,137 @@ void main() {
       expect(rig.files.deleted, ['new-body']);
     });
   });
+
+  group('EndedDelegationStoreImpl session storage', () {
+    const user = 'alice';
+    const delegated = 'delegated';
+    const personal = 'personal';
+    final userName = UserName(user);
+    final delegatedId = AccountId(Id(delegated));
+    final personalId = AccountId(Id(personal));
+
+    tearDown(() => PlatformInfo.isTestingForWeb = false);
+
+    test(
+      'web keys throw: removeDelegatedComposerSnapshots still deletes hive snapshots',
+      () async {
+        PlatformInfo.isTestingForWeb = true;
+        final composer = _ComposerBox(_Memory());
+        final hiveKey = TupleKey('c1', delegated, user).encodeKey;
+        composer.memory.items[hiveKey] = 'draft';
+        final session = _Session()..failRead = true;
+        final rig = _Rig(composer: composer, session: session);
+
+        expect((await rig.store.describe(userName, delegatedId)).draftCount, 1);
+        await rig.store.removeDelegatedComposerSnapshots(
+          userName: userName,
+          personalAccountId: personalId,
+        );
+
+        expect(composer.memory.items.containsKey(hiveKey), isFalse);
+      },
+    );
+
+    test('web keys throw: storedAccountIds returns hive ids', () async {
+      PlatformInfo.isTestingForWeb = true;
+      final rig = _Rig(session: _Session()..failRead = true);
+      rig.mailbox.memory.items[TupleKey('box', delegated, user).encodeKey] =
+          null;
+
+      final ids = await rig.store.storedAccountIds(
+        userName: userName,
+        personalAccountId: personalId,
+      );
+
+      expect(ids, {delegatedId});
+    });
+
+    test(
+      'web storage removes the delegated composer key and keeps the personal one',
+      () async {
+        PlatformInfo.isTestingForWeb = true;
+        final session = _Session();
+        const delegatedKey = 'reopenComposerBrowser|$delegated|$user|c1';
+        const personalKey = 'reopenComposerBrowser|$personal|$user|c2';
+        session.items[delegatedKey] = 'draft';
+        session.items[personalKey] = 'draft';
+        final rig = _Rig(session: session);
+
+        await rig.store.removeDelegatedComposerSnapshots(
+          userName: userName,
+          personalAccountId: personalId,
+        );
+
+        expect(session.items.containsKey(delegatedKey), isFalse);
+        expect(session.items.containsKey(personalKey), isTrue);
+      },
+    );
+
+    test(
+      'web storage keeps a composer key whose username only extends this one',
+      () async {
+        PlatformInfo.isTestingForWeb = true;
+        final session = _Session();
+        const otherKey = 'reopenComposerBrowser|acc|user2|c1';
+        session.items[otherKey] = 'draft';
+        final rig = _Rig(session: session);
+
+        await rig.store.removeDelegatedComposerSnapshots(
+          userName: UserName('user'),
+          personalAccountId: personalId,
+        );
+
+        expect(session.items.containsKey(otherKey), isTrue);
+        expect(session.removes, 0);
+      },
+    );
+
+    test(
+      'web remove throw on one key: removeDelegatedComposerSnapshots completes',
+      () async {
+        PlatformInfo.isTestingForWeb = true;
+        final session = _Session()..failRemove = true;
+        const key = 'reopenComposerBrowser|$delegated|$user|c1';
+        session.items[key] = 'draft';
+        final rig = _Rig(session: session);
+
+        await rig.store.removeDelegatedComposerSnapshots(
+          userName: userName,
+          personalAccountId: personalId,
+        );
+
+        expect(session.removes, 1);
+      },
+    );
+
+    test('non-web never reads session storage', () async {
+      PlatformInfo.isTestingForWeb = false;
+      final session = _Session();
+      final rig = _Rig(session: session);
+
+      await rig.store.storedAccountIds(
+        userName: userName,
+        personalAccountId: personalId,
+      );
+      await rig.store.describe(userName, delegatedId);
+      await rig.store.removeDelegatedComposerSnapshots(
+        userName: userName,
+        personalAccountId: personalId,
+      );
+      await rig.store.delete(
+        userName: userName,
+        personalAccountId: personalId,
+        accountId: delegatedId,
+      );
+
+      expect(session.reads, 0);
+      expect(session.removes, 0);
+    });
+  });
 }
 
 class _Rig {
-  _Rig()
+  _Rig({_ComposerBox? composer, _Session? session})
     : mailbox = _MailboxBox(_Memory()),
       email = _EmailBox(_Memory()),
       state = _StateBox(_Memory()),
@@ -238,6 +367,9 @@ class _Rig {
       fcmCacheClient: fcm,
       keychainSharingManager: _Keychain(),
       fileUtils: files,
+      composerHiveCacheClient: composer,
+      sessionStorageKeys: session?.read,
+      sessionStorageRemove: session?.remove,
     );
   }
 
@@ -371,6 +503,33 @@ class _FcmBox extends FcmCacheClient with _KeyedMemory<String> {
 
   @override
   final _Memory memory;
+}
+
+class _ComposerBox extends ComposerHiveCacheClient with _KeyedMemory<String> {
+  _ComposerBox(this.memory);
+
+  @override
+  final _Memory memory;
+}
+
+class _Session {
+  final items = <String, String>{};
+  var failRead = false;
+  var failRemove = false;
+  var reads = 0;
+  var removes = 0;
+
+  Iterable<String> read() {
+    reads++;
+    if (failRead) throw StateError('blocked');
+    return items.keys;
+  }
+
+  void remove(String key) {
+    removes++;
+    if (failRemove) throw StateError('blocked');
+    items.remove(key);
+  }
 }
 
 class _Files extends Fake implements FileUtils {

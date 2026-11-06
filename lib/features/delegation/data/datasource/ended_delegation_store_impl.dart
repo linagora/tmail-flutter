@@ -26,6 +26,10 @@ import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:universal_html/html.dart' as html;
 
+typedef WebSessionStorageKeys = Iterable<String> Function();
+typedef WebSessionStorageRemove = void Function(String key);
+typedef _SessionStorageAction = void Function();
+
 /// Deletes local data of an account the session no longer lists.
 ///
 /// shortcut: scans account-keyed cache boxes on each online session read,
@@ -41,6 +45,8 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
   final ComposerHiveCacheClient? _composerHiveCacheClient;
   final KeychainSharingManager _keychainSharingManager;
   final FileUtils _fileUtils;
+  final WebSessionStorageKeys _sessionStorageKeys;
+  final WebSessionStorageRemove _sessionStorageRemove;
 
   EndedDelegationStoreImpl({
     required MailboxCacheClient mailboxCacheClient,
@@ -53,6 +59,8 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
     required KeychainSharingManager keychainSharingManager,
     required FileUtils fileUtils,
     ComposerHiveCacheClient? composerHiveCacheClient,
+    WebSessionStorageKeys? sessionStorageKeys,
+    WebSessionStorageRemove? sessionStorageRemove,
   })  : _mailboxCacheClient = mailboxCacheClient,
         _emailCacheClient = emailCacheClient,
         _stateCacheClient = stateCacheClient,
@@ -62,7 +70,17 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
         _fcmCacheClient = fcmCacheClient,
         _composerHiveCacheClient = composerHiveCacheClient,
         _keychainSharingManager = keychainSharingManager,
-        _fileUtils = fileUtils;
+        _fileUtils = fileUtils,
+        _sessionStorageKeys = sessionStorageKeys ?? _windowSessionStorageKeys,
+        _sessionStorageRemove =
+            sessionStorageRemove ?? _windowSessionStorageRemove;
+
+  static Iterable<String> _windowSessionStorageKeys() =>
+      html.window.sessionStorage.keys;
+
+  static void _windowSessionStorageRemove(String key) {
+    html.window.sessionStorage.remove(key);
+  }
 
   static final _composerKeyPrefix =
       '${EmailActionType.reopenComposerBrowser.name}|';
@@ -351,30 +369,51 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
       }
     }
     for (final key in _webComposerKeys(userName, accountId)) {
-      html.window.sessionStorage.remove(key);
+      _withSessionStorage(
+        '_deleteComposerSnapshots',
+        () => _sessionStorageRemove(key),
+      );
+    }
+  }
+
+  // Browsers throw SecurityError when site storage is blocked.
+  void _withSessionStorage(String method, _SessionStorageAction action) {
+    try {
+      action();
+    } catch (error) {
+      logWarning('EndedDelegationStoreImpl::$method: $error');
     }
   }
 
   List<String> _webComposerKeys(UserName userName, AccountId accountId) {
     if (!PlatformInfo.isWeb) return const [];
-    return html.window.sessionStorage.keys.where((key) {
-      if (!key.startsWith(_composerKeyPrefix)) return false;
-      return CacheAccountKey.belongsTo(
-        decoded: key,
-        accountId: accountId.asString,
-        userName: userName.value,
-      );
-    }).toList();
+    final matched = <String>[];
+    _withSessionStorage('_webComposerKeys', () {
+      final found = _sessionStorageKeys().where((key) {
+        if (!key.startsWith(_composerKeyPrefix)) return false;
+        return CacheAccountKey.belongsTo(
+          decoded: key,
+          accountId: accountId.asString,
+          userName: userName.value,
+        );
+      }).toList();
+      matched.addAll(found);
+    });
+    return matched;
   }
 
   Set<String> _webComposerAccountIds(String userName) {
     if (!PlatformInfo.isWeb) return {};
     final accountIds = <String>{};
-    for (final key in html.window.sessionStorage.keys) {
-      if (!key.startsWith(_composerKeyPrefix)) continue;
-      final accountId = CacheAccountKey.accountIdOf(key, userName);
-      if (accountId != null) accountIds.add(accountId);
-    }
+    _withSessionStorage('_webComposerAccountIds', () {
+      final found = <String>{};
+      for (final key in _sessionStorageKeys()) {
+        if (!key.startsWith(_composerKeyPrefix)) continue;
+        final accountId = CacheAccountKey.accountIdOf(key, userName);
+        if (accountId != null) found.add(accountId);
+      }
+      accountIds.addAll(found);
+    });
     return accountIds;
   }
 
