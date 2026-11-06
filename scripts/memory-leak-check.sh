@@ -1,6 +1,6 @@
 #!/bin/bash
 # Usage: memory-leak-check.sh <web|android>
-# Runs the memory-tagged Patrol tests in profile mode against one local backend,
+# Runs the memory-tagged Patrol tests in profile mode, one leased backend slot per test,
 # collects samples through ci-memory-sidecar.js and applies the leak rules.
 # Android expects a booted emulator (emulator-5554).
 set -uo pipefail
@@ -23,8 +23,7 @@ case "$PLATFORM" in
 esac
 RESET_PORT=9999
 SIDECAR_PORT=9998
-WEBSOCKET_URL="ws://$HOST"
-export BASIC_AUTH_URL="http://$HOST"
+export BASIC_AUTH_URL="http://$HOST:8100"
 export MEMORY_OUT_DIR="$MEMORY_DIR"
 export MEMORY_SIDECAR_PORT="$SIDECAR_PORT"
 
@@ -38,13 +37,12 @@ cleanup() {
     [ -n "$RESET_SERVER_PID" ] && kill "$RESET_SERVER_PID" 2>/dev/null
     wait "$SIDECAR_PID" "$RESET_SERVER_PID" 2>/dev/null
     bash "$ROOT_DIR/scripts/ci-backend-teardown.sh" "$CI_LOGS/backend.log"
-    [ -f backend-docker/jmap.properties.bak ] && mv backend-docker/jmap.properties.bak backend-docker/jmap.properties
     rm -f backend-docker/jwt_privatekey backend-docker/jwt_publickey
     [ -f "$CI_LOGS/env.file.backup" ] && mv "$CI_LOGS/env.file.backup" env.file
     return 0
 }
-if [ -f backend-docker/jmap.properties.bak ] || [ -f "$CI_LOGS/env.file.backup" ]; then
-    echo "Leftovers of an interrupted run (backend-docker/jmap.properties.bak or env.file.backup): restore them first."
+if [ -f "$CI_LOGS/env.file.backup" ]; then
+    echo "Leftover of an interrupted run ($CI_LOGS/env.file.backup): restore it first."
     exit 2
 fi
 [ -f env.file ] && cp env.file "$CI_LOGS/env.file.backup"
@@ -54,28 +52,15 @@ export PATH="$PATH:$HOME/.pub-cache/bin"
 dart pub global activate patrol_cli 4.3.1 || exit 1
 
 cd backend-docker || exit 1
-docker compose down || true
 openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -out jwt_privatekey || exit 1
 openssl rsa -in jwt_privatekey -pubout -out jwt_publickey || exit 1
-# James reports this prefix in its JMAP session, and the app follows it.
-sed -i.bak "s|url.prefix=.*|url.prefix=$BASIC_AUTH_URL|" jmap.properties
-sed -i.bak2 "s|websocket.url.prefix=.*|websocket.url.prefix=$WEBSOCKET_URL|" jmap.properties
-rm -f jmap.properties.bak2
-docker compose up -d || exit 1
-for attempt in $(seq 1 150); do
-    docker compose logs tmail-backend | grep -qi "JAMES server started" && break
-    if [ "$attempt" -eq 150 ]; then
-        echo "tmail-backend did not start in 5 minutes"
-        docker compose logs --tail 50 tmail-backend
-        exit 1
-    fi
-    echo "Waiting for tmail-backend to start..."
-    sleep 2
-done
-docker exec tmail-backend ./root/conf/integration_test/provisioning.sh > /dev/null 2>&1 || exit 1
 cd "$ROOT_DIR" || exit 1
 
-RESET_PORT="$RESET_PORT" python3 scripts/backend-reset-server.py > "$CI_LOGS/backend-reset-server.log" 2>&1 &
+# Every test leases a fresh slot; the second slot boots while a test runs.
+POOL_SIZE=2
+POOL_URLS=$(python3 -c 'import sys; print(",".join(f"http://{sys.argv[1]}:{8100 + i}" for i in range(int(sys.argv[2]))))' "$HOST" "$POOL_SIZE") || exit 1
+RESET_PORT="$RESET_PORT" POOL_SIZE="$POOL_SIZE" POOL_URLS="$POOL_URLS" POOL_LOG_DIR="$CI_LOGS" WORK_DIR="$ROOT_DIR" \
+    python3 scripts/backend-reset-server.py > "$CI_LOGS/backend-reset-server.log" 2>&1 &
 RESET_SERVER_PID=$!
 node --experimental-websocket scripts/ci-memory-sidecar.js > "$CI_LOGS/memory-sidecar.log" 2>&1 &
 SIDECAR_PID=$!

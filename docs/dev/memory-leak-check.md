@@ -35,7 +35,7 @@ Web totals exclude the CanvasKit WebAssembly heap.
 
 ## Run locally
 
-- Needs Docker (local JMAP backend) and `bash scripts/prebuild.sh` done once.
+- Needs Docker (one leased JMAP backend slot per test) and `bash scripts/prebuild.sh` done once.
 - Web: `bash scripts/memory-leak-check.sh web`
 - Android: boot an emulator (`emulator-5554`), then `bash scripts/memory-leak-check.sh android` (needs Bash 4+; on macOS install it with `brew install bash`)
 - Output goes to `$CI_LOGS` (default `./ci-logs`), report is printed at the end.
