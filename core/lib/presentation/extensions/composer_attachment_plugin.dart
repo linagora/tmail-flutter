@@ -10,8 +10,11 @@ abstract class ComposerAttachmentPlugin {
     ComposerToolbarButtonStyle style = const ComposerToolbarButtonStyle(),
   });
 
+  /// [onDismiss] closes the host menu; defaults to popping the route (bottom sheet).
   Widget buildContextMenuTile(
     BuildContext context, {
     required ImagePaths imagePaths,
+    String? composerId,
+    VoidCallback? onDismiss,
   });
 }

@@ -12,12 +12,14 @@ class DriveAttachmentContextMenuTile extends StatefulWidget {
   final ImagePaths imagePaths;
   final DrivePickerSession session;
   final OnPickDriveCallback? onPickCallback;
+  final VoidCallback? onDismiss;
 
   const DriveAttachmentContextMenuTile({
     super.key,
     required this.imagePaths,
     required this.session,
     this.onPickCallback,
+    this.onDismiss,
   });
 
   @override
@@ -63,7 +65,12 @@ class _DriveAttachmentContextMenuTileState
         ),
       ),
       onTap: () {
-        Navigator.pop(context);
+        final dismiss = widget.onDismiss;
+        if (dismiss != null) {
+          dismiss();
+        } else {
+          Navigator.pop(context);
+        }
         onPickerTap();
       },
     );

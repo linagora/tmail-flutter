@@ -118,6 +118,8 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   Widget buildContextMenuTile(
     BuildContext context, {
     required ImagePaths imagePaths,
+    String? composerId,
+    VoidCallback? onDismiss,
   }) {
     return ValueListenableBuilder<Uri?>(
       valueListenable: workplaceUri,
@@ -125,10 +127,11 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
         if (uri == null) return const SizedBox.shrink();
         return DriveAttachmentContextMenuTile(
           imagePaths: imagePaths,
-          session: _sessionFor(uri, null),
+          session: _sessionFor(uri, composerId),
+          onDismiss: onDismiss,
           onPickCallback: onPickState == null
               ? null
-              : (state) => onPickState!(null, state),
+              : (state) => onPickState!(composerId, state),
         );
       },
     );
