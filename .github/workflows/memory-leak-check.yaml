@@ -13,6 +13,7 @@ on:
     paths:
       - ".github/workflows/memory-leak-check*.yaml"
       - "scripts/memory-leak-check.sh"
+      - "scripts/memory-leak-android-run.sh"
       - "scripts/memory-leak-report.py"
       - "scripts/memory_report/**"
       - "scripts/test_memory_leak_report.py"
@@ -20,6 +21,14 @@ on:
       - "integration_test/memory/**"
       - "integration_test/scenarios/memory/**"
       - "integration_test/tests/memory/**"
+      - "integration_test/robots/abstract_common_robot.dart"
+      - "integration_test/robots/email_robot.dart"
+      - "integration_test/robots/identity_creator_robot.dart"
+      - "integration_test/robots/profiles_robot.dart"
+      - "integration_test/utils/send_and_wait_for_completion.dart"
+      - "integration_test/utils/test_timeouts.dart"
+      - "integration_test/utils/wait_for_condition.dart"
+      - "android/app/build.gradle"
 
 concurrency:
   group: memory-leak-check-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
