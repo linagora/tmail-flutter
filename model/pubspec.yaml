@@ -23,7 +23,7 @@ resolution: workspace
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.10.0 <4.0.0"
+  sdk: ">=3.13.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -36,13 +36,13 @@ dependencies:
   jmap_dart_client:
 
   ### Dependencies from pub.dev ###
-  cupertino_icons: 1.0.6
+  cupertino_icons: 1.0.8
 
   equatable: 2.0.5
 
   quiver: 3.2.1
 
-  intl: 0.20.2
+  intl: 0.20.3
 
   uri: 1.0.0
 

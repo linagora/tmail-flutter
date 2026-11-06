@@ -66,6 +66,8 @@ class SentryInitializer {
     options.release = config.release;
     options.dist = config.dist;
     options.tracesSampleRate = config.tracesSampleRate;
+    // profilesSampleRate is still experimental in sentry_flutter.
+    // ignore: experimental_member_use
     options.profilesSampleRate = config.profilesSampleRate;
     // Session Replay bypasses beforeSend and sentry_flutter 9.8.0 has no
     // supported API to stop recording and discard its buffer when a user opts

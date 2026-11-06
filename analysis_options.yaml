@@ -10,8 +10,12 @@
 include: package:flutter_lints/flutter.yaml
 
 analyzer:
-  plugins:
-    - riverpod_lint
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - lib/l10n/messages_*.dart
 
 linter:
   rules:
