@@ -31,7 +31,11 @@ mixin AuthenticationClientInteractionMixin {
       postLogoutRedirectUrl: config.logoutRedirectUrl,
       discoveryUrl: config.discoveryUrl,
       serviceConfiguration: serviceConfiguration,
-      externalUserAgent: getExternalUserAgent(),
+      // Twake Workplace signs in with a non-ephemeral session (FlutterWebAuth2):
+      // an ephemeral sign-out could not see the SSO cookie to close (#5038).
+      externalUserAgent: config.isTWP
+          ? ExternalUserAgent.asWebAuthenticationSession
+          : getExternalUserAgent(),
     );
   }
 
