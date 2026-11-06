@@ -45,6 +45,7 @@ ENV CSP_FRAME_ANCESTORS="'self'"
 ENV CSP_FRAME_SRC=""
 ENV CSP_SCRIPT_SRC=""
 ENV CSP_CONNECT_SRC=""
+ENV CSP_IMG_SRC=""
 ENV NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx
 ENV NGINX_ENVSUBST_FILTER=^CSP_
 RUN /docker-entrypoint.d/20-envsubst-on-templates.sh && nginx -t
