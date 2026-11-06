@@ -45,7 +45,12 @@ mixin CollapsedThreadsScenarioMixin on BaseTestScenario {
 
   String get listState =>
       'listed threads: $listedThreads, '
-      'canLoadMore: ${threadController.canLoadMore}';
+      'canLoadMore: ${threadController.canLoadMore}, '
+      'canSearchMore: ${threadController.canSearchMore}';
+
+  bool get _hasMorePages => threadController.isSearchActive
+      ? threadController.canSearchMore
+      : threadController.canLoadMore;
 
   Future<void> runWithCollapsedThreads(Future<void> Function() body) async {
     await waitForMailboxReady();
@@ -120,7 +125,7 @@ mixin CollapsedThreadsScenarioMixin on BaseTestScenario {
 
   Future<void> waitForStep(
     String step,
-    bool Function() condition, {
+    FutureOr<bool> Function() condition, {
     Duration timeout = TestTimeouts.medium,
   }) async {
     try {
@@ -145,11 +150,12 @@ mixin CollapsedThreadsScenarioMixin on BaseTestScenario {
   );
 
   Future<void> scrollUntilListStopsGrowing() async {
-    const maxScrollsWithoutGrowth = 5;
-    var scrollsWithoutGrowth = 0;
-    var listedCount = dashboardController.emailsInCurrentMailbox.length;
-
-    while (scrollsWithoutGrowth < maxScrollsWithoutGrowth) {
+    await waitForStep('all pages loaded', () async {
+      if (threadController.loadingMoreStatus.value.isRunning) {
+        await $.pump();
+        return false;
+      }
+      if (!_hasMorePages) return true;
       final scrollController = threadController.listEmailController;
       if (scrollController.hasClients) {
         scrollController
@@ -157,12 +163,8 @@ mixin CollapsedThreadsScenarioMixin on BaseTestScenario {
           ..jumpTo(scrollController.position.maxScrollExtent);
       }
       await $.pump(const Duration(milliseconds: 500));
-      await waitForLoadMoreIdle();
-      final newCount = dashboardController.emailsInCurrentMailbox.length;
-      scrollsWithoutGrowth = newCount > listedCount
-          ? 0
-          : scrollsWithoutGrowth + 1;
-      listedCount = newCount;
-    }
+      return false;
+    }, timeout: TestTimeouts.long);
+    await waitForLoadMoreIdle();
   }
 }

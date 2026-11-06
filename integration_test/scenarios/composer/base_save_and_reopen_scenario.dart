@@ -40,7 +40,8 @@ abstract class BaseSaveAndReopenScenario extends BaseTestScenario {
   @override
   Future<void> runTestLogic() async {
     const email = String.fromEnvironment('BASIC_AUTH_EMAIL');
-    assert(email.isNotEmpty, 'BASIC_AUTH_EMAIL must not be empty');
+    // assert() is stripped in profile builds.
+    if (email.isEmpty) throw StateError('BASIC_AUTH_EMAIL must not be empty');
 
     final uniqueSubject = '$subject ${DateTime.now().microsecondsSinceEpoch}';
     final threadRobot = robots.threadRobot();

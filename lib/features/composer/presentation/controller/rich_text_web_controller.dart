@@ -274,6 +274,8 @@ class RichTextWebController extends GetxController {
   bool get isCodeViewBusy => codeViewEnabled || _codeViewToggleInFlight;
 
   void setEnableCodeView() async {
+    // Nothing to restore, and the editor's by-type reply could answer a later user toggle.
+    if (!codeViewEnabled) return;
     final isActivated = await isActivatedCodeView;
     if (codeViewEnabled && !isActivated) {
       toggleCodeView();

@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
@@ -6,8 +8,10 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:web/web.dart' as web;
 
 import '../../base/core_robot.dart';
+import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
 import '../abstract/abstract_composer_code_view_robot.dart';
+import 'web_composer_code_view_diagnostics.dart';
 import 'web_composer_controller_finder.dart';
 
 class WebComposerCodeViewRobot extends CoreRobot
@@ -31,12 +35,31 @@ class WebComposerCodeViewRobot extends CoreRobot
   // Long enough for the broken image's error event to fire.
   static const _scriptGracePeriod = Duration(seconds: 2);
 
-  @override
-  Future<void> openEmbedCode() => _toggleEmbedCode(expectCodeViewEnabled: true);
+  late final _diagnostics = WebComposerCodeViewDiagnostics(() {
+    final richText = findWebComposerController($)?.richTextWebController;
+    return 'codeViewEnabled=${richText?.codeViewEnabled} '
+        'toggleInFlight=${richText?.isCodeViewToggleInFlight}';
+  });
 
   @override
-  Future<void> leaveEmbedCode() =>
-      _toggleEmbedCode(expectCodeViewEnabled: false);
+  Future<void> openEmbedCode() async {
+    _diagnostics.startObserving();
+    try {
+      await _toggleEmbedCode(expectCodeViewEnabled: true);
+    } catch (_) {
+      _diagnostics.stopObserving();
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> leaveEmbedCode() async {
+    try {
+      await _toggleEmbedCode(expectCodeViewEnabled: false);
+    } finally {
+      _diagnostics.stopObserving();
+    }
+  }
 
   Future<void> _toggleEmbedCode({required bool expectCodeViewEnabled}) async {
     await $(const Key(UiKeys.composerMoreButton)).tap();
@@ -48,6 +71,7 @@ class WebComposerCodeViewRobot extends CoreRobot
           findWebComposerController($)?.richTextWebController?.codeViewEnabled ==
           expectCodeViewEnabled,
     );
+    _diagnostics.dump('after toggle, expected codeViewEnabled=$expectCodeViewEnabled');
   }
 
   // Fullscreen itself trips a Flutter web semantics assertion under Patrol,
@@ -78,11 +102,21 @@ class WebComposerCodeViewRobot extends CoreRobot
 
   Future<void> _typeInCodeView(String payload) async {
     web.document.documentElement?.removeAttribute(_markerAttribute);
-    await $.platformAutomator.web.enterText(
-      WebSelector(cssOrXpath: 'textarea.note-codable'),
-      iframeSelector: WebSelector(cssOrXpath: 'iframe'),
-      text: payload,
-    );
+    _diagnostics.dump('before enterText');
+    // Playwright's fill() waits for a visible textarea without a client timeout.
+    try {
+      await $.platformAutomator.web
+          .enterText(
+            WebSelector(cssOrXpath: 'textarea.note-codable'),
+            iframeSelector: WebSelector(cssOrXpath: 'iframe'),
+            text: payload,
+          )
+          .timeout(TestTimeouts.medium);
+    } on TimeoutException {
+      _diagnostics.dump('enterText still pending after ${TestTimeouts.medium.inSeconds}s');
+      _diagnostics.stopObserving();
+      fail('Code view textarea never accepted text within ${TestTimeouts.medium.inSeconds} seconds');
+    }
     // Guards against a vacuous pass: the payload must sit in the code view.
     await waitForCondition(
       () => _codeViewText()?.contains(_markerAttribute) == true,

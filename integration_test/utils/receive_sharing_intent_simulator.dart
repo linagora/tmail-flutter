@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
@@ -32,4 +33,26 @@ Future<void> emitSharedMediaEvent(List<Map<String, dynamic>> mediaList) async {
       const StandardMethodCodec().encodeSuccessEnvelope(jsonEncode(mediaList));
   await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
       .handlePlatformMessage(_sharingMediaEventChannel, envelope, (_) {});
+}
+
+/// Completes when the app subscribes to the shared-media stream; from then on
+/// [emitSharedMediaEvent] reaches the app instead of being dropped.
+///
+/// Call before the app mounts. Subscription messages still reach the platform.
+Future<void> waitForSharedMediaStreamListen() {
+  final messenger =
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+  final listened = Completer<void>();
+  messenger.setMockMessageHandler(_sharingMediaEventChannel, (message) {
+    if (!listened.isCompleted &&
+        message != null &&
+        const StandardMethodCodec().decodeMethodCall(message).method == 'listen') {
+      listened.complete();
+    }
+    return messenger.delegate.send(_sharingMediaEventChannel, message);
+  });
+  addTearDown(
+    () => messenger.setMockMessageHandler(_sharingMediaEventChannel, null),
+  );
+  return listened.future;
 }
