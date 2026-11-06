@@ -18,10 +18,12 @@ class TwoComposersHeavySendMemoryScenario extends MemoryLeakScenario {
   @override
   String get caseId => 'two_composers_heavy_send';
 
+  // Warm-up sends as many composers as the measured run, so the delta holds no extra send.
+  static const _composersPerCycle = 2;
+
   @override
   Future<void> runCycle(MemoryCycle cycle) async {
-    final composers = cycle == MemoryCycle.measured ? 2 : 1;
-    for (var index = 0; index < composers; index++) {
+    for (var index = 0; index < _composersPerCycle; index++) {
       await _composeAndSend('Memory composer ${cycle.name} $index');
     }
   }
