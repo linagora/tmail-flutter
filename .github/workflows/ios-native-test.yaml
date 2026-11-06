@@ -24,6 +24,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - name: Setup flutter
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
@@ -68,9 +70,10 @@ jobs:
 
       - name: Run native unit tests
         id: test
+        env:
+          SIMULATOR_UDID: ${{ steps.simulator.outputs.udid }}
         # github-actions renderer turns compile errors and assertion failures into file and line annotations.
         run: |
-          set -o pipefail
           # xcodebuild refuses to replace an existing result bundle.
           rm -rf build/TwakeMailTests.xcresult
           args=(
@@ -78,14 +81,19 @@ jobs:
             -workspace ios/Runner.xcworkspace
             -scheme Runner
             -only-testing:TwakeMailTests
-            -destination "id=${{ steps.simulator.outputs.udid }}"
+            -destination "id=${SIMULATOR_UDID}"
             -resultBundlePath build/TwakeMailTests.xcresult
             # Serial logs keep the assertion file and line for the annotations.
             -parallel-testing-enabled NO
             CODE_SIGNING_ALLOWED=NO
           )
           if command -v xcbeautify >/dev/null 2>&1; then
-            "${args[@]}" | xcbeautify --renderer github-actions
+            # A failing xcbeautify must not replace the xcodebuild status.
+            mkdir -p build
+            status=0
+            "${args[@]}" > build/xcodebuild.log 2>&1 || status=$?
+            xcbeautify --renderer github-actions < build/xcodebuild.log || echo "::warning title=xcbeautify failed::raw log kept at build/xcodebuild.log"
+            exit "$status"
           else
             echo "::warning title=xcbeautify missing::raw xcodebuild output below"
             "${args[@]}"
@@ -96,6 +104,8 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: ios-native-tests-xcresult
-          path: build/TwakeMailTests.xcresult
+          path: |
+            build/TwakeMailTests.xcresult
+            build/xcodebuild.log
           retention-days: 7
           if-no-files-found: ignore
