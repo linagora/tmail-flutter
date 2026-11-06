@@ -5,6 +5,11 @@ on:
     paths:
       - "ios/**"
       - ".github/workflows/ios-native-test.yaml"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - "scripts/prebuild.sh"
+      - "scripts/setup-ios.sh"
+      - "scripts/fetch-web-vendor.sh"
   workflow_dispatch:
 
 concurrency:
@@ -35,11 +40,6 @@ jobs:
           cache: true
           cache-key: deps-${{ hashFiles('pubspec.lock') }}
           cache-path: ${{ runner.tool_cache }}/flutter
-
-      - name: Setup Firebase env
-        env:
-          FIREBASE_ENV: ${{ secrets.FIREBASE_ENV }}
-        run: ./scripts/setup-firebase.sh
 
       - name: Select Xcode version
         uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
