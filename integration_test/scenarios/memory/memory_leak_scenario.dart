@@ -15,9 +15,10 @@ abstract class MemoryLeakScenario extends BaseTestScenario {
   String get caseId;
 
   /// Moves to the screen every cycle starts and ends on.
-  Future<void> prepare() async {}
+  /// Not `prepare`: that one seeds the test credentials before the app mounts.
+  Future<void> openStartScreen() async {}
 
-  /// One full user flow; it must end on the screen [prepare] left.
+  /// One full user flow; it must end on the screen [openStartScreen] left.
   Future<void> runCycle(MemoryCycle cycle);
 
   @override
@@ -26,7 +27,7 @@ abstract class MemoryLeakScenario extends BaseTestScenario {
     $.tester.testTextInput.register();
     addTearDown($.tester.testTextInput.unregister);
     await robots.commonRobot().waitForMailboxReady();
-    await prepare();
+    await openStartScreen();
     await runCycle(MemoryCycle.warmup);
     await sampleMemory($, caseId: caseId, label: 'before');
     await runCycle(MemoryCycle.measured);

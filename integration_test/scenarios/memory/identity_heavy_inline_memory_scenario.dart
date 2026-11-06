@@ -18,7 +18,7 @@ class IdentityHeavyInlineMemoryScenario extends MemoryLeakScenario {
   String get caseId => 'identity_heavy_inline';
 
   @override
-  Future<void> prepare() async {
+  Future<void> openStartScreen() async {
     await robots.mailboxMenuRobot().openSetting();
     await robots.settingsRobot().openSettingsDetail(AccountMenuItem.profiles);
     await expectViewVisible($(#create_new_identity_button));

@@ -58,7 +58,7 @@ Report unit tests: `python3 -m unittest discover -s scripts -p 'test_memory_leak
 ## Add a case
 
 - Add a scenario in `integration_test/scenarios/memory/` extending `MemoryLeakScenario`.
-- Implement `caseId` and `runCycle` (and `prepare` if the flow starts on another screen).
+- Implement `caseId` and `runCycle` (and `openStartScreen` if the flow starts on another screen).
 - Add a test in `integration_test/tests/memory/` with tags `web`, `android`, `memory` and a timeout.
 - Add the case to `memory_rules.json`, with `mustReturnToBaseline` for controllers that must be disposed.
 - Run it with `MEMORY_REPORT_ONLY=1` several times, then set limits above the observed maximum.
