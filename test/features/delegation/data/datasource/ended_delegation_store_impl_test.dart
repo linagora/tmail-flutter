@@ -70,6 +70,33 @@ void main() {
     );
 
     test(
+      'unsent mail removed by a failed cleanup is still reported once the retry succeeds',
+      () async {
+        final rig = _Rig();
+        final session = DelegationFixtures.session();
+        final gone = DelegationFixtures.unknownAccountId;
+        final user = session.username.value;
+        rig.mailbox.memory.items[TupleKey('box', gone.id.value, user).encodeKey] = null;
+        rig.sending.memory.items[TupleKey('out', gone.id.value, user).encodeKey] = null;
+        rig.mailbox.memory.deleteError = StateError(gone.id.value);
+        final interactor = CleanupEndedDelegationsInteractor(rig.store);
+
+        Future<int> run() async => ((await interactor.execute(
+              session: session,
+              fromCache: false,
+            )).getOrElse(() => throw StateError('failure'))
+                as CleanupEndedDelegationsSuccess)
+            .lostCount;
+
+        final first = await run();
+        rig.mailbox.memory.deleteError = null;
+        final second = await run();
+
+        expect(first + second, 1);
+      },
+    );
+
+    test(
       'a username that only continues this one is neither read nor deleted',
       () async {
         final rig = _Rig();
