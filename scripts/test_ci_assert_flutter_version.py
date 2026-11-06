@@ -39,6 +39,15 @@ class AssertFlutterVersionTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("Flutter 3.47.9", result.stdout)
 
+    def test_accepts_version_after_a_startup_banner(self):
+        path = _flutter(
+            'echo "Waiting for another flutter command to release the startup lock..."\n'
+            'echo "Flutter 3.47.9 • channel stable"'
+        )
+        result = _run(path)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Flutter 3.47.9", result.stdout)
+
     def test_rejects_a_different_version(self):
         path = _flutter('echo "Flutter 3.38.9 • channel stable"')
         result = _run(path)
