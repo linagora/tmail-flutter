@@ -2131,8 +2131,8 @@ packages:
     dependency: transitive
     description:
       path: sanitize_html
-      ref: b30215935eb0ca33ed31b6d705edc4dbb317c839
-      resolved-ref: b30215935eb0ca33ed31b6d705edc4dbb317c839
+      ref: "0bd8e751b93e83e3b9655825567634c9d55ab37b"
+      resolved-ref: "0bd8e751b93e83e3b9655825567634c9d55ab37b"
       url: "https://github.com/linagora/dart-neats.git"
     source: git
     version: "3.0.3"
@@ -2498,8 +2498,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "248ee6a0802fcbfb76657315a357d636fe0d6c7f"
-      resolved-ref: "248ee6a0802fcbfb76657315a357d636fe0d6c7f"
+      ref: "102bf81e50194e9a1ac599169f4d6435e7edafb3"
+      resolved-ref: "102bf81e50194e9a1ac599169f4d6435e7edafb3"
       url: "https://github.com/linagora/twake-previewer-flutter.git"
     source: git
     version: "0.1.1"

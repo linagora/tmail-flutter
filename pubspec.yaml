@@ -274,7 +274,7 @@ dependencies:
   twake_previewer_flutter:
     git:
       url: https://github.com/linagora/twake-previewer-flutter.git
-      ref: 248ee6a0802fcbfb76657315a357d636fe0d6c7f
+      ref: 102bf81e50194e9a1ac599169f4d6435e7edafb3
 
   pdfrx: 2.1.5
 
