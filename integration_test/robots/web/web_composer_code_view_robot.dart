@@ -62,6 +62,13 @@ class WebComposerCodeViewRobot extends CoreRobot
   }
 
   Future<void> _toggleEmbedCode({required bool expectCodeViewEnabled}) async {
+    // A toggle posted before the editor iframe registers its handler is never answered.
+    await waitForCondition(() {
+      final composer = findWebComposerController($);
+      return composer != null &&
+          !composer.screenDisplayMode.value.isNotContentVisible() &&
+          !composer.isEmailBodyNotReady;
+    });
     await $(const Key(UiKeys.composerMoreButton)).tap();
     await $.pumpAndSettle();
     await $(find.text(AppLocalizations().embedCode)).tap();
