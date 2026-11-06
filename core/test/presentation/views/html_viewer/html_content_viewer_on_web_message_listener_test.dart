@@ -97,7 +97,8 @@ Future<String> _pumpViewer(
   return RegExp(r'"view": "([^"]+)"').firstMatch(document)!.group(1)!;
 }
 
-/// The test embedder leaves the platform view out of the document.
+/// The test embedder leaves the platform view out of the document. Layout is
+/// flushed so the frame has a viewport when its load handlers measure it.
 void _attachFrameToDocument(WidgetTester tester) {
   final platformViewId = tester
       .widget<PlatformViewSurface>(find.byType(PlatformViewSurface))
@@ -107,6 +108,7 @@ void _attachFrameToDocument(WidgetTester tester) {
       as html.IFrameElement;
   if (iframe.isConnected != true) {
     html.document.body!.append(iframe);
+    iframe.getBoundingClientRect();
     addTearDown(iframe.remove);
   }
 }
@@ -223,30 +225,28 @@ Future<void> _expectHeightMeasuredAfterLaterLoadGrowth(
   await tester.pump();
   _attachFrameToDocument(tester);
 
-  await tester.runAsync(() async {
+  final height = await tester.runAsync(() async {
     final deadline = DateTime.now().add(_wait);
     while (true) {
       final grewAt = received.indexOf('grew');
       final heightAt = received.lastIndexWhere(
         (message) => message.contains('"type":"toDart: htmlHeight"'),
       );
-      if (grewAt != -1 && heightAt > grewAt) return;
+      if (grewAt != -1 && heightAt > grewAt) {
+        final message = jsonDecode(received[heightAt]) as Map<String, dynamic>;
+        return message['height'] as num;
+      }
       if (DateTime.now().isAfter(deadline)) {
-        if (grewAt == -1) {
-          throw TimeoutException(
-            'timed out waiting for htmlHeight measured after the body grew',
-            _wait,
-          );
-        }
-        return;
+        throw TimeoutException(
+          grewAt == -1
+              ? 'timed out waiting for the body to grow'
+              : 'timed out waiting for htmlHeight measured after the body grew',
+          _wait,
+        );
       }
       await Future<void>.delayed(const Duration(milliseconds: 20));
     }
   });
 
-  final heightMessage = received.lastWhere(
-    (message) => message.contains('"type":"toDart: htmlHeight"'),
-  );
-  final height = (jsonDecode(heightMessage) as Map<String, dynamic>)['height'];
   expect(height, greaterThan(500));
 }
