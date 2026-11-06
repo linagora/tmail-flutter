@@ -3,7 +3,8 @@ COVERAGE = """Class sizes are *self* sizes: a buffer held by a controller shows 
 Android class rows cover the Dart heap only; R5 (RSS) covers native memory.
 Web totals exclude the CanvasKit WebAssembly heap (wasmBytes shown per case).
 """
-MIB = 1024 * 1024
+KIB = 1024
+MIB = KIB * KIB
 NEAR_LIMIT = 0.75
 RULE_HEADER = ["| Rule | Before | After | Δ | Limit | % of limit | ✅/❌ |",
                "| --- | ---: | ---: | ---: | --- | ---: | --- |"]
@@ -17,12 +18,15 @@ def escape(value):
     return str(value).replace("|", "&#124;").replace("\n", "<br>").replace("\r", "")
 
 
-def mb(value):
+def size(value):
+    # Class rows grow by bytes; under 1 MB they would all read 0.00 MB.
+    if abs(value) < MIB:
+        return f"{value / KIB:.1f} KB"
     return f"{value / MIB:.2f} MB"
 
 
-def signed_mb(value):
-    return f"{'+' if value >= 0 else '-'}{abs(value) / MIB:.2f} MB"
+def signed_size(value):
+    return ('+' if value >= 0 else '-') + size(abs(value))
 
 
 def growth(result):
@@ -49,8 +53,8 @@ def rule_row(result):
     if not result.limit_bytes:
         return f"| {escape(result.label)} | {old} | {new} | {new - old} | {result.limit} |  | {mark(result)} |"
     operator = result.limit.split()[0]
-    return (f"| {escape(result.label)} | {mb(old)} | {mb(new)} | {signed_mb(new - old)} | "
-            f"{operator} {mb(result.limit_bytes)} | {limit_share(result):.0%} | {mark(result)} |")
+    return (f"| {escape(result.label)} | {size(old)} | {size(new)} | {signed_size(new - old)} | "
+            f"{operator} {size(result.limit_bytes)} | {limit_share(result):.0%} | {mark(result)} |")
 
 
 def biggest_growth(results):
@@ -59,7 +63,7 @@ def biggest_growth(results):
         return ""
     worst = max(sized, key=limit_share)
     name = RULE_NAMES.get(worst.label.split()[0], worst.label)
-    return f"{escape(name)} {signed_mb(growth(worst))} ({limit_share(worst):.0%} of {mb(worst.limit_bytes)})"
+    return f"{escape(name)} {signed_size(growth(worst))} ({limit_share(worst):.0%} of {size(worst.limit_bytes)})"
 
 
 def verdict(results):
@@ -79,8 +83,8 @@ def one_line(value):
 
 def near_limit_warnings(case, platform, results):
     # Workflow commands are line-based; a newline would cut the annotation.
-    return [f"::warning::{one_line(result.label)} {one_line(case)} ({platform}): {signed_mb(growth(result))} = "
-            f"{limit_share(result):.0%} of {mb(result.limit_bytes)}. Near the limit: may fail without a real leak."
+    return [f"::warning::{one_line(result.label)} {one_line(case)} ({platform}): {signed_size(growth(result))} = "
+            f"{limit_share(result):.0%} of {size(result.limit_bytes)}. Near the limit: may fail without a real leak."
             for result in results if is_near_limit(result)]
 
 

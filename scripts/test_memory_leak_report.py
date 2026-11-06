@@ -105,12 +105,12 @@ class MemoryReportTests(unittest.TestCase):
         self.write("android", android(), android({"buffer": 3 * 1024 * 1024}))
         code, text = self.run_report()
         self.assertEqual(code, 1)
-        self.assertIn("R2 | 0.00 MB | 3.00 MB | +3.00 MB | < 2.50 MB | 120% | ❌", text)
+        self.assertIn("R2 | 0.0 KB | 3.00 MB | +3.00 MB | < 2.50 MB | 120% | ❌", text)
     def test_android_r5_boundary_fails(self):
         self.write("android", android(), android({"rss": 31457380}))
         code, text = self.run_report()
         self.assertEqual(code, 1)
-        self.assertIn("R5 | 0.00 MB | 30.00 MB | +30.00 MB | < 30.00 MB | 100% | ❌", text)
+        self.assertIn("R5 | 0.1 KB | 30.00 MB | +30.00 MB | < 30.00 MB | 100% | ❌", text)
     def test_limits_and_override(self):
         for field, limit, rule in [("buffer", 2621440, "R2"), ("heap", 4194304, "R3"),
                                    ("size", 1048576, "R4")]:
@@ -127,8 +127,8 @@ class MemoryReportTests(unittest.TestCase):
         code, text = self.run_report()
         self.assertEqual(code, 0)
         self.assertIn("wasmBytes: before=1000, after=6000000", text)
-        self.assertIn("R3 | 0.00 MB | 0.00 MB | +0.00 MB", text)
-        self.assertIn("R2 | 0.00 MB | 0.00 MB | +0.00 MB", text)
+        self.assertIn("R3 | 0.0 KB | 0.0 KB | +0.0 KB", text)
+        self.assertIn("R2 | 0.0 KB | 0.0 KB | +0.0 KB", text)
         self.assertIn("(string)", text)
         self.assertNotIn("secret content", text)
         self.assertIn("ComposerController | ✅", text)
@@ -196,7 +196,7 @@ class MemoryReportTests(unittest.TestCase):
         code, text = self.run_report(GITHUB_STEP_SUMMARY=str(summary))
         self.assertEqual(code, 0)
         self.assertIn("| Demo flow | android | ⚠️ Pass, near limit | heap +3.00 MB (75% of 4.00 MB) |", text)
-        self.assertIn("R3 | 0.00 MB | 3.00 MB | +3.00 MB | < 4.00 MB | 75% | ⚠️", text)
+        self.assertIn("R3 | 0.1 KB | 3.00 MB | +3.00 MB | < 4.00 MB | 75% | ⚠️", text)
         self.assertIn("::warning::R3 demo (android): +3.00 MB = 75% of 4.00 MB.", text)
         self.assertLess(text.index("| Flow |"), text.index("### demo (android)"))
         self.assertNotIn("::warning::", summary.read_text())
@@ -205,6 +205,10 @@ class MemoryReportTests(unittest.TestCase):
         self.assertIn("| demo | android | ✅ No leak |", self.run_report()[1])
         self.write("android", android(), android({"count": 2}))
         self.assertIn("| demo | android | ❌ 1 rule(s) failed |", self.run_report()[1])
+    def test_small_class_growth_reads_in_kb(self):
+        self.write("android", android(), android({"size": 100 + 288}))
+        self.assertIn("R4 ComposerController | 0.1 KB | 0.4 KB | +0.3 KB | <= 1.00 MB | 0% | ✅",
+                      self.run_report()[1])
 
 if __name__ == "__main__":
     unittest.main()
