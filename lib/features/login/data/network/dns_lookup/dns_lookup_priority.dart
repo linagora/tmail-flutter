@@ -3,22 +3,24 @@
 /// DoH first, so a spoofed cleartext reply cannot redirect discovery.
 /// System DNS next, so VPN split-horizon `_jmap` records still resolve.
 /// Distinct levels keep the order deterministic (`List.sort` is not stable).
+/// Answers from a plaintext resolver ([isEncrypted] false) can be spoofed on
+/// the network path, so the server they name must be confirmed by the user.
 /// 1 → Public resolvers over DoH
 /// 2 → System default
 /// 3 → Public resolvers over UDP/TCP
 /// 4 → Cloud resolvers (Google/Cloudflare)
 enum DnsLookupPriority {
   /// Uses the device's system-configured DNS (e.g., from ISP or OS settings).
-  system(2, 'System Default'),
+  system(2, 'System Default', isEncrypted: false),
 
   /// Uses open DNS resolvers accessible via UDP/TCP (e.g., Quad9, OpenDNS).
-  publicUdp(3, 'Public DNS (UDP/TCP)'),
+  publicUdp(3, 'Public DNS (UDP/TCP)', isEncrypted: false),
 
   /// Uses DNS-over-HTTPS (DoH) resolvers for secure name resolution.
-  publicDoh(1, 'Public DNS (DoH)'),
+  publicDoh(1, 'Public DNS (DoH)', isEncrypted: true),
 
   /// Uses Google or Cloudflare DNS resolvers.
-  cloud(4, 'Cloud DNS (Google/Cloudflare)');
+  cloud(4, 'Cloud DNS (Google/Cloudflare)', isEncrypted: true);
 
   /// The lookup priority (lower means higher priority).
   final int priority;
@@ -26,5 +28,9 @@ enum DnsLookupPriority {
   /// A human-readable description for UI or logging.
   final String label;
 
-  const DnsLookupPriority(this.priority, this.label);
+  /// Whether the resolver answers over HTTPS, which an on-path attacker
+  /// can't spoof.
+  final bool isEncrypted;
+
+  const DnsLookupPriority(this.priority, this.label, {required this.isEncrypted});
 }

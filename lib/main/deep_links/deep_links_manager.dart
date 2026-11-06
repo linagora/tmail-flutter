@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:rxdart/subjects.dart';
+import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_action_type.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_callback_action_define.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
@@ -56,7 +57,10 @@ class DeepLinksManager with OpenAppDeepLinkHandlerMixin {
       log('DeepLinksManager::parseDeepLink: host = ${uri.host}');
       final action = uri.host;
 
-      if (action == DeepLinkActionType.openApp.name.toLowerCase()) {
+      // `mailto` and `teammail.mobile` links reach the app too: only the
+      // Twake Mail scheme may carry an openApp sign-in link.
+      if (uri.scheme == OIDCConstant.twakeWorkplaceUrlScheme &&
+          action == DeepLinkActionType.openApp.name.toLowerCase()) {
         return parseOpenAppDeepLink(uri);
       } else {
         return DeepLinkData(actionType: DeepLinkActionType.unknown);

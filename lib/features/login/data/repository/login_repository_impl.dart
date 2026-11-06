@@ -3,6 +3,7 @@ import 'package:tmail_ui_user/features/login/data/datasource/login_datasource.da
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_username.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/login_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/model/dns_lookup_result.dart';
 
 class LoginRepositoryImpl implements LoginRepository {
   final Map<DataSourceType, LoginDataSource> _loginDataSource;
@@ -30,7 +31,7 @@ class LoginRepositoryImpl implements LoginRepository {
   }
 
   @override
-  Future<String> dnsLookupToGetJmapUrl(String emailAddress) {
+  Future<DnsLookupResult> dnsLookupToGetJmapUrl(String emailAddress) {
     return _loginDataSource[DataSourceType.network]!.dnsLookupToGetJmapUrl(emailAddress);
   }
 }

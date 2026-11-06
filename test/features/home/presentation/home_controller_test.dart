@@ -1,3 +1,15 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
+import 'package:tmail_ui_user/main/deep_links/deep_link_callback_action_define.dart';
+import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
+import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
+
+import '../../../fixtures/account_fixtures.dart';
+import '../../../fixtures/oidc_fixtures.dart';
+import '../../../fixtures/session_fixtures.dart';
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
@@ -177,4 +189,99 @@ void main() {
       verifyNever(mockAppToast.showToastErrorMessage(any, any));
     });
   });
+
+  group('HomeController::switch account from a sign-in link', () {
+    late _SwitchRecordingDeepLinksManager deepLinksManager;
+    late HomeController controller;
+
+    setUp(() {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      deepLinksManager = _SwitchRecordingDeepLinksManager();
+      Get.put<DeepLinksManager>(deepLinksManager);
+      when(mockAuthorizationInterceptors.authenticationType).thenReturn(AuthenticationType.basic);
+      when(mockGetSessionInteractor.execute()).thenAnswer(
+        (_) => Stream.value(Right<Failure, Success>(GetSessionSuccess(SessionFixtures.aliceSession))));
+      controller = HomeController(
+        cleanupEmailCacheInteractor,
+        emailReceiveManager,
+        cleanupRecentLoginUrlCacheInteractor,
+        cleanupRecentLoginUsernameCacheInteractor,
+        checkOIDCIsAvailableInteractor,
+        getOIDCConfigurationInteractor,
+        authenticateOidcOnBrowserInteractor,
+        removeAuthDestinationUrlInteractor,
+      )..onInit();
+    });
+
+    tearDown(() {
+      debugDefaultTargetPlatformOverride = null;
+      Get.delete<DeepLinksManager>();
+    });
+
+    test('SHOULD complete the confirmed switch only after the link sign-in completed', () async {
+      controller.handleSuccessViewState(GetStoredTokenOidcSuccess(
+        Uri.parse('https://domain.com/jmap'),
+        OIDCFixtures.tokenOidcNotExpiredYet,
+        OIDCFixtures.oidcConfiguration,
+        AccountFixtures.aliceAccount,
+      ));
+      await pumpEventQueue();
+      final confirmSwitch = deepLinksManager.onConfirmLogoutCallback;
+      expect(confirmSwitch, isNotNull);
+
+      var isDone = false;
+      final switchFuture = confirmSwitch!(deepLinksManager.link).then((_) => isDone = true);
+      await pumpEventQueue();
+
+      expect(deepLinksManager.autoSignInCalls, 1);
+      expect(isDone, isFalse);
+
+      deepLinksManager.signIn.complete();
+      await switchFuture;
+      expect(isDone, isTrue);
+    });
+  });
+}
+
+/// Hands Home a sign-in link, keeps its switch callback, and holds the link
+/// sign-in until the test completes [signIn].
+class _SwitchRecordingDeepLinksManager extends DeepLinksManager {
+  final link = OpenAppDeepLinkData(
+    registrationUrl: 'https://sign-up.twake.app',
+    jmapUrl: 'https://jmap.twake.app',
+    username: 'bob@twake.app',
+    accessToken: 'token-1',
+  );
+  final signIn = Completer<void>();
+  OnDeepLinkConfirmLogoutCallback<OpenAppDeepLinkData>? onConfirmLogoutCallback;
+  int autoSignInCalls = 0;
+
+  @override
+  Future<void> handleDeepLinksWhenAppTerminated({
+    required OnDeepLinkSuccessCallback onSuccessCallback,
+    required OnDeepLinkFailureCallback onFailureCallback,
+  }) async => onSuccessCallback(link);
+
+  @override
+  Future<void> handleOpenAppDeepLinks({
+    required OpenAppDeepLinkData openAppDeepLinkData,
+    OnDeepLinkFailureCallback? onFailureCallback,
+    OnAutoSignInViaDeepLinkSuccessCallback? onAutoSignInSuccessCallback,
+    OnDeepLinkConfirmLogoutCallback<OpenAppDeepLinkData>? onConfirmLogoutCallback,
+    UserName? username,
+    bool isSignedIn = true,
+    bool Function()? isCallerActive,
+  }) async {
+    this.onConfirmLogoutCallback = onConfirmLogoutCallback;
+  }
+
+  @override
+  Future<void> autoSignInViaDeepLink({
+    required OpenAppDeepLinkData openAppDeepLinkData,
+    required OnAutoSignInViaDeepLinkSuccessCallback onAutoSignInSuccessCallback,
+    required OnDeepLinkFailureCallback onFailureCallback,
+  }) {
+    autoSignInCalls++;
+    return signIn.future;
+  }
 }

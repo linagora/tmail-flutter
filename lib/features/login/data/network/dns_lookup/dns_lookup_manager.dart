@@ -4,6 +4,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:super_dns_client/super_dns_client.dart';
 import 'package:tmail_ui_user/features/login/data/network/dns_lookup/dns_lookup_priority.dart';
+import 'package:tmail_ui_user/features/login/domain/model/dns_lookup_result.dart';
 
 /// Handles DNS SRV lookups for JMAP service discovery.
 ///
@@ -48,6 +49,13 @@ class DnsLookupManager {
   /// Each lookup attempt will timeout after [_defaultTimeout] seconds.
   /// Returns the first successfully resolved hostname, or an empty string if all fail.
   Future<String> lookupJmapUrl(String emailAddress) async {
+    final result = await lookupJmapTarget(emailAddress);
+    return result.target;
+  }
+
+  /// Same as [lookupJmapUrl], and tells whether the answer came from an
+  /// encrypted resolver.
+  Future<DnsLookupResult> lookupJmapTarget(String emailAddress) async {
     final jmapHostName = buildJmapHostName(emailAddress);
     log('$runtimeType::lookupJmapUrl → Resolving SRV for: $jmapHostName');
 
@@ -66,7 +74,10 @@ class DnsLookupManager {
         final target = records.firstOrNull?.target ?? '';
         if (target.isNotEmpty) {
           log('$runtimeType::lookupJmapUrl → ✅ Success via ${priority.label}: $target');
-          return target;
+          return DnsLookupResult(
+            target: target,
+            isEncrypted: priority.isEncrypted,
+          );
         }
         log('$runtimeType::lookupJmapUrl → ⚠️ No records via ${priority.label}, continuing...');
       } on TimeoutException catch (_) {

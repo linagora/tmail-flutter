@@ -48,13 +48,25 @@ class OpenAppDeepLinkData extends DeepLinkData {
 
   String get jmapHost => Uri.tryParse(jmapUrl)?.host ?? jmapUrl;
 
+  static final RegExp _hiddenOrSpacing = RegExp(
+    r'[\s\u0000-\u001F\u007F-\u009F\u061C\u200E\u200F\u202A-\u202E\u2066-\u2069]+',
+  );
+
+  /// Collapses whitespace, control and bidi characters, so a username shown in
+  /// a dialog can't hide or reorder what the user reads.
+  static String displayUsernameOf(String value) =>
+      value.replaceAll(_hiddenOrSpacing, ' ').trim();
+
+  /// Two usernames are the same account when they read the same in a dialog.
+  static bool isSameUsername(String first, String second) =>
+      displayUsernameOf(first).toLowerCase() ==
+      displayUsernameOf(second).toLowerCase();
+
   DateTime? _getExpiredTime() {
     return expiresIn != null
         ? DateTime.now().add(Duration(seconds: expiresIn!))
         : null;
   }
-
-  bool isLoggedInWith(String currentUsername) => username == currentUsername;
 
   TokenOIDC get tokenOIDC {
     return TokenOIDC(

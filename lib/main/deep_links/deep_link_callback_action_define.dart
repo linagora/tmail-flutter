@@ -8,4 +8,4 @@ typedef OnDeepLinkSuccessCallback = Function(DeepLinkData deepLinkData);
 
 typedef OnDeepLinkFailureCallback = Function();
 
-typedef OnDeepLinkConfirmLogoutCallback<T> = Function(T t);
+typedef OnDeepLinkConfirmLogoutCallback<T> = Future<void> Function(T t);

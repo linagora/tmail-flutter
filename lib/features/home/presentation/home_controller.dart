@@ -152,7 +152,9 @@ class HomeController extends ReloadableController {
     return null;
   }
 
-  void _handleLogOutAndSignInNewAccount({
+  /// Completes once the logout and the sign-in to the link account are done,
+  /// so no other sign-in link is handled meanwhile.
+  Future<void> _handleLogOutAndSignInNewAccount({
     required Success authenticationViewStateSuccess,
     required PersonalAccount personalAccount,
     required OpenAppDeepLinkData openAppDeepLinkData,
@@ -171,7 +173,7 @@ class HomeController extends ReloadableController {
       );
     }
 
-    _getSessionActionToLogOut(
+    return _getSessionActionToLogOut(
       authenticationViewStateSuccess: authenticationViewStateSuccess,
       personalAccount: personalAccount,
       openAppDeepLinkData: openAppDeepLinkData,
@@ -186,8 +188,8 @@ class HomeController extends ReloadableController {
     try {
       final sessionViewState = await getSessionInteractor.execute().last;
 
-      sessionViewState.fold(
-        (failure) => _handleGetSessionFailureToLogOut(authenticationViewStateSuccess),
+      await sessionViewState.fold(
+        (failure) async => _handleGetSessionFailureToLogOut(authenticationViewStateSuccess),
         (success) => _handleGetSessionSuccessToLogOut(
           sessionViewStateSuccess: success,
           authenticationViewStateSuccess: authenticationViewStateSuccess,
@@ -201,19 +203,19 @@ class HomeController extends ReloadableController {
     }
   }
 
-  void _handleGetSessionSuccessToLogOut({
+  Future<void> _handleGetSessionSuccessToLogOut({
     required Success sessionViewStateSuccess,
     required Success authenticationViewStateSuccess,
     required PersonalAccount personalAccount,
     required OpenAppDeepLinkData openAppDeepLinkData,
-  }) {
+  }) async {
     if (sessionViewStateSuccess is GetSessionSuccess) {
-      logoutToSignInNewAccount(
+      await logoutToSignInNewAccount(
         session: sessionViewStateSuccess.session,
         accountId: personalAccount.accountId!,
-        onFailureCallback: ({exception}) {
+        onFailureCallback: ({exception}) async {
           if (exception is UserCancelledLogoutOIDCFlowException) {
-            _deepLinksManager?.autoSignInViaDeepLink(
+            await _deepLinksManager?.autoSignInViaDeepLink(
               openAppDeepLinkData: openAppDeepLinkData,
               onFailureCallback: () => _continueUsingTheApp(authenticationViewStateSuccess),
               onAutoSignInSuccessCallback: _handleAutoSignInViaDeepLinkSuccess,
@@ -280,6 +282,7 @@ class HomeController extends ReloadableController {
             _deepLinksManager!.handleOpenAppDeepLinks(
               openAppDeepLinkData: deepLinkData,
               isSignedIn: false,
+              isCallerActive: () => !isClosed,
               onFailureCallback: goToLogin,
               onAutoSignInSuccessCallback: _handleAutoSignInViaDeepLinkSuccess
             );
@@ -316,6 +319,7 @@ class HomeController extends ReloadableController {
             _deepLinksManager!.handleOpenAppDeepLinks(
               openAppDeepLinkData: deepLinkData,
               isSignedIn: true,
+              isCallerActive: () => !isClosed,
               username: personalAccount?.userName,
               onConfirmLogoutCallback: (openAppDeepLinkData) => _handleLogOutAndSignInNewAccount(
                 authenticationViewStateSuccess: success,

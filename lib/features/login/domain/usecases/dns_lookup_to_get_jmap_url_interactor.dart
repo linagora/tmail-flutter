@@ -12,8 +12,12 @@ class DNSLookupToGetJmapUrlInteractor {
   Stream<Either<Failure, Success>> execute(String emailAddress) async* {
     try {
       yield Right<Failure, Success>(DNSLookupToGetJmapUrlLoading());
-      final jmapUrl = await _loginRepository.dnsLookupToGetJmapUrl(emailAddress);
-      yield Right<Failure, Success>(DNSLookupToGetJmapUrlSuccess(jmapUrl));
+      final result = await _loginRepository.dnsLookupToGetJmapUrl(emailAddress);
+      yield Right<Failure, Success>(DNSLookupToGetJmapUrlSuccess(
+        result.target,
+        email: emailAddress,
+        isEncryptedSource: result.isEncrypted,
+      ));
     } catch (e) {
       yield Left<Failure, Success>(DNSLookupToGetJmapUrlFailure(
         e,

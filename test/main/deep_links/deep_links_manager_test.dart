@@ -5,6 +5,7 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -13,6 +14,7 @@ import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/auto_sign_in_via_deep_link_interactor.dart';
+import 'package:tmail_ui_user/main/deep_links/deep_link_account_verifier.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_action_type.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
 import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
@@ -30,6 +32,12 @@ class _RecordingAppToast extends AppToast {
     String? leadingSVGIcon,
     Duration? duration,
   }) => errors.add(message);
+}
+
+/// The server reports the link username as the account of the link token.
+class _LinkUsernameAccountVerifier extends DeepLinkAccountVerifier {
+  @override
+  Future<String> getAccountUsername(OpenAppDeepLinkData data) async => data.username;
 }
 
 class _FakeAutoSignInInteractor extends Fake implements AutoSignInViaDeepLinkInteractor {
@@ -53,7 +61,7 @@ void main() {
   group('DeepLinksManager::test', () {
     group('parseDeepLink::test', () {
       test('SHOULD returns correct DeepLinkData for valid openApp deep link', () {
-        const url = 'twake://openApp/some-data';
+        const url = 'twakemail.mobile://openApp/some-data';
         final result = deepLinkManager.parseDeepLink(url);
 
         expect(result, isNotNull);
@@ -311,20 +319,23 @@ void main() {
     setUp(() {
       Get.put(ResponsiveUtils());
       Get.put(ImagePaths());
+      Get.put<DeepLinkAccountVerifier>(_LinkUsernameAccountVerifier());
+      deepLinkManager.resetHandledSignInLinks();
     });
 
     tearDown(Get.reset);
 
     Future<void> pumpApp(WidgetTester tester) async {
-      await tester.pumpWidget(const GetMaterialApp(
-        localizationsDelegates: [
+      await tester.pumpWidget(GetMaterialApp(
+        localizationsDelegates: const [
           AppLocalizationsDelegate(),
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: LocalizationService.supportedLocales,
-        home: Scaffold(),
+        home: const Scaffold(),
+        builder: FlutterSmartDialog.init(),
       ));
       await tester.pumpAndSettle();
     }
