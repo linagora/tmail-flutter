@@ -442,9 +442,19 @@ abstract class HiveCacheClient<T> {
     await deleteMultipleItem(matching);
   }
 
-  Future<List<String>> encodedKeys({bool isolated = true}) async {
-    final items = await getMapItems(isolated: isolated);
-    return items.keys.toList();
+  Future<List<String>> encodedKeys({bool isolated = true}) {
+    return _runWithRecovery(isolated, () async {
+      final List<dynamic> rawKeys;
+      if (isolated) {
+        final boxItem = await openIsolatedBox();
+        rawKeys = await boxItem.keys;
+      } else {
+        final boxItem = await openBox();
+        rawKeys = boxItem.keys.toList();
+      }
+      log('$runtimeType::encodedKeys: Length of keys is ${rawKeys.length}');
+      return rawKeys.map((key) => key.toString()).toList();
+    });
   }
 
   Future<void> closeBox({bool isolated = true}) async {

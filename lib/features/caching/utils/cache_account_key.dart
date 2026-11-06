@@ -12,18 +12,16 @@ class CacheAccountKey {
 
   /// The account id when [decoded] belongs to [userName], otherwise null.
   ///
-  /// The user name must be a whole part, so another username that only starts
-  /// with it is left alone. The account id is the part before the last match,
-  /// so an account id equal to the user name is kept (ADR-0027, ADR-0114).
+  /// ADR-0027 stores `objectId|accountId|userName`. A composer key keeps that
+  /// order and adds its id after the user name. Only the third part is the
+  /// user, so a username in the account id is left alone (ADR-0114).
   static String? accountIdOf(String decoded, String userName) {
     if (userName.isEmpty) return null;
     final parts = decoded.split('|');
-    for (var index = parts.length - 1; index >= 1; index--) {
-      if (parts[index] == userName && parts[index - 1].isNotEmpty) {
-        return parts[index - 1];
-      }
-    }
-    return null;
+    if (parts.length < 3) return null;
+    if (parts[2] != userName) return null;
+    if (parts[1].isEmpty) return null;
+    return parts[1];
   }
 
   static bool belongsTo({

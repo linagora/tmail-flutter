@@ -46,26 +46,23 @@ void main() {
       expect(CacheAccountKey.accountIdOf('email|$accountId|', userName), isNull);
     });
 
-    test('uses the part before the last username, even when it equals the username', () {
+    test('reads the account id from the second part when the third is this user', () {
       expect(CacheAccountKey.accountIdOf('obj|user|user', 'user'), 'user');
       expect(CacheAccountKey.accountIdOf('obj|acc|user', 'user'), 'acc');
       expect(CacheAccountKey.accountIdOf('user|acc|user', 'user'), 'acc');
       expect(CacheAccountKey.accountIdOf('obj|acc|user2', 'user'), isNull);
+      expect(CacheAccountKey.accountIdOf('out|alice|bob', 'alice'), isNull);
+      expect(CacheAccountKey.accountIdOf('$accountId|$userName', userName), isNull);
     });
 
     test('resolves every stored key shape for this user', () {
       const shapes = <String, String>{
-        'composer account': '$accountId|$userName',
         'composer entry': 'composer-1|$accountId|$userName',
         'thread email': 'email-1|$accountId|$userName',
         'thread email id': 'email-id|$accountId|$userName',
-        'thread nested': '$accountId|$userName',
         'opened email': 'opened-1|$accountId|$userName',
-        'opened nested': '$accountId|$userName',
         'new email': 'new-1|$accountId|$userName',
-        'new nested': '$accountId|$userName',
         'sending email': 'sending-1|$accountId|$userName',
-        'sending nested': '$accountId|$userName',
         'web composer': 'reopenComposerBrowser|$accountId|$userName|composer-1',
       };
 

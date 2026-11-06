@@ -42,7 +42,7 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
   final OpenedEmailHiveCacheClient _openedEmailCacheClient;
   final SendingEmailHiveCacheClient _sendingEmailCacheClient;
   final FcmCacheClient _fcmCacheClient;
-  final ComposerHiveCacheClient? _composerHiveCacheClient;
+  final ComposerHiveCacheClient? Function() _readComposerHiveCacheClient;
   final KeychainSharingManager _keychainSharingManager;
   final FileUtils _fileUtils;
   final WebSessionStorageKeys _sessionStorageKeys;
@@ -58,7 +58,7 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
     required FcmCacheClient fcmCacheClient,
     required KeychainSharingManager keychainSharingManager,
     required FileUtils fileUtils,
-    ComposerHiveCacheClient? composerHiveCacheClient,
+    ComposerHiveCacheClient? Function()? composerHiveCacheClient,
     WebSessionStorageKeys? sessionStorageKeys,
     WebSessionStorageRemove? sessionStorageRemove,
   })  : _mailboxCacheClient = mailboxCacheClient,
@@ -68,7 +68,7 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
         _openedEmailCacheClient = openedEmailCacheClient,
         _sendingEmailCacheClient = sendingEmailCacheClient,
         _fcmCacheClient = fcmCacheClient,
-        _composerHiveCacheClient = composerHiveCacheClient,
+        _readComposerHiveCacheClient = composerHiveCacheClient ?? (() => null),
         _keychainSharingManager = keychainSharingManager,
         _fileUtils = fileUtils,
         _sessionStorageKeys = sessionStorageKeys ?? _windowSessionStorageKeys,
@@ -84,6 +84,9 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
 
   static final _composerKeyPrefix =
       '${EmailActionType.reopenComposerBrowser.name}|';
+
+  ComposerHiveCacheClient? get _composerHiveCacheClient =>
+      _readComposerHiveCacheClient();
 
   List<_KeyedBox> get _boxes {
     final composer = _composerHiveCacheClient;
@@ -113,6 +116,7 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
       _KeyedBox(
         _sendingEmailCacheClient.accountIdsForUser,
         _sendingEmailCacheClient.deleteKeysForAccount,
+        countsTowardLost: true,
       ),
       _KeyedBox(
         _fcmCacheClient.accountIdsForUser,
@@ -122,6 +126,7 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
         _KeyedBox(
           composer.accountIdsForUser,
           composer.deleteKeysForAccount,
+          countsTowardLost: true,
         ),
     ];
   }
@@ -172,13 +177,24 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
       accountId.asString,
       userName.value,
       keepContentRows: contentFailures > 0,
+      countsTowardLost: false,
     );
-    await _deleteComposerSnapshots(userName, accountId);
-    await _removeNotifications(userName, emailIds);
     final failedSteps = contentFailures + boxFailures;
     if (failedSteps > 0) {
+      // Unsent mail and drafts stay, so the next scan can still report them.
       throw StateError('EndedDelegationStoreImpl::delete: $failedSteps failed');
     }
+    final lostFailures = await _deleteAccountBoxes(
+      accountId.asString,
+      userName.value,
+      keepContentRows: false,
+      countsTowardLost: true,
+    );
+    if (lostFailures > 0) {
+      throw StateError('EndedDelegationStoreImpl::delete: $lostFailures failed');
+    }
+    await _deleteComposerSnapshots(userName, accountId);
+    await _removeNotifications(userName, emailIds);
   }
 
   /// Opened and new rows stay when a file step failed so the next scan can retry.
@@ -186,15 +202,18 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
     String accountId,
     String userName, {
     required bool keepContentRows,
+    required bool countsTowardLost,
   }) async {
     var failed = 0;
     for (final box in _boxes) {
+      if (box.countsTowardLost != countsTowardLost) continue;
       if (keepContentRows && box.keepsContentPaths) continue;
       try {
         await box.delete(accountId, userName);
       } catch (error) {
         failed++;
         logWarning('EndedDelegationStoreImpl::delete: ${error.runtimeType}');
+        if (countsTowardLost) break;
       }
     }
     return failed;
@@ -478,10 +497,12 @@ class _KeyedBox {
   final Future<Set<String>> Function(String userName) accountIds;
   final Future<void> Function(String accountId, String userName) delete;
   final bool keepsContentPaths;
+  final bool countsTowardLost;
 
   _KeyedBox(
     this.accountIds,
     this.delete, {
     this.keepsContentPaths = false,
+    this.countsTowardLost = false,
   });
 }

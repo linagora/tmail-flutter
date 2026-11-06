@@ -44,7 +44,7 @@ EndedDelegationStore _endedDelegationStore() {
     fcmCacheClient: Get.find<FcmCacheClient>(),
     keychainSharingManager: Get.find<KeychainSharingManager>(),
     fileUtils: Get.find<FileUtils>(),
-    composerHiveCacheClient: Get.isRegistered<ComposerHiveCacheClient>()
+    composerHiveCacheClient: () => Get.isRegistered<ComposerHiveCacheClient>()
         ? Get.find<ComposerHiveCacheClient>()
         : null,
   );

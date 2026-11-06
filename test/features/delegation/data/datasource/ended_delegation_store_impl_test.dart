@@ -188,7 +188,13 @@ void main() {
         expect(rig.files.deleted, isEmpty);
         expect(rig.opened.memory.items.containsKey(openedKey), isTrue);
         expect(rig.fresh.memory.items.containsKey(newKey), isTrue);
-        for (final box in rig.otherBoxes) {
+        expect(rig.sending.memory.items, isNotEmpty);
+        for (final box in [
+          rig.mailbox.memory,
+          rig.email.memory,
+          rig.state.memory,
+          rig.fcm.memory,
+        ]) {
           expect(box.items, isEmpty);
         }
 
@@ -202,8 +208,75 @@ void main() {
         expect(rig.files.deleted, ['opened-body', 'new-body']);
         expect(rig.opened.memory.items, isEmpty);
         expect(rig.fresh.memory.items, isEmpty);
+        expect(rig.sending.memory.items, isEmpty);
       },
     );
+
+    test(
+      'a composer client registered later is still counted and deleted',
+      () async {
+        final composer = _ComposerBox(_Memory());
+        ComposerHiveCacheClient? current;
+        final rig = _Rig(readComposer: () => current);
+        const user = 'user';
+        const account = 'acc';
+        composer.memory.items[TupleKey('c1', account, user).encodeKey] =
+            'draft';
+        current = composer;
+
+        expect(
+          (await rig.store.describe(
+            UserName(user),
+            AccountId(Id(account)),
+          )).draftCount,
+          1,
+        );
+
+        await rig.store.delete(
+          userName: UserName(user),
+          personalAccountId: AccountId(Id('personal')),
+          accountId: AccountId(Id(account)),
+        );
+
+        expect(composer.memory.items, isEmpty);
+      },
+    );
+
+    test('a failed box delete leaves the web draft for the retry', () async {
+      PlatformInfo.isTestingForWeb = true;
+      try {
+        final session = DelegationFixtures.session();
+        final gone = DelegationFixtures.unknownAccountId;
+        final user = session.username.value;
+        final web = _Session();
+        web.items['reopenComposerBrowser|${gone.id.value}|$user|c1'] = 'draft';
+        final rig = _Rig(session: web);
+        rig.mailbox.memory.items[TupleKey('box', gone.id.value, user).encodeKey] =
+            null;
+        rig.mailbox.memory.deleteError = StateError('box');
+
+        await expectLater(
+          rig.store.delete(
+            userName: session.username,
+            personalAccountId: session.accountId,
+            accountId: gone,
+          ),
+          throwsA(isA<StateError>()),
+        );
+        expect(web.items, isNotEmpty);
+
+        rig.mailbox.memory.deleteError = null;
+        await rig.store.delete(
+          userName: session.username,
+          personalAccountId: session.accountId,
+          accountId: gone,
+        );
+
+        expect(web.items, isEmpty);
+      } finally {
+        PlatformInfo.isTestingForWeb = false;
+      }
+    });
 
     test('keeps content rows when reading them fails', () async {
       final rig = _Rig();
@@ -375,15 +448,18 @@ void main() {
 }
 
 class _Rig {
-  _Rig({_ComposerBox? composer, _Session? session})
-    : mailbox = _MailboxBox(_Memory()),
-      email = _EmailBox(_Memory()),
-      state = _StateBox(_Memory()),
-      opened = _OpenedBox(_Memory()),
-      fresh = _NewBox(_Memory()),
-      sending = _SendingBox(_Memory()),
-      fcm = _FcmBox(_Memory()),
-      files = _Files() {
+  _Rig({
+    _ComposerBox? composer,
+    ComposerHiveCacheClient? Function()? readComposer,
+    _Session? session,
+  }) : mailbox = _MailboxBox(_Memory()),
+       email = _EmailBox(_Memory()),
+       state = _StateBox(_Memory()),
+       opened = _OpenedBox(_Memory()),
+       fresh = _NewBox(_Memory()),
+       sending = _SendingBox(_Memory()),
+       fcm = _FcmBox(_Memory()),
+       files = _Files() {
     store = EndedDelegationStoreImpl(
       mailboxCacheClient: mailbox,
       emailCacheClient: email,
@@ -394,7 +470,7 @@ class _Rig {
       fcmCacheClient: fcm,
       keychainSharingManager: _Keychain(),
       fileUtils: files,
-      composerHiveCacheClient: composer,
+      composerHiveCacheClient: readComposer ?? (() => composer),
       sessionStorageKeys: session?.read,
       sessionStorageRemove: session?.remove,
     );
