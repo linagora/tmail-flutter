@@ -38,7 +38,7 @@ RUN --mount=type=secret,id=sentry_auth_token \
 FROM nginx:alpine@sha256:df221db836e1754089190208cee7eeda94f233197056426eda74a43ab1abeac2
 RUN apk add gzip
 COPY --from=build-env /app/server/nginx.conf /etc/nginx
-COPY --from=build-env /app/server/csp-headers.conf.template /etc/nginx/templates/csp-headers.conf.template
+COPY --from=build-env /app/server/csp-headers.conf.template /etc/nginx/csp-headers.conf.template
 COPY --from=build-env --chmod=755 /app/server/docker-entrypoint.d/ /docker-entrypoint.d/
 COPY --from=build-env /app/build/web /usr/share/nginx/html
 ENV CSP_FRAME_ANCESTORS="'self'"
@@ -47,8 +47,6 @@ ENV CSP_SCRIPT_SRC=""
 ENV CSP_CONNECT_SRC=""
 ENV CSP_IMG_SRC=""
 ENV CSP_REPORT_URI=""
-ENV NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx
-ENV NGINX_ENVSUBST_FILTER=^CSP_
-RUN /docker-entrypoint.d/20-envsubst-on-templates.sh && /docker-entrypoint.d/25-csp-report-uri.sh && nginx -t
+RUN /docker-entrypoint.d/21-render-csp-headers.sh && /docker-entrypoint.d/25-csp-report-uri.sh && nginx -t
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
