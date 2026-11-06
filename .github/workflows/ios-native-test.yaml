@@ -1,0 +1,123 @@
+name: iOS native tests
+
+on:
+  pull_request:
+    paths:
+      - "ios/**"
+      - ".github/workflows/ios-native-test.yaml"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - "scripts/prebuild.sh"
+      - "scripts/setup-ios.sh"
+      - "scripts/fetch-web-vendor.sh"
+  workflow_dispatch:
+
+concurrency:
+  group: ios-native-test-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: 3.38.9
+  XCODE_VERSION: 26.2
+
+jobs:
+  ios-native-test:
+    runs-on: macos-15 # Xcode 26 needs macOS 15.
+    timeout-minutes: 60 # Leaves room for setup after the 35-minute test step.
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+
+      - name: Setup flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+          cache-key: deps-${{ hashFiles('pubspec.lock') }}
+          cache-path: ${{ runner.tool_cache }}/flutter
+
+      - name: Select Xcode version
+        uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: Run prebuild
+        run: ./scripts/prebuild.sh
+
+      - name: Setup iOS environment
+        run: ../scripts/setup-ios.sh
+        working-directory: ios
+
+      - name: Pick iOS simulator
+        id: simulator
+        # The Xcode 26 SDK test host crashes on an older iOS runtime.
+        run: |
+          runtime=$(xcrun simctl list runtimes available -j | jq -r '[.runtimes[] | select(.platform == "iOS")] | sort_by(.version | split(".") | map(tonumber)) | last | .identifier // empty')
+          udid=$(xcrun simctl list devices available -j | jq -r --arg runtime "$runtime" '[.devices[$runtime][]? | select(.name != null and (.name | startswith("iPhone")))][0].udid // empty')
+          name=$(xcrun simctl list devices available -j | jq -r --arg runtime "$runtime" '[.devices[$runtime][]? | select(.name != null and (.name | startswith("iPhone")))][0].name // empty')
+          if [ -z "$runtime" ] || [ -z "$udid" ] || [ -z "$name" ]; then
+            detail="$(xcodebuild -version; xcrun simctl list runtimes available)"
+            detail=$(printf '%s' "$detail" | tr '\n' ' ')
+            echo "::error title=No iOS simulator::${detail}"
+            exit 1
+          fi
+          echo "Picked ${name} (${runtime}) ${udid}"
+          echo "udid=${udid}" >> "$GITHUB_OUTPUT"
+
+      - name: Run native unit tests
+        id: test
+        # Below the job timeout so a hang fails this step and the results upload still runs.
+        timeout-minutes: 35
+        env:
+          SIMULATOR_UDID: ${{ steps.simulator.outputs.udid }}
+        # github-actions renderer turns compile errors and assertion failures into file and line annotations.
+        run: |
+          # xcodebuild refuses to replace an existing result bundle.
+          rm -rf build/TwakeMailTests.xcresult
+          args=(
+            xcodebuild test
+            -workspace ios/Runner.xcworkspace
+            -scheme Runner
+            -only-testing:TwakeMailTests
+            -destination "id=${SIMULATOR_UDID}"
+            -resultBundlePath build/TwakeMailTests.xcresult
+            # Serial logs keep the assertion file and line for the annotations.
+            -parallel-testing-enabled NO
+            CODE_SIGNING_ALLOWED=NO
+          )
+          if command -v xcbeautify >/dev/null 2>&1; then
+            # A failing xcbeautify must not replace the xcodebuild status.
+            mkdir -p build
+            status=0
+            "${args[@]}" > build/xcodebuild.log 2>&1 || status=$?
+            xcbeautify --renderer github-actions < build/xcodebuild.log || { echo "::warning title=xcbeautify failed::raw xcodebuild output below"; cat build/xcodebuild.log; }
+            if [ "$status" -ne 0 ]; then
+              # A launch crash is not an assertion, so xcbeautify leaves it unannotated.
+              message=$(grep -E -A1 '^Testing failed:|^dyld\[[0-9]+\]:|^\*\* (BUILD|TEST) FAILED \*\*' build/xcodebuild.log | grep -v '^--$' | head -n 20 | sed 's/%/%25/g' | awk 'NR > 1 { printf "%%0A" } { printf "%s", $0 }' || true)
+              if [ -n "$message" ]; then
+                echo "::error title=xcodebuild failed::${message}"
+              else
+                echo "::error title=xcodebuild failed::xcodebuild exited ${status}. See build/xcodebuild.log"
+              fi
+            fi
+            exit "$status"
+          else
+            echo "::warning title=xcbeautify missing::raw xcodebuild output below"
+            "${args[@]}"
+          fi
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ios-native-tests-xcresult
+          path: |
+            build/TwakeMailTests.xcresult
+            build/xcodebuild.log
+          retention-days: 7
+          if-no-files-found: ignore
