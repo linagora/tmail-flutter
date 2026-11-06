@@ -71,6 +71,8 @@ jobs:
 
       - name: Run native unit tests
         id: test
+        # Below the job timeout so a hang fails this step and the results upload still runs.
+        timeout-minutes: 35
         env:
           SIMULATOR_UDID: ${{ steps.simulator.outputs.udid }}
         # github-actions renderer turns compile errors and assertion failures into file and line annotations.
@@ -93,7 +95,7 @@ jobs:
             mkdir -p build
             status=0
             "${args[@]}" > build/xcodebuild.log 2>&1 || status=$?
-            xcbeautify --renderer github-actions < build/xcodebuild.log || echo "::warning title=xcbeautify failed::raw log kept at build/xcodebuild.log"
+            xcbeautify --renderer github-actions < build/xcodebuild.log || { echo "::warning title=xcbeautify failed::raw xcodebuild output below"; cat build/xcodebuild.log; }
             if [ "$status" -ne 0 ]; then
               # A launch crash is not an assertion, so xcbeautify leaves it unannotated.
               message=$(grep -E -A1 '^Testing failed:|^dyld\[[0-9]+\]:|^\*\* (BUILD|TEST) FAILED \*\*' build/xcodebuild.log | grep -v '^--$' | head -n 20 | sed 's/%/%25/g' | awk 'NR > 1 { printf "%%0A" } { printf "%s", $0 }' || true)
