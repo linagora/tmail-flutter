@@ -44,7 +44,7 @@ class WebComposerRobot extends MobileComposerRobot {
   }
 
   @override
-  Future<void> grantContactPermission() async {}
+  Future<void> grantContactPermission({Duration? timeout}) async {}
 
   @override
   Future<void> addContent(String content) async {

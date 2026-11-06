@@ -140,6 +140,7 @@ patrol test -v \
     --profile \
     --web-timeout=540000 \
     --tags=web \
+    --exclude-tags=memory \
     --device=chrome \
     --web-port=3000 \
     --web-headless=true \

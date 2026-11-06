@@ -33,6 +33,7 @@ class TestBase {
     required BaseScenario Function(PatrolIntegrationTester $, RobotFactory robots) scenarioBuilder,
     List<TestTags> tags = const [TestTags.ios],
     Map<String, String> envOverrides = const {},
+    Timeout? timeout,
   }) {
     patrolSetUp(_setup);
 
@@ -41,7 +42,7 @@ class TestBase {
     patrolTest(
       description,
       // Fail stuck tests before they consume the CI build timeout.
-      timeout: const Timeout(_testTimeout),
+      timeout: timeout ?? const Timeout(_testTimeout),
       config: const PatrolTesterConfig(
         settlePolicy: SettlePolicy.trySettle,
         existsTimeout: Duration(seconds: 30),

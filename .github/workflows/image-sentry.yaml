@@ -148,3 +148,11 @@ jobs:
     uses: ./.github/workflows/security-release.yaml # zizmor: ignore[self-repository]
     # the report secrets must reach the called workflow
     secrets: inherit # zizmor: ignore[secrets-inherit]
+
+  memory-leak-check:
+    name: Memory leak check
+    # manual image builds aren't release tags
+    if: github.event_name == 'push'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/memory-leak-check.yaml # zizmor: ignore[self-repository]

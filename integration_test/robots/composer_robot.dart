@@ -88,9 +88,11 @@ class ComposerRobot extends CoreRobot {
     await $(const ValueKey(UiKeys.sendEmailButton)).tap();
   }
 
-  Future<void> grantContactPermission() async {
-    if (await native
-        .isPermissionDialogVisible(timeout: const Duration(seconds: 5))) {
+  Future<void> grantContactPermission({
+    Duration? timeout,
+  }) async {
+    if (await native.isPermissionDialogVisible(
+        timeout: timeout ?? const Duration(seconds: 5))) {
       await native.grantPermissionWhenInUse();
     }
   }

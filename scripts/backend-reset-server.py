@@ -29,6 +29,7 @@ Environment variables:
   LEASE_TIMEOUT             Seconds a /lease waits for a free backend; under the client's 3 min (default: 150)
   POOL_READY_TIMEOUT        Seconds startup waits for POOL_MIN_FREE free slots (default: 300)
   RUN_TIMEOUT               Seconds one docker or curl call may take before the attempt fails (default: 300)
+  POOL_BOB_QUOTA_BYTES      Mailbox size quota of bob@example.com in each slot (default: 50000000)
   WORK_DIR                  Repo root, used to resolve the compose file (default: cwd)
   BACKUP_ZIP                Path to backup.zip on the host (default: provisioning/... relative to WORK_DIR)
 """
@@ -62,6 +63,7 @@ LEASE_TTL               = float(os.environ.get("LEASE_TTL", "600"))
 LEASE_TIMEOUT           = float(os.environ.get("LEASE_TIMEOUT", "150"))
 POOL_READY_TIMEOUT      = float(os.environ.get("POOL_READY_TIMEOUT", "300"))
 RUN_TIMEOUT             = float(os.environ.get("RUN_TIMEOUT", "300"))
+POOL_BOB_QUOTA_BYTES    = int(os.environ.get("POOL_BOB_QUOTA_BYTES", "50000000"))
 WORK_DIR                = os.environ.get("WORK_DIR", os.getcwd())
 POOL_LOG_DIR            = os.environ.get("POOL_LOG_DIR", os.getcwd())
 BACKUP_ZIP              = os.environ.get(
@@ -163,7 +165,7 @@ def provision(port: int) -> None:
     for member in ("bob", "alice"):
         _webadmin_ok(port, "PUT", f"{team}/members/{member}@{_TEST_DOMAIN}?role=member")
     _webadmin_ok(port, "PUT", f"/quota/users/bob@{_TEST_DOMAIN}",
-                 data=json.dumps({"count": 200, "size": 50000000}))
+                 data=json.dumps({"count": 200, "size": POOL_BOB_QUOTA_BYTES}))
 
 
 def _slot_env(n: int) -> Dict[str, str]:

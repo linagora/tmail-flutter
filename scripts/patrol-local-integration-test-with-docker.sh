@@ -58,6 +58,7 @@ echo "Building the app and running tests..."
 flutter build apk --config-only
 patrol test \
     --hide-test-steps \
+    --exclude-tags=memory \
     --dart-define=USERNAME="$BOB" \
     --dart-define=PASSWORD="$BOB" \
     --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \
