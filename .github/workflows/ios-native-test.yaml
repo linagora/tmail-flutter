@@ -1,0 +1,101 @@
+name: iOS native tests
+
+on:
+  pull_request:
+    paths:
+      - "ios/**"
+      - ".github/workflows/ios-native-test.yaml"
+  workflow_dispatch:
+
+concurrency:
+  group: ios-native-test-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: 3.38.9
+  XCODE_VERSION: 26.2
+
+jobs:
+  ios-native-test:
+    runs-on: macos-15 # Xcode 26 needs macOS 15.
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Setup flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+          cache-key: deps-${{ hashFiles('pubspec.lock') }}
+          cache-path: ${{ runner.tool_cache }}/flutter
+
+      - name: Setup Firebase env
+        env:
+          FIREBASE_ENV: ${{ secrets.FIREBASE_ENV }}
+        run: ./scripts/setup-firebase.sh
+
+      - name: Select Xcode version
+        uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: Run prebuild
+        run: ./scripts/prebuild.sh
+
+      - name: Setup iOS environment
+        run: ../scripts/setup-ios.sh
+        working-directory: ios
+
+      - name: Pick iOS simulator
+        id: simulator
+        # A fixed device name disappears when the runner image drops that simulator.
+        run: |
+          udid=$(xcrun simctl list devices available -j | jq -r '[.devices[][] | select(.name | startswith("iPhone"))][0].udid // empty')
+          if [ -z "$udid" ]; then
+            detail="$(xcodebuild -version; xcrun simctl list runtimes available)"
+            detail=$(printf '%s' "$detail" | tr '\n' ' ')
+            echo "::error title=No iOS simulator::${detail}"
+            exit 1
+          fi
+          name=$(xcrun simctl list devices available -j | jq -r --arg udid "$udid" '[.devices[][] | select(.udid == $udid)][0].name')
+          echo "Picked ${name} ${udid}"
+          echo "udid=${udid}" >> "$GITHUB_OUTPUT"
+
+      - name: Run native unit tests
+        id: test
+        # github-actions renderer turns compile errors and assertion failures into file and line annotations.
+        run: |
+          set -o pipefail
+          # xcodebuild refuses to replace an existing result bundle.
+          rm -rf build/TwakeMailTests.xcresult
+          args=(
+            xcodebuild test
+            -workspace ios/Runner.xcworkspace
+            -scheme Runner
+            -only-testing:TwakeMailTests
+            -destination "id=${{ steps.simulator.outputs.udid }}"
+            -resultBundlePath build/TwakeMailTests.xcresult
+            # Serial logs keep the assertion file and line for the annotations.
+            -parallel-testing-enabled NO
+            CODE_SIGNING_ALLOWED=NO
+          )
+          if command -v xcbeautify >/dev/null 2>&1; then
+            "${args[@]}" | xcbeautify --renderer github-actions
+          else
+            echo "::warning title=xcbeautify missing::raw xcodebuild output below"
+            "${args[@]}"
+          fi
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ios-native-tests-xcresult
+          path: build/TwakeMailTests.xcresult
+          retention-days: 7
+          if-no-files-found: ignore
