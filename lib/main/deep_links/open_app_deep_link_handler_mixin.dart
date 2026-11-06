@@ -94,13 +94,15 @@ mixin OpenAppDeepLinkHandlerMixin {
       final accountUsername = await _withLoading(
         () => _verifyLinkAccount(openAppDeepLinkData),
       );
-      if (accountUsername == null) {
-        onFailureCallback?.call();
+      // The caller may have closed while the server answered: none of its
+      // callbacks may run then, on success or on failure.
+      if (isCallerActive?.call() == false) {
+        logWarning('DeepLinksManager::handleOpenAppDeepLinks: the caller closed while the link was verified');
         return;
       }
 
-      if (isCallerActive?.call() == false) {
-        logWarning('DeepLinksManager::handleOpenAppDeepLinks: the caller closed while the link was verified');
+      if (accountUsername == null) {
+        onFailureCallback?.call();
         return;
       }
 

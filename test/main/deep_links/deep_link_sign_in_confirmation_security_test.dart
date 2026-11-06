@@ -66,6 +66,19 @@ class _FailingAccountVerifier extends DeepLinkAccountVerifier {
   }
 }
 
+/// Answers only when the test completes it, so the test can act while the
+/// link is being verified.
+class _PendingAccountVerifier extends DeepLinkAccountVerifier {
+  final Completer<String> _result = Completer();
+
+  void succeed(String username) => _result.complete(username);
+
+  void fail(Object error) => _result.completeError(error);
+
+  @override
+  Future<String> getAccountUsername(OpenAppDeepLinkData data) => _result.future;
+}
+
 DioException _dioError(DioExceptionType type, {int? statusCode}) => DioException(
   requestOptions: RequestOptions(path: '/.well-known/jmap'),
   type: type,
@@ -509,6 +522,60 @@ void main() {
         expect(signInDialog, findsNothing);
         expect(interactor.calls, 0);
         expect(failed, isFalse);
+      },
+    );
+
+    testWidgets(
+      'SHOULD NOT run the failure callback WHEN the caller closed '
+      'while a failing verification was pending',
+      (tester) async {
+        final verifier = _PendingAccountVerifier();
+        Get.replace<DeepLinkAccountVerifier>(verifier);
+        await pumpApp(tester);
+        var isCallerActive = true;
+        var failed = false;
+
+        deepLinkManager.handleOpenAppDeepLinks(
+          openAppDeepLinkData: _link(),
+          isSignedIn: false,
+          isCallerActive: () => isCallerActive,
+          onFailureCallback: () => failed = true,
+        );
+        await tester.pump();
+
+        isCallerActive = false;
+        verifier.fail(_dioError(DioExceptionType.connectionTimeout));
+        await tester.pumpAndSettle();
+        await tester.pump(const Duration(milliseconds: 300));
+
+        expect(failed, isFalse);
+        expect(signInDialog, findsNothing);
+        expect(interactor.calls, 0);
+      },
+    );
+
+    testWidgets(
+      'SHOULD run the failure callback WHEN the caller is still open '
+      'after a failing verification',
+      (tester) async {
+        final verifier = _PendingAccountVerifier();
+        Get.replace<DeepLinkAccountVerifier>(verifier);
+        await pumpApp(tester);
+        var failed = false;
+
+        deepLinkManager.handleOpenAppDeepLinks(
+          openAppDeepLinkData: _link(),
+          isSignedIn: false,
+          isCallerActive: () => true,
+          onFailureCallback: () => failed = true,
+        );
+        await tester.pump();
+
+        verifier.fail(_dioError(DioExceptionType.connectionTimeout));
+        await tester.pumpAndSettle();
+        await tester.pump(const Duration(milliseconds: 300));
+
+        expect(failed, isTrue);
       },
     );
 
