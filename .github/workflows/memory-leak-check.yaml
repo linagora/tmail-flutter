@@ -31,7 +31,7 @@ on:
       - "android/app/build.gradle"
 
 concurrency:
-  group: memory-leak-check-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: memory-leak-check-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
