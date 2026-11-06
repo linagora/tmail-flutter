@@ -125,7 +125,19 @@ void main() {
 
   test('defends against cross-origin iframe selection access', () async {
     final flutterView = appendFlutterView();
-    final iframe = await appendIframe(parent: flutterView, sandboxed: true);
+    // data: is cross-origin in Chrome and has no sandbox attribute, so clearing
+    // goes through getSelection() rather than the postMessage branch.
+    final iframe = web.HTMLIFrameElement()..src = 'data:text/html,<p>x</p>';
+    final loaded = Completer<void>();
+    late JSFunction loadListener;
+    loadListener = ((web.Event _) {
+      iframe.removeEventListener('load', loadListener);
+      loaded.complete();
+    }).toJS;
+    iframe.addEventListener('load', loadListener);
+    flutterView.append(iframe);
+    fixtures.add(iframe);
+    await loaded.future;
     iframe.focus();
     expect(web.document.activeElement, same(iframe));
     expect(() => iframe.contentWindow!.getSelection(), throwsA(anything));
