@@ -57,6 +57,11 @@ void main() {
   );
 
   testWidgets(
+    'SHOULD size a signature preview WHEN its body is laid out after its viewport',
+    _expectSignatureSizedAfterLateBodyLayout,
+  );
+
+  testWidgets(
     'SHOULD report a zero height WHEN the signature is empty',
     _expectEmptySignatureReportsZero,
   );
@@ -347,6 +352,38 @@ Future<void> _expectSignatureSizedAfterLateLayout(WidgetTester tester) async {
   await tester.pump();
 
   expect(_heights(received).last, greaterThan(0));
+  final height =
+      tester.widget<HtmlIframeWidget>(find.byType(HtmlIframeWidget)).height;
+  expect(double.parse(height!), greaterThan(0));
+}
+
+/// The body has no layout box at load and gets one 300 ms later.
+const _bodyLaidOutAfterViewport = '''
+<style>body { display: none; }</style>
+<p>signature</p>
+<script>
+  window.addEventListener('load', function () {
+    setTimeout(function () { document.body.style.display = 'block'; }, 300);
+  });
+</script>''';
+
+/// A frame can have a viewport while its body still measures 0 x 0. The
+/// signature preview has no resize observer, so a 0 posted then would stick.
+Future<void> _expectSignatureSizedAfterLateBodyLayout(
+  WidgetTester tester,
+) async {
+  final viewId =
+      await _pumpSignatureViewer(tester, _bodyLaidOutAfterViewport);
+  final received = _recordViewMessages(viewId);
+  _attachFrameToDocument(tester);
+
+  await tester.runAsync(() => _waitFor(
+        () => _heights(received).any((h) => h > 0),
+        'no positive htmlHeight after the body was laid out',
+      ));
+  await tester.pump();
+
+  expect(_heights(received), everyElement(greaterThan(0)));
   final height =
       tester.widget<HtmlIframeWidget>(find.byType(HtmlIframeWidget)).height;
   expect(double.parse(height!), greaterThan(0));

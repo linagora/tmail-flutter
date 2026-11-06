@@ -157,17 +157,26 @@
         }
 
         var _layoutObserver;
+        // A sandboxed frame can have a viewport while its body is not laid out
+        // yet, and the body then measures 0 x 0. A laid-out body spans the
+        // viewport even when empty, so its width is 0 only before layout (or
+        // when mail CSS hides it, where no size report is better than 0).
+        function isNotLaidOut() {
+          return document.documentElement.clientWidth === 0 ||
+            document.body.scrollWidth === 0;
+        }
         function reportSize() {
-          // A frame without a viewport measures 0; wait for layout, not for content.
-          if (document.documentElement.clientWidth === 0) {
+          // Wait for layout, not for content.
+          if (isNotLaidOut()) {
             if (_layoutObserver) return;
             _layoutObserver = new ResizeObserver(function() {
-              if (document.documentElement.clientWidth === 0) return;
+              if (isNotLaidOut()) return;
               _layoutObserver.disconnect();
               _layoutObserver = undefined;
               reportSize();
             });
             _layoutObserver.observe(document.documentElement);
+            _layoutObserver.observe(document.body);
             return;
           }
           window.parent.postMessage(JSON.stringify({"view": "lockViewId", "type": "toDart: htmlHeight", "height": document.body.scrollHeight}), "*");
