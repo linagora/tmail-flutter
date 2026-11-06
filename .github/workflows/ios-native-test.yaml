@@ -23,7 +23,7 @@ env:
 jobs:
   ios-native-test:
     runs-on: macos-15 # Xcode 26 needs macOS 15.
-    timeout-minutes: 45
+    timeout-minutes: 60 # Leaves room for setup after the 35-minute test step.
     permissions:
       contents: read
     steps:
