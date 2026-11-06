@@ -270,11 +270,10 @@ dependencies:
 
   flutter_file_dialog: 3.0.2
 
-  # Pinned to linagora/twake-previewer-flutter#7 until it merges into main.
   twake_previewer_flutter:
     git:
       url: https://github.com/linagora/twake-previewer-flutter.git
-      ref: 102bf81e50194e9a1ac599169f4d6435e7edafb3
+      ref: main
 
   pdfrx: 2.1.5
 
