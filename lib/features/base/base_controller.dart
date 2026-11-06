@@ -548,39 +548,56 @@ abstract class BaseController extends GetxController
     }
   }
 
+  /// Logs out before signing in to another account, then runs exactly one
+  /// callback. It completes only once that callback completed, so a caller
+  /// can hold a lock across the whole account switch.
   Future<void> logoutToSignInNewAccount({
     required Session session,
     required AccountId accountId,
-    required Function onSuccessCallback,
-    required Function({Object? exception}) onFailureCallback,
+    required FutureOr<void> Function() onSuccessCallback,
+    required FutureOr<void> Function({Object? exception}) onFailureCallback,
   }) async {
+    _LogoutToSignInOutcome outcome;
     try {
       _isFcmEnabled = _isFcmActivated(session, accountId);
-
-      if (isAuthenticatedWithOidc) {
-        final logoutViewState = await logoutOidcInteractor.execute().last;
-        logoutViewState.foldSuccess<LogoutOidcSuccess>(
-          onSuccess: (success) async {
-            await _handleDeleteFCMAndClearData();
-            onSuccessCallback();
-          },
-          onFailure: (failure) async {
-            if (failure is LogoutOidcFailure && _validateUserCancelledLogoutOidcFlow(failure.exception))  {
-              await _handleDeleteFCMAndClearData();
-              onFailureCallback(exception: UserCancelledLogoutOIDCFlowException());
-            } else {
-              onFailureCallback();
-            }
-          },
-        );
-      } else {
-        await _handleDeleteFCMAndClearData();
-        onSuccessCallback();
-      }
+      outcome = await _logoutToSignIn();
     } catch (e) {
       logWarning('BaseController::logoutToSignInNewAccount:Exception = $e');
-      onFailureCallback();
+      outcome = _LogoutToSignInOutcome.failed;
     }
+
+    switch (outcome) {
+      case _LogoutToSignInOutcome.loggedOut:
+        await onSuccessCallback();
+      case _LogoutToSignInOutcome.oidcLogoutCancelled:
+        await onFailureCallback(exception: UserCancelledLogoutOIDCFlowException());
+      case _LogoutToSignInOutcome.failed:
+        await onFailureCallback();
+    }
+  }
+
+  Future<_LogoutToSignInOutcome> _logoutToSignIn() async {
+    if (!isAuthenticatedWithOidc) {
+      await _handleDeleteFCMAndClearData();
+      return _LogoutToSignInOutcome.loggedOut;
+    }
+
+    final logoutViewState = await logoutOidcInteractor.execute().last;
+    final isLoggedOut = logoutViewState.fold(
+      (failure) => false,
+      (success) => success is LogoutOidcSuccess,
+    );
+    final isCancelledByUser = logoutViewState.fold(
+      (failure) => failure is LogoutOidcFailure &&
+          _validateUserCancelledLogoutOidcFlow(failure.exception),
+      (success) => false,
+    );
+    if (!isLoggedOut && !isCancelledByUser) return _LogoutToSignInOutcome.failed;
+
+    await _handleDeleteFCMAndClearData();
+    return isLoggedOut
+        ? _LogoutToSignInOutcome.loggedOut
+        : _LogoutToSignInOutcome.oidcLogoutCancelled;
   }
 
   bool _validateUserCancelledLogoutOidcFlow(dynamic exception) {
@@ -737,3 +754,5 @@ abstract class BaseController extends GetxController
     );
   }
 }
+
+enum _LogoutToSignInOutcome { loggedOut, oidcLogoutCancelled, failed }

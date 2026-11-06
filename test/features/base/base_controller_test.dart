@@ -5,6 +5,12 @@ import 'package:contact/contact/model/capability_contact.dart';
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:dartz/dartz.dart' hide State;
+import 'package:flutter/services.dart' show PlatformException;
+import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
+import 'package:tmail_ui_user/features/login/domain/exceptions/logout_exception.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/log_out_oidc_state.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/platform_info.dart';
@@ -679,6 +685,139 @@ void main() {
       mockBaseController.showBlockedLinkToast();
 
       verify(mockAppToast.showToastErrorMessage(any, "This link can't be opened")).called(1);
+    });
+  });
+
+  group('BaseController::logoutToSignInNewAccount', () {
+    late _TestSentrySessionCleanup sentrySessionCleanup;
+
+    setUp(() {
+      sentrySessionCleanup = _TestSentrySessionCleanup();
+      Get.put<SentrySessionCleanup>(sentrySessionCleanup);
+      addTearDown(() => Get.delete<SentrySessionCleanup>());
+      clearInteractions(mockCachingManager);
+      when(mockTwakeAppManager.runClearDataOnce(any)).thenAnswer(
+        (invocation) => (invocation.positionalArguments[0] as Future<void> Function())());
+    });
+
+    Future<void> logout({
+      required FutureOr<void> Function() onSuccess,
+      required FutureOr<void> Function({Object? exception}) onFailure,
+    }) => mockBaseController.logoutToSignInNewAccount(
+      session: SessionFixtures.aliceSession,
+      accountId: AccountFixtures.aliceAccountId,
+      onSuccessCallback: onSuccess,
+      onFailureCallback: onFailure,
+    );
+
+    test('basic session: completes only after the success callback completed', () async {
+      when(mockAuthorizationInterceptors.authenticationType).thenReturn(AuthenticationType.basic);
+      final signIn = Completer<void>();
+      var failures = 0;
+      var isDone = false;
+
+      final logoutFuture = logout(
+        onSuccess: () => signIn.future,
+        onFailure: ({exception}) => failures++,
+      ).then((_) => isDone = true);
+      await pumpEventQueue();
+
+      verify(mockCachingManager.clearAll()).called(1);
+      expect(isDone, isFalse);
+
+      signIn.complete();
+      await logoutFuture;
+
+      expect(isDone, isTrue);
+      expect(failures, 0);
+    });
+
+    test('OIDC session: completes only after the success callback completed', () async {
+      when(mockAuthorizationInterceptors.authenticationType).thenReturn(AuthenticationType.oidc);
+      when(mockLogoutOidcInteractor.execute()).thenAnswer(
+        (_) => Stream.value(Right<Failure, Success>(LogoutOidcSuccess())));
+      final signIn = Completer<void>();
+      var isDone = false;
+
+      final logoutFuture = logout(
+        onSuccess: () => signIn.future,
+        onFailure: ({exception}) => fail('the logout succeeded'),
+      ).then((_) => isDone = true);
+      await pumpEventQueue();
+
+      verify(mockCachingManager.clearAll()).called(1);
+      expect(isDone, isFalse);
+
+      signIn.complete();
+      await logoutFuture;
+      expect(isDone, isTrue);
+    });
+
+    test('OIDC logout cancelled by the user: clears data and completes after '
+        'the failure callback completed', () async {
+      when(mockAuthorizationInterceptors.authenticationType).thenReturn(AuthenticationType.oidc);
+      when(mockLogoutOidcInteractor.execute()).thenAnswer((_) => Stream.value(
+        Left<Failure, Success>(LogoutOidcFailure(
+          PlatformException(code: OIDCConstant.endSessionFailedCode)))));
+      final signIn = Completer<void>();
+      Object? reported;
+      var isDone = false;
+
+      final logoutFuture = logout(
+        onSuccess: () => fail('the logout was cancelled'),
+        onFailure: ({exception}) {
+          reported = exception;
+          return signIn.future;
+        },
+      ).then((_) => isDone = true);
+      await pumpEventQueue();
+
+      verify(mockCachingManager.clearAll()).called(1);
+      expect(reported, isA<UserCancelledLogoutOIDCFlowException>());
+      expect(isDone, isFalse);
+
+      signIn.complete();
+      await logoutFuture;
+      expect(isDone, isTrue);
+    });
+
+    test('OIDC logout failure: keeps the data and reports no exception', () async {
+      when(mockAuthorizationInterceptors.authenticationType).thenReturn(AuthenticationType.oidc);
+      when(mockLogoutOidcInteractor.execute()).thenAnswer((_) => Stream.value(
+        Left<Failure, Success>(LogoutOidcFailure(Exception('server down')))));
+      var failures = 0;
+      Object? reported;
+
+      await logout(
+        onSuccess: () => fail('the logout failed'),
+        onFailure: ({exception}) {
+          failures++;
+          reported = exception;
+        },
+      );
+
+      verifyNever(mockCachingManager.clearAll());
+      expect(failures, 1);
+      expect(reported, isNull);
+    });
+
+    test('OIDC logout failure: completes only after the failure callback completed', () async {
+      when(mockAuthorizationInterceptors.authenticationType).thenReturn(AuthenticationType.oidc);
+      when(mockLogoutOidcInteractor.execute()).thenAnswer((_) => Stream.value(
+        Left<Failure, Success>(LogoutOidcFailure(Exception('server down')))));
+      final recovery = Completer<void>();
+      var isDone = false;
+
+      final logoutFuture = logout(
+        onSuccess: () => fail('the logout failed'),
+        onFailure: ({exception}) => recovery.future,
+      ).then((_) => isDone = true);
+      await pumpEventQueue();
+      expect(isDone, isFalse);
+
+      recovery.complete();
+      await logoutFuture;
+      expect(isDone, isTrue);
     });
   });
 }

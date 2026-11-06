@@ -1,3 +1,11 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:model/account/authentication_type.dart';
+import 'package:tmail_ui_user/main/deep_links/deep_link_callback_action_define.dart';
+import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
+import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
+import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
 import 'dart:io';
 
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
@@ -1561,4 +1569,97 @@ void main() {
       },
     );
   });
+
+  group('switch account from a sign-in link:', () {
+    late _DashboardSwitchDeepLinksManager deepLinksManager;
+
+    setUp(() {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      deepLinksManager = _DashboardSwitchDeepLinksManager();
+      Get.put<DeepLinksManager>(deepLinksManager);
+      when(emailReceiveManager.pendingSharedFileInfo)
+          .thenAnswer((_) => BehaviorSubject.seeded([]));
+      when(downloadController.downloadUIAction)
+          .thenAnswer((_) => Rxn(DownloadUIAction.idle));
+      when(labelController.isLabelSettingEnabled).thenReturn(RxBool(false));
+      when(authorizationInterceptors.authenticationType)
+          .thenReturn(AuthenticationType.basic);
+
+      // A controller left registered by an earlier group would make put a
+      // no-op and skip onInit, which registers the deep link listener.
+      Get.delete<MailboxDashBoardController>(force: true);
+      Get.put(mailboxDashboardController);
+      mailboxDashboardController.sessionCurrent = testSession;
+      mailboxDashboardController.accountId.value = testAccountId;
+    });
+
+    tearDown(() {
+      debugDefaultTargetPlatformOverride = null;
+      Get.delete<DeepLinksManager>();
+    });
+
+    test('SHOULD complete the confirmed switch only after the link sign-in completed', () async {
+      deepLinksManager.pendingDeepLinkData.add(deepLinksManager.link);
+      await pumpEventQueue();
+      final confirmSwitch = deepLinksManager.onConfirmLogoutCallback;
+      expect(confirmSwitch, isNotNull);
+
+      var isDone = false;
+      final switchFuture = confirmSwitch!(deepLinksManager.link).then((_) => isDone = true);
+      await pumpEventQueue();
+
+      expect(deepLinksManager.autoSignInCalls, 1);
+      expect(isDone, isFalse);
+
+      deepLinksManager.signIn.complete();
+      await switchFuture;
+      expect(isDone, isTrue);
+    });
+  });
+}
+
+/// Delivers a running-app sign-in link, keeps the dashboard switch callback,
+/// and holds the link sign-in until the test completes [signIn].
+class _DashboardSwitchDeepLinksManager extends DeepLinksManager {
+  final link = OpenAppDeepLinkData(
+    registrationUrl: 'https://sign-up.twake.app',
+    jmapUrl: 'https://jmap.twake.app',
+    username: 'bob@twake.app',
+    accessToken: 'token-1',
+  );
+  final signIn = Completer<void>();
+  OnDeepLinkConfirmLogoutCallback<OpenAppDeepLinkData>? onConfirmLogoutCallback;
+  int autoSignInCalls = 0;
+
+  @override
+  Future<void> handleDeepLinksWhenAppRunning({
+    required DeepLinkData? deepLinkData,
+    required OnDeepLinkSuccessCallback onSuccessCallback,
+    OnDeepLinkFailureCallback? onFailureCallback,
+  }) async {
+    if (deepLinkData != null) onSuccessCallback(deepLinkData);
+  }
+
+  @override
+  Future<void> handleOpenAppDeepLinks({
+    required OpenAppDeepLinkData openAppDeepLinkData,
+    OnDeepLinkFailureCallback? onFailureCallback,
+    OnAutoSignInViaDeepLinkSuccessCallback? onAutoSignInSuccessCallback,
+    OnDeepLinkConfirmLogoutCallback<OpenAppDeepLinkData>? onConfirmLogoutCallback,
+    UserName? username,
+    bool isSignedIn = true,
+    bool Function()? isCallerActive,
+  }) async {
+    this.onConfirmLogoutCallback = onConfirmLogoutCallback;
+  }
+
+  @override
+  Future<void> autoSignInViaDeepLink({
+    required OpenAppDeepLinkData openAppDeepLinkData,
+    required OnAutoSignInViaDeepLinkSuccessCallback onAutoSignInSuccessCallback,
+    required OnDeepLinkFailureCallback onFailureCallback,
+  }) {
+    autoSignInCalls++;
+    return signIn.future;
+  }
 }

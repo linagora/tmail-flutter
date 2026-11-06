@@ -662,7 +662,7 @@ void main() {
         deepLinkManager.handleOpenAppDeepLinks(
           openAppDeepLinkData: link,
           username: UserName('alice@twake.app'),
-          onConfirmLogoutCallback: (data) => loggedOut = data,
+          onConfirmLogoutCallback: (data) async => loggedOut = data,
           onFailureCallback: () => failures++,
         );
         await tester.pumpAndSettle();
@@ -684,7 +684,7 @@ void main() {
       deepLinkManager.handleOpenAppDeepLinks(
         openAppDeepLinkData: _link(username: 'bob@twake.app'),
         username: UserName('alice@twake.app'),
-        onConfirmLogoutCallback: (_) => loggedOut++,
+        onConfirmLogoutCallback: (_) async => loggedOut++,
         onFailureCallback: () => failures++,
       );
       await tester.pumpAndSettle();
@@ -695,5 +695,70 @@ void main() {
       expect(loggedOut, 0);
       expect(interactor.calls, 0);
     });
+
+    testWidgets(
+      'SHOULD refuse a second link WHEN the confirmed switch is still running',
+      (tester) async {
+        final verifier = _FakeAccountVerifier('bob@twake.app');
+        Get.replace<DeepLinkAccountVerifier>(verifier);
+        await pumpApp(tester);
+        final switchDone = Completer<void>();
+        var switches = 0;
+
+        deepLinkManager.handleOpenAppDeepLinks(
+          openAppDeepLinkData: _link(username: 'bob@twake.app'),
+          username: UserName('alice@twake.app'),
+          onConfirmLogoutCallback: (_) {
+            switches++;
+            return switchDone.future;
+          },
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Yes'));
+        await tester.pumpAndSettle();
+
+        deepLinkManager.handleOpenAppDeepLinks(
+          openAppDeepLinkData: _link(username: 'bob@twake.app', accessToken: 'token-2'),
+          username: UserName('alice@twake.app'),
+          onConfirmLogoutCallback: (_) async => switches++,
+        );
+        await tester.pumpAndSettle();
+
+        expect(verifier.calls, 1);
+        expect(find.byType(Dialog), findsNothing);
+        expect(switches, 1);
+
+        switchDone.complete();
+        await tester.pumpAndSettle();
+      },
+    );
+
+    testWidgets(
+      'SHOULD accept a new link WHEN the previous switch has completed',
+      (tester) async {
+        final verifier = _FakeAccountVerifier('bob@twake.app');
+        Get.replace<DeepLinkAccountVerifier>(verifier);
+        await pumpApp(tester);
+
+        deepLinkManager.handleOpenAppDeepLinks(
+          openAppDeepLinkData: _link(username: 'bob@twake.app'),
+          username: UserName('alice@twake.app'),
+          onConfirmLogoutCallback: (_) async {},
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Yes'));
+        await tester.pumpAndSettle();
+
+        deepLinkManager.handleOpenAppDeepLinks(
+          openAppDeepLinkData: _link(username: 'bob@twake.app', accessToken: 'token-2'),
+          username: UserName('alice@twake.app'),
+          onConfirmLogoutCallback: (_) async {},
+        );
+        await tester.pumpAndSettle();
+
+        expect(verifier.calls, 2);
+        expect(find.text('Yes'), findsOneWidget);
+      },
+    );
   });
 }
