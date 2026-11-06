@@ -55,17 +55,18 @@ jobs:
 
       - name: Pick iOS simulator
         id: simulator
-        # A fixed device name disappears when the runner image drops that simulator.
+        # The Xcode 26 SDK test host crashes on an older iOS runtime.
         run: |
-          udid=$(xcrun simctl list devices available -j | jq -r '[.devices[][] | select(.name | startswith("iPhone"))][0].udid // empty')
-          if [ -z "$udid" ]; then
+          runtime=$(xcrun simctl list runtimes available -j | jq -r '[.runtimes[] | select(.platform == "iOS")] | sort_by(.version | split(".") | map(tonumber)) | last | .identifier // empty')
+          udid=$(xcrun simctl list devices available -j | jq -r --arg runtime "$runtime" '[.devices[$runtime][]? | select(.name != null and (.name | startswith("iPhone")))][0].udid // empty')
+          name=$(xcrun simctl list devices available -j | jq -r --arg runtime "$runtime" '[.devices[$runtime][]? | select(.name != null and (.name | startswith("iPhone")))][0].name // empty')
+          if [ -z "$runtime" ] || [ -z "$udid" ] || [ -z "$name" ]; then
             detail="$(xcodebuild -version; xcrun simctl list runtimes available)"
             detail=$(printf '%s' "$detail" | tr '\n' ' ')
             echo "::error title=No iOS simulator::${detail}"
             exit 1
           fi
-          name=$(xcrun simctl list devices available -j | jq -r --arg udid "$udid" '[.devices[][] | select(.udid == $udid)][0].name')
-          echo "Picked ${name} ${udid}"
+          echo "Picked ${name} (${runtime}) ${udid}"
           echo "udid=${udid}" >> "$GITHUB_OUTPUT"
 
       - name: Run native unit tests
@@ -93,6 +94,15 @@ jobs:
             status=0
             "${args[@]}" > build/xcodebuild.log 2>&1 || status=$?
             xcbeautify --renderer github-actions < build/xcodebuild.log || echo "::warning title=xcbeautify failed::raw log kept at build/xcodebuild.log"
+            if [ "$status" -ne 0 ]; then
+              # A launch crash is not an assertion, so xcbeautify leaves it unannotated.
+              message=$(grep -E -A1 '^Testing failed:|^dyld\[[0-9]+\]:|^\*\* (BUILD|TEST) FAILED \*\*' build/xcodebuild.log | grep -v '^--$' | head -n 20 | sed 's/%/%25/g' | awk 'NR > 1 { printf "%%0A" } { printf "%s", $0 }' || true)
+              if [ -n "$message" ]; then
+                echo "::error title=xcodebuild failed::${message}"
+              else
+                echo "::error title=xcodebuild failed::xcodebuild exited ${status}. See build/xcodebuild.log"
+              fi
+            fi
             exit "$status"
           else
             echo "::warning title=xcbeautify missing::raw xcodebuild output below"
