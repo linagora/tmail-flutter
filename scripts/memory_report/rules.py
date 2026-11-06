@@ -24,6 +24,10 @@ def class_count(sample, name, platform):
 def baseline_rules(context):
     results, failed_names = [], []
     for name in context.config.get("mustReturnToBaseline", []):
+        if name not in context.names:
+            # A renamed class would otherwise pass as 0 -> 0.
+            results.append(RuleResult(f"R1 {name} (class not found)", (0, 0), "0", False))
+            continue
         old, new = (class_count(sample, name, context.platform)
                     for sample in (context.before, context.after))
         results.append(RuleResult(f"R1 {name}", (old, new), "0", new <= old))

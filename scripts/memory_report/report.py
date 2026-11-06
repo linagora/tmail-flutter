@@ -23,7 +23,7 @@ class Report:
         self.summary.append(summary_row(config.get("title", case), platform, f"❌ {reason}"))
 
     def compare_samples(self, case, paths, platform, config):
-        if platform == "web" and self.names is None:
+        if self.names is None:
             self.names = scan_classes(self.root)
         loader = PLATFORMS[platform][1]
         before, after = (loader(load_json(path), self.rules) for path in paths)

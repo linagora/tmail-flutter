@@ -170,14 +170,14 @@ class MemoryReportTests(unittest.TestCase):
         code, text = self.run_report(subprocess_mode=True, MEMORY_REPORT_ONLY="1")
         self.assertEqual(code, 0)
         self.assertIn("RESULT: FAIL (1 failed)", text)
-    def test_absent_baseline_and_both_platforms(self):
+    def test_missing_baseline_class_fails_on_both_platforms(self):
         self.rules["cases"]["demo"]["mustReturnToBaseline"] = ["Absent"]
         self.write("android", android(), android())
         self.write("web", web(), web())
         code, text = self.run_report()
-        self.assertEqual(code, 0)
+        self.assertEqual(code, 1)
         self.assertEqual(text.count("### demo ("), 2)
-        self.assertEqual(text.count("R1 Absent | 0 | 0 | 0 | 0 |  | ✅"), 2)
+        self.assertEqual(text.count("R1 Absent (class not found) | 0 | 0 | 0 | 0 |  | ❌"), 2)
     def test_android_identity_and_top_n(self):
         before, after = android(), android()
         after["classes"].append({"class": "ComposerController", "lib": "other",
