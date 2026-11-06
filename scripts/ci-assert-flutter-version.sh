@@ -10,7 +10,7 @@ if ! command -v flutter >/dev/null 2>&1; then
 fi
 
 output="$(flutter --version 2>&1 || true)"
-actual="$(printf '%s\n' "$output" | awk 'NR==1 && $1=="Flutter" { print $2 }')"
+actual="$(printf '%s\n' "$output" | awk '$1=="Flutter" { print $2; exit }')"
 if [ "$actual" != "$expected" ]; then
   echo "Flutter ${expected} is required (FLUTTER_ROOT=${FLUTTER_ROOT:-unset}). Found: ${actual:-unparsed}" >&2
   printf '%s\n' "$output" >&2
