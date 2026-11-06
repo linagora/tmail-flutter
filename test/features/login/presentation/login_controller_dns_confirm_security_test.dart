@@ -260,6 +260,59 @@ void main() {
   );
 
   testWidgets(
+    'SHOULD drop a DNS-over-HTTPS answer and stop loading '
+    'WHEN the email was edited after the lookup started',
+    (tester) async {
+      await pumpApp(tester);
+      loginController.viewState.value = Right(DNSLookupToGetJmapUrlLoading());
+      loginController.onUsernameChange('bob@other.example');
+
+      loginController.handleSuccessViewState(
+        DNSLookupToGetJmapUrlSuccess('mail.corp.example', email: 'bob@corp.example', isEncryptedSource: true),
+      );
+      await tester.pump();
+
+      verifyNever(checkOIDCIsAvailableInteractor.execute(any));
+      expect(loginController.urlInputController.text, isEmpty);
+      expect(
+        loginController.viewState.value.fold((failure) => failure, (success) => success),
+        UIState.idle,
+      );
+    },
+  );
+
+  testWidgets(
+    'SHOULD drop a DNS-over-HTTPS answer WHEN the user already left the email form',
+    (tester) async {
+      await pumpApp(tester);
+      loginController.loginFormType.value = LoginFormType.baseUrlForm;
+
+      loginController.handleSuccessViewState(
+        DNSLookupToGetJmapUrlSuccess('mail.corp.example', email: 'bob@corp.example', isEncryptedSource: true),
+      );
+      await tester.pump();
+
+      verifyNever(checkOIDCIsAvailableInteractor.execute(any));
+      expect(loginController.urlInputController.text, isEmpty);
+    },
+  );
+
+  testWidgets(
+    'SHOULD use a DNS-over-HTTPS answer WHEN the user is back on the retry form',
+    (tester) async {
+      await pumpApp(tester);
+      loginController.loginFormType.value = LoginFormType.retry;
+
+      loginController.handleSuccessViewState(
+        DNSLookupToGetJmapUrlSuccess('mail.corp.example', email: 'bob@corp.example', isEncryptedSource: true),
+      );
+      await tester.pump();
+
+      verify(checkOIDCIsAvailableInteractor.execute(any)).called(1);
+    },
+  );
+
+  testWidgets(
     'SHOULD NOT use the confirmed server WHEN the email was edited while the dialog was open',
     (tester) async {
       await pumpApp(tester);

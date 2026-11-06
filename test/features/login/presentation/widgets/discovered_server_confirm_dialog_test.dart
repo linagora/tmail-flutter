@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/login/domain/state/dns_lookup_to_get_jmap_url_state.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/discovered_server_confirm_dialog.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
@@ -48,9 +49,8 @@ void main() {
   Future<bool> ask(WidgetTester tester, {required String jmapUrl}) {
     final result = dialog.confirm(
       tester.element(find.byType(Scaffold)),
-      email: 'bob@corp.example',
+      answer: DNSLookupToGetJmapUrlSuccess(jmapUrl, email: 'bob@corp.example'),
       currentEmail: () => 'bob@corp.example',
-      jmapUrl: jmapUrl,
     );
     return result;
   }
@@ -118,6 +118,40 @@ void main() {
         findsNothing,
       );
       expect(await result, isFalse);
+    },
+  );
+
+  testWidgets(
+    'SHOULD accept a server found over DNS-over-HTTPS without asking',
+    (tester) async {
+      await pumpApp(tester);
+
+      final result = await dialog.confirm(
+        tester.element(find.byType(Scaffold)),
+        answer: DNSLookupToGetJmapUrlSuccess(
+          'https://mail.corp.example', email: 'bob@corp.example', isEncryptedSource: true),
+        currentEmail: () => 'bob@corp.example',
+      );
+
+      expect(result, isTrue);
+      expect(find.byType(Dialog), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'SHOULD refuse a DNS-over-HTTPS server WHEN the email was edited since the lookup',
+    (tester) async {
+      await pumpApp(tester);
+
+      final result = await dialog.confirm(
+        tester.element(find.byType(Scaffold)),
+        answer: DNSLookupToGetJmapUrlSuccess(
+          'https://mail.corp.example', email: 'bob@corp.example', isEncryptedSource: true),
+        currentEmail: () => 'bob@other.example',
+      );
+
+      expect(result, isFalse);
+      expect(find.byType(Dialog), findsNothing);
     },
   );
 }

@@ -1,32 +1,38 @@
 import 'package:core/presentation/extensions/url_extension.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/login/domain/state/dns_lookup_to_get_jmap_url_state.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-/// Asks the user to confirm a mail server found over plaintext DNS, which an
-/// attacker on the network path can spoof.
+/// Decides whether a mail server found over DNS may be used, asking the user
+/// when a plaintext resolver found it: an attacker on the network path can
+/// spoof that answer.
 ///
-/// Returns true only when the user taps Continue. Cancel, back or any other
-/// dismissal returns false.
+/// When asked, returns true only when the user taps Continue. Cancel, back or
+/// any other dismissal returns false.
 class DiscoveredServerConfirmDialog {
   const DiscoveredServerConfirmDialog();
 
-  /// Shows the dialog for the server [jmapUrl] found for [email]. Returns
-  /// false without asking when [currentEmail] is no longer [email] (the field
-  /// was edited after the lookup started), when there is no screen to ask on,
-  /// or when [email] has no domain; and false when [currentEmail] changed
-  /// while the dialog was open.
+  /// Returns false without asking when [currentEmail] is no longer the email
+  /// of [answer] (the field was edited after the lookup started), whatever
+  /// resolver found it. Accepts a server found over DNS-over-HTTPS without
+  /// asking. Otherwise shows the dialog; returns false without asking when
+  /// there is no screen to ask on or the email has no domain, and false when
+  /// [currentEmail] changed while the dialog was open.
   Future<bool> confirm(
     BuildContext? context, {
-    required String email,
+    required DNSLookupToGetJmapUrlSuccess answer,
     required String? Function() currentEmail,
-    required String jmapUrl,
   }) async {
-    final emailDomain = email.split('@').last;
-    if (currentEmail() != email || emailDomain.isEmpty) return false;
-    if (context?.mounted != true) return false;
+    final email = answer.email;
+    if (currentEmail() != email) return false;
+    if (answer.isEncryptedSource) return true;
 
+    final emailDomain = email.split('@').last;
+    if (emailDomain.isEmpty || context?.mounted != true) return false;
+
+    final jmapUrl = answer.jmapUrl;
     final isConfirmed = await show(
       context!,
       emailDomain: emailDomain,
