@@ -10,3 +10,6 @@ In [env.file]:
 ```COZY_INTEGRATION=false```
     or
 ```COZY_INTEGRATION=```
+
+On web, an embedded app also needs `CSP_FRAME_ANCESTORS`, `CSP_FRAME_SRC` and `CSP_SCRIPT_SRC`
+on the web container: see [Content Security Policy](csp_configuration.md).
