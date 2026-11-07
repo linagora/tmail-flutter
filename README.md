@@ -181,7 +181,7 @@ No we do not plan to support such extensions, that are currently not standardize
   Then you can just simply run your web-app like this:
 
   ```bash
-  docker run -d -ti -p 8080:80 --name web tmail-web:latest
+  docker run -d -ti -p 8080:80 -e CSP_CONNECT_SRC="http://localhost ws://localhost" --name web tmail-web:latest
   ```
 
   Then go to http://localhost:8080 and you should be able to login against your JMAP backend using the Twake Mail web-app.
@@ -198,10 +198,12 @@ No we do not plan to support such extensions, that are currently not standardize
   you want to connect to. Then, to mount it and override the default one while running the container:
 
   ```bash
-  docker run -d -ti -p 8080:80 --mount type=bind,source="$(pwd)"/env.dev.file,target=/usr/share/nginx/html/assets/env.file --name web tmail-web:latest
+  docker run -d -ti -p 8080:80 -e CSP_CONNECT_SRC="http://localhost ws://localhost" --mount type=bind,source="$(pwd)"/env.dev.file,target=/usr/share/nginx/html/assets/env.file --name web tmail-web:latest
   ```
 
   Then go to http://localhost:8080 and you should be able to login against your JMAP backend using the TMail web-app.
+
+  The web image enforces a Content-Security-Policy. The `docker run` commands above pass `CSP_CONNECT_SRC="http://localhost ws://localhost"` because that demo uses a JMAP backend on port 80; a backend on `http://localhost:8000/` needs `CSP_CONNECT_SRC="http://localhost:8000 ws://localhost:8000"`. Deployments that embed Twake Mail (Twake Workplace / Cozy) or use the Drive picker must set more `CSP_*` variables before upgrading: see [Content Security Policy](docs/configuration/csp_configuration.md).
 
   #### Using the docker-compose file
 
@@ -234,6 +236,7 @@ No we do not plan to support such extensions, that are currently not standardize
     - [Enable and customize the Application grid](docs/configuration/app_grid_configuration.md)
     - [Change logos](docs/configuration/tmail-web-logo.md)
     - [Restrict the available languages](docs/configuration/language_configuration.md)
+    - [Configure the Content Security Policy](docs/configuration/csp_configuration.md)
 
 </details>
 

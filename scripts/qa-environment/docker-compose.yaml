@@ -23,6 +23,8 @@ services:
 
   web:
     image: tmail-web-qa
+    environment:
+      - CSP_CONNECT_SRC=http://localhost:${QA_JMAP_PORT} ws://localhost:${QA_JMAP_PORT}
     volumes:
       - ./.generated/env.file:/usr/share/nginx/html/assets/env.file:ro
     ports:
