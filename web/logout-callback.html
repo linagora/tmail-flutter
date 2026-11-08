@@ -2,23 +2,7 @@
 <html lang="en">
 
 <head>
-  <script>
-    const AUTH_RESPONSE_KEY = "auth_info";
-    const CODE_VERIFIER_KEY = "auth_code_verifier";
-    window.onload = function () {
-        try {
-            sessionStorage.removeItem(AUTH_RESPONSE_KEY);
-            sessionStorage.removeItem(CODE_VERIFIER_KEY);
-            localStorage.removeItem(AUTH_RESPONSE_KEY);
-            localStorage.removeItem(CODE_VERIFIER_KEY);
-            // A caller-supplied redirect target is never followed; "./" keeps subpath (--base-href) deploys inside the app.
-            window.location.replace("./");
-        } catch (error) {
-          console.error("[Logout Auth Redirect] Redirection failed:", error);
-          window.location.replace("./");
-        }
-    }
-  </script>
+  <script src="js/logout-callback.js"></script>
   <title>Twake Mail</title>
 </head>
 
