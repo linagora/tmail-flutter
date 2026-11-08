@@ -1,8 +1,42 @@
-    const AUTH_DESTINATION_KEY = "auth_destination_url";
+const AUTH_DESTINATION_KEY = "auth_destination_url";
     const AUTH_RESPONSE_KEY = "auth_info";
+
+    function showFailure() {
+      document.title = "Sign-in failed";
+      document.getElementById("failure").hidden = false;
+      document.getElementById("retry").href = new URL(".", location.href).href;
+      try {
+        for (const key of [AUTH_DESTINATION_KEY, AUTH_RESPONSE_KEY,
+                           "auth_code_verifier", "auth_request_state"]) {
+          sessionStorage.removeItem(key);
+        }
+      } catch (_) {
+        // Storage can be disabled; keep the retry link usable in that case.
+      }
+    }
 
     window.onload = function () {
       try {
+        const callback = new URL(location.href);
+        const response = callback.searchParams;
+        const pendingState = sessionStorage.getItem("auth_request_state");
+        const verifier = sessionStorage.getItem("auth_code_verifier");
+        // Older plugin versions do not generate state. If either side has
+        // state, require a complete matching transaction; otherwise preserve
+        // the legacy callback until the plugin's state support is adopted.
+        const hasState = pendingState !== null || response.has("state");
+        const invalidState = hasState &&
+            (response.getAll("state").length !== 1 || !response.get("state") ||
+             !pendingState || response.get("state") !== pendingState);
+        // An error callback must stop here. Sending it back to the dashboard
+        // starts another automatic sign-in and hides the provider's failure.
+        if (response.has("error") || callback.href.includes("#") ||
+            response.getAll("code").length !== 1 || !response.get("code") ||
+            invalidState || !verifier) {
+          showFailure();
+          return;
+        }
+
         // Get the original page destination
         const destination = sessionStorage.getItem(AUTH_DESTINATION_KEY) || "/";
         sessionStorage.removeItem(AUTH_DESTINATION_KEY);
@@ -22,7 +56,7 @@
         // Perform redirection
         location.assign(redirectUrl);
       } catch (error) {
-        console.error("[Auth Redirect] Redirection failed:", error);
-        location.assign("/");
+        console.error("[Auth Redirect] Sign-in could not be completed.");
+        showFailure();
       }
     };
