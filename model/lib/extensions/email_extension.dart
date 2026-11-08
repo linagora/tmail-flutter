@@ -153,7 +153,10 @@ extension EmailExtension on Email {
 
     final merged = Map<IndividualHeaderIdentifier, EmailHeaderValue>.from(individualHeaders);
     for (final id in trackedHeaderIds) {
-      if (updatedProperties.contain(id.value)) {
+      final listHeaderRefreshed = updatedProperties.contain(EmailProperty.headers) &&
+          (id == IndividualHeaderIdentifier.listPostHeader ||
+              id == IndividualHeaderIdentifier.listUnsubscribeHeader);
+      if (updatedProperties.contain(id.value) || listHeaderRefreshed) {
         if (newEmail.individualHeaders.containsKey(id)) {
           merged[id] = newEmail.individualHeaders[id]!;
         } else {
@@ -186,6 +189,7 @@ extension EmailExtension on Email {
       threadId: updatedProperties.contain(EmailProperty.threadId) ? newEmail.threadId : threadId,
       messageId: updatedProperties.contain(EmailProperty.messageId) ? newEmail.messageId : messageId,
       references: updatedProperties.contain(EmailProperty.references) ? newEmail.references : references,
+      headers: updatedProperties.contain(EmailProperty.headers) ? newEmail.headers : headers,
       individualHeaders: merged,
     );
   }

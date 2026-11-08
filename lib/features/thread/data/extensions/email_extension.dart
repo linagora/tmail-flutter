@@ -1,6 +1,7 @@
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/extensions/email_extension.dart' as model;
 import 'package:tmail_ui_user/features/thread/data/model/email_cache.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/map_keywords_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_address_extension.dart';
@@ -9,6 +10,10 @@ import 'package:tmail_ui_user/features/thread/data/extensions/map_mailbox_id_ext
 extension EmailExtension on Email {
 
   EmailCache toEmailCache() {
+    final listUnsubscribe = model.EmailExtension(this).listUnsubscribe;
+    final unsubscribe = listUnsubscribe.isNotEmpty
+      ? listUnsubscribe
+      : listUnsubscribeHeader?.value;
     return EmailCache(
       id!.id.value,
       keywords: keywords?.toMapString(),
@@ -38,8 +43,8 @@ extension EmailExtension on Email {
       priorityHeader: priorityHeader?.value != null
         ? {IndividualHeaderIdentifier.priorityHeader.value: priorityHeader!.value}
         : null,
-      unsubscribeHeader: listUnsubscribeHeader?.value != null
-        ? {IndividualHeaderIdentifier.listUnsubscribeHeader.value: listUnsubscribeHeader!.value}
+      unsubscribeHeader: unsubscribe != null
+        ? {IndividualHeaderIdentifier.listUnsubscribeHeader.value: unsubscribe}
         : null,
       messageId: messageId?.ids.toList(),
       references: references?.ids.toList(),
