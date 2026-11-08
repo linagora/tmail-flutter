@@ -1,6 +1,7 @@
 const AUTH_DESTINATION_KEY = "auth_destination_url";
     const AUTH_RESPONSE_KEY = "auth_info";
 
+    /** Show a retry link and discard the failed OAuth transaction. */
     function showFailure() {
       document.title = "Sign-in failed";
       document.getElementById("failure").hidden = false;
@@ -15,7 +16,9 @@ const AUTH_DESTINATION_KEY = "auth_destination_url";
       }
     }
 
+    /** Validate the callback before handing it to the authentication plugin. */
     window.onload = function () {
+      let operation = "read-storage";
       try {
         const callback = new URL(location.href);
         const response = callback.searchParams;
@@ -39,9 +42,11 @@ const AUTH_DESTINATION_KEY = "auth_destination_url";
 
         // Get the original page destination
         const destination = sessionStorage.getItem(AUTH_DESTINATION_KEY) || "/";
+        operation = "remove-destination";
         sessionStorage.removeItem(AUTH_DESTINATION_KEY);
 
         // Store the current window location that will be used to get the information for authentication
+        operation = "store-response";
         sessionStorage.setItem(AUTH_RESPONSE_KEY, window.location);
 
         // Build the redirect URL
@@ -54,9 +59,10 @@ const AUTH_DESTINATION_KEY = "auth_destination_url";
         }
 
         // Perform redirection
+        operation = "redirect";
         location.assign(redirectUrl);
       } catch (error) {
-        console.error("[Auth Redirect] Sign-in could not be completed.");
+        console.error(`[Auth Redirect] Sign-in failed during ${operation}.`);
         showFailure();
       }
     };
