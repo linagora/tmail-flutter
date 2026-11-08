@@ -26,7 +26,7 @@ class ThreadConstants {
     IndividualHeaderIdentifier.xPriorityHeader.value,
     IndividualHeaderIdentifier.importanceHeader.value,
     IndividualHeaderIdentifier.priorityHeader.value,
-    EmailProperty.headers,
+    IndividualHeaderIdentifier.asRaw(EmailProperty.headerUnsubscribeKey).value,
   });
   static final propertiesUpdatedDefault = propertiesDefault;
 

@@ -34,7 +34,16 @@ extension EmailExtension on Email {
 
   bool get withAttachments => hasAttachment == true;
 
+  /// The RFC 8621 raw form used for list requests on strict JMAP servers.
+  RawHeaderValue? get listUnsubscribeRawHeader {
+    final value = individualHeaders[
+      IndividualHeaderIdentifier.asRaw(EmailProperty.headerUnsubscribeKey)
+    ];
+    return value is RawHeaderValue ? value : null;
+  }
+
   String get listUnsubscribe => headers.listUnsubscribe
+    ?? listUnsubscribeRawHeader?.value
     ?? listUnsubscribeHeader?.value
     ?? '';
 
@@ -130,7 +139,9 @@ extension EmailExtension on Email {
       importanceHeader: importanceHeader,
       priorityHeader: priorityHeader,
       listPostHeader: listPostHeader,
-      listUnsubscribeHeader: listUnsubscribeHeader,
+      listUnsubscribeHeader: listUnsubscribeRawHeader != null
+        ? TextHeaderValue(listUnsubscribeRawHeader!.value)
+        : listUnsubscribeHeader,
       messageId: messageId,
       references: references,
     )
@@ -149,12 +160,18 @@ extension EmailExtension on Email {
       IndividualHeaderIdentifier.priorityHeader,
       IndividualHeaderIdentifier.listPostHeader,
       IndividualHeaderIdentifier.listUnsubscribeHeader,
+      IndividualHeaderIdentifier.asRaw(EmailProperty.headerUnsubscribeKey),
     ];
 
     final merged = Map<IndividualHeaderIdentifier, EmailHeaderValue>.from(individualHeaders);
     for (final id in trackedHeaderIds) {
-      final listHeaderRefreshed = updatedProperties.contain(EmailProperty.headers) &&
-          (id == IndividualHeaderIdentifier.listPostHeader ||
+      final unsubscribeRaw = IndividualHeaderIdentifier.asRaw(EmailProperty.headerUnsubscribeKey);
+      final listHeaderRefreshed =
+          (updatedProperties.contain(EmailProperty.headers) &&
+              (id == IndividualHeaderIdentifier.listPostHeader ||
+                  id == IndividualHeaderIdentifier.listUnsubscribeHeader ||
+                  id == unsubscribeRaw)) ||
+          (updatedProperties.contain(unsubscribeRaw.value) &&
               id == IndividualHeaderIdentifier.listUnsubscribeHeader);
       if (updatedProperties.contain(id.value) || listHeaderRefreshed) {
         if (newEmail.individualHeaders.containsKey(id)) {
@@ -169,6 +186,12 @@ extension EmailExtension on Email {
 
   Email combineEmail(Email newEmail, Properties updatedProperties) {
     final merged = mergeTrackedIndividualHeaders(newEmail, updatedProperties);
+    // A separately refreshed unsubscribe header supersedes any old raw block.
+    final retainedHeaders = updatedProperties.contain(
+      IndividualHeaderIdentifier.asRaw(EmailProperty.headerUnsubscribeKey).value,
+    ) ? headers?.where((header) =>
+        header.name.toLowerCase() != EmailProperty.headerUnsubscribeKey.toLowerCase()).toSet()
+      : headers;
 
     return Email(
       id: newEmail.id,
@@ -189,7 +212,7 @@ extension EmailExtension on Email {
       threadId: updatedProperties.contain(EmailProperty.threadId) ? newEmail.threadId : threadId,
       messageId: updatedProperties.contain(EmailProperty.messageId) ? newEmail.messageId : messageId,
       references: updatedProperties.contain(EmailProperty.references) ? newEmail.references : references,
-      headers: updatedProperties.contain(EmailProperty.headers) ? newEmail.headers : headers,
+      headers: updatedProperties.contain(EmailProperty.headers) ? newEmail.headers : retainedHeaders,
       individualHeaders: merged,
     );
   }

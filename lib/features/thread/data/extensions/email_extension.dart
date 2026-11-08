@@ -13,7 +13,8 @@ extension EmailExtension on Email {
     final listUnsubscribe = model.EmailExtension(this).listUnsubscribe;
     final unsubscribe = listUnsubscribe.isNotEmpty
       ? listUnsubscribe
-      : listUnsubscribeHeader?.value;
+      : model.EmailExtension(this).listUnsubscribeRawHeader?.value
+        ?? listUnsubscribeHeader?.value;
     return EmailCache(
       id!.id.value,
       keywords: keywords?.toMapString(),
