@@ -988,6 +988,27 @@ void main() {
         verifyNever(mailboxDashBoardController.clearDashBoardAction());
       },
     );
+
+    test(
+      'DropPendingMailListShortcutsAction clears the dashboard action so a later equal drop is not skipped',
+      () async {
+        final rx = mailboxDashBoardController.dashBoardAction;
+        when(mailboxDashBoardController.clearDashBoardAction()).thenAnswer((_) {
+          // Match production clearDashBoardAction so GetX can deliver an equal
+          // Equatable DropPending again.
+          rx.value = DashBoardAction.idle;
+        });
+
+        rx.value = DropPendingMailListShortcutsAction();
+        await pumpEventQueue();
+
+        rx.value = DropPendingMailListShortcutsAction();
+        await pumpEventQueue();
+
+        verify(mailboxDashBoardController.clearDashBoardAction()).called(2);
+      },
+    );
+
   });
 
   group('search suggestion flow', () {
