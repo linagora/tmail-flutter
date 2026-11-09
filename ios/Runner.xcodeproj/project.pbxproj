@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A15E00010000000000000001 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = A15E00020000000000000002 /* Sentry */; };
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
@@ -246,6 +247,7 @@
 			files = (
 				F5630C812B2CEBC0003CC0FD /* KeychainAccess in Frameworks */,
 				F53D1E632B2DE80200051FD0 /* Alamofire in Frameworks */,
+				A15E00010000000000000001 /* Sentry in Frameworks */,
 				B561AD69C2BE6DF40BF29406 /* Pods_TwakeMailNSE.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -620,6 +622,7 @@
 			packageProductDependencies = (
 				F5630C802B2CEBC0003CC0FD /* KeychainAccess */,
 				F53D1E622B2DE80200051FD0 /* Alamofire */,
+				A15E00020000000000000002 /* Sentry */,
 			);
 			productName = TwakeMailNSE;
 			productReference = F5D4EA002B2ABF090090DDFC /* TwakeMailNSE.appex */;
@@ -667,6 +670,7 @@
 				781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */,
 				F5630C7F2B2CEBC0003CC0FD /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 				F53D1E612B2DE80200051FD0 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				A15E00030000000000000003 /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
@@ -1410,7 +1414,6 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/Sentry",
 					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/flutter_local_notifications",
 					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/receive_sharing_intent",
 				);
@@ -1421,11 +1424,6 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-framework",
-					Sentry,
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.linagora.ios.teammail.TwakeMailTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1460,7 +1458,6 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/Sentry",
 					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/flutter_local_notifications",
 					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/receive_sharing_intent",
 				);
@@ -1470,11 +1467,6 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-framework",
-					Sentry,
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.linagora.ios.teammail.TwakeMailTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1507,7 +1499,6 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/Sentry",
 					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/flutter_local_notifications",
 					"$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/receive_sharing_intent",
 				);
@@ -1517,11 +1508,6 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-framework",
-					Sentry,
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.linagora.ios.teammail.TwakeMailTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1744,6 +1730,14 @@
 				kind = branch;
 			};
 		};
+		A15E00030000000000000003 /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/getsentry/sentry-cocoa";
+			requirement = {
+				kind = exactVersion;
+				version = 8.56.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1760,6 +1754,11 @@
 		78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FlutterGeneratedPluginSwiftPackage;
+		};
+		A15E00020000000000000002 /* Sentry */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A15E00030000000000000003 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
+			productName = Sentry;
 		};
 /* End XCSwiftPackageProductDependency section */
 /* Begin XCLocalSwiftPackageReference section */

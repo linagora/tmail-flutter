@@ -40,8 +40,6 @@ PODS:
     - Flutter
   - flutter_localization (0.0.1):
     - Flutter
-  - flutter_native_splash (0.0.1):
-    - Flutter
   - flutter_secure_storage (6.0.0):
     - Flutter
   - flutter_web_auth_2 (3.0.0):
@@ -65,8 +63,6 @@ PODS:
   - Mantle (2.2.0):
     - Mantle/extobjc (= 2.2.0)
   - Mantle/extobjc (2.2.0)
-  - objective_c (0.0.1):
-    - Flutter
   - open_file_ios (1.0.3):
     - Flutter
   - OrderedSet (6.0.3)
@@ -89,7 +85,6 @@ PODS:
   - SDWebImageWebPCoder (0.15.0):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
-  - Sentry/HybridSDK (8.56.2)
   - super_dns_client (0.0.1):
     - Flutter
   - UniversalDetector2 (2.0.1)
@@ -110,18 +105,15 @@ DEPENDENCIES:
   - flutter_keyboard_visibility (from `.symlinks/plugins/flutter_keyboard_visibility/ios`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - flutter_localization (from `.symlinks/plugins/flutter_localization/ios`)
-  - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - flutter_web_auth_2 (from `.symlinks/plugins/flutter_web_auth_2/ios`)
   - lottie_native (from `.symlinks/plugins/lottie_native/ios`)
-  - objective_c (from `.symlinks/plugins/objective_c/ios`)
   - open_file_ios (from `.symlinks/plugins/open_file_ios/ios`)
   - patrol (from `.symlinks/plugins/patrol/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - pointer_interceptor_ios (from `.symlinks/plugins/pointer_interceptor_ios/ios`)
   - printing (from `.symlinks/plugins/printing/ios`)
   - receive_sharing_intent (from `.symlinks/plugins/receive_sharing_intent/ios`)
-  - Sentry/HybridSDK (= 8.56.2)
   - super_dns_client (from `.symlinks/plugins/super_dns_client/ios`)
 
 SPEC REPOS:
@@ -134,7 +126,6 @@ SPEC REPOS:
     - ReachabilitySwift
     - SDWebImage
     - SDWebImageWebPCoder
-    - Sentry
     - UniversalDetector2
 
 EXTERNAL SOURCES:
@@ -168,16 +159,12 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_local_notifications/ios"
   flutter_localization:
     :path: ".symlinks/plugins/flutter_localization/ios"
-  flutter_native_splash:
-    :path: ".symlinks/plugins/flutter_native_splash/ios"
   flutter_secure_storage:
     :path: ".symlinks/plugins/flutter_secure_storage/ios"
   flutter_web_auth_2:
     :path: ".symlinks/plugins/flutter_web_auth_2/ios"
   lottie_native:
     :path: ".symlinks/plugins/lottie_native/ios"
-  objective_c:
-    :path: ".symlinks/plugins/objective_c/ios"
   open_file_ios:
     :path: ".symlinks/plugins/open_file_ios/ios"
   patrol:
@@ -210,14 +197,12 @@ SPEC CHECKSUMS:
   flutter_keyboard_visibility: 4625131e43015dbbe759d9b20daaf77e0e3f6619
   flutter_local_notifications: ad39620c743ea4c15127860f4b5641649a988100
   flutter_localization: 72299fb6cb4e51cae587bd953ed0b958040b71e6
-  flutter_native_splash: 9e672d3818957718ee006a491730c09deeecace9
   flutter_secure_storage: 2c2ff13db9e0a5647389bff88b0ecac56e3f3418
   flutter_web_auth_2: 5c8d9dcd7848b5a9efb086d24e7a9adcae979c80
   libwebp: af5937a13536ef73f3784d69cc342b98961acf33
   lottie-ios: fcb5e73e17ba4c983140b7d21095c834b3087418
   lottie_native: c2e590a297861fc32a0188cf8dab39aa97f86d81
   Mantle: c5aa8794a29a022dfbbfc9799af95f477a69b62d
-  objective_c: 89e720c30d716b036faf9c9684022048eee1eee2
   open_file_ios: 46184d802ee7959203f6392abcfa0dd49fdb5be0
   OrderedSet: e539b66b644ff081c73a262d24ad552a69be3a94
   patrol: cea8074f183a2a4232d0ebd10569ae05149ada42
@@ -228,10 +213,9 @@ SPEC CHECKSUMS:
   receive_sharing_intent: 222384f00ffe7e952bbfabaa9e3967cb87e5fe00
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   SDWebImageWebPCoder: 0e06e365080397465cc73a7a9b472d8a3bd0f377
-  Sentry: b53951377b78e21a734f5dc8318e333dbfc682d7
   super_dns_client: 03e8ebf4df47d1335d1027299f8d2365b7a7bb59
   UniversalDetector2: 7c9ffd935cf050eeb19edf7e90f6febe3743a1af
 
-PODFILE CHECKSUM: 639565dd16e195fbe1f4882bf8f552747be00660
+PODFILE CHECKSUM: 28c1f693e7c33c042769039cc9adcedbc07b5a9b
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.17.0
