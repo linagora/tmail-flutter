@@ -64,6 +64,9 @@ void main() {
         'new email': 'new-1|$accountId|$userName',
         'sending email': 'sending-1|$accountId|$userName',
         'web composer': 'reopenComposerBrowser|$accountId|$userName|composer-1',
+        'mailbox': 'mailbox-1|$accountId|$userName',
+        'state': 'email|$accountId|$userName',
+        'fcm state': 'Email|$accountId|$userName',
       };
 
       for (final entry in shapes.entries) {
@@ -73,6 +76,34 @@ void main() {
           reason: entry.key,
         );
       }
+    });
+
+    test('reads no account id when the signed-in user name is empty', () {
+      expect(CacheAccountKey.accountIdOf('email-1|$accountId|', ''), isNull);
+      expect(CacheAccountKey.accountIdOf('email-1|$accountId|$userName', ''), isNull);
+    });
+
+    test('reads no account id when the account part is empty', () {
+      expect(CacheAccountKey.accountIdOf('email-1||$userName', userName), isNull);
+    });
+
+    test('a key of another account or another user does not belong to this account', () {
+      expect(
+        CacheAccountKey.belongsTo(
+          decoded: 'email-1|other-account-id|$userName',
+          accountId: accountId,
+          userName: userName,
+        ),
+        isFalse,
+      );
+      expect(
+        CacheAccountKey.belongsTo(
+          decoded: 'email-1|$accountId|$otherUserName',
+          accountId: accountId,
+          userName: userName,
+        ),
+        isFalse,
+      );
     });
   });
 }
