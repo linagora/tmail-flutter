@@ -283,9 +283,9 @@ dependencies:
 
   flutter_custom_tab_bar: 1.2.1
 
-  sentry_flutter: 9.8.0
+  sentry_flutter: 9.10.0
 
-  sentry_dio: 9.8.0
+  sentry_dio: 9.10.0
 
   flutter_riverpod: ^3.3.1
 
