@@ -4,6 +4,8 @@ import 'package:model/extensions/session_extension.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tmail_ui_user/features/delegation/domain/extensions/session_delegation_extension.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/providers/delegation_enabled_provider.dart';
+import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.dart';
 
 part 'active_account_notifier.g.dart';
 
@@ -27,8 +29,11 @@ class ActiveAccountNotifier extends _$ActiveAccountNotifier {
 
   bool canSelect(AccountId accountId) {
     final session = state?.session;
-    return session != null &&
-        (accountId == session.accountId || session.isDelegatedAccount(accountId));
+    if (session == null) return false;
+    if (accountId == session.accountId) return true;
+    // Reads the rule, not delegationEnabledProvider, which watches this notifier.
+    return session.isDelegatedAccount(accountId) &&
+        isDelegationEnabled(session, ref.read(localSettingsProvider));
   }
 
   bool select(AccountId accountId) {

@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/delegation/presentation/model/account_swi
 import 'package:tmail_ui_user/features/delegation/presentation/model/switch_attempt.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
+import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.dart';
 
 import '../../../../fixtures/delegation_fixtures.dart';
 
@@ -82,6 +83,7 @@ void main() {
 
   setUp(() {
     container = ProviderContainer();
+    DelegationFixtures.turnDelegationOn(container);
     view = FakeAccountSwitchView();
     session = DelegationFixtures.session();
     activeAccountNotifierOf().applySession(session);
@@ -203,6 +205,16 @@ void main() {
 
     test('when the session does not list the target account', () async {
       final result = await switchNotifierOf().switchTo(DelegationFixtures.unknownAccountId, view);
+
+      expect(result, const AccountSwitchRefused(AccountSwitchRefusal.accountNotListed));
+      expect(view.calls, isEmpty);
+      expect(shownAccountOf(), ActiveAccount.personal(session));
+    });
+
+    test('when the Delegation preference is off, without touching the view', () async {
+      container.invalidate(localSettingsProvider);
+
+      final result = await switchNotifierOf().switchTo(bob, view);
 
       expect(result, const AccountSwitchRefused(AccountSwitchRefusal.accountNotListed));
       expect(view.calls, isEmpty);
@@ -338,6 +350,18 @@ void main() {
         'catchUpAccount(bob-account-id, 3)',
         'unblockInput',
       ]);
+    });
+
+    test('to my own account when the Delegation preference was turned off meanwhile', () async {
+      await showBobMailbox();
+
+      final toCarol = switchNotifierOf().switchTo(carol, view);
+      container.invalidate(localSettingsProvider);
+      view.loadings.last.completeError(Exception('load failed'));
+      await toCarol;
+
+      expect(shownAccountOf(), ActiveAccount.personal(session));
+      expect(view.calls, contains('catchUpAccount(${alice.id.value}, 3)'));
     });
 
     test('to my own account when the previous delegated account left the session meanwhile', () async {

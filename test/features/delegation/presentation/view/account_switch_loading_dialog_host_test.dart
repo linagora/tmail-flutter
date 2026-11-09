@@ -72,6 +72,7 @@ void main() {
     addTearDown(container.dispose);
     view = _SlowSwitchView();
     container.read(activeAccountProvider.notifier).applySession(DelegationFixtures.session());
+    DelegationFixtures.turnDelegationOn(container);
   });
 
   Future<void> startSwitchToBob() {

@@ -3360,5 +3360,23 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "delegation": "Delegation",
+  "@delegation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delegationSettingExplanation": "Open the mailboxes other users delegated to you",
+  "@delegationSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delegationToggleDescription": "Enable delegation",
+  "@delegationToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

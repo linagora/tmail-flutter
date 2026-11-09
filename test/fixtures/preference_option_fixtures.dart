@@ -37,6 +37,7 @@ class FakeUpdateServerSettingInteractor implements UpdateServerSettingInteractor
 }
 
 PreferencesContext preferencesContext({
+  Session? session,
   TMailServerSettingOptions? serverOptions,
   PreferencesSetting? localSettings,
   bool isAIScribeAvailable = false,
@@ -44,7 +45,7 @@ PreferencesContext preferencesContext({
   bool isLabelVisibilityEnabled = false,
 }) =>
     (
-      session: null,
+      session: session,
       accountId: null,
       serverOptions: serverOptions,
       localSettings: localSettings ?? PreferencesSetting([]),

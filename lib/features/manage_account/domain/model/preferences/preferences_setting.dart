@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/delegation_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/drive_attachment_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/label_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
@@ -43,6 +44,9 @@ class PreferencesSetting with EquatableMixin {
 
   DriveAttachmentConfig get driveAttachmentConfig =>
       getConfigOrDefault(DriveAttachmentConfig.initial());
+
+  DelegationConfig get delegationConfig =>
+      getConfigOrDefault(DelegationConfig.initial());
 
   @override
   List<Object?> get props => [configs];
