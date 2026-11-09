@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/utils/switch_loading_dialog_timing.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/view/account_switch_loading_dialog_host.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/shown_account_input_blocker.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 
@@ -238,5 +239,52 @@ void main() {
 
     expect(find.byType(LinagoraDialog), findsNothing);
     expect(find.text('above-dialog'), findsOneWidget);
+  });
+
+  testWidgets('does not throw when the host leaves the tree while the dialog is up', (tester) async {
+    final showHost = ValueNotifier<bool>(true);
+    addTearDown(showHost.dispose);
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: LocalizationService.supportedLocales,
+          locale: LocalizationService.defaultLocale,
+          home: Scaffold(
+            body: ValueListenableBuilder<bool>(
+              valueListenable: showHost,
+              builder: (_, show, __) => show
+                  ? const AccountSwitchLoadingDialogHost(
+                      child: ShownAccountInputBlocker(child: SizedBox.shrink()),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final switching = startSwitchToBob();
+    await tester.pump();
+    await tester.pump(SwitchLoadingDialogTiming.showDelay);
+    expect(find.byType(LinagoraDialog), findsOneWidget);
+
+    // For example the dashboard is torn down because the session ended mid-switch.
+    showHost.value = false;
+    await tester.pump();
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+
+    container.read(accountSwitchProvider.notifier).cancel();
+    await switching;
+    await tester.pumpAndSettle();
+    expect(find.byType(LinagoraDialog), findsNothing);
   });
 }
