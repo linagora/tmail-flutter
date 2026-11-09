@@ -107,25 +107,30 @@ class WebComposerRobot extends MobileComposerRobot {
 
   /// Waits on the live Summernote iframe only. Cached `textEditorWeb` can hold
   /// the signature HTML before the iframe paints, which races later asserts.
+  /// Requires the signature not to be `display: none` so a hidden draft
+  /// signature does not satisfy the wait (TF-5094 failure mode).
   @override
-  Future<void> waitForSignatureToLoad() async {
-    await waitForCondition(
-      () => findSignatureElement() != null,
-      timeout: TestTimeouts.long,
-      reason: 'identity signature to appear in the web editor iframe',
-    );
-  }
+  Future<void> waitForSignatureToLoad() => _waitForVisibleSignature();
 
   /// Like [waitForSignatureToLoad], but requires the identity marker text so a
   /// quoted/foreign signature cannot satisfy the wait after reopening a draft.
-  Future<void> waitForSignatureMarker(String marker) async {
-    await waitForCondition(
+  Future<void> waitForSignatureMarker(String marker) =>
+      _waitForVisibleSignature(
+        marker: marker,
+        reason: 'visible signature containing $marker in the web editor iframe',
+      );
+
+  Future<void> _waitForVisibleSignature({
+    String? marker,
+    String reason = 'visible identity signature in the web editor iframe',
+  }) {
+    return waitForCondition(
       () {
         final signature = findSignatureElement(marker: marker);
         return signature != null && !signatureStyleIsHidden(signature);
       },
       timeout: TestTimeouts.long,
-      reason: 'visible signature containing $marker in the web editor iframe',
+      reason: reason,
     );
   }
 }

@@ -26,6 +26,7 @@ class SaveDraftWithSignatureThenReopenScenario extends BaseTestScenario {
 
     final subject =
         'Draft with signature ${DateTime.now().microsecondsSinceEpoch}';
+    // Web-only scenario creates the platform robot directly (e2e guide).
     final composerRobot = WebComposerRobot($);
     final signatureAssertion = WebComposerSignatureAssertionRobot($);
     final threadRobot = robots.threadRobot();
@@ -68,10 +69,8 @@ class SaveDraftWithSignatureThenReopenScenario extends BaseTestScenario {
     );
     await threadRobot.openEmailWithSubject(subject);
     await composerRobot.expectComposerViewVisible();
-    // Draft HTML is transformed asynchronously on web. Wait for the marker in
-    // the iframe (and not display:none) before the final assert.
-    await composerRobot.waitForSignatureMarker(_signatureMarker);
-
+    // Assertion robot owns the reopen visibility wait + expects (not a second
+    // identical waitForSignatureMarker that would make the expects vacuous).
     await signatureAssertion.expectSignatureVisible(_signatureMarker);
   }
 
