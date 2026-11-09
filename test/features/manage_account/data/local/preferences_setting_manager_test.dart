@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/preferences_setting_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/default_preferences_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/delegation_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/drive_attachment_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/label_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
@@ -230,6 +231,36 @@ void main() {
         final result = await manager.loadPreferences();
 
         expect(result.driveAttachmentConfig.isEnabled, isTrue);
+      },
+    );
+  });
+
+  group('loadPreferences delegation', () {
+    test(
+      'WHEN delegation was never turned on\n'
+      'THEN it reads as off',
+      () async {
+        await sharedPreferences.setString(
+          storageKey(ThreadDetailConfig.keySuffix),
+          jsonEncode(ThreadDetailConfig(isEnabled: true).toJson()),
+        );
+
+        final result = await manager.loadPreferences();
+
+        expect(result.delegationConfig, DelegationConfig(isEnabled: false));
+      },
+    );
+
+    test(
+      'WHEN delegation is turned on\n'
+      'THEN it is reloaded as a delegation config that is on',
+      () async {
+        await manager.savePreferences(DelegationConfig(isEnabled: true));
+
+        final result = await manager.loadPreferences();
+
+        expect(result.configs.whereType<DelegationConfig>().single, DelegationConfig(isEnabled: true));
+        expect(result.delegationConfig.isEnabled, isTrue);
       },
     );
   });

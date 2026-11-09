@@ -10,6 +10,8 @@ import 'package:tmail_ui_user/features/delegation/presentation/bridge/riverpod_a
 import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 
+import 'delegation_fixtures.dart';
+
 class ActiveAccountSourceFixtures {
   /// Registers a [RiverpodActiveAccountSource] on [container], or on its own container disposed after
   /// the test, that shows [shownAccountId] of [session], or my own account when it is null.
@@ -65,6 +67,7 @@ class ActiveAccountSourceFixtures {
   static ProviderContainer newContainer() {
     final container = ProviderContainer();
     addTearDown(container.dispose);
+    DelegationFixtures.turnDelegationOn(container);
     return container;
   }
 
