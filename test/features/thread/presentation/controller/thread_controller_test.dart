@@ -897,6 +897,64 @@ void main() {
           ).called(1);
         });
       });
+
+      test('DropPendingMailListShortcutsAction drops a shortcut mid-debounce and keeps later ones', () {
+        fakeAsync((async) {
+          PlatformInfo.isTestingForWeb = true;
+          addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+          final dashBoardAction = Rxn<UIAction>();
+          final controller = ThreadController(
+            mockGetEmailsInMailboxInteractor,
+            mockRefreshChangesEmailsInMailboxInteractor,
+            mockLoadMoreEmailsInMailboxInteractor,
+            mockGetEmailByIdInteractor,
+            mockCleanAndGetEmailsInMailboxInteractor,
+          );
+          addTearDown(controller.onClose);
+
+          when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
+          when(mockMailboxDashBoardController.accountId).thenReturn(Rxn(AccountFixtures.aliceAccountId));
+          when(mockMailboxDashBoardController.selectedMailbox)
+              .thenReturn(Rxn(PresentationMailbox(MailboxId(Id('inbox-id')))));
+          when(mockMailboxDashBoardController.searchController).thenReturn(mockSearchController);
+          when(mockMailboxDashBoardController.dashBoardAction).thenReturn(dashBoardAction);
+          when(mockMailboxDashBoardController.emailUIAction).thenReturn(Rxn());
+          when(mockMailboxDashBoardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+          when(mockMailboxDashBoardController.emailsInCurrentMailbox).thenReturn(RxList([
+            PresentationEmail(id: EmailId(Id('email-of-old-account')), selectMode: SelectMode.ACTIVE),
+            PresentationEmail(
+              id: EmailId(Id('read-email-of-old-account')),
+              keywords: {KeyWordIdentifier.emailSeen: true},
+              selectMode: SelectMode.ACTIVE,
+            ),
+          ]));
+          when(mockMailboxDashBoardController.listEmailSelected).thenReturn(RxList());
+          when(mockMailboxDashBoardController.currentSelectMode).thenReturn(Rx(SelectMode.INACTIVE));
+          when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
+          when(mockMailboxDashBoardController.clearDashBoardAction()).thenAnswer((_) {
+            dashBoardAction.value = null;
+          });
+
+          controller.onInit();
+          controller.onKeyboardShortcutInit();
+
+          controller.handleMailListShortcutAction(MailListActionShortcutType.markAsRead);
+          async.elapse(const Duration(milliseconds: 150));
+          dashBoardAction.value = DropPendingMailListShortcutsAction();
+          async.elapse(Duration.zero);
+          async.elapse(const Duration(milliseconds: 300));
+          verifyNever(
+            mockMailboxDashBoardController.markAsReadSelectedMultipleEmail(any, any),
+          );
+
+          controller.handleMailListShortcutAction(MailListActionShortcutType.markAsRead);
+          async.elapse(const Duration(milliseconds: 300));
+          verify(
+            mockMailboxDashBoardController.markAsReadSelectedMultipleEmail(any, any),
+          ).called(1);
+        });
+      });
     });
 
     group('email actions in the shown account:', () {

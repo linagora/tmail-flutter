@@ -7,6 +7,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:tmail_ui_user/features/base/shortcut/app_shortcut_manager.dart';
 import 'package:tmail_ui_user/features/base/shortcut/mail/mail_list_action_shortcut_type.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/mail_searched_list_shortcut_action_view_event.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/utils/shown_account_shortcut_block.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_shift_selection_email_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/mail_list_shortcut_action_view_event.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
@@ -55,12 +56,15 @@ extension HandleKeyboardShortcutActionsExtension on ThreadController {
   }
 
   void refocusMailShortcutFocus() {
+    if (shownAccountShortcutBlocked.value) return;
     if (keyboardFocusNode?.hasFocus == false) {
       keyboardFocusNode?.requestFocus();
     }
   }
 
   void onKeyDownEventAction(KeyEvent event) {
+    if (shownAccountShortcutBlocked.value) return;
+
     handleShiftSelectionEmail(event);
 
     final shortcutType = AppShortcutManager.getMailListActionFromEvent(event);
