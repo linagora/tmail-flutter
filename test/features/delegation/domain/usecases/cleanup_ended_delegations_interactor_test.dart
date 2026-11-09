@@ -87,6 +87,37 @@ void main() {
       expect(cleaned.deletedAccountIds, isNot(contains(gone)));
       expect(cleaned.lostCount, 4);
     });
+
+    test('an online session that still lists every stored account deletes nothing', () async {
+      final store = _Store()..stored.addAll({mine, bob});
+      final result = await CleanupEndedDelegationsInteractor(store).execute(
+        session: DelegationFixtures.session(),
+        fromCache: false,
+      );
+
+      final cleaned = result.getOrElse(() => throw StateError('failure'))
+          as CleanupEndedDelegationsSuccess;
+      expect(cleaned.deletedAccountIds, isEmpty);
+      expect(cleaned.lostCount, 0);
+      expect(store.described, isEmpty);
+      expect(store.deleted, isEmpty);
+    });
+
+    test('a failed read of the stored accounts returns a failure and deletes nothing', () async {
+      final store = _Store()
+        ..stored.add(gone)
+        ..readsThrow = true;
+      final result = await CleanupEndedDelegationsInteractor(store).execute(
+        session: DelegationFixtures.session(listsCarol: false),
+        fromCache: false,
+      );
+
+      expect(
+        result.fold((failure) => failure, (success) => success),
+        isA<CleanupEndedDelegationsFailure>(),
+      );
+      expect(store.deleted, isEmpty);
+    });
   });
 }
 
@@ -94,6 +125,7 @@ class _Store implements EndedDelegationStore {
   final stored = <AccountId>{};
   final rows = <AccountId, StoredDelegatedAccount>{};
   final deleted = <AccountId>[];
+  final described = <AccountId>[];
   final personalAccountIds = <AccountId>[];
   final failDelete = <AccountId>{};
   final failDescribe = <AccountId>{};
@@ -110,6 +142,7 @@ class _Store implements EndedDelegationStore {
 
   @override
   Future<StoredDelegatedAccount> describe(UserName userName, AccountId accountId) async {
+    described.add(accountId);
     if (failDescribe.contains(accountId)) throw StateError('describe');
     return rows[accountId] ??
         StoredDelegatedAccount(accountId: accountId, unsentCount: 0, draftCount: 0);

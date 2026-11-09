@@ -44,7 +44,7 @@ void main() {
       final interactor = StoreListNewEmailInteractor(repository);
 
       final message = Email(id: email.emailId);
-      final delegatedEvents = await interactor.execute(session, delegated, {}).toList();
+      final delegatedEvents = await interactor.execute(session, delegated, {message: email}).toList();
       final mineEvents = await interactor.execute(session, mine, {message: email}).toList();
 
       expect(delegatedEvents, isEmpty);
