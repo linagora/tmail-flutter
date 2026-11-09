@@ -10,7 +10,9 @@ import 'package:tmail_ui_user/features/delegation/presentation/view/account_swit
 
 /// Shows the switch loading dialog above the dashboard once timing allows it.
 class AccountSwitchLoadingDialogHost extends ConsumerStatefulWidget {
-  const AccountSwitchLoadingDialogHost({super.key});
+  final Widget child;
+
+  const AccountSwitchLoadingDialogHost({super.key, required this.child});
 
   @override
   ConsumerState<AccountSwitchLoadingDialogHost> createState() =>
@@ -45,7 +47,7 @@ class _AccountSwitchLoadingDialogHostState
     ref.listen<AccountSwitchState>(accountSwitchProvider, (_, next) {
       _syncWithState(next);
     });
-    return const SizedBox.shrink();
+    return widget.child;
   }
 
   void _syncWithState(AccountSwitchState state) {
@@ -75,9 +77,6 @@ class _AccountSwitchLoadingDialogHostState
       barrierDismissible: false,
       barrierColor: LinagoraDialogStyle.barrierColor,
       builder: (dialogContext) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _focusCancelButton(dialogContext);
-        });
         return AccountSwitchLoadingDialog(
           ownerName: ownerName,
           onCancel: () {
@@ -107,18 +106,5 @@ class _AccountSwitchLoadingDialogHostState
     final account = session?.accounts[accountId];
     // Session accounts expose the owner's address as name; keep that as the fallback.
     return account?.name.value ?? '';
-  }
-
-  void _focusCancelButton(BuildContext dialogContext) {
-    if (!dialogContext.mounted) return;
-    dialogContext.visitChildElements(_requestFocusOnCancelButton);
-  }
-
-  void _requestFocusOnCancelButton(Element element) {
-    if (element.widget.key == LinagoraDialog.primaryActionKey) {
-      Focus.maybeOf(element)?.requestFocus();
-      return;
-    }
-    element.visitChildren(_requestFocusOnCancelButton);
   }
 }

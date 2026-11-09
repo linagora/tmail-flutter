@@ -231,7 +231,7 @@ void main() {
         );
         final fired = <MailViewShortcutActionViewEvent>[];
         controller.shortcutActionEventController =
-            StreamController<MailViewShortcutActionViewEvent>.broadcast();
+            StreamController<MailViewShortcutActionViewEvent>();
         controller.shortcutActionEventSubscription = controller
             .shortcutActionEventController!
             .stream
@@ -279,14 +279,6 @@ void main() {
         )..onInit();
         controller.onKeyboardShortcutInit();
 
-        final fired = <MailViewShortcutActionViewEvent>[];
-        controller.shortcutActionEventSubscription?.cancel();
-        controller.shortcutActionEventSubscription = controller
-            .shortcutActionEventController!
-            .stream
-            .debounceTime(const Duration(milliseconds: 300))
-            .listen(fired.add);
-
         controller.shortcutActionEventController!.add(
           MailViewShortcutActionViewEvent(
             EmailActionType.markAsRead,
@@ -296,13 +288,8 @@ void main() {
         threadDetailUIAction.value = DropPendingMailViewShortcutsAction();
         async.elapse(Duration.zero);
         async.elapse(const Duration(milliseconds: 300));
-        expect(fired, isEmpty);
+        verifyNever(dashboard.dispatchEmailUIAction(any));
 
-        // Production re-listened on a fresh broadcast stream after the drop.
-        final later = <MailViewShortcutActionViewEvent>[];
-        final laterSub = controller.shortcutActionEventController!.stream
-            .debounceTime(const Duration(milliseconds: 300))
-            .listen(later.add);
         controller.shortcutActionEventController!.add(
           MailViewShortcutActionViewEvent(
             EmailActionType.markAsRead,
@@ -310,8 +297,7 @@ void main() {
           ),
         );
         async.elapse(const Duration(milliseconds: 300));
-        laterSub.cancel();
-        expect(later, hasLength(1));
+        verify(dashboard.dispatchEmailUIAction(any)).called(1);
       });
     });
   });

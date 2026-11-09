@@ -77,11 +77,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
     return MailboxDashboardProviderListenerWidget(
       delegateFactories: mailboxDashboardProviderListenerDelegateFactories,
-      child: Stack(
-        children: [
-          ShownAccountInputBlocker(child: child),
-          const AccountSwitchLoadingDialogHost(),
-        ],
+      child: AccountSwitchLoadingDialogHost(
+        child: ShownAccountInputBlocker(child: child),
       ),
     );
   }

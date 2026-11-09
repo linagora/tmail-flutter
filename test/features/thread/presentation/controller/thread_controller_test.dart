@@ -824,7 +824,7 @@ void main() {
 
           final fired = <MailListShortcutActionViewEvent>[];
           threadController.shortcutActionEventController =
-              StreamController<MailListShortcutActionViewEvent>.broadcast();
+              StreamController<MailListShortcutActionViewEvent>();
           threadController.shortcutActionEventSubscription = threadController
               .shortcutActionEventController!
               .stream
@@ -882,29 +882,19 @@ void main() {
           controller.onInit();
           controller.onKeyboardShortcutInit();
 
-          final fired = <MailListShortcutActionViewEvent>[];
-          controller.shortcutActionEventSubscription?.cancel();
-          controller.shortcutActionEventSubscription = controller
-              .shortcutActionEventController!
-              .stream
-              .debounceTime(const Duration(milliseconds: 300))
-              .listen(fired.add);
-
-          controller.handleMailListShortcutAction(MailListActionShortcutType.delete);
+          controller.handleMailListShortcutAction(MailListActionShortcutType.markAsRead);
           dashBoardAction.value = DropPendingMailListShortcutsAction();
           async.elapse(Duration.zero);
           async.elapse(const Duration(milliseconds: 300));
-          expect(fired, isEmpty);
+          verifyNever(
+            mockMailboxDashBoardController.markAsReadSelectedMultipleEmail(any, any),
+          );
 
-          // Production re-listened on a fresh broadcast stream after the drop.
-          final later = <MailListShortcutActionViewEvent>[];
-          final laterSub = controller.shortcutActionEventController!.stream
-              .debounceTime(const Duration(milliseconds: 300))
-              .listen(later.add);
-          controller.handleMailListShortcutAction(MailListActionShortcutType.delete);
+          controller.handleMailListShortcutAction(MailListActionShortcutType.markAsRead);
           async.elapse(const Duration(milliseconds: 300));
-          laterSub.cancel();
-          expect(later, hasLength(1));
+          verify(
+            mockMailboxDashBoardController.markAsReadSelectedMultipleEmail(any, any),
+          ).called(1);
         });
       });
     });
