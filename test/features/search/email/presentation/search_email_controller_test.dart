@@ -1306,4 +1306,39 @@ void main() {
       ).called(1);
     });
   });
+
+  test('DropPendingMailListShortcutsAction drops a search shortcut mid-debounce and keeps later ones', () {
+    fakeAsync((async) {
+      PlatformInfo.isTestingForWeb = true;
+      addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+      controller.onKeyboardShortcutInit();
+
+      controller.shortcutActionEventController!.add(
+        MailSearchedListShortcutActionViewEvent(
+          EmailActionType.markAsRead,
+          [email('search-email-1')],
+        ),
+      );
+      async.elapse(const Duration(milliseconds: 150));
+      mailboxDashBoardController.dashBoardAction.value =
+          DropPendingMailListShortcutsAction();
+      async.elapse(Duration.zero);
+      async.elapse(const Duration(milliseconds: 300));
+      verifyNever(
+        mailboxDashBoardController.markAsReadSelectedMultipleEmail(any, any),
+      );
+
+      controller.shortcutActionEventController!.add(
+        MailSearchedListShortcutActionViewEvent(
+          EmailActionType.markAsStarred,
+          [email('search-email-2')],
+        ),
+      );
+      async.elapse(const Duration(milliseconds: 300));
+      verify(
+        mailboxDashBoardController.markAsStarSelectedMultipleEmail(any, any),
+      ).called(1);
+    });
+  });
 }

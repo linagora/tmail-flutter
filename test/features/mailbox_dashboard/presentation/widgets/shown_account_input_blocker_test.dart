@@ -5,7 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_loading_dialog_visible_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/shown_account_input_block_notifier.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/utils/shown_account_shortcut_block.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/shown_account_input_blocker.dart';
@@ -75,6 +77,7 @@ void main() {
   setUp(() {
     container = ProviderContainer();
     addTearDown(container.dispose);
+    addTearDown(() => shownAccountShortcutBlocked.value = false);
     taps = _Taps();
   });
 
@@ -197,5 +200,40 @@ void main() {
       hasLength(1),
     );
     expect(dashboard.threadDetailActions.whereType<DropPendingMailViewShortcutsAction>(), hasLength(1));
+  });
+
+  testWidgets('sets the sync shortcut gate as soon as block flips, before ExcludeFocus rebuilds',
+      (tester) async {
+    await tester.pumpWidget(_shortcutDashboard(container, taps.record));
+    await tester.pump();
+    expect(shownAccountShortcutBlocked.value, isFalse);
+
+    // No pump: gate must flip in the listenManual callback, not on the next frame.
+    container.read(shownAccountInputBlockProvider.notifier).block();
+
+    expect(shownAccountShortcutBlocked.value, isTrue);
+  });
+
+  testWidgets('keeps the dashboard blocked while the loading dialog stays for min-visible',
+      (tester) async {
+    await tester.pumpWidget(_shortcutDashboard(container, taps.record));
+    await tester.pump();
+    container.read(shownAccountInputBlockProvider.notifier).block();
+    container.read(accountSwitchLoadingDialogVisibleProvider.notifier).setVisible(true);
+    await tester.pump();
+
+    container.read(shownAccountInputBlockProvider.notifier).unblock();
+    await tester.pump();
+    expect(shownAccountShortcutBlocked.value, isTrue);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyN);
+    expect(taps.count, 0);
+
+    container.read(accountSwitchLoadingDialogVisibleProvider.notifier).setVisible(false);
+    await tester.pump();
+    expect(shownAccountShortcutBlocked.value, isFalse);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyN);
+    expect(taps.count, 1);
   });
 }
