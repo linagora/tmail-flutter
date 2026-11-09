@@ -1,6 +1,19 @@
+import 'package:core/utils/file_utils.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/caching/clients/composer_hive_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/email_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/fcm_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/mailbox_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/new_email_hive_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/opened_email_hive_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/sending_email_hive_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
+import 'package:tmail_ui_user/features/delegation/data/datasource/ended_delegation_store_impl.dart';
+import 'package:tmail_ui_user/features/delegation/domain/repository/ended_delegation_store.dart';
+import 'package:tmail_ui_user/features/delegation/domain/usecases/cleanup_ended_delegations_interactor.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/riverpod_active_account_source.dart';
+import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_manager.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
 class DelegationBindings extends Bindings {
@@ -12,5 +25,27 @@ class DelegationBindings extends Bindings {
     Get.put<ActiveAccountSource>(source, permanent: true);
     Get.put<ActiveAccountWriter>(source, permanent: true);
     Get.put<ShownAccountLoadReporter>(source, permanent: true);
+    Get.lazyPut<EndedDelegationStore>(_endedDelegationStore, fenix: true);
+    Get.lazyPut<CleanupEndedDelegationsInteractor>(
+      () => CleanupEndedDelegationsInteractor(Get.find<EndedDelegationStore>()),
+      fenix: true,
+    );
   }
+}
+
+EndedDelegationStore _endedDelegationStore() {
+  return EndedDelegationStoreImpl(
+    mailboxCacheClient: Get.find<MailboxCacheClient>(),
+    emailCacheClient: Get.find<EmailCacheClient>(),
+    stateCacheClient: Get.find<StateCacheClient>(),
+    newEmailCacheClient: Get.find<NewEmailHiveCacheClient>(),
+    openedEmailCacheClient: Get.find<OpenedEmailHiveCacheClient>(),
+    sendingEmailCacheClient: Get.find<SendingEmailHiveCacheClient>(),
+    fcmCacheClient: Get.find<FcmCacheClient>(),
+    keychainSharingManager: Get.find<KeychainSharingManager>(),
+    fileUtils: Get.find<FileUtils>(),
+    composerHiveCacheClient: () => Get.isRegistered<ComposerHiveCacheClient>()
+        ? Get.find<ComposerHiveCacheClient>()
+        : null,
+  );
 }

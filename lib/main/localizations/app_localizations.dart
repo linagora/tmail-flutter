@@ -6216,4 +6216,12 @@ class AppLocalizations {
       name: 'domainActivationPendingMessage',
     );
   }
+
+  String endedDelegationLostItems(int count) {
+    return Intl.message(
+      'Access ended. $count unsent or draft messages were removed.',
+      name: 'endedDelegationLostItems',
+      args: [count],
+    );
+  }
 }

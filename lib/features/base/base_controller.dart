@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/base/mixin/emit_state_mixin.dart';
 import 'package:tmail_ui_user/features/base/extensions/discard_web_composers_on_logout_extension.dart';
 import 'package:tmail_ui_user/features/base/extensions/handle_company_server_login_info_extension.dart';
 import 'package:tmail_ui_user/features/base/mixin/logout_mixin.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/cleanup_ended_delegations.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/delegation_session_cleanup.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
@@ -536,6 +537,10 @@ abstract class BaseController extends GetxController
     }
 
     await discardWebComposersOnLogout(session, accountId);
+    await removeDelegatedComposerSnapshotsOnLogout(
+      session: session,
+      personalAccountId: accountId,
+    );
     await cachingManager.clearMailDataCached();
 
     _isFcmEnabled = _isFcmActivated(session, accountId);
@@ -561,6 +566,10 @@ abstract class BaseController extends GetxController
   }) async {
     _LogoutToSignInOutcome outcome;
     try {
+      await removeDelegatedComposerSnapshotsOnLogout(
+        session: session,
+        personalAccountId: accountId,
+      );
       _isFcmEnabled = _isFcmActivated(session, accountId);
       outcome = await _logoutToSignIn();
     } catch (e) {

@@ -29,6 +29,7 @@ class MailtoUrlController extends ReloadableController {
       final mailtoArgument = MailtoArguments(
         session: session,
         mailtoUri: Uri.base.toString(),
+        sessionFromCache: sessionLoadedFromCache,
       );
       popAndPush(
         RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
