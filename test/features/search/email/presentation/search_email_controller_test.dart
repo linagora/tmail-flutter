@@ -13,10 +13,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:rxdart/rxdart.dart' hide Rx;
 import 'package:tmail_ui_user/features/search/email/presentation/extension/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/mail_searched_list_shortcut_action_view_event.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/mail_list_shortcut_action_view_event.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -1282,14 +1280,6 @@ void main() {
 
       controller.onKeyboardShortcutInit();
 
-      final fired = <MailListShortcutActionViewEvent>[];
-      controller.shortcutActionEventSubscription?.cancel();
-      controller.shortcutActionEventSubscription = controller
-          .shortcutActionEventController!
-          .stream
-          .debounceTime(const Duration(milliseconds: 300))
-          .listen(fired.add);
-
       controller.shortcutActionEventController!.add(
         MailSearchedListShortcutActionViewEvent(
           EmailActionType.markAsRead,
@@ -1300,13 +1290,10 @@ void main() {
           DropPendingMailListShortcutsAction();
       async.elapse(Duration.zero);
       async.elapse(const Duration(milliseconds: 300));
-      expect(fired, isEmpty);
+      verifyNever(
+        mailboxDashBoardController.markAsReadSelectedMultipleEmail(any, any),
+      );
 
-      // Production re-listened on a fresh broadcast stream after the drop.
-      final later = <MailListShortcutActionViewEvent>[];
-      final laterSub = controller.shortcutActionEventController!.stream
-          .debounceTime(const Duration(milliseconds: 300))
-          .listen(later.add);
       controller.shortcutActionEventController!.add(
         MailSearchedListShortcutActionViewEvent(
           EmailActionType.markAsStarred,
@@ -1314,8 +1301,9 @@ void main() {
         ),
       );
       async.elapse(const Duration(milliseconds: 300));
-      laterSub.cancel();
-      expect(later, hasLength(1));
+      verify(
+        mailboxDashBoardController.markAsStarSelectedMultipleEmail(any, any),
+      ).called(1);
     });
   });
 }

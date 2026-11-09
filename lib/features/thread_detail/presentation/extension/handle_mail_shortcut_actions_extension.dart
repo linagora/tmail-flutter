@@ -42,7 +42,7 @@ extension HandleMailShortcutActionsExtension on ThreadDetailController {
 
   void _listenShortcutActionEvents() {
     shortcutActionEventController =
-        StreamController<MailViewShortcutActionViewEvent>.broadcast();
+        StreamController<MailViewShortcutActionViewEvent>();
     shortcutActionEventSubscription = shortcutActionEventController
         ?.stream
         .debounceTime(const Duration(milliseconds: 300))
