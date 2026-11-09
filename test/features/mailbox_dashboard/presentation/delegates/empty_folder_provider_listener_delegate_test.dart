@@ -70,6 +70,7 @@ Future<void> _emptiesTrashOfShownAccount(WidgetTester tester) async {
     emptyFolderProvider.overrideWith2((_) => _RecordingEmptyFolderNotifier()),
   ]);
   addTearDown(container.dispose);
+  DelegationFixtures.turnDelegationOn(container);
   container.read(activeAccountProvider.notifier)
     ..applySession(session)
     ..select(DelegationFixtures.bobAccountId);

@@ -2,13 +2,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
+import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.dart';
 
 import '../../../../fixtures/delegation_fixtures.dart';
 
 void main() {
   late ProviderContainer container;
 
-  setUp(() => container = ProviderContainer());
+  setUp(() {
+    container = ProviderContainer();
+    DelegationFixtures.turnDelegationOn(container);
+  });
   tearDown(() => container.dispose());
 
   ActiveAccountNotifier notifierOf() => container.read(activeAccountProvider.notifier);
@@ -101,9 +105,43 @@ void main() {
     test('refuses any account before a session is applied', () {
       expect(notifierOf().canSelect(DelegationFixtures.aliceAccountId), isFalse);
     });
+
+    test('refuses a delegated account but accepts my own account while the Delegation preference is off', () {
+      container.invalidate(localSettingsProvider);
+      notifierOf().applySession(DelegationFixtures.session());
+
+      expect(notifierOf().canSelect(DelegationFixtures.bobAccountId), isFalse);
+      expect(notifierOf().canSelect(DelegationFixtures.aliceAccountId), isTrue);
+    });
+
+    test('refuses a delegated account but accepts my own account when the server lacks the delegation capability', () {
+      notifierOf().applySession(DelegationFixtures.sessionWithoutDelegationCapability());
+
+      expect(notifierOf().canSelect(DelegationFixtures.bobAccountId), isFalse);
+      expect(notifierOf().canSelect(DelegationFixtures.aliceAccountId), isTrue);
+    });
+
+    test('accepts a delegated account again once the Delegation preference is turned back on', () {
+      container.invalidate(localSettingsProvider);
+      notifierOf().applySession(DelegationFixtures.session());
+      expect(notifierOf().canSelect(DelegationFixtures.bobAccountId), isFalse);
+
+      DelegationFixtures.turnDelegationOn(container);
+
+      expect(notifierOf().canSelect(DelegationFixtures.bobAccountId), isTrue);
+    });
   });
 
   group('select', () {
+    test('refuses a delegated account while the Delegation preference is off and keeps my own account', () {
+      container.invalidate(localSettingsProvider);
+      final session = DelegationFixtures.session();
+      notifierOf().applySession(session);
+
+      expect(notifierOf().select(DelegationFixtures.bobAccountId), isFalse);
+      expect(stateOf(), ActiveAccount.personal(session));
+    });
+
     test('shows a delegated account listed by the session', () {
       final session = DelegationFixtures.session();
       notifierOf().applySession(session);

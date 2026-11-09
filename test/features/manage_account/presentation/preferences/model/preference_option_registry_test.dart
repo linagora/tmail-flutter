@@ -4,8 +4,10 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/p
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/thread_detail_config.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_option_registry.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_options.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_options/delegation_preference_option.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/state/update_server_setting_state.dart';
 
+import '../../../../../fixtures/delegation_fixtures.dart';
 import '../../../../../fixtures/preference_option_fixtures.dart';
 
 void main() {
@@ -110,6 +112,33 @@ void main() {
             .available(preferencesContext(isLabelVisibilityEnabled: true))
             .map((o) => o.id),
         contains('label'),
+      );
+    });
+  });
+
+  group('visible', () {
+    test('drops an unrevealed experimental option that isAvailable still lists', () {
+      final withDelegation = PreferenceOptionRegistry([
+        ThreadPreferenceOption(fakeLocal),
+        DelegationPreferenceOption(fakeLocal),
+      ]);
+      final context = preferencesContext(
+        session: DelegationFixtures.session(),
+        localSettings: PreferencesSetting.initial(),
+      );
+
+      expect(withDelegation.available(context).map((o) => o.id), contains('delegation'));
+      expect(
+        withDelegation
+            .visible(context, experimentalRevealed: false)
+            .map((o) => o.id),
+        isNot(contains('delegation')),
+      );
+      expect(
+        withDelegation
+            .visible(context, experimentalRevealed: true)
+            .map((o) => o.id),
+        contains('delegation'),
       );
     });
   });

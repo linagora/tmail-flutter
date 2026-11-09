@@ -6,6 +6,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_loc
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/bindings/preferences_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_option_registry.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_options.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_options/delegation_preference_option.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_options/drive_attachment_preference_option.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_options/sentry_reporting_preference_option.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/preferences_controller.dart';
@@ -40,6 +41,7 @@ class PreferencesBindings extends Bindings {
         AILabelCategorizationPreferenceOption(updateServer),
         LabelPreferenceOption(updateLocal),
         DriveAttachmentPreferenceOption(updateLocal),
+        DelegationPreferenceOption(updateLocal),
         SentryReportingPreferenceOption(updateServer),
       ]);
     });

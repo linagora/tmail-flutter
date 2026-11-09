@@ -8,7 +8,10 @@ import '../../../../fixtures/delegation_fixtures.dart';
 void main() {
   late ProviderContainer container;
 
-  setUp(() => container = ProviderContainer());
+  setUp(() {
+    container = ProviderContainer();
+    DelegationFixtures.turnDelegationOn(container);
+  });
   tearDown(() => container.dispose());
 
   ActiveAccountNotifier notifierOf() => container.read(activeAccountProvider.notifier);
