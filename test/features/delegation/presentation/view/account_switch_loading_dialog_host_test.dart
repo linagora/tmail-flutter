@@ -55,7 +55,9 @@ Widget _hostApp(ProviderContainer container) {
       ],
       supportedLocales: LocalizationService.supportedLocales,
       locale: LocalizationService.defaultLocale,
-      home: Scaffold(body: AccountSwitchLoadingDialogHost()),
+      home: Scaffold(
+        body: AccountSwitchLoadingDialogHost(child: SizedBox.shrink()),
+      ),
     ),
   );
 }
@@ -138,9 +140,25 @@ void main() {
     final switching = startSwitchToBob();
     await tester.pump();
     await tester.pump(SwitchLoadingDialogTiming.showDelay);
-    await tester.pump(); // focus lands on Cancel
+    await tester.pump();
 
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pump();
+    await switching.timeout(const Duration(seconds: 2));
+    await tester.pump(SwitchLoadingDialogTiming.minVisible);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(LinagoraDialog), findsNothing);
+  });
+
+  testWidgets('Enter cancels the switch', (tester) async {
+    await tester.pumpWidget(_hostApp(container));
+    final switching = startSwitchToBob();
+    await tester.pump();
+    await tester.pump(SwitchLoadingDialogTiming.showDelay);
+    await tester.pump();
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pump();
     await switching.timeout(const Duration(seconds: 2));
     await tester.pump(SwitchLoadingDialogTiming.minVisible);
@@ -195,7 +213,9 @@ void main() {
           ],
           supportedLocales: LocalizationService.supportedLocales,
           locale: LocalizationService.defaultLocale,
-          home: const Scaffold(body: AccountSwitchLoadingDialogHost()),
+          home: const Scaffold(
+            body: AccountSwitchLoadingDialogHost(child: SizedBox.shrink()),
+          ),
         ),
       ),
     );
