@@ -4,6 +4,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/default_preferences_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/delegation_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/drive_attachment_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/label_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
@@ -26,6 +27,7 @@ class PreferencesSettingManager {
     _storageKey(AIScribeConfig.keySuffix): AIScribeConfig.fromJson,
     _storageKey(LabelConfig.keySuffix): LabelConfig.fromJson,
     _storageKey(DriveAttachmentConfig.keySuffix): DriveAttachmentConfig.fromJson,
+    _storageKey(DelegationConfig.keySuffix): DelegationConfig.fromJson,
   });
 
   const PreferencesSettingManager(this._sharedPreferences);

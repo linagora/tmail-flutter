@@ -6225,6 +6225,27 @@ class AppLocalizations {
     );
   }
 
+  String get delegation {
+    return Intl.message(
+      'Delegation',
+      name: 'delegation',
+    );
+  }
+
+  String get delegationSettingExplanation {
+    return Intl.message(
+      'Open the mailboxes other users delegated to you',
+      name: 'delegationSettingExplanation',
+    );
+  }
+
+  String get delegationToggleDescription {
+    return Intl.message(
+      'Enable delegation',
+      name: 'delegationToggleDescription',
+    );
+  }
+
   String openingOwnerMailbox(String name) {
     return Intl.message(
       "Opening $name's mailbox…",

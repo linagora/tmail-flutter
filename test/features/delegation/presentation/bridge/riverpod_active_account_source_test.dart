@@ -31,6 +31,7 @@ void main() {
 
   setUp(() {
     container = ProviderContainer();
+    DelegationFixtures.turnDelegationOn(container);
     source = RiverpodActiveAccountSource(container);
   });
 

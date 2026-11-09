@@ -54,6 +54,7 @@ void main() {
   setUp(() {
     container = ProviderContainer();
     addTearDown(container.dispose);
+    DelegationFixtures.turnDelegationOn(container);
     container.listen(shownAccountInputBlockProvider, (_, __) {});
     reloadRequests = [];
     container.listen(shownAccountReloadProvider, (_, attemptId) => reloadRequests.add(attemptId));
