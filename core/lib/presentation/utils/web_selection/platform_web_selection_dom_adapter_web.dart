@@ -4,11 +4,12 @@ import 'package:core/presentation/utils/web_selection/web_selection_dom_adapter.
 import 'package:core/utils/app_logger.dart';
 import 'package:web/web.dart' as web;
 
-/// Web build: touches every `<iframe>` directly (srcdoc iframes are same-origin).
+/// Web build: clears every `<iframe>` selection; sandboxed viewer frames via postMessage.
 class PlatformWebSelectionDomAdapter implements WebSelectionDomAdapter {
   PlatformWebSelectionDomAdapter();
 
   static const _flutterViewTag = 'flutter-view';
+  static const _clearSelectionMessage = '{"type":"toIframe: clearSelection"}';
 
   JSFunction? _blurListener;
 
@@ -36,7 +37,13 @@ class PlatformWebSelectionDomAdapter implements WebSelectionDomAdapter {
 
   void _clearSelectionOf(web.HTMLIFrameElement iframe) {
     try {
-      iframe.contentWindow?.getSelection()?.removeAllRanges();
+      final window = iframe.contentWindow;
+      if (window == null) return;
+      if (iframe.hasAttribute('sandbox')) {
+        window.postMessage(_clearSelectionMessage.toJS, '*'.toJS);
+        return;
+      }
+      window.getSelection()?.removeAllRanges();
     } catch (e) {
       logWarning(
         'PlatformWebSelectionDomAdapter::_clearSelectionOf: Exception = $e',

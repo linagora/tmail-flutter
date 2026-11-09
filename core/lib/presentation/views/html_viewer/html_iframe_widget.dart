@@ -10,11 +10,19 @@ class HtmlIframeWidget extends StatelessWidget {
     this.borderRadius,
     this.src,
     this.srcdoc,
+    this.sandbox,
   });
 
   final void Function(IFrameElement iframe)? onIframeCreated;
   final String? width, height, src, srcdoc;
   final double? borderRadius;
+
+  /// Sandbox attribute value; null leaves the frame unsandboxed (trusted apps).
+  final String? sandbox;
+
+  /// Opaque origin: mail content cannot reach the app window, DOM or storage.
+  static const String sandboxPolicy =
+      'allow-scripts allow-popups allow-popups-to-escape-sandbox';
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +30,8 @@ class HtmlIframeWidget extends StatelessWidget {
       key: key,
       tagName: 'iframe',
       onElementCreated: (element) {
-        // No sandbox: the viewer needs allow-scripts + allow-same-origin, which together void it.
         final iframe = element as IFrameElement;
+        if (sandbox != null) iframe.setAttribute('sandbox', sandbox!);
         onIframeCreated?.call(iframe);
         iframe
           ..width = width
