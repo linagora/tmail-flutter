@@ -98,6 +98,22 @@ void main() {
       );
       expect(style, 'display: block;');
     });
+
+    test('hides a nested signature that has no style attribute', () async {
+      expect(
+        await styleAfterHide(
+          '<blockquote><div class="tmail-signature">Sig</div></blockquote>',
+        ),
+        'display: none;',
+      );
+    });
+
+    test('hides a nested signature whose style has no trailing semicolon', () async {
+      final style = await styleAfterHide(
+        '<blockquote><div class="tmail-signature" style="color: red">Sig</div></blockquote>',
+      );
+      expect(style, 'color: red; display: none;');
+    });
   });
 
   group('RemoveCollapsedSignatureButtonTransformer', () {
