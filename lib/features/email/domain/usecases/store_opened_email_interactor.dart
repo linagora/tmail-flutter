@@ -4,6 +4,8 @@ import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:model/extensions/session_extension.dart';
+import 'package:tmail_ui_user/features/delegation/domain/model/offline_email_body_policy.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_cache_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
@@ -19,6 +21,13 @@ class StoreOpenedEmailInteractor {
     AccountId accountId,
     DetailedEmail detailedEmail
   ) async* {
+    if (!OfflineEmailBodyPolicy.mayStore(
+      accountId: accountId,
+      personalAccountId: session.accountId,
+    )) {
+      log('StoreOpenedEmailInteractor::execute: skip, offline bodies stay on mine');
+      return;
+    }
     try {
       yield Right<Failure, Success>(StoreOpenedEmailLoading());
       final isOpenedEmailExist = await _isOpenedEmailAlreadyStored(session, accountId, detailedEmail);

@@ -2,7 +2,7 @@ import 'package:hive_ce/hive.dart';
 import 'package:tmail_ui_user/features/caching/clients/account_cache_client.dart';
 import 'package:tmail_ui_user/features/login/data/model/account_cache.dart';
 
-class MemoryAccountCacheClient implements AccountCacheClient {
+class MemoryAccountCacheClient extends AccountCacheClient {
   final Map<String, AccountCache> _cache = {};
 
   @override
@@ -133,6 +133,6 @@ class MemoryAccountCacheClient implements AccountCacheClient {
 
   @override
   Future<Map<String, AccountCache>> getMapItems({bool isolated = true}) {
-    throw UnimplementedError();
+    return Future.value(Map.of(_cache));
   }
 }
