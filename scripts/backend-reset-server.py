@@ -129,6 +129,19 @@ def _recreate_team_mailboxes() -> None:
     _webadmin("PUT", f"/domains/{_TEST_DOMAIN}/team-mailboxes/bob-guests/members/alice@{_TEST_DOMAIN}?role=member")
 
 
+def _grant_delegation() -> None:
+    """Let bob open alice's mailbox, so every e2e test runs with a delegated account in bob's session."""
+    path = f"/users/alice@{_TEST_DOMAIN}/authorizedUsers/{_BOB_USER}"
+    result = _run([
+        "curl", "-s", "-o", "/dev/null", "-w", "%{http_code}",
+        "-X", "PUT",
+        f"http://localhost:{WEBADMIN_PORT}{path}",
+    ])
+    code = result.stdout.strip()
+    if code not in {"200", "201", "204"}:
+        raise RuntimeError(f"grant delegation failed: HTTP {code} for PUT {path}")
+
+
 def _set_quota() -> None:
     """Set quota for bob after data deletion."""
     _webadmin("PUT", f"/quota/users/bob@{_TEST_DOMAIN}",
@@ -155,8 +168,9 @@ def reset_backend() -> None:
     print(f"[reset-server]   restored {_BOB_USER}", flush=True)
 
     # Recreate team mailbox and quota (these are not restored by mailbox restore).
-    print("[reset-server] Recreating team mailboxes and quota...", flush=True)
+    print("[reset-server] Recreating team mailboxes, delegation and quota...", flush=True)
     _recreate_team_mailboxes()
+    _grant_delegation()
     _set_quota()
 
     print("[reset-server] Reset complete.", flush=True)
