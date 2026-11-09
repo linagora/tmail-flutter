@@ -324,6 +324,7 @@ class SearchEmailController extends BaseController
           mailboxDashBoardController.clearDashBoardAction();
         } else if (action is DropPendingMailListShortcutsAction) {
           dropPendingShortcutActions();
+          mailboxDashBoardController.clearDashBoardAction();
         }
       }
     );
