@@ -14,6 +14,8 @@ class HideDraftSignatureTransformer extends DomTransformer {
     Map<String, String>? mapUrlDownloadCID
   }) async {
     try {
+      // A top-level signature is not re-applied on load, so it must stay visible.
+      if (document.querySelector('body > .tmail-signature') != null) return;
       final signature = document.querySelector('.tmail-signature');
       if (signature == null) return;
       final currentStyle = signature.attributes['style']?.trim();

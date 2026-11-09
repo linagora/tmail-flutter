@@ -73,15 +73,30 @@ void main() {
   group('HideDraftSignatureTransformer', () {
     const transformer = HideDraftSignatureTransformer();
 
-    test('hides a visible signature', () async {
+    Future<String?> styleAfterHide(String html) async {
       final document = await run(
         (doc) => transformer.process(document: doc, dioClient: dioClient),
+        html,
+      );
+      return document.querySelector('.tmail-signature')!.attributes['style'];
+    }
+
+    test('hides a visible signature nested in quoted content', () async {
+      final style = await styleAfterHide(
+        '<blockquote><div class="tmail-signature" style="display: block;">Sig</div></blockquote>',
+      );
+      expect(style, contains('display: none'));
+    });
+
+    test('keeps a top-level signature without style visible', () async {
+      expect(await styleAfterHide('<div class="tmail-signature">Sig</div>'), isNull);
+    });
+
+    test('keeps a top-level signature with visible style visible', () async {
+      final style = await styleAfterHide(
         '<div class="tmail-signature" style="display: block;">Sig</div>',
       );
-      expect(
-        document.querySelector('.tmail-signature')!.attributes['style'],
-        contains('display: none'),
-      );
+      expect(style, 'display: block;');
     });
   });
 
