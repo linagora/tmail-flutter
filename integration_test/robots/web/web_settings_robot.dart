@@ -17,4 +17,10 @@ class WebSettingsRobot extends MobileSettingsRobot {
       Key('${accountMenuItem.getAliasBrowser()}_account_menu_item_tile'),
     ).tap();
   }
+
+  @override
+  Future<void> leaveSettingsDetail() async {
+    // Web: the menu stays on screen, so leaving a detail means opening another one.
+    await openSettingsDetail(AccountMenuItem.languageAndRegion);
+  }
 }
