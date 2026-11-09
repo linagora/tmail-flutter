@@ -17,6 +17,19 @@ void _printLines(String text, {int? maxLines}) {
   }
 }
 
+// The web console forwarder keeps only the first line of a message; print the whole error.
+void logFlutterErrorDetails(FlutterErrorDetails details) {
+  try {
+    debugPrintSynchronously(
+      '[FLUTTER ERROR] ${details.exceptionAsString()} '
+      'library=${details.library} context=${details.context?.toDescription()}',
+    );
+    _printLines(details.stack?.toString() ?? 'no stack');
+  } catch (e) {
+    debugPrintSynchronously('[FLUTTER ERROR] log failed: $e');
+  }
+}
+
 // debugPrint, not dart:developer log: the latter is not written to Android logcat.
 void dumpFailureState(PatrolIntegrationTester $) {
   try {
