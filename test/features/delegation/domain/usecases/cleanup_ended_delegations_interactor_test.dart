@@ -13,6 +13,21 @@ void main() {
   final bob = DelegationFixtures.bobAccountId;
   final gone = DelegationFixtures.unknownAccountId;
 
+  CleanupEndedDelegationsSuccess expectCleanupSuccess(dynamic result) {
+    final success = result.getOrElse(() => throw StateError('failure'));
+    expect(success, isA<CleanupEndedDelegationsSuccess>());
+    return success as CleanupEndedDelegationsSuccess;
+  }
+
+  void expectNoCleanup(
+    CleanupEndedDelegationsSuccess cleaned,
+    _Store store,
+  ) {
+    expect(cleaned.deletedAccountIds, isEmpty);
+    expect(cleaned.lostCount, 0);
+    expect(store.deleted, isEmpty);
+  }
+
   group('CleanupEndedDelegationsInteractor', () {
     test('a cached session does not read or delete local data', () async {
       final store = _Store()..readsThrow = true;
@@ -21,12 +36,7 @@ void main() {
         fromCache: true,
       );
 
-      final success = result.getOrElse(() => throw StateError('failure'));
-      expect(success, isA<CleanupEndedDelegationsSuccess>());
-      final cleaned = success as CleanupEndedDelegationsSuccess;
-      expect(cleaned.deletedAccountIds, isEmpty);
-      expect(cleaned.lostCount, 0);
-      expect(store.deleted, isEmpty);
+      expectNoCleanup(expectCleanupSuccess(result), store);
     });
 
     test('deletes an account the session no longer lists and counts what is lost', () async {
@@ -42,8 +52,7 @@ void main() {
         fromCache: false,
       );
 
-      final cleaned = result.getOrElse(() => throw StateError('failure'))
-          as CleanupEndedDelegationsSuccess;
+      final cleaned = expectCleanupSuccess(result);
       expect(cleaned.deletedAccountIds, [gone]);
       expect(cleaned.lostCount, 3);
       expect(store.deleted, [gone]);
@@ -59,11 +68,7 @@ void main() {
         fromCache: false,
       );
 
-      final cleaned = result.getOrElse(() => throw StateError('failure'))
-          as CleanupEndedDelegationsSuccess;
-      expect(cleaned.deletedAccountIds, isEmpty);
-      expect(cleaned.lostCount, 0);
-      expect(store.deleted, isEmpty);
+      expectNoCleanup(expectCleanupSuccess(result), store);
     });
 
     test('keeps going when one account fails and still reports the others', () async {
@@ -71,6 +76,11 @@ void main() {
       final store = _Store()
         ..stored.addAll({gone, carol})
         ..failDelete.add(gone)
+        ..rows[gone] = StoredDelegatedAccount(
+          accountId: gone,
+          unsentCount: 5,
+          draftCount: 0,
+        )
         ..rows[carol] = StoredDelegatedAccount(
           accountId: carol,
           unsentCount: 0,
@@ -81,10 +91,10 @@ void main() {
         fromCache: false,
       );
 
-      final cleaned = result.getOrElse(() => throw StateError('failure'))
-          as CleanupEndedDelegationsSuccess;
+      final cleaned = expectCleanupSuccess(result);
       expect(cleaned.deletedAccountIds, contains(carol));
       expect(cleaned.deletedAccountIds, isNot(contains(gone)));
+      // gone has 5 unsent items but delete failed, so only carol's 4 count.
       expect(cleaned.lostCount, 4);
     });
 
@@ -95,12 +105,8 @@ void main() {
         fromCache: false,
       );
 
-      final cleaned = result.getOrElse(() => throw StateError('failure'))
-          as CleanupEndedDelegationsSuccess;
-      expect(cleaned.deletedAccountIds, isEmpty);
-      expect(cleaned.lostCount, 0);
+      expectNoCleanup(expectCleanupSuccess(result), store);
       expect(store.described, isEmpty);
-      expect(store.deleted, isEmpty);
     });
 
     test('a failed read of the stored accounts returns a failure and deletes nothing', () async {
