@@ -104,7 +104,7 @@ void main() {
         await styleAfterHide(
           '<blockquote><div class="tmail-signature">Sig</div></blockquote>',
         ),
-        'display: none;',
+        'display: none !important;',
       );
     });
 
@@ -112,7 +112,16 @@ void main() {
       final style = await styleAfterHide(
         '<blockquote><div class="tmail-signature" style="color: red">Sig</div></blockquote>',
       );
-      expect(style, 'color: red; display: none;');
+      expect(style, 'color: red; display: none !important;');
+    });
+
+    test('hides a nested signature whose display uses !important', () async {
+      final style = await styleAfterHide(
+        '<blockquote><div class="tmail-signature" '
+        'style="display: block !important;">Sig</div></blockquote>',
+      );
+      expect(style, 'display: none !important;');
+      expect(style, isNot(contains('display: block')));
     });
   });
 

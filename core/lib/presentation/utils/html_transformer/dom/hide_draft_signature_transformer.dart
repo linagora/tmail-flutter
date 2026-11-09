@@ -18,18 +18,30 @@ class HideDraftSignatureTransformer extends DomTransformer {
       if (document.querySelector('body > .tmail-signature') != null) return;
       final signature = document.querySelector('.tmail-signature');
       if (signature == null) return;
-      final currentStyle = signature.attributes['style']?.trim();
-      if (currentStyle == null) {
-        signature.attributes['style'] = 'display: none;';
-      } else if (currentStyle.contains('display: block;') == true) {
-        signature.attributes['style'] = currentStyle.replaceFirst('display: block;', 'display: none;');
-      } else if (currentStyle.endsWith(';')) {
-        signature.attributes['style'] = '$currentStyle display: none;';
-      } else {
-        signature.attributes['style'] = '$currentStyle; display: none;';
-      }
+      signature.attributes['style'] =
+          styleWithHiddenSignature(signature.attributes['style']);
     } catch (e) {
       logWarning('$runtimeType::process:Exception = $e');
     }
+  }
+
+  /// Drops any existing `display` declaration (including `!important`) and sets
+  /// `display: none !important` so a sender `display: block !important` cannot
+  /// keep a nested draft signature visible.
+  static String styleWithHiddenSignature(String? currentStyle) {
+    final trimmed = currentStyle?.trim();
+    if (trimmed == null || trimmed.isEmpty) {
+      return 'display: none !important;';
+    }
+
+    final kept = <String>[];
+    for (final part in trimmed.split(';')) {
+      final declaration = part.trim();
+      if (declaration.isEmpty) continue;
+      if (declaration.toLowerCase().startsWith('display:')) continue;
+      kept.add(declaration);
+    }
+    kept.add('display: none !important');
+    return '${kept.join('; ')};';
   }
 }
