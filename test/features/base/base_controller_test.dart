@@ -33,6 +33,8 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/base/sentry_session_cleanup.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/delegation/domain/model/ended_delegation_cleanup.dart';
+import 'package:tmail_ui_user/features/delegation/domain/repository/ended_delegation_store.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
@@ -111,6 +113,44 @@ class FakeComposerCacheRepository extends Fake implements ComposerCacheRepositor
     events.add('removeAllComposerCache');
     removedFor = (accountId: accountId, userName: userName);
     if (error != null) throw error!;
+  }
+}
+
+class _SnapshotStore implements EndedDelegationStore {
+  _SnapshotStore(this.events);
+
+  final List<String> events;
+  AccountId? personalAccountId;
+  UserName? userName;
+
+  @override
+  Future<void> removeDelegatedComposerSnapshots({
+    required UserName userName,
+    required AccountId personalAccountId,
+  }) async {
+    events.add('snapshots');
+    this.userName = userName;
+    this.personalAccountId = personalAccountId;
+  }
+
+  @override
+  Future<Set<AccountId>> storedAccountIds({
+    required UserName userName,
+    required AccountId personalAccountId,
+  }) async => {};
+
+  @override
+  Future<StoredDelegatedAccount> describe(UserName userName, AccountId accountId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> delete({
+    required UserName userName,
+    required AccountId personalAccountId,
+    required AccountId accountId,
+  }) {
+    throw UnimplementedError();
   }
 }
 
@@ -756,6 +796,34 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(mockBaseController.events, ['removeAllComposerCache', 'logout']);
+    });
+  });
+
+  group('BaseController::logoutToSignInNewAccount', () {
+    setUp(() {
+      mockBaseController.resetState();
+      when(mockAuthorizationInterceptors.authenticationType).thenReturn(AuthenticationType.basic);
+      when(mockTwakeAppManager.runClearDataOnce(any)).thenAnswer((_) async {
+        mockBaseController.events.add('clearAllData');
+      });
+    });
+
+    test('removes delegated composer snapshots before clearing data', () async {
+      final store = _SnapshotStore(mockBaseController.events);
+      Get.put<EndedDelegationStore>(store);
+      addTearDown(() => Get.delete<EndedDelegationStore>(force: true));
+      final session = DelegationFixtures.session();
+
+      await mockBaseController.logoutToSignInNewAccount(
+        session: session,
+        accountId: DelegationFixtures.aliceAccountId,
+        onSuccessCallback: () {},
+        onFailureCallback: ({Object? exception}) => fail('$exception'),
+      );
+
+      expect(mockBaseController.events, ['snapshots', 'clearAllData']);
+      expect(store.personalAccountId, DelegationFixtures.aliceAccountId);
+      expect(store.userName, session.username);
     });
   });
 

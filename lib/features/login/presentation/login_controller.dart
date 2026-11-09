@@ -59,6 +59,7 @@ import 'package:tmail_ui_user/features/login/presentation/extensions/handle_open
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/discovered_server_confirm_dialog.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_session_arguments.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/state/sign_in_twake_workplace_state.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/usecase/sign_in_twake_workplace_interactor.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
@@ -270,7 +271,10 @@ class LoginController extends ReloadableController {
 
     popAndPush(
       RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
-      arguments: session,
+      arguments: DashboardSessionArguments(
+        session: session,
+        fromCache: sessionLoadedFromCache,
+      ),
     );
   }
 

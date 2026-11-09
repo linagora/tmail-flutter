@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_ex
 import 'package:tmail_ui_user/features/login/domain/usecases/remove_company_server_login_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_session_arguments.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/state/sign_in_twake_workplace_state.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/state/sign_up_twake_workplace_state.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/usecase/sign_in_twake_workplace_interactor.dart';
@@ -199,7 +200,10 @@ class TwakeWelcomeController extends ReloadableController {
 
     popAndPush(
       RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
-      arguments: session);
+      arguments: DashboardSessionArguments(
+        session: session,
+        fromCache: sessionLoadedFromCache,
+      ));
   }
 
   @override
