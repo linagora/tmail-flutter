@@ -58,8 +58,9 @@ class TestBase {
       ),
       framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive,
       ($) async {
-        // Profile builds drop text sent to client -1, so the mock input must own the connection.
-        if (!kDebugMode) {
+        // On mobile the mock input owns the connection so the platform IME never overwrites
+        // entered text; web profile builds drop text sent to client -1, web debug keeps the browser's.
+        if (!kIsWeb || !kDebugMode) {
           $.tester.testTextInput.register();
           addTearDown($.tester.testTextInput.unregister);
         }
