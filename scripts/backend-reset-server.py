@@ -164,6 +164,8 @@ def provision(port: int) -> None:
     _webadmin_ok(port, "PUT", team)
     for member in ("bob", "alice"):
         _webadmin_ok(port, "PUT", f"{team}/members/{member}@{_TEST_DOMAIN}?role=member")
+    # Let bob open alice's mailbox, so every e2e test runs with a delegated account in bob's session.
+    _webadmin_ok(port, "PUT", f"/users/alice@{_TEST_DOMAIN}/authorizedUsers/bob@{_TEST_DOMAIN}", ok=(200, 201, 204))
     _webadmin_ok(port, "PUT", f"/quota/users/bob@{_TEST_DOMAIN}",
                  data=json.dumps({"count": 200, "size": POOL_BOB_QUOTA_BYTES}))
 

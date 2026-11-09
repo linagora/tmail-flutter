@@ -27,7 +27,14 @@ wait
 # Create team mailbox
 curl -s -XPUT "$WEBADMIN/domains/$DOMAIN/team-mailboxes/bob-guests" 
 curl -s -XPUT "$WEBADMIN/domains/$DOMAIN/team-mailboxes/bob-guests/members/bob@$DOMAIN?role=member" 
-curl -s -XPUT "$WEBADMIN/domains/$DOMAIN/team-mailboxes/bob-guests/members/alice@$DOMAIN?role=member" 
+curl -s -XPUT "$WEBADMIN/domains/$DOMAIN/team-mailboxes/bob-guests/members/alice@$DOMAIN?role=member"
+
+# Let bob open alice's mailbox (delegation)
+delegation_status=$(curl -s -o /dev/null -w "%{http_code}" -XPUT "$WEBADMIN/users/alice@$DOMAIN/authorizedUsers/bob@$DOMAIN")
+if [ "$delegation_status" != "200" ] && [ "$delegation_status" != "201" ] && [ "$delegation_status" != "204" ]; then
+  echo "Failed to grant delegation: HTTP $delegation_status" >&2
+  exit 1
+fi
 
 # Set quota for bob
 curl -s -XPUT "$WEBADMIN/quota/users/bob@$DOMAIN" \
