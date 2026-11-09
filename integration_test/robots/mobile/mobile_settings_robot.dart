@@ -30,4 +30,7 @@ class MobileSettingsRobot extends SettingRobot
     await settingTile.scrollTo();
     await settingTile.tap();
   }
+
+  @override
+  Future<void> leaveSettingsDetail() => backToSettingsFromFirstLevel();
 }
