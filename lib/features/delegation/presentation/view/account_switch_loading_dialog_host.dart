@@ -1,8 +1,10 @@
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/account_switch_state.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_loading_dialog_visible_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/utils/switch_loading_dialog_timing.dart';
@@ -21,9 +23,13 @@ class AccountSwitchLoadingDialogHost extends ConsumerStatefulWidget {
 
 class _AccountSwitchLoadingDialogHostState
     extends ConsumerState<AccountSwitchLoadingDialogHost> {
+  static const _backInterceptorName = 'account_switch_loading';
+
   late final SwitchLoadingDialogTiming _timing;
   DialogRoute<void>? _dialogRoute;
   AccountId? _targetAccountId;
+  bool _backInterceptorAdded = false;
+  ProviderContainer? _container;
 
   @override
   void initState() {
@@ -36,9 +42,27 @@ class _AccountSwitchLoadingDialogHostState
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _container = ProviderScope.containerOf(context, listen: false);
+  }
+
+  @override
   void dispose() {
+    _removeBackInterceptor();
     _timing.dispose();
-    _removeDialogRoute();
+    final route = _dialogRoute;
+    _dialogRoute = null;
+    if (route != null && route.isActive) {
+      route.navigator?.removeRoute(route);
+    }
+    final container = _container;
+    if (container != null &&
+        container.read(accountSwitchLoadingDialogVisibleProvider)) {
+      container
+          .read(accountSwitchLoadingDialogVisibleProvider.notifier)
+          .setVisible(false);
+    }
     super.dispose();
   }
 
@@ -53,8 +77,10 @@ class _AccountSwitchLoadingDialogHostState
   void _syncWithState(AccountSwitchState state) {
     if (state is AccountSwitching) {
       _targetAccountId = state.attempt.to;
+      _addBackInterceptor();
       _timing.switchStarted();
     } else {
+      _removeBackInterceptor();
       _timing.switchEnded();
     }
   }
@@ -79,16 +105,15 @@ class _AccountSwitchLoadingDialogHostState
       builder: (dialogContext) {
         return AccountSwitchLoadingDialog(
           ownerName: ownerName,
-          onCancel: () {
-            if (!mounted) return;
-            ref.read(accountSwitchProvider.notifier).cancel();
-          },
+          onCancel: _cancelSwitch,
         );
       },
     );
     _dialogRoute = route;
+    _setDialogVisible(true);
     navigator.push(route).whenComplete(() {
       if (identical(_dialogRoute, route)) _dialogRoute = null;
+      if (mounted) _setDialogVisible(false);
     });
   }
 
@@ -98,6 +123,36 @@ class _AccountSwitchLoadingDialogHostState
     if (route != null && route.isActive) {
       route.navigator?.removeRoute(route);
     }
+    if (mounted) _setDialogVisible(false);
+  }
+
+  void _setDialogVisible(bool visible) {
+    if (!mounted) return;
+    if (ref.read(accountSwitchLoadingDialogVisibleProvider) == visible) return;
+    ref.read(accountSwitchLoadingDialogVisibleProvider.notifier).setVisible(visible);
+  }
+
+  void _cancelSwitch() {
+    if (!mounted) return;
+    ref.read(accountSwitchProvider.notifier).cancel();
+  }
+
+  void _addBackInterceptor() {
+    if (_backInterceptorAdded) return;
+    BackButtonInterceptor.add(_onBackButton, name: _backInterceptorName);
+    _backInterceptorAdded = true;
+  }
+
+  void _removeBackInterceptor() {
+    if (!_backInterceptorAdded) return;
+    BackButtonInterceptor.removeByName(_backInterceptorName);
+    _backInterceptorAdded = false;
+  }
+
+  /// Android back during the show delay or while the dialog is up cancels the switch.
+  bool _onBackButton(bool stopDefaultButtonEvent, RouteInfo routeInfo) {
+    _cancelSwitch();
+    return true;
   }
 
   String _ownerNameFor(AccountId? accountId) {

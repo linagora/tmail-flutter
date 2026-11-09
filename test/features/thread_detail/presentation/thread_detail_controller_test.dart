@@ -300,5 +300,56 @@ void main() {
         verify(dashboard.dispatchEmailUIAction(any)).called(1);
       });
     });
+
+    test('DropPendingMailViewShortcutsAction drops a shortcut mid-debounce and keeps later ones', () {
+      fakeAsync((async) {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+        final threadDetailUIAction = Rxn<ThreadDetailUIAction>();
+        final dashboard = Get.find<MailboxDashBoardController>() as MockMailboxDashBoardController;
+        when(dashboard.accountId).thenReturn(Rxn());
+        when(dashboard.selectedEmail).thenReturn(Rxn());
+        when(dashboard.threadDetailUIAction).thenReturn(threadDetailUIAction);
+        when(dashboard.emailUIAction).thenReturn(Rxn());
+        when(dashboard.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
+        when(dashboard.ownEmailAddress).thenReturn(RxString(DelegationFixtures.bobAddress));
+
+        final controller = ThreadDetailController(
+          MockGetThreadByIdInteractor(),
+          MockGetEmailsByIdsInteractor(),
+          MockMarkAsEmailReadInteractor(),
+          MockMarkAsStarEmailInteractor(),
+          MockPrintEmailInteractor(),
+          MockGetEmailContentInteractor(),
+          MockMarkAsStarMultipleEmailInteractor(),
+          MockMarkAsMultipleEmailReadInteractor(),
+          MockAddALabelToAThreadInteractor(),
+          MockRemoveALabelFromAThreadInteractor(),
+        )..onInit();
+        controller.onKeyboardShortcutInit();
+
+        controller.shortcutActionEventController!.add(
+          MailViewShortcutActionViewEvent(
+            EmailActionType.markAsRead,
+            PresentationEmail(id: EmailId(Id('email-1'))),
+          ),
+        );
+        async.elapse(const Duration(milliseconds: 150));
+        threadDetailUIAction.value = DropPendingMailViewShortcutsAction();
+        async.elapse(Duration.zero);
+        async.elapse(const Duration(milliseconds: 300));
+        verifyNever(dashboard.dispatchEmailUIAction(any));
+
+        controller.shortcutActionEventController!.add(
+          MailViewShortcutActionViewEvent(
+            EmailActionType.markAsRead,
+            PresentationEmail(id: EmailId(Id('email-2'))),
+          ),
+        );
+        async.elapse(const Duration(milliseconds: 300));
+        verify(dashboard.dispatchEmailUIAction(any)).called(1);
+      });
+    });
   });
 }
