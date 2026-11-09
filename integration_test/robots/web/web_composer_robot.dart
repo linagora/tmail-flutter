@@ -8,10 +8,12 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.d
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/web_editor_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
+import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
 import '../mobile/mobile_composer_robot.dart';
 import 'web_composer_code_view_robot.dart';
 import 'web_composer_controller_finder.dart';
+import 'web_composer_editor_dom.dart';
 import 'web_composer_editor_keyboard_robot.dart';
 import 'web_composer_recipient_robot.dart';
 import 'web_composer_reload_robot.dart';
@@ -101,5 +103,29 @@ class WebComposerRobot extends MobileComposerRobot {
   @override
   Future<void> expectInsertLinkDialogVisible(AppLocalizations appLocalizations) async {
     await $.waitUntilVisible($(find.text(appLocalizations.apply)));
+  }
+
+  /// Waits on the live Summernote iframe only. Cached `textEditorWeb` can hold
+  /// the signature HTML before the iframe paints, which races later asserts.
+  @override
+  Future<void> waitForSignatureToLoad() async {
+    await waitForCondition(
+      () => findSignatureElement() != null,
+      timeout: TestTimeouts.long,
+      reason: 'identity signature to appear in the web editor iframe',
+    );
+  }
+
+  /// Like [waitForSignatureToLoad], but requires the identity marker text so a
+  /// quoted/foreign signature cannot satisfy the wait after reopening a draft.
+  Future<void> waitForSignatureMarker(String marker) async {
+    await waitForCondition(
+      () {
+        final signature = findSignatureElement(marker: marker);
+        return signature != null && !signatureStyleIsHidden(signature);
+      },
+      timeout: TestTimeouts.long,
+      reason: 'visible signature containing $marker in the web editor iframe',
+    );
   }
 }
