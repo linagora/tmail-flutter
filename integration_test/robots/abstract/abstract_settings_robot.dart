@@ -10,4 +10,6 @@ abstract class AbstractSettingsRobot {
   const AbstractSettingsRobot(this.preferencesRobot, this.languageRobot);
 
   Future<void> openSettingsDetail(AccountMenuItem accountMenuItem);
+
+  Future<void> leaveSettingsDetail();
 }
