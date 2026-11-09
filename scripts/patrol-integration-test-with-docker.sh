@@ -146,6 +146,7 @@ set -m
     GRADLE_OPTS="${GRADLE_OPTS:-} -Dorg.gradle.project.target-platform=android-arm64" \
         patrol build android -v \
         --tags=android \
+        --exclude-tags=memory \
         --dart-define=USERNAME="$BOB" \
         --dart-define=PASSWORD="$BOB" \
         --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \

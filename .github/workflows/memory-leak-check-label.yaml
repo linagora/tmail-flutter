@@ -1,0 +1,17 @@
+name: Memory leak check (label)
+
+# Runs the memory check on any PR labelled `memory-check`, for example a suspected leak fix.
+on:
+  pull_request:
+    types: [labeled, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  memory:
+    name: Memory leak check
+    if: >-
+      contains(github.event.pull_request.labels.*.name, 'memory-check')
+      && (github.event.action != 'labeled' || github.event.label.name == 'memory-check')
+    uses: ./.github/workflows/memory-leak-check.yaml # zizmor: ignore[self-repository]
