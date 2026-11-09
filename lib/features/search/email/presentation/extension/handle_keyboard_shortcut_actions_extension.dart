@@ -21,7 +21,7 @@ extension HandleKeyboardShortcutActionsExtension on SearchEmailController {
 
   void _listenShortcutActionEvents() {
     shortcutActionEventController =
-        StreamController<MailListShortcutActionViewEvent>.broadcast();
+        StreamController<MailListShortcutActionViewEvent>();
     shortcutActionEventSubscription = shortcutActionEventController
         ?.stream
         .debounceTime(const Duration(milliseconds: 300))

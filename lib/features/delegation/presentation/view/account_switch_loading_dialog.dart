@@ -9,7 +9,7 @@ class _CancelSwitchIntent extends Intent {
 }
 
 /// Loading dialog while a delegated mailbox switch is in progress.
-class AccountSwitchLoadingDialog extends StatelessWidget {
+class AccountSwitchLoadingDialog extends StatefulWidget {
   final String ownerName;
   final VoidCallback onCancel;
 
@@ -20,34 +20,60 @@ class AccountSwitchLoadingDialog extends StatelessWidget {
   });
 
   @override
+  State<AccountSwitchLoadingDialog> createState() =>
+      _AccountSwitchLoadingDialogState();
+}
+
+class _AccountSwitchLoadingDialogState extends State<AccountSwitchLoadingDialog> {
+  late final FocusNode _cancelFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    // LinagoraDialog's Cancel button has no autofocus API; keep a focused
+    // scope so Escape / Enter / Space cancel without walking the element tree.
+    _cancelFocusNode = FocusNode(debugLabel: 'account_switch_loading_cancel');
+  }
+
+  @override
+  void dispose() {
+    _cancelFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final appLocalizations = AppLocalizations.of(context);
     return Shortcuts(
       shortcuts: const {
         SingleActivator(LogicalKeyboardKey.escape): _CancelSwitchIntent(),
+        SingleActivator(LogicalKeyboardKey.enter): _CancelSwitchIntent(),
+        SingleActivator(LogicalKeyboardKey.numpadEnter): _CancelSwitchIntent(),
+        SingleActivator(LogicalKeyboardKey.space): _CancelSwitchIntent(),
       },
       child: Actions(
         actions: {
           _CancelSwitchIntent: CallbackAction<_CancelSwitchIntent>(
             onInvoke: (_) {
-              onCancel();
+              widget.onCancel();
               return null;
             },
           ),
         },
         child: Focus(
+          focusNode: _cancelFocusNode,
           autofocus: true,
           child: PopScope(
             canPop: false,
             onPopInvokedWithResult: (didPop, _) {
-              if (!didPop) onCancel();
+              if (!didPop) widget.onCancel();
             },
             child: LinagoraDialog(
-              title: appLocalizations.openingOwnerMailbox(ownerName),
+              title: appLocalizations.openingOwnerMailbox(widget.ownerName),
               content: const CupertinoLoadingWidget(padding: EdgeInsets.only(top: 8)),
               primaryAction: LinagoraDialogAction(
                 label: appLocalizations.cancel,
-                onPressed: onCancel,
+                onPressed: widget.onCancel,
               ),
             ),
           ),
