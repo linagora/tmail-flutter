@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,6 +31,7 @@ class _AccountSwitchLoadingDialogHostState
   DialogRoute<void>? _dialogRoute;
   AccountId? _targetAccountId;
   bool _backInterceptorAdded = false;
+  bool _disposed = false;
   ProviderContainer? _container;
 
   @override
@@ -49,6 +52,7 @@ class _AccountSwitchLoadingDialogHostState
 
   @override
   void dispose() {
+    _disposed = true;
     _removeBackInterceptor();
     _timing.dispose();
     final route = _dialogRoute;
@@ -56,13 +60,7 @@ class _AccountSwitchLoadingDialogHostState
     if (route != null && route.isActive) {
       route.navigator?.removeRoute(route);
     }
-    final container = _container;
-    if (container != null &&
-        container.read(accountSwitchLoadingDialogVisibleProvider)) {
-      container
-          .read(accountSwitchLoadingDialogVisibleProvider.notifier)
-          .setVisible(false);
-    }
+    _setDialogVisible(false);
     super.dispose();
   }
 
@@ -113,7 +111,7 @@ class _AccountSwitchLoadingDialogHostState
     _setDialogVisible(true);
     navigator.push(route).whenComplete(() {
       if (identical(_dialogRoute, route)) _dialogRoute = null;
-      if (mounted) _setDialogVisible(false);
+      _setDialogVisible(false);
     });
   }
 
@@ -123,13 +121,31 @@ class _AccountSwitchLoadingDialogHostState
     if (route != null && route.isActive) {
       route.navigator?.removeRoute(route);
     }
-    if (mounted) _setDialogVisible(false);
+    _setDialogVisible(false);
   }
 
   void _setDialogVisible(bool visible) {
-    if (!mounted) return;
-    if (ref.read(accountSwitchLoadingDialogVisibleProvider) == visible) return;
-    ref.read(accountSwitchLoadingDialogVisibleProvider.notifier).setVisible(visible);
+    final container = _container;
+    if (container == null) return;
+    if (container.read(accountSwitchLoadingDialogVisibleProvider) == visible) {
+      return;
+    }
+    void apply() {
+      if (container.read(accountSwitchLoadingDialogVisibleProvider) == visible) {
+        return;
+      }
+      container
+          .read(accountSwitchLoadingDialogVisibleProvider.notifier)
+          .setVisible(visible);
+    }
+
+    // Riverpod forbids provider writes during dispose; removeRoute.whenComplete
+    // can also run there, so defer until after the widget tree settles.
+    if (_disposed) {
+      scheduleMicrotask(apply);
+      return;
+    }
+    apply();
   }
 
   void _cancelSwitch() {
