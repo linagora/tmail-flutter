@@ -56,6 +56,12 @@ class WebThreadRobot extends ThreadRobot implements AbstractThreadRobot {
   static const Duration _emailListRefreshInterval = Duration(seconds: 5);
 
   @override
+  Future<void> openComposer() async {
+    // ComposeButtonWidget wraps LinagoraSidebarPrimaryAction (no InkWell).
+    await $(const ValueKey(UiKeys.composeEmailPrimaryAction)).tap();
+  }
+
+  @override
   Future<void> openAppGrid() async {
     await $(const ValueKey(UiKeys.toggleAppGridButton)).tap();
   }

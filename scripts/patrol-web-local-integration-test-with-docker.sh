@@ -69,4 +69,5 @@ patrol test -v \
     --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \
     --dart-define=BASIC_AUTH_EMAIL="$BOB@$DOMAIN" \
     --dart-define=BASIC_AUTH_URL="$BASIC_AUTH_URL" \
-    --dart-define=RESET_SERVER_URL="http://localhost:$RESET_PORT"
+    --dart-define=RESET_SERVER_URL="http://localhost:$RESET_PORT" \
+    --dart-define=ACCOUNT_SWITCH_LOADING_SHOW_DELAY_MS=0

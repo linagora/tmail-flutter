@@ -110,7 +110,8 @@ patrol test -v \
     --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \
     --dart-define=BASIC_AUTH_EMAIL="$BOB@$DOMAIN" \
     --dart-define=BASIC_AUTH_URL="$BASIC_AUTH_URL" \
-    --dart-define=RESET_SERVER_URL="http://localhost:$RESET_PORT" 2>&1 | tee "$PATROL_LOG" | grep --line-buffered -v -E 'Loaded debug metadata|PatrolBinding: tearDown\(\): count'
+    --dart-define=RESET_SERVER_URL="http://localhost:$RESET_PORT" \
+    --dart-define=ACCOUNT_SWITCH_LOADING_SHOW_DELAY_MS=0 2>&1 | tee "$PATROL_LOG" | grep --line-buffered -v -E 'Loaded debug metadata|PatrolBinding: tearDown\(\): count'
 TEST_EXIT_CODE=${PIPESTATUS[0]}
 
 exit $TEST_EXIT_CODE
