@@ -252,4 +252,25 @@ void main() {
       [AppLocalizations().closeComposerBeforeSwitchingAccounts],
     );
   });
+
+  testWidgets('copying the shown address toasts through the app toast provider',
+      (tester) async {
+    container
+        .read(activeAccountProvider.notifier)
+        .applySession(DelegationFixtures.session());
+    DelegationFixtures.turnDelegationOn(container);
+
+    await tester.pumpWidget(_app(container, child: _menu()));
+    await tester.pump();
+    await tester.tap(find.byKey(const ValueKey(UiKeys.userAvatar)));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(LinagoraAccountMenuHeader.copyKey));
+    await tester.pump();
+
+    expect(
+      appToast.successMessages,
+      [AppLocalizations().email_address_copied_to_clipboard],
+    );
+  });
 }
