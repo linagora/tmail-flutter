@@ -1009,12 +1009,13 @@ void main() {
     group('ThreadView', () {
       testWidgets(
         'WHEN web viewport is tabletLarge (1000px)\n'
-        'ThreadView SHOULD NOT render the mobile app bar next to the sidebar',
+        'the dashboard SHOULD keep the drawer layout without the desktop navigation bar',
       (tester) async {
         PlatformInfo.isTestingForWeb = true;
         addTearDown(() => PlatformInfo.isTestingForWeb = false);
         addTearDown(() => WidgetFixtures.resetResponsive(tester));
-        debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+        when(responsiveUtils.isTabletLarge(any)).thenReturn(true);
+        addTearDown(() => when(responsiveUtils.isTabletLarge(any)).thenReturn(false));
         final dpi = tester.view.devicePixelRatio;
         tester.view.physicalSize = Size(dpi * 1000, dpi * 800);
 
@@ -1029,7 +1030,11 @@ void main() {
         await tester.pump();
 
         expect(find.byType(ThreadView), findsOneWidget);
-        expect(find.byType(MobileAppBarThreadWidget), findsNothing);
+        expect(find.byType(MobileAppBarThreadWidget), findsOneWidget);
+        expect(
+          find.byWidgetPredicate((widget) => widget is HideInsideCozyWidget && widget.child is DashboardNavigationBar),
+          findsNothing,
+        );
       });
 
       testWidgets(
