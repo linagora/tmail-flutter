@@ -56,3 +56,15 @@ bool signatureStyleIsHidden(web.Element signature) {
   final style = (signature.getAttribute('style') ?? '').toLowerCase();
   return RegExp(r'display\s*:\s*none').hasMatch(style);
 }
+
+/// Every signature currently in the editor, whatever its nesting.
+List<web.Element> findAllSignatureElements({String? marker}) {
+  final editable = findNoteEditable();
+  if (editable == null) return const [];
+  final all = editable.querySelectorAll('.tmail-signature');
+  return [
+    for (var i = 0; i < all.length; i++)
+      if (all.item(i) case final web.Element node when _matchesMarker(node, marker))
+        node,
+  ];
+}

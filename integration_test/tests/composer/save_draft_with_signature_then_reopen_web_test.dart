@@ -5,7 +5,7 @@ import '../../scenarios/composer/save_draft_with_signature_then_reopen_scenario.
 void main() {
   TestBase().runPatrolTest(
     description:
-        'Should keep the identity signature visible when reopening a draft on web',
+        'Should show the identity signature once and not ask to save when reopening a draft on web',
     scenarioBuilder: ($, robots) =>
         SaveDraftWithSignatureThenReopenScenario($, robots),
     tags: [TestTags.web],

@@ -36,6 +36,18 @@ class WebComposerSignatureAssertionRobot extends CoreRobot {
     );
   }
 
+  /// A reopened draft must show the identity signature once: neither hidden
+  /// nor applied a second time.
+  Future<void> expectSingleVisibleSignature(String marker) async {
+    await expectSignatureVisible(marker);
+    final signatures = findAllSignatureElements(marker: marker);
+    expect(
+      signatures,
+      hasLength(1),
+      reason: 'identity signature must appear exactly once after reopening',
+    );
+  }
+
   bool _isVisibleSignatureWithMarker(String marker) {
     final signature = findSignatureElement(marker: marker);
     if (signature == null) return false;

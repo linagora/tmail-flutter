@@ -1334,6 +1334,54 @@ void main() {
         expect(composerController?.isEmailChanged.value, isFalse);
       });
 
+      test(
+        'Should update _savedEmailDraftHash on web\n'
+        'When email action type is editDraft\n'
+        'And identity is already selected from the draft header',
+      () async {
+        // arrange
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+        composerController?.composerArguments.value = ComposerArguments(
+          emailActionType: EmailActionType.editDraft,
+          identities: [identity],
+        );
+        composerController?.currentEmailActionType = EmailActionType.editDraft;
+        composerController?.identitySelected.value = identity;
+        composerController?.setTextEditorWeb(emailContent);
+        composerController?.subjectEmail.value = emailSubject;
+
+        when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
+        when(mockComposerRepository.removeCollapsedExpandedSignatureEffect(
+          emailContent: anyNamed('emailContent'),
+        )).thenAnswer((_) async => emailContent);
+
+        final savedEmailDraft = SavedComposingEmail(
+          content: emailContent,
+          subject: emailSubject,
+          toRecipients: {},
+          ccRecipients: {},
+          bccRecipients: {},
+          replyToRecipients: {},
+          identity: identity,
+          attachments: [attachment],
+          hasReadReceipt: false,
+          isMarkAsImportant: false,
+        );
+
+        // act
+        await composerController?.setupSelectedIdentity();
+        await Future.delayed(const Duration(milliseconds: 100));
+
+        // assert
+        expect(
+          composerController?.savedEmailDraftHash,
+          equals(savedEmailDraft.asString().hashCode),
+        );
+        expect(composerController?.isEmailChanged.value, isFalse);
+      });
+
       for (final actionType in [
         EmailActionType.compose,
         EmailActionType.reply,

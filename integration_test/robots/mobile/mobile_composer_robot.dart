@@ -59,6 +59,22 @@ class MobileComposerRobot extends ComposerRobot implements AbstractComposerRobot
   }
 
   @override
+  Future<void> expectComposerClosedWithoutSavePrompt() async {
+    final discardButton = $(AppLocalizations().discardChanges);
+    await tapCloseComposer();
+    await waitForCondition(
+      () => discardButton.exists || !$(ComposerView).exists,
+      reason: 'composer to close or ask to save the draft',
+    );
+    expect(
+      discardButton.exists,
+      isFalse,
+      reason: 'closing an unmodified composer must not ask to save the draft',
+    );
+    await waitForCondition(() => !$(ComposerView).exists);
+  }
+
+  @override
   Future<void> addRecipient(PrefixEmailAddress prefix, String email) =>
       addRecipientIntoField(prefixEmailAddress: prefix, email: email);
 

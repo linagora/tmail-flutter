@@ -24,6 +24,9 @@ abstract class AbstractComposerRobot {
   Future<void> expectComposerViewVisible();
   /// Discards the draft if closing asks to keep it.
   Future<void> expectComposerClosedDiscardingChanges();
+  /// Taps close on an unmodified composer and expects it to close without
+  /// asking whether to save the draft.
+  Future<void> expectComposerClosedWithoutSavePrompt();
   Future<void> grantContactPermission({Duration? timeout});
   Future<void> addRecipient(PrefixEmailAddress prefix, String email);
   Future<void> addSubject(String subject);
