@@ -76,7 +76,7 @@ class EmailRecoveryFormDesktopBuilder extends StatelessWidget {
                                 LimitsBanner(
                                   bannerContent: appLocalizations
                                       .dialogRecoverDeletedMessagesDescription(
-                                    controller.getRestorationHorizonAsString(),
+                                    controller.getRestorationHorizonInDays().toString(),
                                   ),
                                   padding: const EdgeInsetsDirectional.symmetric(
                                     horizontal: 32,

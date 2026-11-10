@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/session_extension.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 void main() {
 
@@ -102,5 +103,41 @@ void main() {
           // assert
           expect(horizon, "15 days");
         });
+
+    Session sessionWithHorizon(Map<String, dynamic> props) => Session(
+        {},
+        {AccountId(Id("1")): Account(AccountName("name"), true, false,
+            {capabilityDeletedMessagesVault: DefaultCapability(props)})},
+        {}, UserName(''), Uri(), Uri(), Uri(), Uri(), State(''));
+
+    test('getRestorationHorizonInDays should return 15 when 15 days', () {
+      final session = sessionWithHorizon({"restorationHorizon": "15 days"});
+      expect(session.getRestorationHorizonInDays(), 15);
+    });
+
+    test('getRestorationHorizonInDays should round 1 hour up to 1', () {
+      final session = sessionWithHorizon({"restorationHorizon": "1 hour"});
+      expect(session.getRestorationHorizonInDays(), 1);
+    });
+
+    test('getRestorationHorizonInDays should round 36 hours up to 2', () {
+      final session = sessionWithHorizon({"restorationHorizon": "36 hours"});
+      expect(session.getRestorationHorizonInDays(), 2);
+    });
+
+    test('getRestorationHorizonInDays should return 15 when capability key is missing', () {
+      final session = sessionWithHorizon({"invalid": "15 days"});
+      expect(session.getRestorationHorizonInDays(), 15);
+    });
+
+    test('recover description does not duplicate the day unit', () {
+      final session = sessionWithHorizon({"restorationHorizon": "15 days"});
+
+      final text = AppLocalizations().dialogRecoverDeletedMessagesDescription(
+          session.getRestorationHorizonInDays().toString());
+
+      expect(text, contains('within the last 15 days.'));
+      expect(text, isNot(contains('days days')));
+    });
   });
 }
