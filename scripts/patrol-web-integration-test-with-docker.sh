@@ -159,7 +159,8 @@ patrol test -v \
     --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \
     --dart-define=BASIC_AUTH_EMAIL="$BOB@$DOMAIN" \
     --dart-define=BASIC_AUTH_URL="$BASIC_AUTH_URL" \
-    --dart-define=RESET_SERVER_URL="http://localhost:$RESET_PORT" 2>&1 \
+    --dart-define=RESET_SERVER_URL="http://localhost:$RESET_PORT" \
+    --dart-define=ACCOUNT_SWITCH_LOADING_SHOW_DELAY_MS=0 2>&1 \
     | perl -MPOSIX -ne 'BEGIN { open(LOG, ">", shift) or die "$!\n"; select((select(LOG), $| = 1)[0]); $| = 1 } print LOG strftime("%T ", localtime), $_; print' "$PATROL_LOG" \
     | perl scripts/ci-console-filter.pl "ci-logs/patrol-console.log.gz"
 TEST_EXIT_CODE=${PIPESTATUS[0]}
