@@ -33,6 +33,9 @@ class NavigationBarWidget extends StatelessWidget {
   final OnProfileSettingActionTypeClick onProfileSettingActionTypeClick;
   final double leadingWidth;
 
+  /// Replaces the default [ProfileSettingIcon] when set (e.g. stand-alone switcher).
+  final Widget? profileMenu;
+
   const NavigationBarWidget({
     super.key,
     required this.imagePaths,
@@ -46,6 +49,7 @@ class NavigationBarWidget extends StatelessWidget {
     this.onTapApplicationLogoAction,
     this.onTapContactSupportAction,
     this.leadingWidth = ResponsiveUtils.defaultSizeMenu,
+    this.profileMenu,
   });
 
   @override
@@ -99,12 +103,14 @@ class NavigationBarWidget extends StatelessWidget {
                     return const SizedBox.shrink();
                   }),
                 const SizedBox(width: 16),
-                ProfileSettingIcon(
-                  key: const ValueKey(UiKeys.userAvatar),
-                  ownEmailAddress: ownEmailAddress,
-                  settingActionTypes: settingActionTypes,
-                  onProfileSettingActionTypeClick: onProfileSettingActionTypeClick,
-                ),
+                profileMenu ??
+                    ProfileSettingIcon(
+                      key: const ValueKey(UiKeys.userAvatar),
+                      ownEmailAddress: ownEmailAddress,
+                      settingActionTypes: settingActionTypes,
+                      onProfileSettingActionTypeClick:
+                          onProfileSettingActionTypeClick,
+                    ),
               ]
             );
           }))
@@ -132,11 +138,13 @@ class NavigationBarWidget extends StatelessWidget {
                 return const SizedBox.shrink();
               }),
             const SizedBox(width: 16),
-            ProfileSettingIcon(
-              ownEmailAddress: ownEmailAddress,
-              settingActionTypes: settingActionTypes,
-              onProfileSettingActionTypeClick: onProfileSettingActionTypeClick,
-            ),
+            profileMenu ??
+                ProfileSettingIcon(
+                  ownEmailAddress: ownEmailAddress,
+                  settingActionTypes: settingActionTypes,
+                  onProfileSettingActionTypeClick:
+                      onProfileSettingActionTypeClick,
+                ),
           ]
       ]),
     );
