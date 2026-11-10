@@ -4,12 +4,23 @@ import 'package:patrol/patrol.dart';
 import '../../base/core_robot.dart';
 import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
+import '../abstract/abstract_composer_signature_robot.dart';
 import 'web_composer_editor_dom.dart';
 import 'web_composer_controller_finder.dart';
 
 /// Web-only checks for the identity signature inside the Summernote iframe.
-class WebComposerSignatureAssertionRobot extends CoreRobot {
+class WebComposerSignatureAssertionRobot extends CoreRobot
+    implements AbstractComposerSignatureRobot {
   WebComposerSignatureAssertionRobot(PatrolIntegrationTester $) : super($);
+
+  /// Requires the identity marker text so a quoted/foreign signature cannot
+  /// satisfy the wait after reopening a draft.
+  @override
+  Future<void> waitForSignatureMarker(String marker) => waitForCondition(
+        () => _isVisibleSignatureWithMarker(marker),
+        timeout: TestTimeouts.long,
+        reason: 'visible signature containing $marker in the web editor iframe',
+      );
 
   /// Polls the live iframe DOM until a signature with [marker] is present and
   /// not `display: none`. Cached HTML alone is not enough: a hidden signature
@@ -38,6 +49,7 @@ class WebComposerSignatureAssertionRobot extends CoreRobot {
 
   /// A reopened draft must show the identity signature once: neither hidden
   /// nor applied a second time.
+  @override
   Future<void> expectSingleVisibleSignature(String marker) async {
     await expectSignatureVisible(marker);
     final signatures = findAllSignatureElements(marker: marker);

@@ -5,7 +5,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/base_test_scenario.dart';
-import '../../robots/web/web_composer_robot.dart';
+import '../../robots/abstract/abstract_composer_robot.dart';
 import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
 
@@ -13,7 +13,7 @@ mixin SaveDraftByClosingComposerMixin on BaseTestScenario {
   /// Mirrors [BaseSaveDraftThenReopenScenario.performFirstSave]: subscribe
   /// before tapping Save so a momentary success state is not missed.
   Future<void> saveDraftByClosingComposer(
-    WebComposerRobot composerRobot,
+    AbstractComposerRobot composerRobot,
     AppLocalizations l10n,
   ) async {
     await composerRobot.tapCloseComposer();

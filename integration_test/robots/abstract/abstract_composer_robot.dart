@@ -9,6 +9,7 @@ import 'abstract_composer_code_view_robot.dart';
 import 'abstract_composer_editor_keyboard_robot.dart';
 import 'abstract_composer_recipient_robot.dart';
 import 'abstract_composer_reload_robot.dart';
+import 'abstract_composer_signature_robot.dart';
 
 abstract class AbstractComposerRobot {
   AbstractComposerRecipientRobot get recipient;
@@ -20,6 +21,9 @@ abstract class AbstractComposerRobot {
 
   /// Web only: the "Embed code" HTML source view.
   AbstractComposerCodeViewRobot? get codeView;
+
+  /// Web only: identity signature checks in the editor iframe.
+  AbstractComposerSignatureRobot? get signature;
 
   Future<void> expectComposerViewVisible();
   /// Discards the draft if closing asks to keep it.

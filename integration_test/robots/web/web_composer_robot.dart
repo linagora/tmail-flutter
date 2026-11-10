@@ -17,6 +17,7 @@ import 'web_composer_editor_dom.dart';
 import 'web_composer_editor_keyboard_robot.dart';
 import 'web_composer_recipient_robot.dart';
 import 'web_composer_reload_robot.dart';
+import 'web_composer_signature_assertion_robot.dart';
 
 /// Web-specific composer robot. Overrides [addContent] because InAppWebView
 /// is unavailable on web — content is injected via Patrol's web automator.
@@ -28,6 +29,7 @@ class WebComposerRobot extends MobileComposerRobot {
           reload: WebComposerReloadRobot($),
           editorKeyboard: WebComposerEditorKeyboardRobot($),
           codeView: WebComposerCodeViewRobot($),
+          signature: WebComposerSignatureAssertionRobot($),
         );
 
   @override
@@ -110,27 +112,14 @@ class WebComposerRobot extends MobileComposerRobot {
   /// Requires the signature not to be `display: none` so a hidden draft
   /// signature does not satisfy the wait (TF-5094 failure mode).
   @override
-  Future<void> waitForSignatureToLoad() => _waitForVisibleSignature();
-
-  /// Like [waitForSignatureToLoad], but requires the identity marker text so a
-  /// quoted/foreign signature cannot satisfy the wait after reopening a draft.
-  Future<void> waitForSignatureMarker(String marker) =>
-      _waitForVisibleSignature(
-        marker: marker,
-        reason: 'visible signature containing $marker in the web editor iframe',
-      );
-
-  Future<void> _waitForVisibleSignature({
-    String? marker,
-    String reason = 'visible identity signature in the web editor iframe',
-  }) {
+  Future<void> waitForSignatureToLoad() {
     return waitForCondition(
       () {
-        final signature = findSignatureElement(marker: marker);
+        final signature = findSignatureElement();
         return signature != null && !signatureStyleIsHidden(signature);
       },
       timeout: TestTimeouts.long,
-      reason: reason,
+      reason: 'visible identity signature in the web editor iframe',
     );
   }
 }

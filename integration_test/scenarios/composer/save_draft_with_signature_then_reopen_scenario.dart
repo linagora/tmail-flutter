@@ -6,8 +6,6 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/base_test_scenario.dart';
 import '../../models/provisioning_identity.dart';
-import '../../robots/web/web_composer_robot.dart';
-import '../../robots/web/web_composer_signature_assertion_robot.dart';
 import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
 import 'save_draft_by_closing_composer_mixin.dart';
@@ -25,9 +23,8 @@ class SaveDraftWithSignatureThenReopenScenario extends BaseTestScenario
 
     final subject =
         'Draft with signature ${DateTime.now().microsecondsSinceEpoch}';
-    // Web-only scenario creates the platform robot directly (e2e guide).
-    final composerRobot = WebComposerRobot($);
-    final signatureAssertion = WebComposerSignatureAssertionRobot($);
+    final composerRobot = robots.composerRobot();
+    final signatureRobot = composerRobot.signature!;
     final threadRobot = robots.threadRobot();
     final mailboxMenuRobot = robots.mailboxMenuRobot();
     final l10n = AppLocalizations();
@@ -50,11 +47,11 @@ class SaveDraftWithSignatureThenReopenScenario extends BaseTestScenario
     await composerRobot.grantContactPermission();
     // Wait for the identity marker before other edits. Do not call addContent
     // via web enterText here: it replaces note-editable and wipes the signature.
-    await composerRobot.waitForSignatureMarker(_signatureMarker);
+    await signatureRobot.waitForSignatureMarker(_signatureMarker);
     await composerRobot.addRecipient(PrefixEmailAddress.to, email);
     await composerRobot.addSubject(subject);
     // Confirm the signature survived recipient/subject edits before saving.
-    await composerRobot.waitForSignatureMarker(_signatureMarker);
+    await signatureRobot.waitForSignatureMarker(_signatureMarker);
 
     await saveDraftByClosingComposer(composerRobot, l10n);
 
@@ -70,7 +67,7 @@ class SaveDraftWithSignatureThenReopenScenario extends BaseTestScenario
     await composerRobot.expectComposerViewVisible();
     // Assertion robot owns the reopen visibility wait + expects (not a second
     // identical waitForSignatureMarker that would make the expects vacuous).
-    await signatureAssertion.expectSingleVisibleSignature(_signatureMarker);
+    await signatureRobot.expectSingleVisibleSignature(_signatureMarker);
 
     // Reopening is not an edit: closing now must not ask to save again.
     await composerRobot.expectComposerClosedWithoutSavePrompt();

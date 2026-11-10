@@ -5,7 +5,6 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/base_test_scenario.dart';
 import '../../models/provisioning_identity.dart';
-import '../../robots/web/web_composer_robot.dart';
 import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
 import 'save_draft_by_closing_composer_mixin.dart';
@@ -24,7 +23,7 @@ class ReopenDraftWithIdentityWithoutSignatureScenario extends BaseTestScenario
 
     final subject =
         'Draft without signature ${DateTime.now().microsecondsSinceEpoch}';
-    final composerRobot = WebComposerRobot($);
+    final composerRobot = robots.composerRobot();
     final threadRobot = robots.threadRobot();
     final mailboxMenuRobot = robots.mailboxMenuRobot();
     final l10n = AppLocalizations();

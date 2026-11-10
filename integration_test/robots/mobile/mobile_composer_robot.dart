@@ -17,6 +17,7 @@ import '../abstract/abstract_composer_editor_keyboard_robot.dart';
 import '../abstract/abstract_composer_recipient_robot.dart';
 import '../abstract/abstract_composer_reload_robot.dart';
 import '../abstract/abstract_composer_robot.dart';
+import '../abstract/abstract_composer_signature_robot.dart';
 import '../composer_recipient_robot.dart';
 import '../composer_robot.dart';
 import '../../utils/wait_for_condition.dart';
@@ -34,12 +35,16 @@ class MobileComposerRobot extends ComposerRobot implements AbstractComposerRobot
   @override
   final AbstractComposerCodeViewRobot? codeView;
 
+  @override
+  final AbstractComposerSignatureRobot? signature;
+
   MobileComposerRobot(
     PatrolIntegrationTester $, {
     AbstractComposerRecipientRobot? recipientRobot,
     this.reload,
     this.editorKeyboard,
     this.codeView,
+    this.signature,
   })  : recipient = recipientRobot ?? ComposerRecipientRobot($),
         super($);
 
