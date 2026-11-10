@@ -16,31 +16,35 @@ web.Document? findSummernoteDocument() {
 web.Element? findNoteEditable() =>
     findSummernoteDocument()?.querySelector('div.note-editable');
 
-bool _matchesMarker(web.Element element, String? marker) =>
+typedef _ElementFilter = bool Function(web.Element element);
+
+_ElementFilter _containsMarker(String? marker) => (element) =>
     marker == null || element.textContent?.contains(marker) == true;
 
 bool _isSignatureElement(web.Element? element) =>
     element != null && element.classList.contains('tmail-signature');
 
-web.Element? _directChildSignature(web.Element editable, String? marker) {
+web.Element? _directChildSignature(
+  web.Element editable,
+  _ElementFilter matches,
+) {
   final children = editable.children;
   for (var i = 0; i < children.length; i++) {
     final child = children.item(i);
-    if (!_isSignatureElement(child)) continue;
-    if (_matchesMarker(child!, marker)) return child;
+    if (_isSignatureElement(child) && matches(child!)) return child;
   }
   return null;
 }
 
-web.Element? _descendantSignature(web.Element editable, String? marker) {
+List<web.Element> _descendantSignatures(
+  web.Element editable,
+  _ElementFilter matches,
+) {
   final all = editable.querySelectorAll('.tmail-signature');
-  for (var i = 0; i < all.length; i++) {
-    final node = all.item(i);
-    if (node is web.Element && _matchesMarker(node, marker)) {
-      return node;
-    }
-  }
-  return null;
+  return [
+    for (var i = 0; i < all.length; i++)
+      if (all.item(i) case final web.Element node when matches(node)) node,
+  ];
 }
 
 /// Prefers a direct child of `note-editable`, then any descendant. Summernote
@@ -48,16 +52,13 @@ web.Element? _descendantSignature(web.Element editable, String? marker) {
 web.Element? findSignatureElement({String? marker}) {
   final editable = findNoteEditable();
   if (editable == null) return null;
-  return _directChildSignature(editable, marker) ??
-      _descendantSignature(editable, marker);
+  final matches = _containsMarker(marker);
+  return _directChildSignature(editable, matches) ??
+      _descendantSignatures(editable, matches).firstOrNull;
 }
 
-/// Simulates the user typing inside the signature with [marker].
-void appendTextInSignature(String marker, String text) {
-  final signature = findSignatureElement(marker: marker);
-  if (signature == null) {
-    throw StateError('No signature containing $marker in the editor');
-  }
+/// Simulates the user typing at the end of [signature].
+void appendTextToSignature(web.Element signature, String text) {
   signature.appendChild(web.document.createTextNode(text));
 }
 
@@ -70,10 +71,5 @@ bool signatureStyleIsHidden(web.Element signature) {
 List<web.Element> findAllSignatureElements({String? marker}) {
   final editable = findNoteEditable();
   if (editable == null) return const [];
-  final all = editable.querySelectorAll('.tmail-signature');
-  return [
-    for (var i = 0; i < all.length; i++)
-      if (all.item(i) case final web.Element node when _matchesMarker(node, marker))
-        node,
-  ];
+  return _descendantSignatures(editable, _containsMarker(marker));
 }

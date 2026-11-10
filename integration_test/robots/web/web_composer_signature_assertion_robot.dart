@@ -62,7 +62,11 @@ class WebComposerSignatureAssertionRobot extends CoreRobot
 
   @override
   Future<void> editSignature(String marker, String appendedText) async {
-    appendTextInSignature(marker, appendedText);
+    final signature = findSignatureElement(marker: marker);
+    if (signature == null) {
+      throw StateError('No signature containing $marker in the editor');
+    }
+    appendTextToSignature(signature, appendedText);
     await $.pumpAndTrySettle();
   }
 
