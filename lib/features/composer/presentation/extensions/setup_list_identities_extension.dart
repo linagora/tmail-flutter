@@ -30,9 +30,9 @@ extension SetupListIdentitiesExtension on ComposerController {
     final uiState = resultState.fold((failure) => failure, (success) => success);
 
     if (uiState is GetAllIdentitiesSuccess) {
-      final identitiesMayDeleted = uiState.identities?.toListMayDeleted() ?? [];
-      if (identitiesMayDeleted.isNotEmpty) {
-        listFromIdentities.value = identitiesMayDeleted;
+      final fromList = (uiState.identities ?? []).forComposerFromPicker();
+      if (fromList.isNotEmpty) {
+        listFromIdentities.value = fromList;
       }
     } else if (uiState is GetAllIdentitiesFailure) {
       consumeState(Stream.value(Left(uiState)));
