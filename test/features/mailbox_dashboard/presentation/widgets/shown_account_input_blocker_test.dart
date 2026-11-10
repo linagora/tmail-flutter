@@ -145,12 +145,76 @@ void main() {
     expect(taps.count, 0);
   });
 
+  testWidgets('asks the dashboard to reclaim mail-list shortcut focus after unblock',
+      (tester) async {
+    final dashboard = _RecordingMailboxDashBoardController();
+    Get.put<MailboxDashBoardController>(dashboard);
+    addTearDown(Get.reset);
+
+    await tester.pumpWidget(_shortcutDashboard(container, taps.record));
+    await tester.pump();
+    container.read(shownAccountInputBlockProvider.notifier).block();
+    await tester.pump();
+    container.read(shownAccountInputBlockProvider.notifier).unblock();
+
+    // Reclaim is post-frame so the sync shortcut gate is already clear.
+    expect(
+      dashboard.actions.whereType<ReclaimMailListKeyboardShortcutFocusAction>(),
+      isEmpty,
+    );
+    await tester.pump();
+    expect(
+      dashboard.actions.whereType<ReclaimMailListKeyboardShortcutFocusAction>(),
+      hasLength(1),
+    );
+    expect(shownAccountShortcutBlocked.value, isFalse);
+  });
+
+  testWidgets(
+      'does not reclaim focus while the loading dialog still keeps input blocked',
+      (tester) async {
+    final dashboard = _RecordingMailboxDashBoardController();
+    Get.put<MailboxDashBoardController>(dashboard);
+    addTearDown(Get.reset);
+
+    await tester.pumpWidget(_shortcutDashboard(container, taps.record));
+    await tester.pump();
+    container.read(shownAccountInputBlockProvider.notifier).block();
+    container
+        .read(accountSwitchLoadingDialogVisibleProvider.notifier)
+        .setVisible(true);
+    await tester.pump();
+    container.read(shownAccountInputBlockProvider.notifier).unblock();
+    await tester.pump();
+
+    expect(
+      dashboard.actions.whereType<ReclaimMailListKeyboardShortcutFocusAction>(),
+      isEmpty,
+    );
+    expect(shownAccountShortcutBlocked.value, isTrue);
+
+    container
+        .read(accountSwitchLoadingDialogVisibleProvider.notifier)
+        .setVisible(false);
+    await tester.pump();
+
+    expect(
+      dashboard.actions.whereType<ReclaimMailListKeyboardShortcutFocusAction>(),
+      hasLength(1),
+    );
+    expect(shownAccountShortcutBlocked.value, isFalse);
+  });
+
   testWidgets('lets key presses reach the shown mailbox again once the switch unblocks them', (tester) async {
     await tester.pumpWidget(_shortcutDashboard(container, taps.record));
     await tester.pump();
     container.read(shownAccountInputBlockProvider.notifier).block();
     await tester.pump();
     container.read(shownAccountInputBlockProvider.notifier).unblock();
+    await tester.pump();
+    // Reclaim is dispatched to ThreadController. This harness has no thread
+    // focus node, so restore the list Focus for the key assertion.
+    Focus.of(tester.element(find.text('mail list'))).requestFocus();
     await tester.pump();
 
     await tester.sendKeyEvent(LogicalKeyboardKey.keyN);
@@ -233,6 +297,9 @@ void main() {
     await tester.pump();
     expect(shownAccountShortcutBlocked.value, isFalse);
 
+    // Harness has no ThreadController focus reclaim target.
+    Focus.of(tester.element(find.text('mail list'))).requestFocus();
+    await tester.pump();
     await tester.sendKeyEvent(LogicalKeyboardKey.keyN);
     expect(taps.count, 1);
   });
