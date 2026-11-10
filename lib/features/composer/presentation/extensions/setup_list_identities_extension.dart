@@ -1,5 +1,6 @@
 
 import 'package:dartz/dartz.dart';
+import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -30,12 +31,18 @@ extension SetupListIdentitiesExtension on ComposerController {
     final uiState = resultState.fold((failure) => failure, (success) => success);
 
     if (uiState is GetAllIdentitiesSuccess) {
-      final fromList = (uiState.identities ?? []).forComposerFromPicker();
-      if (fromList.isNotEmpty) {
-        listFromIdentities.value = fromList;
-      }
+      applyFromPickerIdentities(uiState.identities);
     } else if (uiState is GetAllIdentitiesFailure) {
       consumeState(Stream.value(Left(uiState)));
+    }
+  }
+
+  void applyFromPickerIdentities(List<Identity>? identities) {
+    final fromList = (identities ?? []).forComposerFromPicker(
+      keepServerDefaults: mailboxDashBoardController.shownAccountCapabilities.offersServerDefaultIdentities,
+    );
+    if (fromList.isNotEmpty) {
+      listFromIdentities.value = fromList;
     }
   }
 }

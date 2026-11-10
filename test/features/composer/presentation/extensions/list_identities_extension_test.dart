@@ -20,19 +20,29 @@ Identity _identity({
 
 void main() {
   group('forComposerFromPicker', () {
-    test('keeps only mayDelete identities when any exist', () {
-      final server = _identity(id: 'server', mayDelete: false);
-      final editable = _identity(id: 'editable', mayDelete: true);
-      expect([server, editable].forComposerFromPicker(), [editable]);
-    });
+    for (final keepServerDefaults in [true, false]) {
+      test('keeps only mayDelete identities when any exist (keep server defaults: $keepServerDefaults)', () {
+        final server = _identity(id: 'server', mayDelete: false);
+        final editable = _identity(id: 'editable', mayDelete: true);
+        expect(
+          [server, editable].forComposerFromPicker(keepServerDefaults: keepServerDefaults),
+          [editable],
+        );
+      });
 
-    test('keeps the full list when every identity is a server default', () {
+      test('returns empty when the list is empty (keep server defaults: $keepServerDefaults)', () {
+        expect(<Identity>[].forComposerFromPicker(keepServerDefaults: keepServerDefaults), isEmpty);
+      });
+    }
+
+    test('keeps the server defaults when asked and no identity is editable', () {
       final onlyServer = _identity(id: 'server', mayDelete: false);
-      expect([onlyServer].forComposerFromPicker(), [onlyServer]);
+      expect([onlyServer].forComposerFromPicker(keepServerDefaults: true), [onlyServer]);
     });
 
-    test('returns empty when the list is empty', () {
-      expect(<Identity>[].forComposerFromPicker(), isEmpty);
+    test('SHOULD NOT keep the server defaults unless asked', () {
+      final onlyServer = _identity(id: 'server', mayDelete: false);
+      expect([onlyServer].forComposerFromPicker(keepServerDefaults: false), isEmpty);
     });
   });
 }
