@@ -59,7 +59,16 @@ class ReopenDraftWithIdentityWithoutSignatureScenario extends BaseTestScenario
     await threadRobot.openEmailWithSubject(subject);
     await composerRobot.expectComposerViewVisible();
     // Closing before the body loads skips the prompt for an unrelated reason.
-    await $.pumpAndTrySettle(duration: const Duration(seconds: 3));
+    // Wait for the draft baseline hash so the close assert covers the hash fix.
+    await waitForCondition(
+      () {
+        final composer = composerRobot.findComposerController();
+        return composer?.savedEmailDraftHash != null &&
+            composer?.isEmailChanged.value == false;
+      },
+      timeout: TestTimeouts.long,
+      reason: 'draft baseline hash after reopening without a signature',
+    );
 
     await composerRobot.expectComposerClosedWithoutSavePrompt();
   }
