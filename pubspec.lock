@@ -1481,7 +1481,7 @@ packages:
     description:
       path: "."
       ref: "temp/ds-2-3-combined"
-      resolved-ref: "6eeab29bd77cbe77a94aee99295da73f6d993017"
+      resolved-ref: f268c502a7de92b614e30326d8553811d0a10fcc
       url: "https://github.com/linagora/linagora-design-flutter.git"
     source: git
     version: "0.4.2"
