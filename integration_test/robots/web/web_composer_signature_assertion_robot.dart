@@ -102,6 +102,32 @@ class WebComposerSignatureAssertionRobot extends CoreRobot
     }
   }
 
+  /// The cache is refreshed by the editor's own change event, which arrives
+  /// after the switch returns, so it is polled rather than read once.
+  @override
+  Future<void> expectNoSignature({required List<String> absentText}) async {
+    bool cacheIsClean() {
+      final cached = findWebComposerController($)?.textEditorWeb ?? '';
+      return !cached.contains('tmail-signature') &&
+          absentText.every((text) => !cached.contains(text));
+    }
+
+    await waitForCondition(
+      cacheIsClean,
+      timeout: TestTimeouts.long,
+      reason: 'cached composer body to drop the removed signature',
+    );
+    expect(
+      findAllSignatureElements(),
+      isEmpty,
+      reason: 'an identity without signature must leave none in the editor',
+    );
+    final editorText = findNoteEditable()?.textContent ?? '';
+    for (final text in absentText) {
+      expect(editorText, isNot(contains(text)));
+    }
+  }
+
   bool _isVisibleSignatureWithMarker(String marker) {
     final signature = findSignatureElement(marker: marker);
     if (signature == null) return false;

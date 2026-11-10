@@ -11,6 +11,7 @@ class SwitchIdentityDiscardsEditedSignatureScenario extends BaseTestScenario {
   static const _secondMarker = 'SIG_TWO_MARKER';
   static const _editedText = 'EDITED_BY_USER';
   static const _secondIdentityName = 'Identity 2';
+  static const _noSignatureIdentityName = 'Identity Without Signature';
 
   @override
   Future<void> runTestLogic() async {
@@ -38,6 +39,13 @@ class SwitchIdentityDiscardsEditedSignatureScenario extends BaseTestScenario {
           sortOrder: UnsignedInt(100),
         ),
       ),
+      ProvisioningIdentity(
+        identity: Identity(
+          name: _noSignatureIdentityName,
+          email: email,
+          sortOrder: UnsignedInt(200),
+        ),
+      ),
     ]);
     await robots.commonRobot().waitForMailboxReady();
 
@@ -52,6 +60,13 @@ class SwitchIdentityDiscardsEditedSignatureScenario extends BaseTestScenario {
     await signatureRobot.expectOnlySignature(
       _secondMarker,
       absentText: [_firstMarker, _editedText],
+    );
+
+    // No new signature is inserted here, so nothing else refreshes the cached
+    // body: only the removal itself can drop the old signature from it.
+    await signatureRobot.switchIdentity(_noSignatureIdentityName);
+    await signatureRobot.expectNoSignature(
+      absentText: [_firstMarker, _secondMarker, _editedText],
     );
   }
 }

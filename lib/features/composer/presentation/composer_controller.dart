@@ -1972,12 +1972,9 @@ class ComposerController extends BaseController
   Future<void> _removeSignature() async {
     try {
       if (PlatformInfo.isWeb) {
-        final editorController = richTextWebController?.editorController;
-        editorController?.evaluateJavascriptWeb(HtmlUtils.removeAllSignatures.name);
-        // The script posts no change event, so refresh the cached body like the native removal.
-        if (editorController != null) {
-          onChangeTextEditorWeb(await editorController.getText());
-        }
+        // The script reports the new body through the editor's own change event.
+        richTextWebController?.editorController
+            .evaluateJavascriptWeb(HtmlUtils.removeAllSignatures.name);
       } else {
         await htmlEditorApi?.webViewController
             .evaluateJavascript(source: HtmlUtils.removeAllSignatures.script);

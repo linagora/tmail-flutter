@@ -55,7 +55,8 @@ class HtmlUtils {
 
   /// Removes every identity signature, including ones the user edited or
   /// split; signatures inside a quoted message are kept. Runs in the web
-  /// editor iframe and the mobile editor webview.
+  /// editor iframe and the mobile editor webview; only the web editor has
+  /// jQuery, so only it emits the change notification.
   static const removeAllSignatures = (
     script: '''
       (() => {
@@ -64,6 +65,13 @@ class HtmlUtils {
         root.querySelectorAll('.tmail-signature').forEach(el => {
           if (!el.closest('blockquote, cite')) el.remove();
         });
+        // Notify through this editor's own change handler, which tags the
+        // message with its view id, so the composer refreshes its cached body
+        // without a window-wide getText that another composer could answer.
+        if (window.jQuery) {
+          const \$editor = window.jQuery('#summernote-2');
+          \$editor.trigger('summernote.change', [root.innerHTML, window.jQuery(root)]);
+        }
       })();''',
     name: 'removeAllSignatures');
 

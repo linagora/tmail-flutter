@@ -1544,7 +1544,7 @@ void main() {
         verify(mockRichTextWebController.editorController
             .evaluateJavascriptWeb(HtmlUtils.removeAllSignatures.name)).called(1);
         verifyNever(mockRichTextWebController.editorController.removeSignature());
-        verify(mockRichTextWebController.editorController.getText()).called(1);
+        verifyNever(mockRichTextWebController.editorController.getText());
       });
 
       test(
@@ -1561,7 +1561,7 @@ void main() {
     });
 
     group('applySignature test:', () {
-      const rawSignature ='<p style="line-height:0.1;">Alice</p>';
+      const rawSignature = '<p style="line-height:0.1;">Alice</p>';
 
       void useMobileEditor() {
         composerController?.richTextMobileTabletController =

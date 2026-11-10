@@ -17,4 +17,8 @@ abstract class AbstractComposerSignatureRobot {
     String marker, {
     required List<String> absentText,
   });
+
+  /// Waits until the editor and the composer's cached body (what send and
+  /// drafts read) hold no signature and none of [absentText].
+  Future<void> expectNoSignature({required List<String> absentText});
 }
