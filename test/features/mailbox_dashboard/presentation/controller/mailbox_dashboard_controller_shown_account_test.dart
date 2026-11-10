@@ -58,6 +58,7 @@ import 'package:mockito/mockito.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:rxdart/subjects.dart';
@@ -82,6 +83,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:model/extensions/mailbox_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
@@ -615,6 +617,34 @@ void main() {
       mailboxDashboardController.ownEmailAddress.value = 'alice@domain.tld';
 
       expect(mailboxDashboardController.ownerEmailAddress, 'alice@domain.tld');
+    });
+
+    group('identities of a shown account that only has server defaults:', () {
+      final serverDefault = Identity(
+        id: IdentityId(Id('server-default')),
+        email: DelegationFixtures.bobAddress,
+        mayDelete: false,
+      );
+
+      void loadOnlyServerDefaultOf(ActiveAccount shown) {
+        ActiveAccountSourceFixtures.putShowing(shown.accountId).show(shown.accountId, shown);
+        mailboxDashboardController.accountId.value = DelegationFixtures.aliceAccountId;
+        mailboxDashboardController.handleSuccessViewState(GetAllIdentitiesSuccess([serverDefault], null));
+      }
+
+      test('are kept for a delegated account', () {
+        loadOnlyServerDefaultOf(
+          ActiveAccount.delegated(DelegationFixtures.session(), DelegationFixtures.bobAccountId),
+        );
+
+        expect(mailboxDashboardController.listIdentities, [serverDefault]);
+      });
+
+      test('are not offered for my own account', () {
+        loadOnlyServerDefaultOf(ActiveAccount.personal(DelegationFixtures.session()));
+
+        expect(mailboxDashboardController.listIdentities, isEmpty);
+      });
     });
 
     test('reads the label setting once when a session is applied', () {

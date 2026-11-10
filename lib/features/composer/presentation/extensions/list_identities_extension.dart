@@ -5,10 +5,9 @@ extension ListIdentitiesExtension on List<Identity> {
 
   List<Identity> toListMayDeleted() => where((identity) => identity.mayDelete == true).toList();
 
-  /// Composer From: prefer editable identities. Fall back to server defaults
-  /// when a mailbox (often delegated) only has `mayDelete: false` rows.
-  List<Identity> forComposerFromPicker() {
+  /// Composer From: editable identities, or with [keepServerDefaults] the whole list when none is editable.
+  List<Identity> forComposerFromPicker({required bool keepServerDefaults}) {
     final deletable = toListMayDeleted();
-    return deletable.isNotEmpty ? deletable : this;
+    return deletable.isEmpty && keepServerDefaults ? this : deletable;
   }
 }

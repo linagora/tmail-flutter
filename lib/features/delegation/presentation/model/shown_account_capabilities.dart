@@ -26,6 +26,10 @@ class ShownAccountCapabilities with EquatableMixin {
   /// Viewing chrome (banner, stacked avatar, Delegated badge) while a delegated account is shown.
   final bool showsViewingOwnerChrome;
 
+  /// The From picker keeps server default identities only for a delegated account that has no
+  /// editable one, so my own account never offers them.
+  final bool offersServerDefaultIdentities;
+
   const ShownAccountCapabilities._({
     required this.canOpenSettings,
     required this.canCreateFilter,
@@ -33,6 +37,7 @@ class ShownAccountCapabilities with EquatableMixin {
     required this.canUseNotificationKeychain,
     required this.canApplyMyComposerSettings,
     required this.showsViewingOwnerChrome,
+    required this.offersServerDefaultIdentities,
   });
 
   factory ShownAccountCapabilities.of(ActiveAccount? shownAccount) {
@@ -45,6 +50,7 @@ class ShownAccountCapabilities with EquatableMixin {
       canUseNotificationKeychain: personalShown,
       canApplyMyComposerSettings: !delegatedShown,
       showsViewingOwnerChrome: delegatedShown,
+      offersServerDefaultIdentities: delegatedShown,
     );
   }
 
@@ -56,5 +62,6 @@ class ShownAccountCapabilities with EquatableMixin {
         canUseNotificationKeychain,
         canApplyMyComposerSettings,
         showsViewingOwnerChrome,
+        offersServerDefaultIdentities,
       ];
 }
