@@ -65,6 +65,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_s
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/sanitize_signature_in_email_content_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/upload/presentation/validator/attachment_upload_validation_service.dart';
@@ -106,6 +107,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_co
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart';
@@ -3776,6 +3778,80 @@ void main() {
           verify(mockGetServerSettingInteractor.execute(DelegationFixtures.aliceAccountId))
               .called(1);
           expect(composerController!.hasRequestReadReceipt.value, isTrue);
+        },
+      );
+    });
+
+    group('getAllIdentitiesAsSynchronize:', () {
+      final serverDefault = Identity(
+        id: IdentityId(Id('server-default')),
+        name: 'Server default',
+        email: DelegationFixtures.bobAddress,
+        mayDelete: false,
+      );
+      final editable = Identity(
+        id: IdentityId(Id('editable')),
+        name: 'Editable',
+        email: DelegationFixtures.bobAddress,
+        mayDelete: true,
+      );
+
+      final bobShown = ActiveAccount.delegated(
+        DelegationFixtures.session(),
+        DelegationFixtures.bobAccountId,
+      );
+
+      void arrangeShownAccount(ActiveAccount shown, List<Identity> identities) {
+        addTearDown(() {
+          mockMailboxDashBoardController.currentAccountId = AccountFixtures.aliceAccountId;
+          mockMailboxDashBoardController.currentSession = SessionFixtures.aliceSession;
+          mockMailboxDashBoardController.shownAccountCapabilitiesOverride =
+              ShownAccountCapabilities.of(null);
+        });
+        mockMailboxDashBoardController.currentAccountId = shown.accountId;
+        mockMailboxDashBoardController.currentSession = shown.session;
+        mockMailboxDashBoardController.shownAccountCapabilitiesOverride =
+            ShownAccountCapabilities.of(shown);
+        when(mockGetAllIdentitiesInteractor.execute(any, shown.accountId)).thenAnswer(
+          (_) => Stream.value(Right(GetAllIdentitiesSuccess(identities, null))),
+        );
+      }
+
+      test(
+        'SHOULD offer the server default identities '
+        'WHEN a delegated account that has no editable identity is shown',
+        () async {
+          arrangeShownAccount(bobShown, [serverDefault]);
+
+          await composerController!.getAllIdentitiesAsSynchronize();
+
+          expect(composerController!.listFromIdentities, [serverDefault]);
+        },
+      );
+
+      test(
+        'SHOULD offer only the editable identities '
+        'WHEN a delegated account that has some is shown',
+        () async {
+          arrangeShownAccount(bobShown, [serverDefault, editable]);
+
+          await composerController!.getAllIdentitiesAsSynchronize();
+
+          expect(composerController!.listFromIdentities, [editable]);
+        },
+      );
+
+      test(
+        'SHOULD NOT offer the server default identities '
+        'WHEN my own account is shown',
+        () async {
+          arrangeShownAccount(ActiveAccount.personal(DelegationFixtures.session()), [serverDefault]);
+
+          await composerController!.getAllIdentitiesAsSynchronize();
+
+          expect(composerController!.listFromIdentities, isEmpty);
+          verify(mockGetAllIdentitiesInteractor.execute(any, DelegationFixtures.aliceAccountId))
+              .called(1);
         },
       );
     });
