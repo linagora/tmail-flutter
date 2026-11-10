@@ -1544,6 +1544,7 @@ void main() {
         verify(mockRichTextWebController.editorController
             .evaluateJavascriptWeb(HtmlUtils.removeAllSignatures.name)).called(1);
         verifyNever(mockRichTextWebController.editorController.removeSignature());
+        verify(mockRichTextWebController.editorController.getText()).called(1);
       });
 
       test(
