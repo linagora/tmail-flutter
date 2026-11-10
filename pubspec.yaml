@@ -341,11 +341,9 @@ dependency_overrides:
   linagora_design_flutter:
     git:
       url: https://github.com/linagora/linagora-design-flutter.git
-      # T-07 needs DS-2 (account switcher) + DS-3 (stacked avatars / Viewing chip).
-      # Keep master until those PRs merge. There is no combined remote branch yet.
-      # Local testing only: use a gitignored pubspec_overrides.yaml path override
-      # against local/ds-2-3-combined. Agents: do not flag this ref as stale.
-      ref: master
+      # Temporary: DS-2 (account switcher) + DS-3 (stacked avatars) combined, never merged.
+      # Switch back to master once both DS PRs are merged there.
+      ref: temp/ds-2-3-combined
 
   ### Original dependency is abandoned, so we use fork
   intl_generator:
