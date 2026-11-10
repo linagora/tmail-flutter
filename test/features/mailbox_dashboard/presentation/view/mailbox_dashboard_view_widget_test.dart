@@ -156,6 +156,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_em
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/mobile_app_bar_thread_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -1006,6 +1007,31 @@ void main() {
     });
 
     group('ThreadView', () {
+      testWidgets(
+        'WHEN web viewport is tabletLarge (1000px)\n'
+        'ThreadView SHOULD NOT render the mobile app bar next to the sidebar',
+      (tester) async {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        addTearDown(() => WidgetFixtures.resetResponsive(tester));
+        debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+        final dpi = tester.view.devicePixelRatio;
+        tester.view.physicalSize = Size(dpi * 1000, dpi * 800);
+
+        when(mailboxDashboardController.spamReportController.spamReportState).thenReturn(Rx(SpamReportState.disabled));
+        when(mailboxDashboardController.spamReportController.presentationSpamMailbox).thenReturn(Rxn(null));
+        when(mailboxDashboardController.downloadController.listDownloadTaskState).thenReturn(RxList([]));
+        when(mailboxDashboardController.labelController.isLabelSettingEnabled).thenReturn(RxBool(false));
+        when(mailboxDashboardController.labelController.labels).thenReturn(RxList([]));
+        when(composerManager.composers).thenReturn(RxMap({}));
+
+        await tester.pumpWidget(makeTestableWidget(child: MailboxDashBoardView()));
+        await tester.pump();
+
+        expect(find.byType(ThreadView), findsOneWidget);
+        expect(find.byType(MobileAppBarThreadWidget), findsNothing);
+      });
+
       testWidgets(
         'WHEN switch from old mailbox to new mailbox\n'
         'AND old mailbox and new mailbox both have emails\n'
