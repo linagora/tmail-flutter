@@ -1,5 +1,4 @@
 @TestOn('chrome')
-
 import 'package:file_picker_web/file_picker_web.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/web_pick_options.dart';
@@ -12,5 +11,11 @@ void main() {
     final webOptions = options as FilePickerWebOptions;
     expect(webOptions.withData, isFalse);
     expect(webOptions.withReadStream, isFalse);
+  });
+
+  test('web picks do not treat window focus as a cancelled dialog', () {
+    final webOptions = lazyWebPickOptions() as FilePickerWebOptions;
+
+    expect(webOptions.cancelUploadOnWindowBlur, isFalse);
   });
 }
