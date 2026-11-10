@@ -37,8 +37,8 @@ extension SessionExtension on Session {
   }
 
   int getRestorationHorizonInDays() {
-    final horizon = getRestorationHorizonAsDuration();
-    final days = (horizon.inSeconds / Duration.secondsPerDay).ceil();
+    final restorationDuration = getRestorationHorizonAsDuration();
+    final days = (restorationDuration.inSeconds / Duration.secondsPerDay).ceil();
     return days < 1 ? 1 : days;
   }
 
