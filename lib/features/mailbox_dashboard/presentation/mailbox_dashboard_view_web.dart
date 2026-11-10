@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/base/widget/report_message_banner.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/web/composer_overlay_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_empty_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
@@ -74,10 +75,11 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   @override
   Widget build(BuildContext context) {
-    // T-07: reuse desktop chrome for tabletLarge so resizing under 1200px keeps
-    // the avatar menu and Viewing banner as a return path. Mobile (<900) stays
-    // drawer layout until T-09.
-    final standAloneDesktopBody = Scaffold(
+    final child = Portal(
+      child: Stack(children: [
+        ResponsiveWidget(
+            responsiveUtils: controller.responsiveUtils,
+            desktop: Scaffold(
               backgroundColor: AppColor.colorBgDesktop,
               body: Column(
                 children: [
@@ -238,13 +240,34 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   )
                 ],
               ),
-            );
-    final child = Portal(
-      child: Stack(children: [
-        ResponsiveWidget(
-            responsiveUtils: controller.responsiveUtils,
-            desktop: standAloneDesktopBody,
-            tabletLarge: standAloneDesktopBody,
+            ),
+            tabletLarge: Consumer(builder: (context, ref, child) {
+              final isSearchEmailRunning = ref.watch(
+                searchViewStateProvider.select((state) => state.isSearchEmailRunning),
+              );
+              return Obx(() {
+                switch (controller.dashboardRoute.value) {
+                  case DashboardRoutes.searchEmail:
+                    return const SearchEmailView();
+                  case DashboardRoutes.threadDetailed:
+                    return isSearchEmailRunning
+                        ? const ThreadDetailView()
+                        : buildResponsiveWithDrawer(
+                            left: ThreadView(),
+                            right: const ThreadDetailView(),
+                            mobile: const ThreadDetailView(),
+                          );
+                  default:
+                    return isSearchEmailRunning
+                        ? const ThreadDetailView()
+                        : buildResponsiveWithDrawer(
+                            left: ThreadView(),
+                            right: const EmailViewEmptyWidget(),
+                            mobile: ThreadView(),
+                          );
+                }
+              });
+            }),
             mobile: Obx(() {
               switch(controller.dashboardRoute.value) {
                 case DashboardRoutes.thread:
