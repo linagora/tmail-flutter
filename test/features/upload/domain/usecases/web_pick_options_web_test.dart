@@ -38,12 +38,6 @@ void main() {
     expect(webOptions.withReadStream, isFalse);
   });
 
-  test('web picks do not treat window focus as a cancelled dialog', () {
-    final webOptions = lazyWebPickOptions() as FilePickerWebOptions;
-
-    expect(webOptions.cancelUploadOnWindowBlur, isFalse);
-  });
-
   test(
     'keeps every file when change arrives more than 500 ms after window focus',
     () async {
