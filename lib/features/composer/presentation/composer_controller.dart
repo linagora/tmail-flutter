@@ -74,7 +74,6 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_k
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_message_failure_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_recipients_collapsed_extensions.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/invalid_recipients_extension.dart';
-import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/sanitize_signature_in_email_content_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_email_attachments_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_email_content_extension.dart';
@@ -84,6 +83,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_em
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_email_request_read_receipt_flag_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_email_subject_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_email_template_id_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_selected_identity_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/update_screen_display_mode_extension.dart';
@@ -752,9 +752,9 @@ class ComposerController extends BaseController
   }
 
   void _handleGetAllIdentitiesSuccess(GetAllIdentitiesSuccess success) {
-    final listIdentitiesMayDeleted = success.identities?.toListMayDeleted() ?? [];
-    if (listIdentitiesMayDeleted.isNotEmpty) {
-      listFromIdentities.value = listIdentitiesMayDeleted;
+    final fromList = (success.identities ?? []).forComposerFromPicker();
+    if (fromList.isNotEmpty) {
+      listFromIdentities.value = fromList;
     }
   }
 

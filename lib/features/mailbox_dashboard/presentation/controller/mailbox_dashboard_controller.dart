@@ -3438,9 +3438,8 @@ class MailboxDashBoardController extends ReloadableController
   void _handleGetAllIdentitiesSuccess(GetAllIdentitiesSuccess success) {
     log('MailboxDashBoardController::_handleGetAllIdentitiesSuccess: IDENTITIES_SIZE = ${_identities?.length}');
     final listIdentities = success.identities ?? [];
-
-    final listIdentitiesMayDeleted = listIdentities.toListMayDeleted();
-    _identities = listIdentitiesMayDeleted;
+    // Prefer editable identities. Keep server defaults when they are the only ones.
+    _identities = listIdentities.forComposerFromPicker();
 
     // Personal ownEmailAddress stays mine; shown-mailbox "me" reads ownerEmailAddresses.
     if (activeAccountId == accountId.value) {
