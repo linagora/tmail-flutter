@@ -252,7 +252,7 @@ dependencies:
 
   file_picker: 13.1.0
 
-  file_picker_web: ^4.0.0
+  file_picker_web: ^4.0.1
 
   app_settings: 5.1.1
 
