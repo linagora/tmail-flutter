@@ -5858,6 +5858,34 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "endedDelegationLostItems": "Access ended. {count} unsent or draft messages were removed.",
+  "@endedDelegationLostItems": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "delegation": "Delegation",
+  "@delegation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delegationSettingExplanation": "Open the mailboxes other users delegated to you",
+  "@delegationSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delegationToggleDescription": "Enable delegation",
+  "@delegationToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "openingOwnerMailbox": "Opening {name}'s mailbox…",
   "@openingOwnerMailbox": {
     "type": "text",
@@ -5867,5 +5895,73 @@
     "placeholders": {
       "name": {}
     }
+  },
+  "openingYourMailbox": "Opening your mailbox…",
+  "@openingYourMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "viewingOwnerMailbox": "Viewing {name}",
+  "@viewingOwnerMailbox": {
+    "type": "text",
+    "placeholders_order": [
+      "name"
+    ],
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "yourMailbox": "Your mailbox",
+  "@yourMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delegatedToYou": "Delegated to you",
+  "@delegatedToYou": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "accountSwitcherMenu": "Account switcher",
+  "@accountSwitcherMenu": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "couldNotOpenOwnerMailbox": "Couldn't open {name}'s mailbox",
+  "@couldNotOpenOwnerMailbox": {
+    "type": "text",
+    "placeholders_order": [
+      "name"
+    ],
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "couldNotReturnToYourMailbox": "Couldn't return to your mailbox",
+  "@couldNotReturnToYourMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "closeComposerBeforeSwitchingAccounts": "Close the composer before switching accounts",
+  "@closeComposerBeforeSwitchingAccounts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delegatedMailbox": "Delegated mailbox",
+  "@delegatedMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "backToYourMailbox": "Back to your mailbox",
+  "@backToYourMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

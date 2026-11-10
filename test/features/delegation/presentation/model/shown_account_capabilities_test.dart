@@ -16,6 +16,7 @@ void main() {
           canCreateDefaultFolders,
           canUseNotificationKeychain,
           canApplyMyComposerSettings,
+          showsViewingOwnerChrome,
         ) in [
       (
         'my own account',
@@ -25,6 +26,7 @@ void main() {
         true,
         true,
         true,
+        false,
       ),
       (
         'a delegated account',
@@ -34,6 +36,7 @@ void main() {
         false,
         false,
         false,
+        true,
       ),
       (
         'no account yet',
@@ -43,14 +46,16 @@ void main() {
         false,
         false,
         true,
+        false,
       ),
     ]) {
       test(
         '${canOpenSettings ? 'opens' : 'does not open'} Settings, '
         '${canCreateFilter ? 'allows' : 'does not allow'} creating a filter, '
         '${canCreateDefaultFolders ? 'creates' : 'does not create'} default folders, '
-        '${canUseNotificationKeychain ? 'writes' : 'does not write'} the notification keychain and '
-        '${canApplyMyComposerSettings ? 'applies' : 'does not apply'} my composer settings '
+        '${canUseNotificationKeychain ? 'writes' : 'does not write'} the notification keychain, '
+        '${canApplyMyComposerSettings ? 'applies' : 'does not apply'} my composer settings and '
+        '${showsViewingOwnerChrome ? 'shows' : 'does not show'} Viewing owner chrome '
         'while $shown is shown',
         () {
           final capabilities = ShownAccountCapabilities.of(shownAccount);
@@ -60,6 +65,7 @@ void main() {
           expect(capabilities.canCreateDefaultFolders, canCreateDefaultFolders);
           expect(capabilities.canUseNotificationKeychain, canUseNotificationKeychain);
           expect(capabilities.canApplyMyComposerSettings, canApplyMyComposerSettings);
+          expect(capabilities.showsViewingOwnerChrome, showsViewingOwnerChrome);
         },
       );
     }

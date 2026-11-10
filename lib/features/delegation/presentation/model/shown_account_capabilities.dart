@@ -23,12 +23,16 @@ class ShownAccountCapabilities with EquatableMixin {
   /// account is shown, so mail sent from it never picks up my setting.
   final bool canApplyMyComposerSettings;
 
+  /// Viewing chrome (banner, stacked avatar, Delegated badge) while a delegated account is shown.
+  final bool showsViewingOwnerChrome;
+
   const ShownAccountCapabilities._({
     required this.canOpenSettings,
     required this.canCreateFilter,
     required this.canCreateDefaultFolders,
     required this.canUseNotificationKeychain,
     required this.canApplyMyComposerSettings,
+    required this.showsViewingOwnerChrome,
   });
 
   factory ShownAccountCapabilities.of(ActiveAccount? shownAccount) {
@@ -40,6 +44,7 @@ class ShownAccountCapabilities with EquatableMixin {
       canCreateDefaultFolders: personalShown,
       canUseNotificationKeychain: personalShown,
       canApplyMyComposerSettings: !delegatedShown,
+      showsViewingOwnerChrome: delegatedShown,
     );
   }
 
@@ -50,5 +55,6 @@ class ShownAccountCapabilities with EquatableMixin {
         canCreateDefaultFolders,
         canUseNotificationKeychain,
         canApplyMyComposerSettings,
+        showsViewingOwnerChrome,
       ];
 }
