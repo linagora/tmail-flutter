@@ -123,6 +123,33 @@ void main() {
       expect(style, 'display: none !important;');
       expect(style, isNot(contains('display: block')));
     });
+
+    test('keeps semicolons inside a data URL of a nested signature', () async {
+      final style = await styleAfterHide(
+        '<blockquote><div class="tmail-signature" style="display: block !important; '
+        'background-image: url(data:image/gif;base64,R0lGOD)">Sig</div></blockquote>',
+      );
+      expect(
+        style,
+        'background-image: url(data:image/gif;base64,R0lGOD); display: none !important;',
+      );
+    });
+
+    test('keeps semicolons inside a quoted URL of a nested signature', () async {
+      final style = await styleAfterHide(
+        '<blockquote><div class="tmail-signature" '
+        'style="background: url(\'a;display:block\')">Sig</div></blockquote>',
+      );
+      expect(style, "background: url('a;display:block'); display: none !important;");
+    });
+
+    test('hides a nested signature whose style is malformed', () async {
+      final style = await styleAfterHide(
+        '<blockquote><div class="tmail-signature" '
+        'style="background: url(\'unterminated">Sig</div></blockquote>',
+      );
+      expect(style, 'display: none !important;');
+    });
   });
 
   group('RemoveCollapsedSignatureButtonTransformer', () {

@@ -1,6 +1,7 @@
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/html/css_declaration_splitter.dart';
 import 'package:html/dom.dart';
 
 class HideDraftSignatureTransformer extends DomTransformer {
@@ -29,19 +30,30 @@ class HideDraftSignatureTransformer extends DomTransformer {
   /// `display: none !important` so a sender `display: block !important` cannot
   /// keep a nested draft signature visible.
   static String styleWithHiddenSignature(String? currentStyle) {
+    const hidden = 'display: none !important;';
     final trimmed = currentStyle?.trim();
-    if (trimmed == null || trimmed.isEmpty) {
-      return 'display: none !important;';
-    }
+    if (trimmed == null || trimmed.isEmpty) return hidden;
+
+    final declarations = CssDeclarationSplitter.splitTopLevel(trimmed);
+    // Malformed CSS would swallow an appended declaration; hiding wins.
+    if (declarations == null) return hidden;
 
     final kept = <String>[];
-    for (final part in trimmed.split(';')) {
+    for (final part in declarations) {
       final declaration = part.trim();
-      if (declaration.isEmpty) continue;
-      if (declaration.toLowerCase().startsWith('display:')) continue;
-      kept.add(declaration);
+      final body = declaration.endsWith(';')
+          ? declaration.substring(0, declaration.length - 1).trim()
+          : declaration;
+      if (body.isEmpty || _isDisplayDeclaration(body)) continue;
+      kept.add(body);
     }
     kept.add('display: none !important');
     return '${kept.join('; ')};';
+  }
+
+  static bool _isDisplayDeclaration(String declaration) {
+    final colon = declaration.indexOf(':');
+    return colon != -1 &&
+        declaration.substring(0, colon).trim().toLowerCase() == 'display';
   }
 }

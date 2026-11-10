@@ -1,6 +1,7 @@
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/html/css_declaration_splitter.dart';
 import 'package:flutter/widgets.dart' show visibleForTesting;
 import 'package:html/dom.dart';
 
@@ -78,7 +79,7 @@ class NormalizeLineHeightInStyleTransformer extends DomTransformer {
   /// `null` when nothing changed or the CSS is malformed (fail-open: keep the
   /// original). Kept declarations are re-emitted verbatim.
   String? _stripDegenerateLineHeights(String style) {
-    final declarations = _splitTopLevelDeclarations(style);
+    final declarations = CssDeclarationSplitter.splitTopLevel(style);
     if (declarations == null) return null; // malformed → fail-open
 
     var removed = false;
@@ -91,72 +92,6 @@ class NormalizeLineHeightInStyleTransformer extends DomTransformer {
       }
     }
     return removed ? kept.toString().trim() : null;
-  }
-
-  /// Splits [style] at top-level `;`, ignoring semicolons inside quotes,
-  /// comments, or parentheses, and honoring CSS `\` escapes. Each declaration
-  /// keeps its original text (including any trailing `;`). Returns `null` for
-  /// malformed CSS (unterminated quote/comment, unbalanced parenthesis, or a
-  /// trailing backslash). Single linear scan — no backtracking, so ReDoS-immune
-  /// (ADR 0069-redos-vulnerability-mitigation).
-  List<String>? _splitTopLevelDeclarations(String style) {
-    final declarations = <String>[];
-    var start = 0;
-    var inSingleQuote = false;
-    var inDoubleQuote = false;
-    var inComment = false;
-    var parenDepth = 0;
-
-    for (var i = 0; i < style.length; i++) {
-      final char = style[i];
-      final next = i + 1 < style.length ? style[i + 1] : '';
-
-      if (inComment) {
-        if (char == '*' && next == '/') {
-          inComment = false;
-          i++;
-        }
-      } else if (inSingleQuote) {
-        if (char == '\\') {
-          i++; // skip the escaped character
-        } else if (char == "'") {
-          inSingleQuote = false;
-        }
-      } else if (inDoubleQuote) {
-        if (char == '\\') {
-          i++;
-        } else if (char == '"') {
-          inDoubleQuote = false;
-        }
-      } else if (char == '\\') {
-        if (next.isEmpty) return null; // trailing backslash → fail-open
-        i++; // escaped char is literal data (e.g. `\;`), never a boundary
-      } else if (char == '/' && next == '*' && parenDepth == 0) {
-        // Inside parentheses `/*` is data, not a comment — an unquoted
-        // `url(https://x/a/*/b.png)` must not poison the whole attribute
-        // (fail-open would keep a degenerate line-height → TF-3964 returns).
-        inComment = true;
-        i++;
-      } else if (char == "'") {
-        inSingleQuote = true;
-      } else if (char == '"') {
-        inDoubleQuote = true;
-      } else if (char == '(') {
-        parenDepth++;
-      } else if (char == ')') {
-        if (parenDepth == 0) return null; // unbalanced
-        parenDepth--;
-      } else if (char == ';' && parenDepth == 0) {
-        declarations.add(style.substring(start, i + 1));
-        start = i + 1;
-      }
-    }
-
-    if (inSingleQuote || inDoubleQuote || inComment || parenDepth != 0) {
-      return null; // unterminated
-    }
-    if (start < style.length) declarations.add(style.substring(start));
-    return declarations;
   }
 
   bool _isRemovableLineHeight(String declaration) {
