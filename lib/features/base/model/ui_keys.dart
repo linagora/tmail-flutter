@@ -41,6 +41,12 @@ class UiKeys {
   static const String userAvatar = 'userAvatar';
   // Settings button that replaces the avatar inside Twake Workplace.
   static const String workplaceSettingsButton = 'workplace_settings_button';
+  static const String viewingOwnerBanner = 'viewingOwnerBanner';
+  static const String viewingOwnerBannerDismiss = 'viewingOwnerBannerDismiss';
+  static const String accountSwitcherMenu = 'accountSwitcherMenu';
+  static const String accountSwitchLoadingDialog = 'accountSwitchLoadingDialog';
+  static const String accountSwitchLoadingCancel =
+      'accountSwitchLoadingCancel';
 
   // Advanced search
   static const String openAdvancedSearchButton = 'open_advanced_search_button';
