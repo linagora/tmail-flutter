@@ -10,13 +10,13 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
+import 'package:tmail_ui_user/features/base/widget/hide_inside_cozy_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/report_message_banner.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/web/composer_overlay_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_empty_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
@@ -38,6 +38,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/do
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/empty_trash_banner_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/mark_mailbox_as_read_loading_banner.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/dashboard_navigation_bar.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/widgets/viewing_owner_banner.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/profile_setting/cozy_profile_setting_icon.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/filter_message_button.dart';
@@ -73,11 +74,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   @override
   Widget build(BuildContext context) {
-    final child = Portal(
-      child: Stack(children: [
-        ResponsiveWidget(
-            responsiveUtils: controller.responsiveUtils,
-            desktop: Scaffold(
+    // T-07: reuse desktop chrome for tabletLarge so resizing under 1200px keeps
+    // the avatar menu and Viewing banner as a return path. Mobile (<900) stays
+    // drawer layout until T-09.
+    final standAloneDesktopBody = Scaffold(
               backgroundColor: AppColor.colorBgDesktop,
               body: Column(
                 children: [
@@ -247,34 +247,13 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   )
                 ],
               ),
-            ),
-            tabletLarge: Consumer(builder: (context, ref, child) {
-              final isSearchEmailRunning = ref.watch(
-                searchViewStateProvider.select((state) => state.isSearchEmailRunning),
-              );
-              return Obx(() {
-                switch (controller.dashboardRoute.value) {
-                  case DashboardRoutes.searchEmail:
-                    return const SearchEmailView();
-                  case DashboardRoutes.threadDetailed:
-                    return isSearchEmailRunning
-                        ? const ThreadDetailView()
-                        : buildResponsiveWithDrawer(
-                            left: ThreadView(),
-                            right: const ThreadDetailView(),
-                            mobile: const ThreadDetailView(),
-                          );
-                  default:
-                    return isSearchEmailRunning
-                        ? const ThreadDetailView()
-                        : buildResponsiveWithDrawer(
-                            left: ThreadView(),
-                            right: const EmailViewEmptyWidget(),
-                            mobile: ThreadView(),
-                          );
-                }
-              });
-            }),
+            );
+    final child = Portal(
+      child: Stack(children: [
+        ResponsiveWidget(
+            responsiveUtils: controller.responsiveUtils,
+            desktop: standAloneDesktopBody,
+            tabletLarge: standAloneDesktopBody,
             mobile: Obx(() {
               switch(controller.dashboardRoute.value) {
                 case DashboardRoutes.thread:
@@ -343,18 +322,26 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             if (controller.isSelectionEnabled() && listEmailSelected.isNotEmpty) {
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.5, horizontal: 16),
-                child: TopBarThreadSelection(
-                  listEmailSelected,
-                  controller.mapMailboxById,
-                  controller.imagePaths,
-                  isLabelAvailable: controller.isLabelAvailable,
-                  onCancelSelection: () =>
-                    controller.dispatchAction(CancelSelectionAllEmailAction()),
-                  onEmailActionTypeAction: (listEmails, actionType) =>
-                    controller.dispatchAction(HandleEmailActionTypeAction(
-                      listEmails,
-                      actionType
-                    )),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TopBarThreadSelection(
+                        listEmailSelected,
+                        controller.mapMailboxById,
+                        controller.imagePaths,
+                        isLabelAvailable: controller.isLabelAvailable,
+                        onCancelSelection: () =>
+                          controller.dispatchAction(CancelSelectionAllEmailAction()),
+                        onEmailActionTypeAction: (listEmails, actionType) =>
+                          controller.dispatchAction(HandleEmailActionTypeAction(
+                            listEmails,
+                            actionType
+                          )),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const HideInsideCozyWidget(child: ViewingOwnerBanner()),
+                  ],
                 ),
               );
             } else {
@@ -496,7 +483,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             return const SizedBox.shrink();
           }
         });
-      })
+      }),
+      const Spacer(),
+      const HideInsideCozyWidget(child: ViewingOwnerBanner()),
     ]);
   }
 
