@@ -5,12 +5,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/account_switch_view.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/utils/switch_loading_dialog_timing.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/view/account_switch_loading_dialog.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/view/account_switch_loading_dialog_host.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/shown_account_input_blocker.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
@@ -86,7 +87,7 @@ void main() {
     await tester.pumpWidget(_hostApp(container));
     await tester.pump();
 
-    expect(find.byType(LinagoraDialog), findsNothing);
+    expect(find.byType(AccountSwitchLoadingDialog), findsNothing);
   });
 
   testWidgets('does not show the dialog for a switch shorter than the show delay', (tester) async {
@@ -99,7 +100,7 @@ void main() {
     await tester.pump();
     await tester.pump(SwitchLoadingDialogTiming.showDelay);
 
-    expect(find.byType(LinagoraDialog), findsNothing);
+    expect(find.byType(AccountSwitchLoadingDialog), findsNothing);
   });
 
   testWidgets('shows the dialog after the show delay and keeps it for the minimum time',
@@ -115,11 +116,11 @@ void main() {
     await switching;
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 499));
-    expect(find.byType(LinagoraDialog), findsOneWidget);
+    expect(find.byType(AccountSwitchLoadingDialog), findsOneWidget);
 
     await tester.pump(const Duration(milliseconds: 1));
     await tester.pumpAndSettle();
-    expect(find.byType(LinagoraDialog), findsNothing);
+    expect(find.byType(AccountSwitchLoadingDialog), findsNothing);
   });
 
   testWidgets('Cancel calls cancel on the switch notifier', (tester) async {
@@ -128,13 +129,15 @@ void main() {
     await tester.pump();
     await tester.pump(SwitchLoadingDialogTiming.showDelay);
 
-    await tester.tap(find.byKey(LinagoraDialog.primaryActionKey));
+    await tester.tap(
+      find.byKey(const ValueKey(UiKeys.accountSwitchLoadingCancel)),
+    );
     await tester.pump();
     await switching;
     await tester.pump(SwitchLoadingDialogTiming.minVisible);
     await tester.pumpAndSettle();
 
-    expect(find.byType(LinagoraDialog), findsNothing);
+    expect(find.byType(AccountSwitchLoadingDialog), findsNothing);
   });
 
   testWidgets('Escape cancels the switch', (tester) async {
@@ -144,13 +147,17 @@ void main() {
     await tester.pump(SwitchLoadingDialogTiming.showDelay);
     await tester.pump();
 
+    var switchDone = false;
+    switching.whenComplete(() => switchDone = true);
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pump();
-    await switching.timeout(const Duration(seconds: 2));
+    await tester.pump(const Duration(seconds: 2));
+    expect(switchDone, isTrue, reason: 'Escape should cancel');
+    await switching;
     await tester.pump(SwitchLoadingDialogTiming.minVisible);
     await tester.pumpAndSettle();
 
-    expect(find.byType(LinagoraDialog), findsNothing);
+    expect(find.byType(AccountSwitchLoadingDialog), findsNothing);
   });
 
   testWidgets('Enter cancels the switch', (tester) async {
@@ -160,13 +167,17 @@ void main() {
     await tester.pump(SwitchLoadingDialogTiming.showDelay);
     await tester.pump();
 
+    var switchDone = false;
+    switching.whenComplete(() => switchDone = true);
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pump();
-    await switching.timeout(const Duration(seconds: 2));
+    await tester.pump(const Duration(seconds: 2));
+    expect(switchDone, isTrue, reason: 'Enter should cancel');
+    await switching;
     await tester.pump(SwitchLoadingDialogTiming.minVisible);
     await tester.pumpAndSettle();
 
-    expect(find.byType(LinagoraDialog), findsNothing);
+    expect(find.byType(AccountSwitchLoadingDialog), findsNothing);
   });
 
   testWidgets('closes when the session ends during a switch', (tester) async {
@@ -174,7 +185,7 @@ void main() {
     final switching = startSwitchToBob();
     await tester.pump();
     await tester.pump(SwitchLoadingDialogTiming.showDelay);
-    expect(find.byType(LinagoraDialog), findsOneWidget);
+    expect(find.byType(AccountSwitchLoadingDialog), findsOneWidget);
 
     container.read(accountSwitchProvider.notifier).endSession();
     await switching;
@@ -182,7 +193,7 @@ void main() {
     await tester.pump(SwitchLoadingDialogTiming.minVisible);
     await tester.pumpAndSettle();
 
-    expect(find.byType(LinagoraDialog), findsNothing);
+    expect(find.byType(AccountSwitchLoadingDialog), findsNothing);
   });
 
   testWidgets('removes the dialog when the host is unmounted while it is visible', (tester) async {
@@ -190,12 +201,12 @@ void main() {
     final switching = startSwitchToBob();
     await tester.pump();
     await tester.pump(SwitchLoadingDialogTiming.showDelay);
-    expect(find.byType(LinagoraDialog), findsOneWidget);
+    expect(find.byType(AccountSwitchLoadingDialog), findsOneWidget);
 
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump();
 
-    expect(find.byType(LinagoraDialog), findsNothing);
+    expect(find.byType(AccountSwitchLoadingDialog), findsNothing);
     view.loadings.single.complete();
     await switching;
   });
@@ -224,7 +235,7 @@ void main() {
     final switching = startSwitchToBob();
     await tester.pump();
     await tester.pump(SwitchLoadingDialogTiming.showDelay);
-    expect(find.byType(LinagoraDialog), findsOneWidget);
+    expect(find.byType(AccountSwitchLoadingDialog), findsOneWidget);
 
     unawaited(navigatorKey.currentState!.push(
       MaterialPageRoute<void>(builder: (_) => const Text('above-dialog')),
@@ -238,7 +249,7 @@ void main() {
     await tester.pump(SwitchLoadingDialogTiming.minVisible);
     await tester.pumpAndSettle();
 
-    expect(find.byType(LinagoraDialog), findsNothing);
+    expect(find.byType(AccountSwitchLoadingDialog), findsNothing);
     expect(find.text('above-dialog'), findsOneWidget);
   });
 
@@ -274,7 +285,7 @@ void main() {
     final switching = startSwitchToBob();
     await tester.pump();
     await tester.pump(SwitchLoadingDialogTiming.showDelay);
-    expect(find.byType(LinagoraDialog), findsOneWidget);
+    expect(find.byType(AccountSwitchLoadingDialog), findsOneWidget);
 
     // For example the dashboard is torn down because the session ended mid-switch.
     showHost.value = false;
@@ -286,6 +297,6 @@ void main() {
     container.read(accountSwitchProvider.notifier).cancel();
     await switching;
     await tester.pumpAndSettle();
-    expect(find.byType(LinagoraDialog), findsNothing);
+    expect(find.byType(AccountSwitchLoadingDialog), findsNothing);
   });
 }
