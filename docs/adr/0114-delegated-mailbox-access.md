@@ -6,6 +6,7 @@ Updated: 2026-10-29
 Updated: 2026-11-02
 Updated: 2026-11-03
 Updated: 2026-11-09
+Updated: 2026-11-10
 
 ## Status
 
@@ -37,8 +38,8 @@ delegation on = session has urn:apache:james:params:jmap:delegation
              && Preferences › "Delegation" is on   // local, off by default, hidden behind the 7-tap experimental reveal like Drive was
 ```
 
-- One rule, one provider: `delegationEnabledProvider` exposes that conjunction. `ActiveAccountNotifier.canSelect` reads it for a delegated target (`mine` stays selectable). Start (T-14), notification taps, intents and the switcher entry points call `canSelect` / `switchTo` only — no second `if` of their own.
-- Delegation off or no delegated account: `active` = `mine` and there is no switcher, so the app works as today, apart from the cleanup of ended delegations and my aliases counting as "me". Turning the toggle off while a delegated mailbox is shown runs the normal switch back to `mine`. While a composer is open that switch is refused with a toast and the toggle stays on. Once stable, a later ticket turns the toggle on by default and removes it from the reveal.
+- One rule, one provider: `delegationEnabledProvider` exposes that conjunction. `ActiveAccountNotifier.canSelect` applies the same rule for a delegated target via `isDelegationEnabled` (not the provider, which would cycle because the provider watches the notifier); `mine` stays selectable. Start (T-14), notification taps, intents and the switcher entry points call `canSelect` / `switchTo` only — no second `if` of their own.
+- Delegation off or no delegated account: `active` = `mine` and there is no switcher, so the app works as today, apart from the cleanup of ended delegations and my aliases counting as "me". Turning the toggle off while a delegated mailbox is shown runs the normal switch back to `mine` (T-06). While a composer is open that switch is refused with a toast and the toggle stays on. Once stable, a later ticket turns the toggle on by default and removes it from the reveal.
 - One mailbox is shown at a time. A delegated mailbox is never merged into my folder tree. A web reload and a mobile app restart keep the shown account (see Start on a delegated account). A sign-in still lands on `mine`, as it lands on a plain `/dashboard` today.
 - An owner is shown by name and address when a name is known, otherwise by address only. The session gives only the address, so v1 shows the address.
 
@@ -144,7 +145,7 @@ Ids increase with implementation order. A later ticket never reuses a smaller id
 | T-03 | Realtime and FCM filter per account with delegated entries dropped, `delegatedAccounts` in the keychain entry of `mine` read by the iOS notification extension, per-account debounce (WebSocket, FCM background, email change listener) and "from cache" flag on the session result | T-01 |
 | T-04 | Local data: no delegated bodies, cleanup of ended delegations, composer snapshots | T-01, T-03 |
 | T-05 | Loading dialog | T-01 |
-| T-06 | Experimental "Delegation" toggle in Preferences; `delegationEnabledProvider` (capability ∧ toggle); `canSelect` reads it for delegated targets | T-01, T-03, T-04 |
+| T-06 | Experimental "Delegation" toggle in Preferences; `delegationEnabledProvider` (capability ∧ toggle); `canSelect` applies the same rule via `isDelegationEnabled` for delegated targets; turning the toggle off while a delegated mailbox is shown switches back to `mine` (refused with a toast while a composer is open, and the toggle stays on) | T-01, T-03, T-04 |
 | T-07 | Web stand-alone avatar menu + "Viewing [Owner] ✕" banner (#4977 §9) and the "Couldn't open" toast. First `switchTo` entry point | T-02.1–2.5, T-03, T-04, T-05, T-06, DS-2, DS-3 |
 | T-08 | Web Workplace switcher chip (#4977 §8). Reuses the switch wiring and toast from T-07 | T-07, DS-2 |
 | T-09 | Mobile app, tablet, mobile web (Figma mobile) | T-07, DS-1, DS-3 |
