@@ -248,5 +248,30 @@ void main() {
 
       expect(tester.takeException(), isNull);
     });
+
+    testWidgets(
+        'focus listener survives disposing the selection region mid-notify',
+        (tester) async {
+      await pumpApp(tester);
+      coordinator.start();
+      regionFocusNode.requestFocus();
+      await tester.pump();
+      expect(dom.clearIframeSelectionsCalls, 1);
+
+      // Tear down the mailbox/selection tree the way an account switch does.
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+
+      // A later focus change must not throw on a deactivated Element.
+      await pumpApp(tester);
+      textFieldFocusNode.requestFocus();
+      await tester.pump();
+      regionFocusNode.requestFocus();
+      await tester.pump();
+
+      expect(tester.takeException(), isNull);
+      expect(dom.clearIframeSelectionsCalls, greaterThanOrEqualTo(1));
+    });
   });
 }

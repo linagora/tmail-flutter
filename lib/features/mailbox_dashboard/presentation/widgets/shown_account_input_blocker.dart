@@ -19,7 +19,6 @@ class ShownAccountInputBlocker extends ConsumerStatefulWidget {
 }
 
 class _ShownAccountInputBlockerState extends ConsumerState<ShownAccountInputBlocker> {
-  FocusNode? _focusBeforeBlock;
   ProviderSubscription<bool>? _blockSubscription;
   ProviderSubscription<bool>? _dialogVisibleSubscription;
 
@@ -65,14 +64,15 @@ class _ShownAccountInputBlockerState extends ConsumerState<ShownAccountInputBloc
     if (shouldBlock == wasBlocked) return;
 
     if (shouldBlock) {
-      _focusBeforeBlock = FocusManager.instance.primaryFocus;
-      // Reject new key-downs before ExcludeFocus rebuilds.
-      _focusBeforeBlock?.unfocus();
+      // Reject new key-downs before ExcludeFocus rebuilds. Do not save/restore
+      // a pre-switch FocusNode: the dashboard tree is replaced and that node
+      // goes stale (ModalScope on web). Reclaim after unblock instead.
+      FocusManager.instance.primaryFocus?.unfocus();
       _dropDebouncedShortcuts();
       shownAccountShortcutBlocked.value = true;
     } else {
       shownAccountShortcutBlocked.value = false;
-      _restoreFocus();
+      _reclaimMailListShortcutFocus();
     }
   }
 
@@ -84,17 +84,15 @@ class _ShownAccountInputBlockerState extends ConsumerState<ShownAccountInputBloc
     dashboard.dispatchThreadDetailUIAction(DropPendingMailViewShortcutsAction());
   }
 
-  /// Once the subtree can take focus again, so the mail list shortcuts work without a click.
-  void _restoreFocus() {
-    final focus = _focusBeforeBlock;
-    _focusBeforeBlock = null;
+  /// Thread/search controllers own the shortcut [FocusNode]. Reclaim after the
+  /// next frame so [shownAccountShortcutBlocked] is already false.
+  void _reclaimMailListShortcutFocus() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted &&
-          !shownAccountShortcutBlocked.value &&
-          focus != null &&
-          focus.context != null) {
-        focus.requestFocus();
-      }
+      if (!mounted || shownAccountShortcutBlocked.value) return;
+      if (!Get.isRegistered<MailboxDashBoardController>()) return;
+      Get.find<MailboxDashBoardController>().dispatchAction(
+        ReclaimMailListKeyboardShortcutFocusAction(),
+      );
     });
   }
 }
