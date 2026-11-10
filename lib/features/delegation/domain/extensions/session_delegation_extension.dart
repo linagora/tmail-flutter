@@ -1,4 +1,5 @@
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/account/account.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 
@@ -10,4 +11,10 @@ extension SessionDelegationExtension on Session {
       accounts[accountId]?.isPersonal == false;
 
   bool get supportsDelegation => capabilities.containsKey(delegationCapability);
+
+  /// Owner mailboxes listed on this session (`isPersonal: false`).
+  Iterable<MapEntry<AccountId, Account>> get delegatedAccounts =>
+      accounts.entries.where((entry) => entry.value.isPersonal == false);
+
+  bool get hasDelegatedAccounts => delegatedAccounts.isNotEmpty;
 }
