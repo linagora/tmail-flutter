@@ -41,6 +41,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/ma
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/dashboard_navigation_bar.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/shown_account_capabilities_provider.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/widgets/viewing_owner_banner.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/widgets/workplace_account_switcher.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/profile_setting/cozy_profile_setting_icon.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/filter_message_button.dart';
@@ -134,6 +135,14 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                                           ),
                                         ),
                                         const Spacer(),
+                                        // Bound the chip so DS Flexible ellipsis
+                                        // can shrink long "Viewing …" labels.
+                                        const Expanded(
+                                          child: Align(
+                                            alignment: AlignmentDirectional.centerEnd,
+                                            child: WorkplaceAccountSwitcher(),
+                                          ),
+                                        ),
                                         CozyProfileSettingIcon(),
                                       ],
                                     ),
