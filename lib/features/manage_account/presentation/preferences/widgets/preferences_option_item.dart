@@ -2,16 +2,14 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tmail_ui_user/features/base/widget/default_switch_icon_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_option.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/providers/experimental_preferences_revealed_provider.dart';
 
 typedef OnTapPreferencesOptionAction =
     Function(PreferenceOption option, bool currentValue);
 
-class PreferencesOptionItem extends ConsumerWidget {
+class PreferencesOptionItem extends StatelessWidget {
   final ImagePaths imagePaths;
   final PreferenceOption option;
   final PreferencesContext preferencesContext;
@@ -26,16 +24,9 @@ class PreferencesOptionItem extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final appLocalizations = AppLocalizations.of(context);
     final isEnabled = option.isEnabled(preferencesContext);
-    final isExperimental = option.isExperimental;
-    final revealed =
-        ref.watch(experimentalPreferencesRevealedProvider).asData?.value ??
-        false;
-    if (isExperimental && !revealed) {
-      return const SizedBox.shrink();
-    }
 
     return Column(
       mainAxisSize: MainAxisSize.min,
