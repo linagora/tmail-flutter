@@ -49,6 +49,12 @@ class WebThreadRobot extends ThreadRobot implements AbstractThreadRobot {
         );
 
   @override
+  Future<void> openComposer() async {
+    // ComposeButtonWidget wraps LinagoraSidebarPrimaryAction (no InkWell).
+    await $(const ValueKey(UiKeys.composeEmailPrimaryAction)).tap();
+  }
+
+  @override
   Future<void> openAppGrid() async {
     await $(const ValueKey(UiKeys.toggleAppGridButton)).tap();
   }
