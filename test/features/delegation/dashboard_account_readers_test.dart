@@ -71,6 +71,9 @@ const _ownEmailAddressReaders = <String, int>{
   'lib/features/delegation/domain/model/active_account.dart': 1,
   'lib/features/home/domain/extensions/session_extensions.dart': 1,
   // Personal display: nav, avatar, profile, premium, Settings, session sync.
+  'lib/features/delegation/presentation/utils/account_switcher_sections.dart': 1,
+  'lib/features/delegation/presentation/widgets/standalone_account_avatar_menu.dart': 2,
+  'lib/features/delegation/presentation/widgets/viewing_owner_banner.dart': 1,
   'lib/features/mailbox/presentation/base_mailbox_view.dart': 2,
   'lib/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart': 4,
   'lib/features/mailbox_dashboard/presentation/extensions/handle_profile_setting_action_type_click_extension.dart': 2,
