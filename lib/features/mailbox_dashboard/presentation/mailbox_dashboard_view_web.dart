@@ -81,16 +81,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
               backgroundColor: AppColor.colorBgDesktop,
               body: Column(
                 children: [
-                  FutureBuilder(
-                    future: CozyConfigManager().isInsideCozy,
-                    builder: (context, snapshot) {
-                      if (snapshot.data == true) {
-                        return const SizedBox.shrink();
-                      }
-
-                      return DashboardNavigationBar();
-                    },
-                  ),
+                  HideInsideCozyWidget(child: DashboardNavigationBar()),
                   Expanded(
                     child: Row(
                       children: [

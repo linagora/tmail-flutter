@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/widgets/standalone_account_avatar_menu.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/profile_setting/profile_setting_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/providers/cozy/inside_cozy_provider.dart';
@@ -33,5 +34,10 @@ class WebWorkplaceProfileMenuAssertionRobot extends CoreRobot
     await $.pumpAndTrySettle();
 
     expect($(AppLocalizations().sign_out), findsNothing);
+  }
+
+  @override
+  Future<void> expectStandaloneAccountMenuHidden() async {
+    expect($(StandaloneAccountAvatarMenu), findsNothing);
   }
 }
