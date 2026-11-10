@@ -1,20 +1,15 @@
-import 'package:core/presentation/extensions/string_extension.dart';
-import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
-import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
-import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_capabilities.dart';
-import 'package:tmail_ui_user/features/delegation/presentation/providers/account_switch_view_factory_provider.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/delegation_enabled_provider.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/utils/account_switch_failure_toast.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/utils/account_switcher_visibility.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/widgets/account_switcher_avatar.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/providers/app_toast_provider.dart';
 
 /// "Viewing [Owner] ✕" chip for the thread action row (Reload / Select all / Filter).
 ///
@@ -66,47 +61,15 @@ class ViewingOwnerBanner extends ConsumerWidget {
             dismissTooltip: l10n.backToYourMailbox,
             dismissButtonKey: dismissKey,
             style: chipStyle,
-            onDismissed: () => _switchToMine(context, ref, activeAccount),
-            leading: _ownerAvatar(ownerEmail),
+            onDismissed: () => switchShownAccountOrToastFailure(
+              context: context,
+              ref: ref,
+              shown: activeAccount,
+              targetAccountId: activeAccount.personalAccountId,
+            ),
+            leading: accountSwitcherAvatar(ownerEmail, 20),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _ownerAvatar(String email) {
-    const size = 20.0;
-    return (AvatarBuilder()
-          ..text(email.firstCharacterToUpperCase)
-          ..size(size)
-          ..avatarColor(email.gradientColors)
-          ..addTextStyle(const TextStyle(
-            color: Colors.white,
-            fontSize: size * 0.44,
-            fontWeight: FontWeight.w600,
-          )))
-        .build();
-  }
-
-  Future<void> _switchToMine(
-    BuildContext context,
-    WidgetRef ref,
-    ActiveAccount activeAccount,
-  ) async {
-    final mineId = activeAccount.personalAccountId;
-    final ownerDisplayName = activeAccount.session.getOwnEmailAddressOrEmpty();
-    final view = ref.read(accountSwitchViewFactoryProvider)(context);
-    final result = await ref
-        .read(accountSwitchProvider.notifier)
-        .switchTo(mineId, view);
-    if (!context.mounted) return;
-    showAccountSwitchFailureToast(
-      context: context,
-      appToast: ref.read(appToastProvider),
-      args: AccountSwitchFailureToastArgs(
-        result: result,
-        ownerDisplayName: ownerDisplayName,
-        returningToMine: true,
       ),
     );
   }

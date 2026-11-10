@@ -14,7 +14,6 @@ import 'package:tmail_ui_user/features/delegation/domain/model/active_account.da
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_capabilities.dart';
-import 'package:tmail_ui_user/features/delegation/presentation/providers/account_switch_view_factory_provider.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/delegation_enabled_provider.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/utils/account_switch_failure_toast.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/utils/account_switcher_sections.dart';
@@ -152,7 +151,12 @@ class _DelegationAvatarMenuState extends ConsumerState<_DelegationAvatarMenu> {
                       onSelected: (accountId) {
                         _closeMenu();
                         FocusManager.instance.primaryFocus?.unfocus();
-                        _onSelected(shown, accountId);
+                        switchShownAccountOrToastFailure(
+                          context: context,
+                          ref: ref,
+                          shown: shown,
+                          targetAccountId: accountId,
+                        );
                       },
                       header: LinagoraAccountMenuHeader(
                         style: style,
@@ -288,33 +292,6 @@ class _DelegationAvatarMenuState extends ConsumerState<_DelegationAvatarMenu> {
           fontWeight: FontWeight.w500,
           color: blue,
         ),
-      ),
-    );
-  }
-
-  Future<void> _onSelected(
-    ActiveAccount shown,
-    AccountId targetAccountId,
-  ) async {
-    final returningToMine = targetAccountId == shown.personalAccountId;
-    final ownerDisplayName = returningToMine
-        ? shown.session.getOwnEmailAddressOrEmpty()
-        : shown.session.accounts[targetAccountId]?.name.value ??
-            targetAccountId.id.value;
-
-    final view = ref.read(accountSwitchViewFactoryProvider)(context);
-    final result = await ref
-        .read(accountSwitchProvider.notifier)
-        .switchTo(targetAccountId, view);
-
-    if (!mounted) return;
-    showAccountSwitchFailureToast(
-      context: context,
-      appToast: ref.read(appToastProvider),
-      args: AccountSwitchFailureToastArgs(
-        result: result,
-        ownerDisplayName: ownerDisplayName,
-        returningToMine: returningToMine,
       ),
     );
   }
