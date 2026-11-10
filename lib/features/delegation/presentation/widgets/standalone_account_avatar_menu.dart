@@ -1,6 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/extensions/string_extension.dart';
-import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -83,7 +82,6 @@ class _DelegationAvatarMenu extends ConsumerStatefulWidget {
 
 class _DelegationAvatarMenuState extends ConsumerState<_DelegationAvatarMenu> {
   final ValueNotifier<bool> _isExpandedNotifier = ValueNotifier(false);
-  final _appToast = AppToast();
 
   @override
   void dispose() {
@@ -298,7 +296,7 @@ class _DelegationAvatarMenuState extends ConsumerState<_DelegationAvatarMenu> {
 
   void _copyEmail(String email) {
     Clipboard.setData(ClipboardData(text: email));
-    _appToast.showToastSuccessMessage(
+    ref.read(appToastProvider).showToastSuccessMessage(
       context,
       AppLocalizations.of(context).email_address_copied_to_clipboard,
     );
