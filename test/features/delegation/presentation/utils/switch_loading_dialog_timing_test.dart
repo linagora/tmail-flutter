@@ -91,4 +91,25 @@ void main() {
       expect(timing.isVisible, isFalse);
     });
   });
+
+  test('zero show delay still paints when the switch ends in microtasks', () {
+    fakeAsync((async) {
+      timing = SwitchLoadingDialogTiming(
+        onVisibilityChanged: visibility.add,
+        showDelay: Duration.zero,
+      );
+
+      timing.switchStarted();
+      // Microtask-fast load finishes before the zero-delay show runs.
+      timing.switchEnded();
+      expect(visibility, isEmpty);
+
+      async.flushMicrotasks();
+      expect(visibility, [true]);
+      expect(timing.isVisible, isTrue);
+
+      async.elapse(SwitchLoadingDialogTiming.minVisible);
+      expect(visibility, [true, false]);
+    });
+  });
 }

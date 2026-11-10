@@ -95,6 +95,10 @@ class _AccountSwitchLoadingDialogHostState
   void _openDialog() {
     if (_dialogRoute != null || !mounted) return;
     final ownerName = _ownerNameFor(_targetAccountId);
+    final active = ref.read(activeAccountProvider);
+    final returningToMine = active != null &&
+        _targetAccountId != null &&
+        _targetAccountId == active.personalAccountId;
     final navigator = Navigator.of(context, rootNavigator: true);
     final route = DialogRoute<void>(
       context: context,
@@ -103,6 +107,7 @@ class _AccountSwitchLoadingDialogHostState
       builder: (dialogContext) {
         return AccountSwitchLoadingDialog(
           ownerName: ownerName,
+          returningToMine: returningToMine,
           onCancel: _cancelSwitch,
         );
       },
@@ -119,6 +124,8 @@ class _AccountSwitchLoadingDialogHostState
     final route = _dialogRoute;
     _dialogRoute = null;
     if (route != null && route.isActive) {
+      // Do not unfocus here: unblock already cleared focus for the switch, and
+      // ShownAccountInputBlocker reclaims the mail-list shortcut focus next frame.
       route.navigator?.removeRoute(route);
     }
     _setDialogVisible(false);
