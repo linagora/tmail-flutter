@@ -53,6 +53,20 @@ class HtmlUtils {
       });''',
     name: 'removeLineHeight1px');
 
+  /// Removes every identity signature, including ones the user edited or
+  /// split; signatures inside a quoted message are kept. Runs in the web
+  /// editor iframe and the mobile editor webview.
+  static const removeAllSignatures = (
+    script: '''
+      (() => {
+        const root = document.querySelector('.note-editable') || document.getElementById('editor');
+        if (!root) return;
+        root.querySelectorAll('.tmail-signature').forEach(el => {
+          if (!el.closest('blockquote, cite')) el.remove();
+        });
+      })();''',
+    name: 'removeAllSignatures');
+
   /// Editor script (summernote iframe): sanitizes every `insertHTML`
   /// command. The editor inserts pasted and dropped HTML with
   /// `document.execCommand('insertHTML', ...)` instead of the browser's

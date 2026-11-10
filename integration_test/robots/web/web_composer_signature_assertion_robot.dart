@@ -60,6 +60,44 @@ class WebComposerSignatureAssertionRobot extends CoreRobot
     );
   }
 
+  @override
+  Future<void> editSignature(String marker, String appendedText) async {
+    appendTextInSignature(marker, appendedText);
+    await $.pumpAndTrySettle();
+  }
+
+  @override
+  Future<void> switchIdentity(String identityName) async {
+    final controller = findWebComposerController($);
+    if (controller == null) throw StateError('No web composer controller');
+    final identity = controller.listFromIdentities
+        .firstWhere((item) => item.name == identityName);
+    await controller.onChangeIdentity(identity);
+    await $.pumpAndTrySettle();
+  }
+
+  /// Only the new identity signature may remain: no stale or edited text.
+  @override
+  Future<void> expectOnlySignature(
+    String marker, {
+    required List<String> absentText,
+  }) async {
+    await waitForSignatureMarker(marker);
+    expect(
+      findAllSignatureElements(),
+      hasLength(1),
+      reason: 'switching identity must leave exactly one signature',
+    );
+    final editorText = findNoteEditable()?.textContent ?? '';
+    for (final text in absentText) {
+      expect(
+        editorText,
+        isNot(contains(text)),
+        reason: 'stale signature text "$text" survived the identity switch',
+      );
+    }
+  }
+
   bool _isVisibleSignatureWithMarker(String marker) {
     final signature = findSignatureElement(marker: marker);
     if (signature == null) return false;

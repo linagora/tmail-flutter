@@ -12,5 +12,6 @@ final class WebEditorBootstrapScriptGroup
   List<WebEditorScriptDescriptor> build() => [
     adapter.fromHtmlUtils(HtmlUtils.removeLineHeight1px),
     adapter.fromHtmlUtils(HtmlUtils.sanitizeInsertHtml, runOnInit: true),
+    adapter.fromHtmlUtils(HtmlUtils.removeAllSignatures),
   ];
 }

@@ -12,6 +12,7 @@ import 'package:core/presentation/utils/html_transformer/dom/normalize_line_heig
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:dartz/dartz.dart';
@@ -1522,8 +1523,44 @@ void main() {
       });
     });
 
+    group('selectIdentity signature removal test:', () {
+      final formerIdentity = Identity(id: IdentityId(Id('former')), name: 'Former');
+      final nextIdentity = Identity(id: IdentityId(Id('next')), name: 'Next');
+
+      setUp(() {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        composerController?.richTextWebController = mockRichTextWebController;
+      });
+
+      test(
+        'Should remove every signature through the tmail script\n'
+        'When switching from a former identity',
+      () async {
+        composerController?.identitySelected.value = formerIdentity;
+
+        await composerController?.selectIdentity(nextIdentity);
+
+        verify(mockRichTextWebController.editorController
+            .evaluateJavascriptWeb(HtmlUtils.removeAllSignatures.name)).called(1);
+        verifyNever(mockRichTextWebController.editorController.removeSignature());
+      });
+
+      test(
+        'Should not remove any signature\n'
+        'When there is no former identity',
+      () async {
+        composerController?.identitySelected.value = null;
+
+        await composerController?.selectIdentity(nextIdentity);
+
+        verifyNever(mockRichTextWebController.editorController
+            .evaluateJavascriptWeb(HtmlUtils.removeAllSignatures.name));
+      });
+    });
+
     group('applySignature test:', () {
-      const rawSignature = '<p style="line-height:0.1;">Alice</p>';
+      const rawSignature ='<p style="line-height:0.1;">Alice</p>';
 
       void useMobileEditor() {
         composerController?.richTextMobileTabletController =

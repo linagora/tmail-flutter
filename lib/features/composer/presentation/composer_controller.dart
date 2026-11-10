@@ -1970,10 +1970,16 @@ class ComposerController extends BaseController
   }
 
   Future<void> _removeSignature() async {
-    if (PlatformInfo.isWeb) {
-      richTextWebController?.editorController.removeSignature();
-    } else {
-      await htmlEditorApi?.removeSignature();
+    try {
+      if (PlatformInfo.isWeb) {
+        richTextWebController?.editorController
+            .evaluateJavascriptWeb(HtmlUtils.removeAllSignatures.name);
+      } else {
+        await htmlEditorApi?.webViewController
+            .evaluateJavascript(source: HtmlUtils.removeAllSignatures.script);
+      }
+    } catch (e) {
+      logWarning('ComposerController::_removeSignature: $e');
     }
   }
 

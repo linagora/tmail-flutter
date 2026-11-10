@@ -70,6 +70,7 @@ void main() {
       orderedEquals([
         HtmlUtils.removeLineHeight1px.name,
         HtmlUtils.sanitizeInsertHtml.name,
+        HtmlUtils.removeAllSignatures.name,
         HtmlUtils.registerDropListener.name,
         HtmlUtils.unregisterDropListener.name,
         selectionChangeScript.name,

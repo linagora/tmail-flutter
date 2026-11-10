@@ -52,6 +52,15 @@ web.Element? findSignatureElement({String? marker}) {
       _descendantSignature(editable, marker);
 }
 
+/// Simulates the user typing inside the signature with [marker].
+void appendTextInSignature(String marker, String text) {
+  final signature = findSignatureElement(marker: marker);
+  if (signature == null) {
+    throw StateError('No signature containing $marker in the editor');
+  }
+  signature.appendChild(web.document.createTextNode(text));
+}
+
 bool signatureStyleIsHidden(web.Element signature) {
   final style = (signature.getAttribute('style') ?? '').toLowerCase();
   return RegExp(r'display\s*:\s*none').hasMatch(style);
