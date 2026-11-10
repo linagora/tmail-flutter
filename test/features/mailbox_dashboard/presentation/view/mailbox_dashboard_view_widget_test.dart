@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/default_close_button_widget.dart';
@@ -41,13 +43,16 @@ import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
+import 'package:tmail_ui_user/features/base/widget/hide_inside_cozy_widget.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_capabilities.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/shown_account_capabilities_provider.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/widgets/standalone_account_avatar_menu.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/app_dashboard/linagora_app.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/app_linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/profile_setting/profile_setting_action_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/dashboard_navigation_bar.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/profile_setting/cozy_profile_setting_icon.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/profile_setting/profile_setting_icon.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
@@ -376,7 +381,11 @@ void main() {
     () => _TestEcosystemNotifier(() => initialTestEcosystem),
   );
 
-  Widget makeTestableWidget({required Widget child, bool canOpenSettings = true}) {
+  Widget makeTestableWidget({
+    required Widget child,
+    bool canOpenSettings = true,
+    FutureOr<bool> insideCozy = true,
+  }) {
     return ProviderScope(
       overrides: [
         shownAccountCapabilitiesProvider.overrideWithValue(ShownAccountCapabilities.of(
@@ -385,7 +394,7 @@ void main() {
               : ActiveAccount.delegated(DelegationFixtures.session(), DelegationFixtures.bobAccountId),
         )),
         paywallLauncherProvider.overrideWithValue(testPaywallLauncher),
-        insideCozyProvider.overrideWith((ref) => true),
+        insideCozyProvider.overrideWith((ref) => insideCozy),
         activeEcosystemProvider.overrideWith((ref, _) {
           final ecosystem = ref.watch(testEcosystemProvider);
           return ecosystem == null
@@ -859,7 +868,11 @@ void main() {
     });
 
     group('Settings entries', () {
-      Future<void> pumpDesktopDashboard(WidgetTester tester, {required bool canOpenSettings}) async {
+      Future<void> pumpDesktopDashboard(
+        WidgetTester tester, {
+        required bool canOpenSettings,
+        FutureOr<bool> insideCozy = true,
+      }) async {
         addTearDown(() => WidgetFixtures.resetResponsive(tester));
         debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
         final dpi = tester.view.devicePixelRatio;
@@ -879,6 +892,7 @@ void main() {
         await tester.pumpWidget(makeTestableWidget(
           child: MailboxDashBoardView(),
           canOpenSettings: canOpenSettings,
+          insideCozy: insideCozy,
         ));
         await tester.pump();
       }
@@ -947,6 +961,27 @@ void main() {
           await tester.pump();
 
           expect(tester.widget<ProfileSettingIcon>(find.byType(ProfileSettingIcon)).settingActionTypes, actionTypes);
+        });
+      }
+
+      for (final (workplaceState, insideCozy) in <(String, FutureOr<bool>)>[
+        ('inside Twake Workplace', true),
+        ('before the Twake Workplace check completes', Completer<bool>().future),
+      ]) {
+        testWidgets('the desktop dashboard hides the stand-alone account menu $workplaceState', (tester) async {
+          when(responsiveUtils.isDesktop(any)).thenReturn(true);
+          addTearDown(() => when(responsiveUtils.isDesktop(any)).thenReturn(false));
+
+          await pumpDesktopDashboard(tester, canOpenSettings: true, insideCozy: insideCozy);
+
+          expect(
+            find.byWidgetPredicate((widget) => widget is HideInsideCozyWidget && widget.child is DashboardNavigationBar),
+            findsOneWidget,
+          );
+          expect(find.byType(DashboardNavigationBar), findsNothing);
+          expect(find.byType(StandaloneAccountAvatarMenu), findsNothing);
+
+          WidgetFixtures.resetResponsive(tester);
         });
       }
 
