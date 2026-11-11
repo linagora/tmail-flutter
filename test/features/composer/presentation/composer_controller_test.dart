@@ -510,6 +510,7 @@ List<List<String>> _recordStartedDriveBatches(ProviderContainer container) {
   // Additional misc dependencies mock specs
   MockSpec<HtmlEditorApi>(),
   MockSpec<HtmlEditorController>(),
+  MockSpec<InAppWebViewController>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -1531,6 +1532,8 @@ void main() {
         PlatformInfo.isTestingForWeb = true;
         addTearDown(() => PlatformInfo.isTestingForWeb = false);
         composerController?.richTextWebController = mockRichTextWebController;
+        reset(mockRichTextWebController.editorController);
+        reset(mockHtmlEditorApi);
       });
 
       test(
@@ -1557,6 +1560,25 @@ void main() {
 
         verifyNever(mockRichTextWebController.editorController
             .evaluateJavascriptWeb(HtmlUtils.removeAllSignatures.name));
+      });
+
+      test(
+        'Should remove every signature through the tmail script on mobile\n'
+        'When switching from a former identity',
+      () async {
+        PlatformInfo.isTestingForWeb = false;
+        final mockWebViewController = MockInAppWebViewController();
+        composerController?.richTextMobileTabletController = mockRichTextMobileTabletController;
+        when(mockRichTextMobileTabletController.htmlEditorApi).thenReturn(mockHtmlEditorApi);
+        when(mockHtmlEditorApi.webViewController).thenReturn(mockWebViewController);
+        composerController?.identitySelected.value = formerIdentity;
+
+        await composerController?.selectIdentity(nextIdentity);
+
+        verify(mockWebViewController.evaluateJavascript(
+          source: HtmlUtils.removeAllSignatures.script,
+        )).called(1);
+        verifyNever(mockHtmlEditorApi.removeSignature());
       });
     });
 
