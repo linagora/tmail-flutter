@@ -22,11 +22,8 @@ const _personalAccountReaders = <String, int>{
   'lib/features/composer/presentation/providers/composer_attachment_extension_registry_provider.dart': 1,
   'lib/features/mailbox_dashboard/presentation/delegates/ecosystem_provider_listener_delegate.dart': 2,
   'lib/features/mailbox_dashboard/presentation/extensions/handle_ai_needs_action_extension.dart': 1,
-  // Recent searches: my own data. Autocomplete bindings: registered once at start, for my own account.
+  // Autocomplete bindings: registered once at start, for my own account.
   'lib/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart': 1,
-  'lib/features/mailbox_dashboard/presentation/extensions/cleanup_recent_search_extension.dart': 1,
-  'lib/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart': 2,
-  'lib/features/search/email/presentation/search_email_controller.dart': 2,
   // WebSocket connection account stays mine (ADR-0114). Label capability itself reads the shown account.
   'lib/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart': 1,
   // Send queue: each mail keeps the account it was written in (T-04).
