@@ -14,7 +14,7 @@ class GetAllLabelInteractor {
     try {
       yield Right(GettingAllLabel());
       final result = await _labelRepository.getAllLabels(accountId);
-      yield Right(GetAllLabelSuccess(result.labels, result.newState));
+      yield Right(GetAllLabelSuccess(result.labels, result.newState, accountId));
     } catch (e) {
       yield Left(GetAllLabelFailure(e));
     }
