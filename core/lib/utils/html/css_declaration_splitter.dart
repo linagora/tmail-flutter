@@ -64,19 +64,15 @@ class _Scan {
     }
   }
 
-  late final Map<String, bool Function()> _codeHandlers = {
-    '\\': _skipEscape,
-    '/': _openComment,
-    "'": _openQuote,
-    '"': _openQuote,
-    '(': _openParen,
-    ')': _closeParen,
-    ';': _closeDeclaration,
+  bool _stepCode() => switch (_char) {
+    '\\' => _skipEscape(),
+    '/' => _openComment(),
+    '"' || "'" => _openQuote(),
+    '(' => _openParen(),
+    ')' => _closeParen(),
+    ';' => _closeDeclaration(),
+    _ => true,
   };
-
-  bool _stepCode() => (_codeHandlers[_char] ?? _ignore)();
-
-  bool _ignore() => true;
 
   bool _skipEscape() {
     if (_next.isEmpty) return false; // trailing backslash → fail-open
