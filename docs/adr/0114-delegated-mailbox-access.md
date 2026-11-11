@@ -6,6 +6,7 @@ Updated: 2026-10-29
 Updated: 2026-11-02
 Updated: 2026-11-03
 Updated: 2026-11-09
+Updated: 2026-11-11
 Updated: 2026-11-10
 
 ## Status
@@ -86,7 +87,7 @@ A test lists the remaining readers of `dashboard.accountId` and of the "me" sour
 
 ### Settings
 
-- Settings is reached from `mine` only. With `active` delegated, one rule, `ShownAccountCapabilities.canOpenSettings` (false only while a delegated account is shown), hides every entry: "Manage account" in the avatar menu, the settings button of the mobile mailbox bar and the link of the vacation banner. The web avatar menu keeps Sign out. On mobile, Sign out sits inside Settings and is hidden with it: the user switches back to `mine` to sign out. The web identity-cache restore opens Settings on `mine` only.
+- Settings is reached from `mine` only. With `active` delegated, one rule, `ShownAccountCapabilities.canOpenSettings` (false only while a delegated account is shown), hides every entry: "Manage account" in the avatar menu and the settings button of the mobile mailbox bar. `ShownAccountCapabilities.showsMyVacationBanner` hides the vacation banner too, since it shows and ends my own vacation. The web avatar menu keeps Sign out. On mobile, Sign out sits inside Settings and is hidden with it: the user switches back to `mine` to sign out. The web identity-cache restore opens Settings on `mine` only.
 - `ShownAccountCapabilities` also carries the other personal-only gates of the view (`canCreateFilter`, `canCreateDefaultFolders`, `canUseNotificationKeychain`). T-02.5 owns those fields and their call sites; T-02.4 shipped `canOpenSettings` and `canCreateFilter`.
 - `/settings` opened while a delegated account is shown goes to the dashboard of that account. A page load of `/settings` carries no `account`, so it starts on `mine`.
 - Settings still reads `mine` only, so an entry that a later change forgets to hide still cannot reach the owner's settings.
