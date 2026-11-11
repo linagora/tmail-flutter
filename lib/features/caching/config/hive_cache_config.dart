@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:tmail_ui_user/features/base/upgradeable/upgrade_hive_database_steps_v10.dart';
@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/base/upgradeable/upgrade_hive_database_st
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/config/cache_version.dart';
 import 'package:tmail_ui_user/features/caching/config/fcm_isolate_name_server.dart';
+import 'package:tmail_ui_user/features/caching/config/hive_key_platform_store.dart';
 import 'package:tmail_ui_user/features/login/data/local/encryption_key_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/model/encryption_key_cache.dart';
 import 'package:tmail_ui_user/hive_registrar.g.dart';
@@ -41,6 +42,9 @@ class HiveCacheConfig {
   bool _regularAdaptersRegistered = false;
 
   int _closeGeneration = 0;
+
+  @visibleForTesting
+  HiveKeyPlatformStore keyPlatformStore = const HiveKeyPlatformStore();
 
   /// Bumped by every deliberate [closeHive], so an operation that started
   /// before one can tell it happened underneath.
@@ -98,22 +102,31 @@ class HiveCacheConfig {
   }
 
   Future<void> initializeEncryptionKey() async {
-    final encryptionKeyCacheManager = getBinding<EncryptionKeyCacheManager>() ?? getBinding<EncryptionKeyCacheManager>(tag: BindingTag.isolateTag);
+    final encryptionKeyCacheManager = _encryptionKeyCacheManager();
+    if (PlatformInfo.isMobile) {
+      if (await keyPlatformStore.initialize(encryptionKeyCacheManager)) return;
+    }
     if (encryptionKeyCacheManager == null) {
-      log('HiveCacheConfig::_initializeEncryptionKey(): encryptionKeyCacheManager not found');
+      log('HiveCacheConfig::initializeEncryptionKey(): encryptionKeyCacheManager not found');
       return;
     }
     final encryptionKeyCache = await encryptionKeyCacheManager.getEncryptionKeyStored();
     if (encryptionKeyCache == null) {
-      final secureKey = Hive.generateSecureKey();
-      final secureKeyEncode = base64Encode(secureKey);
-      log('HiveCacheConfig::_initializeEncryptionKey(): secureKeyEncode: $secureKeyEncode');
-      await encryptionKeyCacheManager.storeEncryptionKey(EncryptionKeyCache(secureKeyEncode));
+      final boxKey = Hive.generateSecureKey();
+      await encryptionKeyCacheManager.storeEncryptionKey(EncryptionKeyCache(base64Encode(boxKey)));
     }
   }
 
+  EncryptionKeyCacheManager? _encryptionKeyCacheManager() =>
+      getBinding<EncryptionKeyCacheManager>() ??
+      getBinding<EncryptionKeyCacheManager>(tag: BindingTag.isolateTag);
+
   Future<Uint8List?> getEncryptionKey() async {
-    final encryptionKeyCacheManager = getBinding<EncryptionKeyCacheManager>() ?? getBinding<EncryptionKeyCacheManager>(tag: BindingTag.isolateTag);
+    if (PlatformInfo.isMobile) {
+      final platformKey = await keyPlatformStore.read();
+      if (platformKey != null) return platformKey;
+    }
+    final encryptionKeyCacheManager = _encryptionKeyCacheManager();
     if (encryptionKeyCacheManager == null) {
       // No key → an encrypted box (incl. the OIDC token box) opens without a
       // cipher and cannot be decrypted, surfacing later as a "no token" startup
@@ -132,6 +145,10 @@ class HiveCacheConfig {
       final encryptionKeyDecode = base64Decode(encryptionKeyCache.value);
       return encryptionKeyDecode;
     } else {
+      if (PlatformInfo.isMobile) {
+        final platformKey = await keyPlatformStore.read();
+        if (platformKey != null) return platformKey;
+      }
       logError(
         'HiveCacheConfig::getEncryptionKey(): '
         'encryption_key_unavailable=true | reason=key_cache_empty',
