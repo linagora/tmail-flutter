@@ -77,6 +77,12 @@ class ComposerRecipientRobot extends CoreRobot
     await _field(prefix).$(TextField).tap();
   }
 
+  @override
+  Future<void> openFirstRecipientMenu(PrefixEmailAddress prefix) async {
+    await _chips(prefix).first.tap();
+    await $.pumpAndTrySettle();
+  }
+
   PatrolFinder _editor(PrefixEmailAddress prefix) =>
       _field(prefix).$(TagEditor<SuggestionEmailAddress>);
 

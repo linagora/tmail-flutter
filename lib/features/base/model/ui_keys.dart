@@ -44,6 +44,7 @@ class UiKeys {
   static const String viewingOwnerBanner = 'viewingOwnerBanner';
   static const String viewingOwnerBannerDismiss = 'viewingOwnerBannerDismiss';
   static const String accountSwitcherMenu = 'accountSwitcherMenu';
+  static const String recoverDeletedMessagesButton = 'recover_deleted_messages_button';
   static const String compactAccountSwitcher = 'compactAccountSwitcher';
   static const String accountSwitchLoadingDialog = 'accountSwitchLoadingDialog';
   static const String accountSwitchLoadingCancel =
