@@ -65,6 +65,19 @@ void main() {
     expect((spans[2] as TextSpan).style?.fontWeight, isNull);
   });
 
+  test('openingMessageSpans keeps the message plain when the target name is not in it', () {
+    const base = TextStyle(fontSize: 16);
+    final spans = AccountSwitchLoadingDialog.openingMessageSpans(
+      message: 'Opening the mailbox…',
+      ownerName: owner,
+      baseStyle: base,
+    );
+
+    expect(spans, hasLength(1));
+    expect((spans.single as TextSpan).text, 'Opening the mailbox…');
+    expect((spans.single as TextSpan).style, base);
+  });
+
   testWidgets('renders Text.rich with a bold span for the target account',
       (tester) async {
     await pumpDialog(tester);
