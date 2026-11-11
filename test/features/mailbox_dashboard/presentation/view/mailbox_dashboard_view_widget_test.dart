@@ -48,7 +48,9 @@ import 'package:tmail_ui_user/features/delegation/domain/model/active_account.da
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_capabilities.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/shown_account_capabilities_provider.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/widgets/standalone_account_avatar_menu.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/widgets/viewing_owner_banner.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/app_dashboard/linagora_app.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/app_linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/profile_setting/profile_setting_action_type.dart';
@@ -1007,17 +1009,17 @@ void main() {
     });
 
     group('ThreadView', () {
-      testWidgets(
-        'WHEN web viewport is tabletLarge (1000px)\n'
-        'the dashboard SHOULD keep the drawer layout without the desktop navigation bar',
-      (tester) async {
+      Future<ProviderContainer> pumpNarrowDashboard(
+        WidgetTester tester, {
+        bool isTabletLarge = true,
+      }) async {
         PlatformInfo.isTestingForWeb = true;
         addTearDown(() => PlatformInfo.isTestingForWeb = false);
         addTearDown(() => WidgetFixtures.resetResponsive(tester));
-        when(responsiveUtils.isTabletLarge(any)).thenReturn(true);
+        when(responsiveUtils.isTabletLarge(any)).thenReturn(isTabletLarge);
         addTearDown(() => when(responsiveUtils.isTabletLarge(any)).thenReturn(false));
         final dpi = tester.view.devicePixelRatio;
-        tester.view.physicalSize = Size(dpi * 1000, dpi * 800);
+        tester.view.physicalSize = Size(dpi * (isTabletLarge ? 1000 : 700), dpi * 800);
 
         when(mailboxDashboardController.spamReportController.spamReportState).thenReturn(Rx(SpamReportState.disabled));
         when(mailboxDashboardController.spamReportController.presentationSpamMailbox).thenReturn(Rxn(null));
@@ -1026,8 +1028,27 @@ void main() {
         when(mailboxDashboardController.labelController.labels).thenReturn(RxList([]));
         when(composerManager.composers).thenReturn(RxMap({}));
 
-        await tester.pumpWidget(makeTestableWidget(child: MailboxDashBoardView()));
+        await tester.pumpWidget(makeTestableWidget(child: MailboxDashBoardView(), insideCozy: false));
         await tester.pump();
+        final container = ProviderScope.containerOf(tester.element(find.byType(ThreadView)));
+        container.read(activeAccountProvider.notifier).applySession(DelegationFixtures.session());
+        DelegationFixtures.turnDelegationOn(container);
+        await tester.pump();
+        return container;
+      }
+
+      Future<void> showDelegatedMailbox(WidgetTester tester, ProviderContainer container) async {
+        container.read(activeAccountProvider.notifier).select(DelegationFixtures.bobAccountId);
+        await tester.pump();
+      }
+
+      final searchBar = find.byKey(const Key('email_search_bar_view'));
+
+      testWidgets(
+        'WHEN web viewport is tabletLarge (1000px)\n'
+        'the dashboard SHOULD keep the drawer layout without the desktop navigation bar',
+      (tester) async {
+        await pumpNarrowDashboard(tester);
 
         expect(find.byType(ThreadView), findsOneWidget);
         expect(find.byType(MobileAppBarThreadWidget), findsOneWidget);
@@ -1035,6 +1056,47 @@ void main() {
           find.byWidgetPredicate((widget) => widget is HideInsideCozyWidget && widget.child is DashboardNavigationBar),
           findsNothing,
         );
+      });
+
+      testWidgets(
+        'WHEN web viewport is tabletLarge (1000px)\n'
+        'AND a delegated mailbox is shown\n'
+        'ThreadView SHOULD show the Viewing banner below a full-width search bar',
+      (tester) async {
+        final container = await pumpNarrowDashboard(tester);
+        final ownSearchBarSize = tester.getSize(searchBar);
+
+        await showDelegatedMailbox(tester, container);
+
+        expect(find.byKey(ViewingOwnerBanner.bannerKey), findsOneWidget);
+        expect(tester.getSize(searchBar), ownSearchBarSize);
+        expect(
+          tester.getTopLeft(find.byKey(ViewingOwnerBanner.bannerKey)).dy,
+          greaterThanOrEqualTo(tester.getBottomLeft(searchBar).dy),
+        );
+      });
+
+      testWidgets(
+        'WHEN web viewport is mobile (700px)\n'
+        'AND a delegated mailbox is shown\n'
+        'ThreadView SHOULD show the Viewing banner',
+      (tester) async {
+        final container = await pumpNarrowDashboard(tester, isTabletLarge: false);
+
+        await showDelegatedMailbox(tester, container);
+
+        expect(find.byKey(ViewingOwnerBanner.bannerKey), findsOneWidget);
+      });
+
+      testWidgets(
+        'WHEN web viewport is tabletLarge (1000px)\n'
+        'AND the own mailbox is shown\n'
+        'ThreadView SHOULD NOT show the Viewing banner',
+      (tester) async {
+        await pumpNarrowDashboard(tester);
+
+        expect(searchBar, findsOneWidget);
+        expect(find.byKey(ViewingOwnerBanner.bannerKey), findsNothing);
       });
 
       testWidgets(
@@ -1652,6 +1714,7 @@ void main() {
             // Arrange
             arrangeSidebarMenu();
             when(responsiveUtils.isWebDesktop(any)).thenReturn(isWebDesktop);
+            addTearDown(() => when(responsiveUtils.isWebDesktop(any)).thenReturn(false));
             mailboxDashboardController.sessionCurrent = createPremiumSession();
             mailboxDashboardController.accountId.value =
                 AccountFixtures.aliceAccountId;
