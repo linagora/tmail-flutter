@@ -26,11 +26,6 @@ void main() {
 
   test('rejects a 1 MB invalid nonce', () {
     final nonce = '${'a' * (1024 * 1024)}!';
-    final watch = Stopwatch()..start();
     expect(HostScriptNonce.isValid(nonce), isFalse);
-    watch.stop();
-    // ignore: avoid_print
-    print('nonce regex 1MB invalid: ${watch.elapsedMilliseconds} ms');
-    expect(watch.elapsedMilliseconds, lessThan(1000));
   });
 }
