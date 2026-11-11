@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:model/extensions/session_extension.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
@@ -121,9 +122,11 @@ class _DelegationAvatarMenuState extends ConsumerState<_DelegationAvatarMenu> {
             opacity: isSwitching ? 0.5 : 1,
             child: PortalTarget(
               visible: isExpanded,
-              portalFollower: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: _closeMenu,
+              portalFollower: PointerInterceptor(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: _closeMenu,
+                ),
               ),
               child: PortalTarget(
                 anchor: Aligned(
@@ -136,43 +139,46 @@ class _DelegationAvatarMenuState extends ConsumerState<_DelegationAvatarMenu> {
                   offset: const Offset(0, 8),
                 ),
                 visible: isExpanded,
-                portalFollower: Material(
-                  color: Colors.transparent,
-                  child: LinagoraAccountMenuShell(
-                    key: const ValueKey(UiKeys.accountSwitcherMenu),
-                    style: style,
-                    maxHeight: MediaQuery.sizeOf(context).height * 0.7,
-                    child: LinagoraAccountMenu<AccountId>(
+                // The composer editor is an iframe on web and takes the clicks of Flutter content above it.
+                portalFollower: PointerInterceptor(
+                  child: Material(
+                    color: Colors.transparent,
+                    child: LinagoraAccountMenuShell(
+                      key: const ValueKey(UiKeys.accountSwitcherMenu),
                       style: style,
-                      sections: sections,
-                      selectedId: shown.accountId,
-                      onSelected: (accountId) {
-                        _closeMenu();
-                        FocusManager.instance.primaryFocus?.unfocus();
-                        switchShownAccountOrToastFailure(
-                          context: context,
-                          ref: ref,
-                          shown: shown,
-                          targetAccountId: accountId,
-                        );
-                      },
-                      header: LinagoraAccountMenuHeader(
+                      maxHeight: MediaQuery.sizeOf(context).height * 0.7,
+                      child: LinagoraAccountMenu<AccountId>(
                         style: style,
-                        avatar: accountSwitcherAvatar(
-                          shown.ownerEmailAddress,
-                          style.headerAvatarSize,
+                        sections: sections,
+                        selectedId: shown.accountId,
+                        onSelected: (accountId) {
+                          _closeMenu();
+                          FocusManager.instance.primaryFocus?.unfocus();
+                          switchShownAccountOrToastFailure(
+                            context: context,
+                            ref: ref,
+                            shown: shown,
+                            targetAccountId: accountId,
+                          );
+                        },
+                        header: LinagoraAccountMenuHeader(
+                          style: style,
+                          avatar: accountSwitcherAvatar(
+                            shown.ownerEmailAddress,
+                            style.headerAvatarSize,
+                          ),
+                          // ADR v1 is address-only. Header shows one line + copy.
+                          name: shown.ownerEmailAddress,
+                          email: null,
+                          onCopyEmail: () => _copyEmail(shown.ownerEmailAddress),
+                          copyTooltip: l10n.copy,
+                          badge: ShownAccountCapabilities.of(shown)
+                                  .showsViewingOwnerChrome
+                              ? _delegatedBadge(l10n.delegatedMailbox)
+                              : null,
                         ),
-                        // ADR v1 is address-only. Header shows one line + copy.
-                        name: shown.ownerEmailAddress,
-                        email: null,
-                        onCopyEmail: () => _copyEmail(shown.ownerEmailAddress),
-                        copyTooltip: l10n.copy,
-                        badge: ShownAccountCapabilities.of(shown)
-                                .showsViewingOwnerChrome
-                            ? _delegatedBadge(l10n.delegatedMailbox)
-                            : null,
+                        footer: _buildFooter(style: style, l10n: l10n),
                       ),
-                      footer: _buildFooter(style: style, l10n: l10n),
                     ),
                   ),
                 ),
