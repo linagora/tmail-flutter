@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/account_switch_result.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/account_switch_state.dart';
@@ -149,6 +150,31 @@ void main() {
     expect(find.text(DelegationFixtures.bobAddress), findsOneWidget);
     expect(find.byKey(LinagoraAccountMenuActions.manageKey), findsOneWidget);
     expect(find.byKey(LinagoraAccountMenuActions.signOutKey), findsOneWidget);
+  });
+
+  testWidgets('the account menu and its outside-tap barrier take the clicks above a web composer editor',
+      (tester) async {
+    container
+        .read(activeAccountProvider.notifier)
+        .applySession(DelegationFixtures.session());
+    DelegationFixtures.turnDelegationOn(container);
+
+    await tester.pumpWidget(_app(container, child: _menu()));
+    await tester.pump();
+    expect(find.byType(PointerInterceptor), findsNothing);
+
+    await tester.tap(find.byKey(const ValueKey(UiKeys.userAvatar)));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const ValueKey(UiKeys.accountSwitcherMenu)), findsOneWidget);
+    expect(
+      find.ancestor(
+        of: find.byKey(LinagoraAccountMenu.itemKey(DelegationFixtures.bobAccountId)),
+        matching: find.byType(PointerInterceptor),
+      ),
+      findsOneWidget,
+    );
+    expect(find.byType(PointerInterceptor), findsNWidgets(2));
   });
 
   testWidgets('hides Manage and keeps Sign out while a delegated mailbox is shown',
