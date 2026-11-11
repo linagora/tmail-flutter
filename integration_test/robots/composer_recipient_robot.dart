@@ -78,6 +78,11 @@ class ComposerRecipientRobot extends CoreRobot
   }
 
   @override
+  Future<void> openFromField() async {
+    await $(Key('prefix_${PrefixEmailAddress.to.name}_recipient_from_button')).tap();
+  }
+
+  @override
   Future<void> openFirstRecipientMenu(PrefixEmailAddress prefix) async {
     await _chips(prefix).first.tap();
     await $.pumpAndTrySettle();
