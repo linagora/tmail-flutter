@@ -1006,6 +1006,27 @@ void main() {
 
         WidgetFixtures.resetResponsive(tester);
       });
+
+      for (final (accountState, canOpenSettings, expected) in [
+        ('my own account is shown', true, findsOneWidget),
+        ('a delegated account is shown', false, findsNothing),
+      ]) {
+        testWidgets('Trash ${expected == findsNothing ? 'does not offer' : 'offers'} recover deleted messages while $accountState',
+            (tester) async {
+          mailboxDashboardController.selectedMailbox.value = PresentationMailbox(
+            MailboxId(Id('trash')),
+            role: PresentationMailbox.roleTrash,
+          );
+          mailboxDashboardController.dashboardRoute.value = DashboardRoutes.thread;
+          when(responsiveUtils.isDesktop(any)).thenReturn(true);
+          addTearDown(() => when(responsiveUtils.isDesktop(any)).thenReturn(false));
+          await pumpDesktopDashboard(tester, canOpenSettings: canOpenSettings);
+
+          expect(find.byKey(const Key('recover_deleted_messages_button')), expected);
+
+          WidgetFixtures.resetResponsive(tester);
+        });
+      }
     });
 
     group('ThreadView', () {
