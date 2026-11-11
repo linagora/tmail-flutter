@@ -18,6 +18,7 @@ void main() {
           canApplyMyComposerSettings,
           showsViewingOwnerChrome,
           offersServerDefaultIdentities,
+          showsMyVacationBanner,
         ) in [
       (
         'my own account',
@@ -29,6 +30,7 @@ void main() {
         true,
         false,
         false,
+        true,
       ),
       (
         'a delegated account',
@@ -40,6 +42,7 @@ void main() {
         false,
         true,
         true,
+        false,
       ),
       (
         'no account yet',
@@ -51,6 +54,7 @@ void main() {
         true,
         false,
         false,
+        true,
       ),
     ]) {
       test(
@@ -60,7 +64,8 @@ void main() {
         '${canUseNotificationKeychain ? 'writes' : 'does not write'} the notification keychain, '
         '${canApplyMyComposerSettings ? 'applies' : 'does not apply'} my composer settings, '
         '${showsViewingOwnerChrome ? 'shows' : 'does not show'} Viewing owner chrome and '
-        '${offersServerDefaultIdentities ? 'offers' : 'does not offer'} server default identities '
+        '${offersServerDefaultIdentities ? 'offers' : 'does not offer'} server default identities, '
+        '${showsMyVacationBanner ? 'shows' : 'does not show'} my vacation banner '
         'while $shown is shown',
         () {
           final capabilities = ShownAccountCapabilities.of(shownAccount);
@@ -72,6 +77,7 @@ void main() {
           expect(capabilities.canApplyMyComposerSettings, canApplyMyComposerSettings);
           expect(capabilities.showsViewingOwnerChrome, showsViewingOwnerChrome);
           expect(capabilities.offersServerDefaultIdentities, offersServerDefaultIdentities);
+          expect(capabilities.showsMyVacationBanner, showsMyVacationBanner);
         },
       );
     }

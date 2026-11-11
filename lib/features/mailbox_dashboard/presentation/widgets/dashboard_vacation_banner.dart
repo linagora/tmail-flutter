@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/features/delegation/presentation/providers/shown_a
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 
-/// The vacation banner of the shown mailbox, with no link to the vacation settings while Settings cannot open.
+/// My vacation banner, hidden while a delegated mailbox is shown.
 class DashboardVacationBanner extends ConsumerWidget {
   final _dashboardController = Get.find<MailboxDashBoardController>();
   final VacationResponse vacationResponse;
@@ -16,7 +16,9 @@ class DashboardVacationBanner extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final canOpenSettings = ref.watch(shownAccountCapabilitiesProvider).canOpenSettings;
+    final capabilities = ref.watch(shownAccountCapabilitiesProvider);
+    if (!capabilities.showsMyVacationBanner) return const SizedBox.shrink();
+    final canOpenSettings = capabilities.canOpenSettings;
     return VacationNotificationMessageWidget(
       margin: margin,
       vacationResponse: vacationResponse,
