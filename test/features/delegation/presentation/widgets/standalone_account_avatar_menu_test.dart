@@ -181,6 +181,33 @@ void main() {
     expect(find.text(l10n.sign_out), findsOneWidget);
   });
 
+  testWidgets('puts the owner avatar on top of mine while a delegated mailbox is shown',
+      (tester) async {
+    container
+        .read(activeAccountProvider.notifier)
+        .applySession(DelegationFixtures.session());
+    DelegationFixtures.turnDelegationOn(container);
+    container
+        .read(activeAccountProvider.notifier)
+        .select(DelegationFixtures.bobAccountId);
+
+    await tester.pumpWidget(_app(container, child: _menu()));
+    await tester.pump();
+
+    final avatars = tester
+        .widget<LinagoraStackedAvatars>(find.byType(LinagoraStackedAvatars))
+        .avatars;
+    expect(avatars, hasLength(2));
+    expect(
+      find.descendant(of: find.byWidget(avatars.first), matching: find.text('B')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: find.byWidget(avatars.last), matching: find.text('A')),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('selecting a delegated row calls switchTo with that account',
       (tester) async {
     container
