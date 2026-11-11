@@ -9,7 +9,7 @@ extension CleanupRecentSearchExtension on MailboxDashBoardController {
   void cleanupRecentSearch() {
     final cleanupRecentSearchCacheInteractor =
       getBinding<CleanupRecentSearchCacheInteractor>();
-    final accountId = this.accountId.value;
+    final accountId = activeAccountId;
     final username = sessionCurrent?.username;
 
     if (accountId == null || username == null || cleanupRecentSearchCacheInteractor == null) {
