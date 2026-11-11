@@ -57,9 +57,12 @@ web.Element? findSignatureElement({String? marker}) {
       _descendantSignatures(editable, matches).firstOrNull;
 }
 
-/// Simulates the user typing at the end of [signature].
-void appendTextToSignature(web.Element signature, String text) {
-  signature.appendChild(web.document.createTextNode(text));
+/// Simulates Enter then typing at the end of [signature]: the editor splits
+/// the block, so the text lands in a sibling copy of the signature element.
+void splitSignatureWithText(web.Element signature, String text) {
+  final part = signature.cloneNode() as web.Element
+    ..appendChild(web.document.createTextNode(text));
+  signature.parentNode!.insertBefore(part, signature.nextSibling);
 }
 
 bool signatureStyleIsHidden(web.Element signature) {

@@ -6,7 +6,7 @@ abstract class AbstractComposerSignatureRobot {
   /// A reopened draft shows the identity signature once, not hidden.
   Future<void> expectSingleVisibleSignature(String marker);
 
-  /// Appends [appendedText] inside the signature containing [marker].
+  /// Types [appendedText] on a new line after the signature containing [marker].
   Future<void> editSignature(String marker, String appendedText);
 
   /// Selects the composer identity named [identityName].

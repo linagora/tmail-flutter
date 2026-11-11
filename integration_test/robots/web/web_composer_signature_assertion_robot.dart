@@ -66,7 +66,7 @@ class WebComposerSignatureAssertionRobot extends CoreRobot
     if (signature == null) {
       throw StateError('No signature containing $marker in the editor');
     }
-    appendTextToSignature(signature, appendedText);
+    splitSignatureWithText(signature, appendedText);
     await $.pumpAndTrySettle();
   }
 

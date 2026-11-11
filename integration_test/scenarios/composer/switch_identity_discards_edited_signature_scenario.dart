@@ -55,18 +55,18 @@ class SwitchIdentityDiscardsEditedSignatureScenario extends BaseTestScenario {
     await signatureRobot.waitForSignatureMarker(_firstMarker);
 
     await signatureRobot.editSignature(_firstMarker, _editedText);
-    await signatureRobot.switchIdentity(_secondIdentityName);
 
-    await signatureRobot.expectOnlySignature(
-      _secondMarker,
+    // No new signature is inserted here, so nothing overwrites a leftover part
+    // or refreshes the cached body: only the removal itself can drop them.
+    await signatureRobot.switchIdentity(_noSignatureIdentityName);
+    await signatureRobot.expectNoSignature(
       absentText: [_firstMarker, _editedText],
     );
 
-    // No new signature is inserted here, so nothing else refreshes the cached
-    // body: only the removal itself can drop the old signature from it.
-    await signatureRobot.switchIdentity(_noSignatureIdentityName);
-    await signatureRobot.expectNoSignature(
-      absentText: [_firstMarker, _secondMarker, _editedText],
+    await signatureRobot.switchIdentity(_secondIdentityName);
+    await signatureRobot.expectOnlySignature(
+      _secondMarker,
+      absentText: [_firstMarker, _editedText],
     );
   }
 }
