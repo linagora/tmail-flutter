@@ -13,10 +13,8 @@ import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
-import 'package:tmail_ui_user/features/base/widget/hide_inside_cozy_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
 import 'package:tmail_ui_user/features/base/widget/report_message_banner.dart';
-import 'package:tmail_ui_user/features/delegation/presentation/widgets/viewing_owner_banner.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_action_type_extension.dart';
@@ -137,11 +135,6 @@ class ThreadView extends GetWidget<ThreadController>
                           hintTextSearch: AppLocalizations.of(context).search_emails,
                           onOpenSearchViewAction: controller.goToSearchView
                         ),
-                        if (PlatformInfo.isWeb)
-                          const Padding(
-                            padding: EdgeInsetsDirectional.symmetric(horizontal: 12),
-                            child: HideInsideCozyWidget(child: ViewingOwnerBanner()),
-                          ),
                         Obx(() {
                           final spamController = controller
                               .mailboxDashBoardController
