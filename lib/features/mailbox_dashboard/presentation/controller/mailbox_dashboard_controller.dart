@@ -3367,6 +3367,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void gotoEmailRecovery() async {
+    if (!shownAccountCapabilities.canRecoverDeletedMessages) return;
     closeMailboxMenuDrawer();
     final currentAccountId = activeAccountId;
     final currentSession = sessionCurrent;

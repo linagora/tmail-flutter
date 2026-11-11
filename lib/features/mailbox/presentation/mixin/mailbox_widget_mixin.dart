@@ -13,6 +13,9 @@ mixin MailboxWidgetMixin {
   /// A filter is a rule of my own account: the folder views of a delegated account turn it off.
   bool get canCreateFilter => true;
 
+  /// Recovery restores into my own account: the folder views of a delegated account turn it off.
+  bool get canRecoverDeletedMessages => true;
+
   MailboxActions _mailboxActionForSpam(bool spamReportEnabled) {
     return spamReportEnabled
       ? MailboxActions.disableSpamReport
@@ -41,7 +44,7 @@ mixin MailboxWidgetMixin {
         ...[
           MailboxActions.moveFolderContent,
           MailboxActions.emptyTrash,
-          if (deletedMessageVaultSupported)
+          if (deletedMessageVaultSupported && canRecoverDeletedMessages)
             MailboxActions.recoverDeletedMessages,
         ]
       else if (mailbox.isSpam)

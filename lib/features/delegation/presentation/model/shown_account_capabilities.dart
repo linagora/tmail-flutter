@@ -34,6 +34,13 @@ class ShownAccountCapabilities with EquatableMixin {
   /// account is shown.
   final bool showsMyVacationBanner;
 
+  /// `EmailRecoveryAction/set` carries no account id, so the server restores into my own account:
+  /// recovery stays off while a delegated account is shown.
+  final bool canRecoverDeletedMessages;
+
+  /// Premium upgrades my own storage, so it is not offered on the quota of a delegated account.
+  final bool offersMyPremium;
+
   const ShownAccountCapabilities._({
     required this.canOpenSettings,
     required this.canCreateFilter,
@@ -43,6 +50,8 @@ class ShownAccountCapabilities with EquatableMixin {
     required this.showsViewingOwnerChrome,
     required this.offersServerDefaultIdentities,
     required this.showsMyVacationBanner,
+    required this.canRecoverDeletedMessages,
+    required this.offersMyPremium,
   });
 
   factory ShownAccountCapabilities.of(ActiveAccount? shownAccount) {
@@ -57,6 +66,8 @@ class ShownAccountCapabilities with EquatableMixin {
       showsViewingOwnerChrome: delegatedShown,
       offersServerDefaultIdentities: delegatedShown,
       showsMyVacationBanner: !delegatedShown,
+      canRecoverDeletedMessages: !delegatedShown,
+      offersMyPremium: !delegatedShown,
     );
   }
 
@@ -70,5 +81,7 @@ class ShownAccountCapabilities with EquatableMixin {
         showsViewingOwnerChrome,
         offersServerDefaultIdentities,
         showsMyVacationBanner,
+        canRecoverDeletedMessages,
+        offersMyPremium,
       ];
 }

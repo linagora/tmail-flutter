@@ -39,6 +39,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/do
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/empty_trash_banner_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/mark_mailbox_as_read_loading_banner.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/dashboard_navigation_bar.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/providers/shown_account_capabilities_provider.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/widgets/viewing_owner_banner.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/profile_setting/cozy_profile_setting_icon.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
@@ -465,7 +466,12 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           }
         });
       }),
-      Obx(() {
+      Consumer(builder: (context, ref, child) {
+        if (!ref.watch(shownAccountCapabilitiesProvider).canRecoverDeletedMessages) {
+          return const SizedBox.shrink();
+        }
+        return child!;
+      }, child: Obx(() {
         if (controller.selectedMailbox.value?.isTrashPersonal == true) {
           return TMailButtonWidget.fromIcon(
             key: const Key('recover_deleted_messages_button'),
@@ -479,7 +485,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         } else {
           return const SizedBox.shrink();
         }
-      }),
+      })),
       Consumer(builder: (context, ref, child) {
         final isSearchEmailRunning = ref.watch(
           searchViewStateProvider.select((state) => state.isSearchEmailRunning),
