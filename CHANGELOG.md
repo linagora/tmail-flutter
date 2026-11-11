@@ -1,3 +1,22 @@
+## [0.41.3] - 2026-11-11
+### Added
+- Add automated memory leak check for web and Android
+
+### Fixed
+- #5094 Keep top-level signature visible when reopening a draft
+- #4985 Reject a vacation message with no text content
+- #4827 Show the attaching file bottom sheet on narrow web
+- Stop dropping Firefox multi-file picks when focus returns before change
+- Fix NSE empty-list loop by paging Email/changes and advancing state
+- Confirm deep-link sign-in account and DNS-discovered server
+- Sandbox the web mail viewer iframe
+
+### Changed
+- #4678 Use design system sidebar symbols in BaseMailboxView
+- Move inline web scripts to files and enforce the nginx page policy
+- Show the LLM section of the security report unfolded
+- Translate vi, ru, fr, mn
+
 ## [0.41.0] - 2026-11-02
 ### Added
 - #4849 Hide sign out in the profile menu inside Twake Workplace
