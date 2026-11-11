@@ -56,7 +56,6 @@ class CompactAccountSwitcher extends ConsumerWidget {
           ),
           selectedId: shown.accountId,
           onSelected: (accountId) {
-            FocusManager.instance.primaryFocus?.unfocus();
             switchShownAccountOrToastFailure(
               context: context,
               ref: ref,
