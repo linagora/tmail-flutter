@@ -10,6 +10,7 @@ import 'package:model/email/mark_star_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
@@ -40,7 +41,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' hide State;
 import 'package:fake_async/fake_async.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_restored_deleted_message_state.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart' show UncontrolledProviderScope;
+import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderContainer, UncontrolledProviderScope;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
@@ -613,6 +614,37 @@ void main() {
       mailboxDashboardController.handleReloaded(DelegationFixtures.session());
 
       expect(dashboardStateOnLoad, [(DelegationFixtures.aliceAccountId, DelegationFixtures.aliceAddress)]);
+    });
+
+    group('recent searches:', () {
+      late _RecordingCleanupRecentSearchCacheInteractor cleanupInteractor;
+      late ProviderContainer container;
+
+      setUp(() {
+        cleanupInteractor = _RecordingCleanupRecentSearchCacheInteractor();
+        Get.put<CleanupRecentSearchCacheInteractor>(cleanupInteractor);
+        addTearDown(() => Get.delete<CleanupRecentSearchCacheInteractor>());
+        container = ActiveAccountSourceFixtures.newContainer();
+        ActiveAccountSourceFixtures.put(DelegationFixtures.session(), container: container);
+        Get.put(mailboxDashboardController);
+      });
+
+      List<AccountId> trimmedAccountIds() => cleanupInteractor.rules.map((rule) => rule.accountId).toList();
+
+      test('a new dashboard trims the recent searches of my account once', () {
+        mailboxDashboardController.handleReloaded(DelegationFixtures.session());
+
+        expect(trimmedAccountIds(), [DelegationFixtures.aliceAccountId]);
+      });
+
+      test('a switch to a delegated account trims its recent searches once', () {
+        mailboxDashboardController.handleReloaded(DelegationFixtures.session());
+        cleanupInteractor.rules.clear();
+
+        container.read(activeAccountProvider.notifier).select(DelegationFixtures.bobAccountId);
+
+        expect(trimmedAccountIds(), [DelegationFixtures.bobAccountId]);
+      });
     });
 
     test('ownerEmailAddress falls back to the identity-derived address when the session username is not an email', () {

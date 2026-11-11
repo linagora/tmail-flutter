@@ -1005,7 +1005,6 @@ class MailboxDashBoardController extends ReloadableController
     spamReportController.getSpamReportStateAction();
     notifyThreadDetailSettingUpdated();
     getServerSetting();
-    cleanupRecentSearch();
     loadStoredEmailSortOrder();
 
     if (PlatformInfo.isMobile) {
