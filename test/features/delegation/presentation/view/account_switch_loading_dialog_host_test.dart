@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -194,6 +195,22 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(AccountSwitchLoadingDialog), findsNothing);
+  });
+
+  testWidgets('drops the pending dialog and the back interceptor when the host is unmounted mid-switch',
+      (tester) async {
+    await tester.pumpWidget(_hostApp(container));
+    final switching = startSwitchToBob();
+    await tester.pump();
+    expect(BackButtonInterceptor.describe(), contains('account_switch_loading'));
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump(SwitchLoadingDialogTiming.showDelay);
+
+    expect(find.byType(AccountSwitchLoadingDialog), findsNothing);
+    expect(BackButtonInterceptor.describe(), isNot(contains('account_switch_loading')));
+    view.loadings.single.complete();
+    await switching;
   });
 
   testWidgets('removes the dialog when the host is unmounted while it is visible', (tester) async {
