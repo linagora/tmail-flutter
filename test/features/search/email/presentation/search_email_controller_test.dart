@@ -1071,6 +1071,48 @@ void main() {
       ).called(1);
     });
 
+    test('saveRecentSearch stores the query under the delegated account while it is shown', () async {
+      ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+      when(
+        saveRecentSearchInteractor.execute(any, any, any),
+      ).thenAnswer((_) => Stream.value(Right(SaveRecentSearchSuccess())));
+
+      controller.saveRecentSearch('report');
+      await pumpEventQueue();
+
+      verify(
+        saveRecentSearchInteractor.execute(
+          DelegationFixtures.bobAccountId,
+          SessionFixtures.aliceSession.username,
+          any,
+        ),
+      ).called(1);
+      verifyNever(saveRecentSearchInteractor.execute(AccountFixtures.aliceAccountId, any, any));
+    });
+
+    test('getAllRecentSearchAction reads the recent list of the delegated account while it is shown', () async {
+      ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+
+      await controller.getAllRecentSearchAction(pattern: 'rep');
+
+      verify(
+        getAllRecentSearchLatestInteractor.execute(
+          DelegationFixtures.bobAccountId,
+          SessionFixtures.aliceSession.username,
+          limit: anyNamed('limit'),
+          pattern: 'rep',
+        ),
+      ).called(1);
+      verifyNever(
+        getAllRecentSearchLatestInteractor.execute(
+          AccountFixtures.aliceAccountId,
+          any,
+          limit: anyNamed('limit'),
+          pattern: anyNamed('pattern'),
+        ),
+      );
+    });
+
     test(
       'clearing the search text clears suggestions and loads recent searches',
       () async {

@@ -63,6 +63,9 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
+import 'package:tmail_ui_user/features/cleanup/domain/model/recent_search_cleanup_rule.dart';
+import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_search_cache_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/cleanup_recent_search_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/labels/domain/model/open_edit_label_modal_params.dart';
 import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
@@ -1537,10 +1540,34 @@ void main() {
           .single as OpenEditLabelModalParams;
       expect(params.accountId, DelegationFixtures.bobAccountId);
     });
+
+    test('trims the recent searches of the shown account', () {
+      final cleanupInteractor = _RecordingCleanupRecentSearchCacheInteractor();
+      Get.put<CleanupRecentSearchCacheInteractor>(cleanupInteractor);
+      addTearDown(() => Get.delete<CleanupRecentSearchCacheInteractor>());
+      ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+
+      mailboxDashboardController.cleanupRecentSearch();
+
+      expect(
+        cleanupInteractor.rules.map((rule) => rule.accountId),
+        [DelegationFixtures.bobAccountId],
+      );
+    });
   });
 }
 
 class _FakeBuildContext extends Fake implements BuildContext {}
+
+class _RecordingCleanupRecentSearchCacheInteractor extends Fake implements CleanupRecentSearchCacheInteractor {
+  final rules = <RecentSearchCleanupRule>[];
+
+  @override
+  Stream<Either<Failure, Success>> execute(RecentSearchCleanupRule cleanupRule) {
+    rules.add(cleanupRule);
+    return const Stream.empty();
+  }
+}
 
 Function _retryActionOfToast(MockAppToast appToast) {
   final actions = verify(appToast.showToastMessageWithMultipleActions(

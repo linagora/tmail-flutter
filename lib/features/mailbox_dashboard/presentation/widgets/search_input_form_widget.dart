@@ -122,7 +122,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
             child: loadingWidget
         ),
         fetchRecentActionCallback: (pattern) {
-          final accountId = _dashBoardController.accountId.value;
+          final accountId = _dashBoardController.activeAccountId;
           final userName = _dashBoardController.sessionCurrent?.username;
 
           if (accountId == null || userName == null) {
@@ -199,7 +199,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
   }
 
   void _saveRecentSearch(String queryString) {
-    final accountId = _dashBoardController.accountId.value;
+    final accountId = _dashBoardController.activeAccountId;
     final userName = _dashBoardController.sessionCurrent?.username;
 
     if (accountId == null || userName == null) {
