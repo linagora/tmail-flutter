@@ -7,6 +7,9 @@ abstract class AbstractComposerRecipientRobot {
 
   Future<void> openCcField();
 
+  /// Shows the From identity picker of the composer.
+  Future<void> openFromField();
+
   /// Types [email] into the [prefix] field and submits it as a chip.
   Future<void> enterRecipient(PrefixEmailAddress prefix, String email);
 

@@ -3,8 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:patrol/patrol.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_mobile_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_tag_item_widget.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/from_composer_drop_down_widget.dart';
 
 import '../base/core_robot.dart';
 import '../utils/wait_for_condition.dart';
@@ -36,5 +38,22 @@ class ComposerRecipientAssertionRobot extends CoreRobot
       (widget) => widget.currentEmailAddress.emailAddress == email,
     );
     await waitForCondition(() => chip.evaluate().isNotEmpty);
+  }
+
+  @override
+  Future<void> expectFromSelected(String email) async {
+    // Narrow composers show the mobile From button, wide ones the drop-down.
+    await waitForCondition(
+      () =>
+          $(FromComposerDropDownWidget)
+              .which<FromComposerDropDownWidget>((widget) => widget.itemSelected?.email == email)
+              .evaluate()
+              .isNotEmpty ||
+          $(FromComposerMobileWidget)
+              .which<FromComposerMobileWidget>((widget) => widget.selectedIdentity?.email == email)
+              .evaluate()
+              .isNotEmpty,
+      reason: 'composer From selection is $email',
+    );
   }
 }
