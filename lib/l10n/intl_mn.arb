@@ -5769,6 +5769,54 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "deepLinkAccountCannotBeVerified": "Бид энэ нэвтрэх холбоосыг баталгаажуулж чадсангүй. Аппаас нэвтэрнэ үү.",
+  "@deepLinkAccountCannotBeVerified": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signInWithLinkTitle": "Энэ холбоосоор нэвтрэх үү?",
+  "@signInWithLinkTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signInWithLinkAccountPrefix": "Энэ холбоос таныг дараах хэрэглэгчээр нэвтрүүлнэ:",
+  "@signInWithLinkAccountPrefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signInWithLinkWarning": "Та нэвтрэхийг хүссэн бол л үргэлжлүүлнэ үү.",
+  "@signInWithLinkWarning": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discoveredServerTitle": "Имэйл серверээ баталгаажуулна уу",
+  "@discoveredServerTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discoveredServerPrefix": "Дараах хаягт зориулсан имэйл сервер олдлоо:",
+  "@discoveredServerPrefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discoveredServerHint": "Энэ серверийг таньдаг бол л үргэлжлүүлнэ үү.",
+  "@discoveredServerHint": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discoveredServerOutsideDomainWarning": "Энэ сервер таны имэйл домэйнд хамаарахгүй байна. Администратор тань ашиглахыг хэлсэн бол л үргэлжлүүлнэ үү.",
+  "@discoveredServerOutsideDomainWarning": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "pdfPasswordRequired": "Нууц үгээр хамгаалагдсан PDF",
   "@pdfPasswordRequired": {
     "type": "text",

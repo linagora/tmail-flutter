@@ -6124,6 +6124,54 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "deepLinkAccountCannotBeVerified": "Nous n'avons pas pu vérifier ce lien de connexion. Veuillez vous connecter depuis l'application.",
+  "@deepLinkAccountCannotBeVerified": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signInWithLinkTitle": "Se connecter avec ce lien ?",
+  "@signInWithLinkTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signInWithLinkAccountPrefix": "Ce lien vous connecte en tant que",
+  "@signInWithLinkAccountPrefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signInWithLinkWarning": "Ne continuez que si vous avez demandé à vous connecter.",
+  "@signInWithLinkWarning": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discoveredServerTitle": "Confirmez votre serveur de messagerie",
+  "@discoveredServerTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discoveredServerPrefix": "Serveur de messagerie trouvé pour",
+  "@discoveredServerPrefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discoveredServerHint": "Ne continuez que si vous reconnaissez ce serveur.",
+  "@discoveredServerHint": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discoveredServerOutsideDomainWarning": "Ce serveur ne fait pas partie de votre domaine de messagerie. Ne continuez que si votre administrateur vous a demandé de l'utiliser.",
+  "@discoveredServerOutsideDomainWarning": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "pdfPasswordRequired": "PDF protégé par mot de passe",
   "@pdfPasswordRequired": {
     "type": "text",

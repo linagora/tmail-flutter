@@ -6142,6 +6142,54 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "deepLinkAccountCannotBeVerified": "Не удалось проверить эту ссылку для входа. Пожалуйста, войдите из приложения.",
+  "@deepLinkAccountCannotBeVerified": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signInWithLinkTitle": "Войти по этой ссылке?",
+  "@signInWithLinkTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signInWithLinkAccountPrefix": "Эта ссылка выполняет вход как",
+  "@signInWithLinkAccountPrefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signInWithLinkWarning": "Продолжайте, только если вы запрашивали вход.",
+  "@signInWithLinkWarning": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discoveredServerTitle": "Подтвердите свой почтовый сервер",
+  "@discoveredServerTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discoveredServerPrefix": "Найден почтовый сервер для",
+  "@discoveredServerPrefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discoveredServerHint": "Продолжайте, только если вы узнаёте этот сервер.",
+  "@discoveredServerHint": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discoveredServerOutsideDomainWarning": "Этот сервер не относится к домену вашей электронной почты. Продолжайте, только если администратор сообщил вам использовать его.",
+  "@discoveredServerOutsideDomainWarning": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "pdfPasswordRequired": "PDF защищён паролем",
   "@pdfPasswordRequired": {
     "type": "text",

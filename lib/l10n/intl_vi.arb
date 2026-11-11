@@ -6130,6 +6130,54 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "deepLinkAccountCannotBeVerified": "Chúng tôi không thể xác minh liên kết đăng nhập này. Vui lòng đăng nhập từ ứng dụng.",
+  "@deepLinkAccountCannotBeVerified": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signInWithLinkTitle": "Đăng nhập bằng liên kết này?",
+  "@signInWithLinkTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signInWithLinkAccountPrefix": "Liên kết này đăng nhập bạn với tư cách",
+  "@signInWithLinkAccountPrefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signInWithLinkWarning": "Chỉ tiếp tục nếu bạn đã yêu cầu đăng nhập.",
+  "@signInWithLinkWarning": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discoveredServerTitle": "Xác nhận máy chủ thư của bạn",
+  "@discoveredServerTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discoveredServerPrefix": "Đã tìm thấy máy chủ thư cho",
+  "@discoveredServerPrefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discoveredServerHint": "Chỉ tiếp tục nếu bạn nhận ra máy chủ này.",
+  "@discoveredServerHint": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discoveredServerOutsideDomainWarning": "Máy chủ này không thuộc miền email của bạn. Chỉ tiếp tục nếu quản trị viên của bạn yêu cầu sử dụng máy chủ này.",
+  "@discoveredServerOutsideDomainWarning": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "pdfPasswordRequired": "PDF được bảo vệ bằng mật khẩu",
   "@pdfPasswordRequired": {
     "type": "text",
