@@ -452,7 +452,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   /// Account id changed: clear stale identities, reload identities, trim recent searches, restore web composer cache.
-  /// Labels reload on session setup and on a switch's loadAccount, not here.
+  /// Labels reload on session setup and on a switch's loadAccount or catchUpAccount, not here.
   void _onShownAccountChanged(AccountId shownAccountId) {
     _identities = null;
     _getAllIdentities(shownAccountId);
