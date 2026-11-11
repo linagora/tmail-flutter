@@ -41,10 +41,8 @@ class ViewingOwnerBanner extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final ownerEmail = activeAccount.ownerEmailAddress;
     final label = l10n.viewingOwnerMailbox(ownerEmail);
-    // Tokens match DS material Viewing chip: #F5F6FA fill, no border, 6px radius.
     final chipStyle = LinagoraDismissibleChipStyle.material().copyWith(
       height: 34,
-      padding: const EdgeInsetsDirectional.only(start: 8, end: 2),
       dismissTargetSize: 32,
       iconSize: 16,
     );
