@@ -352,7 +352,7 @@ class SearchEmailController extends BaseController
   }
 
   Future<List<RecentSearch>> getAllRecentSearchAction({String pattern = ''}) async {
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = mailboxDashBoardController.activeAccountId;
     final userName = mailboxDashBoardController.sessionCurrent?.username;
 
     if (accountId == null || userName == null) {
@@ -393,7 +393,7 @@ class SearchEmailController extends BaseController
   }
 
   void saveRecentSearch(String queryString) {
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = mailboxDashBoardController.activeAccountId;
     final userName = mailboxDashBoardController.sessionCurrent?.username;
 
     if (accountId == null || userName == null) {
