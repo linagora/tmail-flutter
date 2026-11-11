@@ -83,6 +83,42 @@ void main() {
 
     expect(_triggers(), ['["#summernote-2","summernote.change","<p>Body</p>"]']);
   });
+
+  test('removes signatures from the code view HTML and notifies the code view', () {
+    _installFakeJQuery(codeView: true);
+    fixture.innerHTML = '''<div class="note-editable"><p>Old</p><div class="tmail-signature">Sig</div></div><textarea class="note-codable"></textarea>'''.toJS;
+    _codable(fixture).value = '<p>Edited</p><div class="tmail-signature">Sig</div>';
+
+    _runRemoveAllSignatures();
+
+    expect(_codable(fixture).value, '<p>Edited</p>');
+    expect(_editableHtml(fixture), '<p>Old</p><div class="tmail-signature">Sig</div>');
+    expect(_triggers(), ['["#summernote-2","summernote.change.codeview","<p>Edited</p>"]']);
+  });
+
+  test('keeps quoted signatures in the code view HTML', () {
+    _installFakeJQuery(codeView: true);
+    const quoted = '<blockquote><div class="tmail-signature">Q</div></blockquote>';
+    fixture.innerHTML = '''<div class="note-editable"></div><textarea class="note-codable"></textarea>'''.toJS;
+    _codable(fixture).value = quoted;
+
+    _runRemoveAllSignatures();
+
+    expect(_codable(fixture).value, quoted);
+    expect(_triggers(), isEmpty);
+  });
+
+  test('uses the visual editor when code view is off', () {
+    _installFakeJQuery();
+    fixture.innerHTML = '''<div class="note-editable"><p>Body</p><div class="tmail-signature">Sig</div></div><textarea class="note-codable"></textarea>'''.toJS;
+    _codable(fixture).value = '<div class="tmail-signature">Raw</div>';
+
+    _runRemoveAllSignatures();
+
+    expect(_editableHtml(fixture), '<p>Body</p>');
+    expect(_codable(fixture).value, '<div class="tmail-signature">Raw</div>');
+    expect(_triggers(), ['["#summernote-2","summernote.change","<p>Body</p>"]']);
+  });
 }
 
 void _runJs(String source) {
@@ -99,8 +135,9 @@ void _runRemoveAllSignatures() {
 }
 
 /// Stands in for Summernote's jQuery, recording each `trigger` call.
-void _installFakeJQuery() => _runJs('''
+void _installFakeJQuery({bool codeView = false}) => _runJs('''
   window.jQuery = (target) => ({
+    summernote: (cmd) => cmd === 'codeview.isActivated' && $codeView,
     trigger: (name, args) => {
       const call = JSON.stringify([target, name, args[0]]);
       document.body.dataset.triggers = (document.body.dataset.triggers || '') + call + '\\n';
@@ -114,3 +151,6 @@ List<String> _triggers() => (web.document.body!.getAttribute('data-triggers') ??
 
 String _editableHtml(web.Element fixture) =>
     fixture.querySelector('.note-editable')!.innerHTML.toString();
+
+web.HTMLTextAreaElement _codable(web.Element fixture) =>
+    fixture.querySelector('.note-codable')! as web.HTMLTextAreaElement;

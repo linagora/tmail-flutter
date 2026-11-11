@@ -56,21 +56,38 @@ class HtmlUtils {
   /// Removes every identity signature, including ones the user edited or
   /// split; signatures inside a quoted message are kept. Runs in the web
   /// editor iframe and the mobile editor webview; only the web editor has
-  /// jQuery, so only it emits the change notification.
+  /// jQuery, so only it emits the change notification. In code view the
+  /// edited HTML lives in the code textarea, so signatures are removed there.
   static const removeAllSignatures = (
     script: '''
       (() => {
         const root = document.querySelector('.note-editable') || document.getElementById('editor');
         if (!root) return;
-        root.querySelectorAll('.tmail-signature').forEach(el => {
-          if (!el.closest('blockquote, cite')) el.remove();
-        });
+        const removeFrom = (container) => {
+          let removed = 0;
+          container.querySelectorAll('.tmail-signature').forEach(el => {
+            if (!el.closest('blockquote, cite')) { el.remove(); removed++; }
+          });
+          return removed;
+        };
+        const jq = window.jQuery;
+        const \$editor = jq ? jq('#summernote-2') : null;
+        const codable = document.querySelector('.note-codable');
+        if (\$editor && codable && \$editor.summernote('codeview.isActivated')) {
+          // Inert document: the user's raw HTML is parsed without running anything.
+          const container = document.implementation.createHTMLDocument('').createElement('div');
+          container.innerHTML = codable.value;
+          if (removeFrom(container) === 0) return;
+          codable.value = container.innerHTML;
+          \$editor.trigger('summernote.change.codeview', [codable.value, jq(codable)]);
+          return;
+        }
+        removeFrom(root);
         // Notify through this editor's own change handler, which tags the
         // message with its view id, so the composer refreshes its cached body
         // without a window-wide getText that another composer could answer.
-        if (window.jQuery) {
-          const \$editor = window.jQuery('#summernote-2');
-          \$editor.trigger('summernote.change', [root.innerHTML, window.jQuery(root)]);
+        if (\$editor) {
+          \$editor.trigger('summernote.change', [root.innerHTML, jq(root)]);
         }
       })();''',
     name: 'removeAllSignatures');
