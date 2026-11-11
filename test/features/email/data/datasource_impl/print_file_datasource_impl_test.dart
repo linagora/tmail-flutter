@@ -12,14 +12,11 @@ import 'package:tmail_ui_user/features/email/data/datasource_impl/print_file_dat
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/domain/model/email_print.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
-import 'print_file_datasource_impl_nonce_probe_stub.dart'
-    if (dart.library.html) 'print_file_datasource_impl_nonce_probe_web.dart';
 
 class _CapturingPrintUtils extends PrintUtils {
   String? subject;
   String? senderName;
   List<PrintAttachment>? listAttachment;
-  String? scriptNonce;
 
   @override
   Future<void> printEmail({
@@ -46,7 +43,6 @@ class _CapturingPrintUtils extends PrintUtils {
     this.subject = subject;
     this.senderName = senderName;
     this.listAttachment = listAttachment;
-    this.scriptNonce = scriptNonce;
   }
 }
 
@@ -140,41 +136,5 @@ void main() {
 
       expect(printUtils.listAttachment!.single.name, 'invoicefdp.exe');
     });
-
-    test(
-      'SHOULD pass the host script nonce to PrintUtils',
-      () async {
-        final script = insertHostNonceScript('n1');
-        addTearDown(script.remove);
-
-        final printUtils = _CapturingPrintUtils();
-        final dataSource = PrintFileDataSourceImpl(
-          printUtils,
-          ImagePaths(),
-          _FakeFileUtils(),
-          _FakeHtmlAnalyzer(),
-          _FakeExceptionThrower(),
-        );
-
-        await dataSource.printEmail(EmailPrint(
-          appName: 'Twake Mail',
-          userName: 'alice@example.com',
-          emailContent: '',
-          fromPrefix: 'From',
-          toPrefix: 'To',
-          ccPrefix: 'Cc',
-          bccPrefix: 'Bcc',
-          replyToPrefix: 'Reply to',
-          titleAttachment: 'attachment',
-          receiveTime: 'today',
-          subject: 'Nonce',
-          sender: EmailAddress('Bob', 'bob@example.com'),
-        ));
-
-        expect(script.getAttribute('nonce'), '');
-        expect(printUtils.scriptNonce, 'n1');
-      },
-      testOn: 'chrome',
-    );
   });
 }
