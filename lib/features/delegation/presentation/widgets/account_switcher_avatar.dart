@@ -4,14 +4,17 @@ import 'package:flutter/material.dart';
 
 /// Round initials avatar sized for the account switcher chip or menu tile.
 Widget accountSwitcherAvatar(String emailAddress, double size) {
-  return (AvatarBuilder()
-        ..text(emailAddress.firstCharacterToUpperCase)
-        ..size(size)
-        ..avatarColor(emailAddress.gradientColors)
-        ..addTextStyle(TextStyle(
-          color: Colors.white,
-          fontSize: size * 0.44,
-          fontWeight: FontWeight.w600,
-        )))
-      .build();
+  // AvatarBuilder always wraps an InkWell that would swallow taps meant for the chip or tile.
+  return IgnorePointer(
+    child: (AvatarBuilder()
+          ..text(emailAddress.firstCharacterToUpperCase)
+          ..size(size)
+          ..avatarColor(emailAddress.gradientColors)
+          ..addTextStyle(TextStyle(
+            color: Colors.white,
+            fontSize: size * 0.44,
+            fontWeight: FontWeight.w600,
+          )))
+        .build(),
+  );
 }
