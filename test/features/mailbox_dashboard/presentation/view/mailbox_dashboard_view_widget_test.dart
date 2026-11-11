@@ -49,6 +49,7 @@ import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_acc
 import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_capabilities.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/shown_account_capabilities_provider.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/widgets/compact_account_switcher.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/widgets/standalone_account_avatar_menu.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/widgets/viewing_owner_banner.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/app_dashboard/linagora_app.dart';
@@ -1042,7 +1043,10 @@ void main() {
         await tester.pump();
       }
 
-      final searchBar = find.byKey(const Key('email_search_bar_view'));
+      final appBarSwitcher = find.descendant(
+        of: find.byType(MobileAppBarThreadWidget),
+        matching: find.byKey(CompactAccountSwitcher.switcherKey),
+      );
 
       testWidgets(
         'WHEN web viewport is tabletLarge (1000px)\n'
@@ -1060,43 +1064,54 @@ void main() {
 
       testWidgets(
         'WHEN web viewport is tabletLarge (1000px)\n'
+        'AND the own mailbox is shown\n'
+        'ThreadView SHOULD show the compact account switcher in the app bar',
+      (tester) async {
+        await pumpNarrowDashboard(tester);
+
+        expect(appBarSwitcher, findsOneWidget);
+        expect(find.byKey(ViewingOwnerBanner.bannerKey), findsNothing);
+      });
+
+      testWidgets(
+        'WHEN web viewport is tabletLarge (1000px)\n'
         'AND a delegated mailbox is shown\n'
-        'ThreadView SHOULD show the Viewing banner below a full-width search bar',
+        'ThreadView SHOULD keep the compact account switcher\n'
+        'AND SHOULD NOT show the Viewing banner',
       (tester) async {
         final container = await pumpNarrowDashboard(tester);
-        final ownSearchBarSize = tester.getSize(searchBar);
 
         await showDelegatedMailbox(tester, container);
 
-        expect(find.byKey(ViewingOwnerBanner.bannerKey), findsOneWidget);
-        expect(tester.getSize(searchBar), ownSearchBarSize);
-        expect(
-          tester.getTopLeft(find.byKey(ViewingOwnerBanner.bannerKey)).dy,
-          greaterThanOrEqualTo(tester.getBottomLeft(searchBar).dy),
-        );
+        expect(appBarSwitcher, findsOneWidget);
+        expect(find.byKey(ViewingOwnerBanner.bannerKey), findsNothing);
       });
 
       testWidgets(
         'WHEN web viewport is mobile (700px)\n'
         'AND a delegated mailbox is shown\n'
-        'ThreadView SHOULD show the Viewing banner',
+        'ThreadView SHOULD show the compact account switcher\n'
+        'AND SHOULD NOT show the Viewing banner',
       (tester) async {
         final container = await pumpNarrowDashboard(tester, isTabletLarge: false);
 
         await showDelegatedMailbox(tester, container);
 
-        expect(find.byKey(ViewingOwnerBanner.bannerKey), findsOneWidget);
+        expect(appBarSwitcher, findsOneWidget);
+        expect(find.byKey(ViewingOwnerBanner.bannerKey), findsNothing);
       });
 
       testWidgets(
-        'WHEN web viewport is tabletLarge (1000px)\n'
-        'AND the own mailbox is shown\n'
-        'ThreadView SHOULD NOT show the Viewing banner',
+        'WHEN web viewport is mobile (700px)\n'
+        'AND the user taps the compact account switcher\n'
+        'the account menu SHOULD open',
       (tester) async {
-        await pumpNarrowDashboard(tester);
+        await pumpNarrowDashboard(tester, isTabletLarge: false);
 
-        expect(searchBar, findsOneWidget);
-        expect(find.byKey(ViewingOwnerBanner.bannerKey), findsNothing);
+        await tester.tap(find.byKey(LinagoraAccountSwitcher.chipKey));
+        await tester.pump();
+
+        expect(find.byKey(LinagoraAccountSwitcher.menuKey), findsOneWidget);
       });
 
       testWidgets(
