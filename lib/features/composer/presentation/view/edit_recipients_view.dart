@@ -11,7 +11,7 @@ class EditRecipientsView extends StatelessWidget {
   final double width;
   final VoidCallback onCopyAction;
   final VoidCallback onEditAction;
-  final VoidCallback onCreateRuleAction;
+  final VoidCallback? onCreateRuleAction;
   final VoidCallback onCloseAction;
 
   const EditRecipientsView({
@@ -22,7 +22,7 @@ class EditRecipientsView extends StatelessWidget {
     required this.width,
     required this.onCopyAction,
     required this.onEditAction,
-    required this.onCreateRuleAction,
+    this.onCreateRuleAction,
     required this.onCloseAction,
   });
 

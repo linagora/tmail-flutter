@@ -159,6 +159,9 @@ class MailboxController extends BaseMailboxController
   @override
   bool get canCreateFilter => shownAccountCapabilities.canCreateFilter;
 
+  @override
+  bool get canRecoverDeletedMessages => shownAccountCapabilities.canRecoverDeletedMessages;
+
   Session? get session => mailboxDashBoardController.sessionCurrent;
 
   MailboxController(

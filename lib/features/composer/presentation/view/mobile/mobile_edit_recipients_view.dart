@@ -17,7 +17,8 @@ class MobileEditRecipientsView extends StatelessWidget {
   final double width;
   final VoidCallback onCopyAction;
   final VoidCallback onEditAction;
-  final VoidCallback onCreateRuleAction;
+  /// Null hides the create-rule entry.
+  final VoidCallback? onCreateRuleAction;
 
   const MobileEditRecipientsView({
     super.key,
@@ -26,7 +27,7 @@ class MobileEditRecipientsView extends StatelessWidget {
     required this.width,
     required this.onCopyAction,
     required this.onEditAction,
-    required this.onCreateRuleAction,
+    this.onCreateRuleAction,
   });
 
   @override
@@ -118,7 +119,9 @@ class MobileEditRecipientsView extends StatelessWidget {
   }
 
   List<Widget> _buildActions(AppLocalizations appLocalizations) {
-    return EmailAddressActionType.values.map((type) {
+    return EmailAddressActionType.values
+        .where((type) => type != EmailAddressActionType.createRule || onCreateRuleAction != null)
+        .map((type) {
       return Container(
         decoration: BoxDecoration(
           border: Border(
@@ -146,7 +149,7 @@ class MobileEditRecipientsView extends StatelessWidget {
         onEditAction();
         break;
       case EmailAddressActionType.createRule:
-        onCreateRuleAction();
+        onCreateRuleAction?.call();
         break;
     }
   }

@@ -6,6 +6,7 @@ import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/text/middle_ellipsis_text.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
@@ -15,6 +16,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/draggable_ema
 import 'package:tmail_ui_user/features/composer/presentation/model/email_address_action_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/recipient_tag_item_widget_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/edit_recipients_view.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/providers/shown_account_capabilities_provider.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/draggable_recipient_tag_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
@@ -59,7 +61,7 @@ class RecipientTagItemWidget extends StatelessWidget {
     final overlayWidth = isMobile ? 227.0 : 361.0;
     Widget tagWidget = CardWithSmartInteractionOverlayView(
       overlayWidth: overlayWidth,
-      menuBuilder: (onClose) => EditRecipientsView(
+      menuBuilder: (onClose) => Consumer(builder: (_, ref, __) => EditRecipientsView(
         emailAddress: currentEmailAddress,
         imagePaths: imagePaths,
         isMobile: isMobile,
@@ -80,15 +82,17 @@ class RecipientTagItemWidget extends StatelessWidget {
             EmailAddressActionType.edit,
           );
         },
-        onCreateRuleAction: () {
-          onClose();
-          _onEditRecipientAction(
-            context,
-            EmailAddressActionType.createRule,
-          );
-        },
+        onCreateRuleAction: ref.watch(shownAccountCapabilitiesProvider).canCreateFilter
+            ? () {
+                onClose();
+                _onEditRecipientAction(
+                  context,
+                  EmailAddressActionType.createRule,
+                );
+              }
+            : null,
         onCloseAction: onClose,
-      ),
+      )),
       onClearFocusAction: onClearFocusAction,
       child: Container(
         key: Key('recipient_tag_item_${prefix.name}_$index'),

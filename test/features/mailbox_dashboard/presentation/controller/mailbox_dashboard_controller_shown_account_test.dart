@@ -30,6 +30,9 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_new_rule_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/premium_cta_context_extension.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
 
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:dartz/dartz.dart' show Either, Left, Right;
@@ -176,6 +179,18 @@ void main() {
       ActiveAccountSourceFixtures.put(DelegationFixtures.session());
 
       expect(newMailboxController().canCreateFilter, isTrue);
+    });
+
+    test('the folder menu offers no deleted messages recovery while a delegated account is shown', () {
+      ActiveAccountSourceFixtures.put(DelegationFixtures.session(), shownAccountId: DelegationFixtures.bobAccountId);
+
+      expect(newMailboxController().canRecoverDeletedMessages, isFalse);
+    });
+
+    test('the folder menu offers deleted messages recovery while my own account is shown', () {
+      ActiveAccountSourceFixtures.put(DelegationFixtures.session());
+
+      expect(newMailboxController().canRecoverDeletedMessages, isTrue);
     });
 
     test('reports the folder load of the shown account with its switch attempt', () {
@@ -927,6 +942,79 @@ void main() {
     }
   });
 
+  group('actions on my own account:', () {
+    final alice = DelegationFixtures.aliceAccountId;
+
+    setUp(() {
+      mailboxDashboardController.sessionCurrent = DelegationFixtures.session();
+      mailboxDashboardController.accountId.value = alice;
+    });
+
+    void showDelegated() => ActiveAccountSourceFixtures.putForThisTest(
+          DelegationFixtures.session(),
+          shownAccountId: DelegationFixtures.bobAccountId,
+        );
+
+    void showMine() => ActiveAccountSourceFixtures.putForThisTest(
+          DelegationFixtures.session(),
+          shownAccountId: alice,
+        );
+
+    testWidgets('recover deleted messages does not open while a delegated account is shown', (tester) async {
+      showDelegated();
+      final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.emailRecovery);
+
+      mailboxDashboardController.gotoEmailRecovery();
+      await tester.pumpAndSettle();
+
+      expect(recorder.arguments, isNull);
+      expect(Get.currentRoute, isNot(AppRoutes.emailRecovery));
+    });
+
+    testWidgets('recover deleted messages opens on my own account while my own account is shown', (tester) async {
+      showMine();
+      final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.emailRecovery);
+
+      mailboxDashboardController.gotoEmailRecovery();
+      await tester.pumpAndSettle();
+
+      expect((recorder.arguments as EmailRecoveryArguments).accountId, alice);
+    });
+
+    testWidgets('create a rule does not open while a delegated account is shown', (tester) async {
+      showDelegated();
+      final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.rulesFilterCreator);
+
+      unawaited(mailboxDashboardController.openCreateEmailRuleView());
+      await tester.pumpAndSettle();
+
+      expect(recorder.arguments, isNull);
+      expect(Get.currentRoute, isNot(AppRoutes.rulesFilterCreator));
+    });
+
+    testWidgets('create a rule opens on my own account while my own account is shown', (tester) async {
+      showMine();
+      final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.rulesFilterCreator);
+
+      unawaited(mailboxDashboardController.openCreateEmailRuleView());
+      await tester.pumpAndSettle();
+
+      expect((recorder.arguments as RulesFilterCreatorArguments).accountId, alice);
+    });
+
+    test('premium is not offered while a delegated account is shown', () {
+      showDelegated();
+
+      expect(mailboxDashboardController.currentPremiumCtaContext, isNull);
+    });
+
+    test('premium is offered on my own account while my own account is shown', () {
+      showMine();
+
+      expect(mailboxDashboardController.currentPremiumCtaContext?.accountId, alice);
+    });
+  });
+
   group('restored messages polling:', () {
     setUp(() {
       mailboxDashboardController.sessionCurrent = testSession;
@@ -1436,12 +1524,6 @@ void main() {
         route: AppRoutes.destinationPicker,
         open: () => mailboxDashboardController.selectFolderSearchFilter(),
         accountIdOf: (arguments) => (arguments as DestinationPickerArguments).accountId,
-      ),
-      (
-        name: 'gotoEmailRecovery',
-        route: AppRoutes.emailRecovery,
-        open: () async => mailboxDashboardController.gotoEmailRecovery(),
-        accountIdOf: (arguments) => (arguments as EmailRecoveryArguments).accountId,
       ),
     ];
 

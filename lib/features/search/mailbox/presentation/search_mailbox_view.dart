@@ -38,6 +38,9 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
   bool get canCreateFilter => controller.canCreateFilter;
 
   @override
+  bool get canRecoverDeletedMessages => controller.canRecoverDeletedMessages;
+
+  @override
   Widget build(BuildContext context) {
     if (PlatformInfo.isWeb) {
       return Scaffold(

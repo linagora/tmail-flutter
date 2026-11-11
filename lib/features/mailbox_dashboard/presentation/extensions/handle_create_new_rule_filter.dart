@@ -21,6 +21,7 @@ extension HandleCreateNewRuleFilter on MailboxDashBoardController {
     PresentationMailbox? presentationMailbox,
     EmailAddress? emailAddress,
   }) async {
+    if (!shownAccountCapabilities.canCreateFilter) return;
     final accountId = this.accountId.value;
     final session = sessionCurrent;
 
