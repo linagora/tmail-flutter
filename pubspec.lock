@@ -1489,8 +1489,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "temp/ds-2-3-combined"
-      resolved-ref: f268c502a7de92b614e30326d8553811d0a10fcc
+      ref: master
+      resolved-ref: cbc5f4027d6ad3f08821e525b394bffc35d3322d
       url: "https://github.com/linagora/linagora-design-flutter.git"
     source: git
     version: "0.4.2"

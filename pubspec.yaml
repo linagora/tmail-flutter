@@ -341,9 +341,7 @@ dependency_overrides:
   linagora_design_flutter:
     git:
       url: https://github.com/linagora/linagora-design-flutter.git
-      # Temporary: DS-2 (account switcher) + DS-3 (stacked avatars) combined, never merged.
-      # Switch back to master once both DS PRs are merged there.
-      ref: temp/ds-2-3-combined
+      ref: master
 
   ### Original dependency is abandoned, so we use fork
   intl_generator:

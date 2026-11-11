@@ -220,8 +220,8 @@ class _DelegationAvatarMenuState extends ConsumerState<_DelegationAvatarMenu> {
     final stack = LinagoraStackedAvatars(
       style: stackStyle,
       avatars: [
-        accountSwitcherAvatar(mineEmail, size),
         accountSwitcherAvatar(shown.ownerEmailAddress, size),
+        accountSwitcherAvatar(mineEmail, size),
       ],
     );
     // Tap layer on top: stacked avatar children otherwise swallow the hit.
