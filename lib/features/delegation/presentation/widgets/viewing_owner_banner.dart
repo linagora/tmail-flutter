@@ -11,7 +11,8 @@ import 'package:tmail_ui_user/features/delegation/presentation/utils/account_swi
 import 'package:tmail_ui_user/features/delegation/presentation/widgets/account_switcher_avatar.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-/// "Viewing [Owner] ✕" chip for the thread action row (Reload / Select all / Filter).
+/// "Viewing [Owner] ✕" chip for the desktop thread action row (Reload / Select all / Filter)
+/// and below the search bar on narrower web layouts.
 ///
 /// One owner avatar inside the pill. Stacked avatars stay on the top-right nav.
 class ViewingOwnerBanner extends ConsumerWidget {
