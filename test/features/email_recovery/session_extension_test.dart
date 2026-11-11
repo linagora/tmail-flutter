@@ -120,6 +120,11 @@ void main() {
       expect(session.getRestorationHorizonInDays(), 1);
     });
 
+    test('getRestorationHorizonInDays should return 1 when 0 days', () {
+      final session = sessionWithHorizon({"restorationHorizon": "0 days"});
+      expect(session.getRestorationHorizonInDays(), 1);
+    });
+
     test('getRestorationHorizonInDays should return 1 when 24 hours', () {
       final session = sessionWithHorizon({"restorationHorizon": "24 hours"});
       expect(session.getRestorationHorizonInDays(), 1);
