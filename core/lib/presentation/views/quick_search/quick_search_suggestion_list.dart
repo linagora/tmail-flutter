@@ -315,7 +315,7 @@ class QuickSearchSuggestionListState<T, P, R>
       );
     } else if (_animationController != null) {
       animationChild = SizeTransition(
-        axisAlignment: -1.0,
+        alignment: AlignmentDirectional.topStart,
         sizeFactor: CurvedAnimation(
           parent: _animationController!,
           curve: Curves.fastOutSlowIn,

@@ -96,11 +96,11 @@ class ApplicationManager {
   Future<String> getUserAgent() async {
     try {
       if (PlatformInfo.isWeb) {
-        return _getWebUserAgent();
+        return await _getWebUserAgent();
       }
 
       if (PlatformInfo.isMobile) {
-        return _getMobileUserAgent();
+        return await _getMobileUserAgent();
       }
 
       return '';

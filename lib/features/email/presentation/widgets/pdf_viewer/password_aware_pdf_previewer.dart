@@ -120,7 +120,7 @@ class _PasswordAwarePdfDocument extends PdfPreviewer {
 
     return PdfViewer.data(
       bytes,
-      sourceName: upstreamViewer.documentRef.sourceName,
+      sourceName: upstreamViewer.documentRef.key.sourceName,
       passwordProvider: passwordProvider,
       controller: upstreamViewer.controller,
       params: upstreamViewer.params,

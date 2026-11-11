@@ -94,27 +94,27 @@ List<HtmlPipelineRow> htmlPipelineRegistry() => [
 
 /// Pipelines that feed the composer: replies, drafts and signatures.
 List<HtmlPipelineRow> _composerPipelines() => [
-      HtmlPipelineRow(
+      const HtmlPipelineRow(
         name: 'forReplyForwardEmail',
         create: TransformConfiguration.forReplyForwardEmail,
         trust: HtmlPipelineTrust.sanitized,
         wiring: HtmlPipelineWiring.passesThrough,
-        rules: const HtmlPipelineRules(composer: true),
+        rules: HtmlPipelineRules(composer: true),
       ),
-      HtmlPipelineRow(
+      const HtmlPipelineRow(
         name: 'forReplyForwardEmptyEmail',
         create: TransformConfiguration.forReplyForwardEmptyEmail,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
-        rules: const HtmlPipelineRules(composer: true),
+        rules: HtmlPipelineRules(composer: true),
         allowsContentEditable: true,
       ),
-      HtmlPipelineRow(
+      const HtmlPipelineRow(
         name: 'forDraftsEmail',
         create: TransformConfiguration.forDraftsEmail,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
-        rules: const HtmlPipelineRules(displayOn: [DisplayViewer.drafts]),
+        rules: HtmlPipelineRules(displayOn: [DisplayViewer.drafts]),
       ),
       HtmlPipelineRow(
         name: 'forEditDraftsEmail-vm',
@@ -136,44 +136,44 @@ List<HtmlPipelineRow> _composerPipelines() => [
         setPlatform: () => PlatformInfo.isTestingForWeb = true,
         allowsContentEditable: true,
       ),
-      HtmlPipelineRow(
+      const HtmlPipelineRow(
         name: 'forSignatureIdentity',
         create: TransformConfiguration.forSignatureIdentity,
         trust: HtmlPipelineTrust.user,
         wiring: HtmlPipelineWiring.sanitizes,
-        rules: const HtmlPipelineRules(
+        rules: HtmlPipelineRules(
           displayOn: [DisplayViewer.signatureNative, DisplayViewer.signatureWeb],
         ),
       ),
-      HtmlPipelineRow(
+      const HtmlPipelineRow(
         name: 'forComposerSignature',
         create: TransformConfiguration.forComposerSignature,
         trust: HtmlPipelineTrust.user,
         wiring: HtmlPipelineWiring.sanitizes,
-        rules: const HtmlPipelineRules(composer: true),
+        rules: HtmlPipelineRules(composer: true),
         allowsContentEditable: true,
       ),
     ];
 
 /// Pipelines that show a received email or attachment.
 List<HtmlPipelineRow> _readingPipelines() => [
-      HtmlPipelineRow(
+      const HtmlPipelineRow(
         name: 'forPreviewEmailOnWeb',
         create: TransformConfiguration.forPreviewEmailOnWeb,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
-        rules: const HtmlPipelineRules(
+        rules: HtmlPipelineRules(
           displayOn: [DisplayViewer.web],
           preservation: true,
         ),
         allowsContentEditable: true,
       ),
-      HtmlPipelineRow(
+      const HtmlPipelineRow(
         name: 'forPreviewEmail',
         create: TransformConfiguration.forPreviewEmail,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
-        rules: const HtmlPipelineRules(
+        rules: HtmlPipelineRules(
           displayOn: [DisplayViewer.native, DisplayViewer.ios],
           preservation: true,
         ),
@@ -199,12 +199,12 @@ List<HtmlPipelineRow> _readingPipelines() => [
         setPlatform: () => PlatformInfo.isTestingForWeb = true,
         allowsContentEditable: true,
       ),
-      HtmlPipelineRow(
+      const HtmlPipelineRow(
         name: 'forPlainTextEmail',
         create: TransformConfiguration.forPlainTextEmail,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
-        rules: const HtmlPipelineRules(
+        rules: HtmlPipelineRules(
           displayOn: [DisplayViewer.native, DisplayViewer.web, DisplayViewer.ios],
           preservation: true,
         ),
@@ -217,38 +217,38 @@ List<HtmlPipelineRow> _readingPipelines() => [
         wiring: HtmlPipelineWiring.sanitizes,
         rules: const HtmlPipelineRules(preservation: true),
       ),
-      HtmlPipelineRow(
+      const HtmlPipelineRow(
         name: 'forAttachmentPreview',
         create: TransformConfiguration.forAttachmentPreview,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
-        rules: const HtmlPipelineRules(displayOn: [DisplayViewer.attachment]),
+        rules: HtmlPipelineRules(displayOn: [DisplayViewer.attachment]),
       ),
     ];
 
 /// Restore, print and calendar pipelines.
 List<HtmlPipelineRow> _otherPipelines() => [
-      HtmlPipelineRow(
+      const HtmlPipelineRow(
         name: 'forRestoreEmail',
         create: TransformConfiguration.forRestoreEmail,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
-        rules: const HtmlPipelineRules(composer: true),
+        rules: HtmlPipelineRules(composer: true),
         allowsContentEditable: true,
       ),
-      HtmlPipelineRow(
+      const HtmlPipelineRow(
         name: 'forPrintEmail',
         create: TransformConfiguration.forPrintEmail,
         trust: HtmlPipelineTrust.sanitized,
         wiring: HtmlPipelineWiring.stripsStyles,
-        rules: const HtmlPipelineRules(displayOn: [DisplayViewer.print]),
+        rules: HtmlPipelineRules(displayOn: [DisplayViewer.print]),
       ),
-      HtmlPipelineRow(
+      const HtmlPipelineRow(
         name: 'forCalendarEvent',
         create: TransformConfiguration.forCalendarEvent,
         trust: HtmlPipelineTrust.raw,
         wiring: HtmlPipelineWiring.sanitizes,
-        rules: const HtmlPipelineRules(
+        rules: HtmlPipelineRules(
           displayOn: [DisplayViewer.calendarNative, DisplayViewer.calendarWeb],
         ),
       ),

@@ -38,7 +38,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
-  FLUTTER_VERSION: 3.38.9
+  FLUTTER_VERSION: 3.47.9
 
 permissions:
   contents: read

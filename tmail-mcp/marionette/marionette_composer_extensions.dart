@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:marionette_flutter/marionette_flutter.dart';
 
 import 'composer/composer_body_driver.dart';
@@ -19,7 +18,8 @@ void registerComposerExtensions(ComposerBodyDriver driver) {
   );
 }
 
-@visibleForTesting
+// Called from registerComposerExtensions and from tmail-mcp/test (not under
+// package-root test/), so these stay public without @visibleForTesting.
 Future<MarionetteExtensionResult> handleSetBody(
   ComposerBodyDriver driver,
   Map<String, String> params,
@@ -29,7 +29,6 @@ Future<MarionetteExtensionResult> handleSetBody(
   return _toExtensionResult(await driver.setBody(text));
 }
 
-@visibleForTesting
 Future<MarionetteExtensionResult> handleGetBody(
   ComposerBodyDriver driver,
 ) async {

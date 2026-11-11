@@ -65,7 +65,7 @@ class TestBase {
         }
         try {
           final scenario = scenarioBuilder($, createRobotFactory($));
-          await setupTest(scenario, envOverrides: envOverrides);
+          await setupTest($, scenario, envOverrides: envOverrides);
           await scenario.execute();
         } catch (_) {
           dumpFailureState($);
@@ -76,6 +76,7 @@ class TestBase {
   }
 
   Future<void> setupTest(
+    PatrolIntegrationTester $,
     BaseScenario scenario, {
     Map<String, String> envOverrides = const {},
   }) async {
@@ -89,7 +90,14 @@ class TestBase {
     runApp(const TMailApp());
 
     final originalOnError = FlutterError.onError!;
+    var stateDumped = false;
     FlutterError.onError = (FlutterErrorDetails details) {
+      logFlutterErrorDetails(details);
+      // One dump per test: the first error carries the UI state that caused the rest.
+      if (!stateDumped) {
+        stateDumped = true;
+        dumpFailureState($);
+      }
       originalOnError(details);
     };
   }
