@@ -1,10 +1,13 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
+import 'package:tmail_ui_user/features/base/widget/hide_inside_cozy_widget.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/widgets/compact_account_switcher.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/app_bar/mobile_app_bar_thread_widget_style.dart';
@@ -73,6 +76,13 @@ class DefaultMobileAppBarThreadWidget extends StatelessWidget {
             onTapActionCallback: () => onContextMenuFilterEmailAction?.call(filterOption),
             onTapActionAtPositionCallback: (position) => onPopupMenuFilterEmailAction?.call(filterOption, position),
           ),
+          if (PlatformInfo.isWeb)
+            const HideInsideCozyWidget(
+              child: Padding(
+                padding: EdgeInsetsDirectional.only(start: 8),
+                child: CompactAccountSwitcher(),
+              ),
+            ),
         ],
       ),
     );
