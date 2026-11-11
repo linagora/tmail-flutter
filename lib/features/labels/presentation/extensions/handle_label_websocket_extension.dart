@@ -29,10 +29,11 @@ extension HandleLabelWebsocketExtension on LabelController {
 
   Future<void> handleWebSocketMessage(WebSocketMessage message) async {
     try {
+      final requestAccountId = accountId!;
       final refreshViewState = await getLabelChangesInteractor!
           .execute(
             session!,
-            accountId!,
+            requestAccountId,
             currentLabelState!,
           )
           .last;
@@ -40,7 +41,9 @@ extension HandleLabelWebsocketExtension on LabelController {
       final refreshState =
           refreshViewState.foldSuccessWithResult<GetLabelChangesSuccess>();
 
-      if (refreshState is GetLabelChangesSuccess) {
+      if (accountId != requestAccountId) {
+        logWarning('HandleLabelWebsocketExtension::handleWebSocketMessage: skip changes of a previously shown account');
+      } else if (refreshState is GetLabelChangesSuccess) {
         await _handleGetLabelChangesSuccess(refreshState);
       } else if (refreshState != null) {
         onDataFailureViewState(refreshState);
