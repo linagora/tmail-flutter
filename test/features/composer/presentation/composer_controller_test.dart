@@ -12,6 +12,7 @@ import 'package:core/presentation/utils/html_transformer/dom/normalize_line_heig
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:dartz/dartz.dart';
@@ -509,6 +510,7 @@ List<List<String>> _recordStartedDriveBatches(ProviderContainer container) {
   // Additional misc dependencies mock specs
   MockSpec<HtmlEditorApi>(),
   MockSpec<HtmlEditorController>(),
+  MockSpec<InAppWebViewController>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -1334,6 +1336,54 @@ void main() {
         expect(composerController?.isEmailChanged.value, isFalse);
       });
 
+      test(
+        'Should update _savedEmailDraftHash on web\n'
+        'When email action type is editDraft\n'
+        'And identity is already selected from the draft header',
+      () async {
+        // arrange
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+        composerController?.composerArguments.value = ComposerArguments(
+          emailActionType: EmailActionType.editDraft,
+          identities: [identity],
+        );
+        composerController?.currentEmailActionType = EmailActionType.editDraft;
+        composerController?.identitySelected.value = identity;
+        composerController?.setTextEditorWeb(emailContent);
+        composerController?.subjectEmail.value = emailSubject;
+
+        when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
+        when(mockComposerRepository.removeCollapsedExpandedSignatureEffect(
+          emailContent: anyNamed('emailContent'),
+        )).thenAnswer((_) async => emailContent);
+
+        final savedEmailDraft = SavedComposingEmail(
+          content: emailContent,
+          subject: emailSubject,
+          toRecipients: {},
+          ccRecipients: {},
+          bccRecipients: {},
+          replyToRecipients: {},
+          identity: identity,
+          attachments: [attachment],
+          hasReadReceipt: false,
+          isMarkAsImportant: false,
+        );
+
+        // act
+        await composerController?.setupSelectedIdentity();
+        await Future.delayed(const Duration(milliseconds: 100));
+
+        // assert
+        expect(
+          composerController?.savedEmailDraftHash,
+          equals(savedEmailDraft.asString().hashCode),
+        );
+        expect(composerController?.isEmailChanged.value, isFalse);
+      });
+
       for (final actionType in [
         EmailActionType.compose,
         EmailActionType.reply,
@@ -1471,6 +1521,64 @@ void main() {
 
         // assert
         expect(composerController?.restoringSignatureButton, isFalse);
+      });
+    });
+
+    group('selectIdentity signature removal test:', () {
+      final formerIdentity = Identity(id: IdentityId(Id('former')), name: 'Former');
+      final nextIdentity = Identity(id: IdentityId(Id('next')), name: 'Next');
+
+      setUp(() {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        composerController?.richTextWebController = mockRichTextWebController;
+        reset(mockRichTextWebController.editorController);
+        reset(mockHtmlEditorApi);
+      });
+
+      test(
+        'Should remove every signature through the tmail script\n'
+        'When switching from a former identity',
+      () async {
+        composerController?.identitySelected.value = formerIdentity;
+
+        await composerController?.selectIdentity(nextIdentity);
+
+        verify(mockRichTextWebController.editorController
+            .evaluateJavascriptWeb(HtmlUtils.removeAllSignatures.name)).called(1);
+        verifyNever(mockRichTextWebController.editorController.removeSignature());
+        verifyNever(mockRichTextWebController.editorController.getText());
+      });
+
+      test(
+        'Should not remove any signature\n'
+        'When there is no former identity',
+      () async {
+        composerController?.identitySelected.value = null;
+
+        await composerController?.selectIdentity(nextIdentity);
+
+        verifyNever(mockRichTextWebController.editorController
+            .evaluateJavascriptWeb(HtmlUtils.removeAllSignatures.name));
+      });
+
+      test(
+        'Should remove every signature through the tmail script on mobile\n'
+        'When switching from a former identity',
+      () async {
+        PlatformInfo.isTestingForWeb = false;
+        final mockWebViewController = MockInAppWebViewController();
+        composerController?.richTextMobileTabletController = mockRichTextMobileTabletController;
+        when(mockRichTextMobileTabletController.htmlEditorApi).thenReturn(mockHtmlEditorApi);
+        when(mockHtmlEditorApi.webViewController).thenReturn(mockWebViewController);
+        composerController?.identitySelected.value = formerIdentity;
+
+        await composerController?.selectIdentity(nextIdentity);
+
+        verify(mockWebViewController.evaluateJavascript(
+          source: HtmlUtils.removeAllSignatures.script,
+        )).called(1);
+        verifyNever(mockHtmlEditorApi.removeSignature());
       });
     });
 

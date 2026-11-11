@@ -72,7 +72,9 @@ abstract class AbstractCommonRobot extends CoreRobot {
       );
     }
 
-    ComposerBindings().dispose();
+    // No ComposerBindings().dispose() here: it runs with the default (null) tag,
+    // so it would delete the dashboard's own untagged registrations (for example
+    // ManageAccountRepository) and break closing a composer later in the test.
   }
 
   // A swallowed send failure otherwise surfaces 90 s later as a missing tile

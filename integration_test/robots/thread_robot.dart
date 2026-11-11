@@ -1,15 +1,18 @@
 import 'package:core/presentation/views/search/search_bar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
 import 'package:labels/extensions/label_extension.dart';
 import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
+import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/scroll_to_top_button_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
+import '../utils/test_timeouts.dart';
 import '../utils/wait_for_condition.dart';
 import 'abstract/abstract_thread_assertion_robot.dart';
 import 'abstract/abstract_thread_empty_trash_robot.dart';
@@ -18,6 +21,9 @@ import 'thread_assertion_robot.dart';
 import 'thread_empty_trash_robot.dart';
 
 class ThreadRobot extends CoreRobot {
+  static const Duration _emailOpenPumpDuration = Duration(seconds: 2);
+  static const Duration _emailListRefreshInterval = Duration(seconds: 5);
+
   final AbstractThreadAssertionRobot assertion;
   final AbstractThreadEmptyTrashRobot emptyTrash;
   final AbstractThreadViewportRobot? viewport;
@@ -45,9 +51,7 @@ class ThreadRobot extends CoreRobot {
   Future<void> openEmailWithSubject(String subject) async {
     final email = $(EmailTileBuilder)
       .which<EmailTileBuilder>((view) => view.presentationEmail.subject == subject);
-    await $.waitUntilVisible(email);
-    await email.tap();
-    await $.pump(const Duration(seconds: 2));
+    await openEmailTile(email);
   }
 
   Future<void> openEmailWithLabel(String labelDisplayName) async {
@@ -57,9 +61,31 @@ class ThreadRobot extends CoreRobot {
               ?.any((label) => label.safeDisplayName == labelDisplayName) ==
           true,
     );
-    await $.waitUntilVisible(email);
-    await email.tap();
-    await $.pump(const Duration(seconds: 2));
+    await openEmailTile(email);
+  }
+
+  /// Provisioned emails go through asynchronous server-side delivery: the single
+  /// refresh issued right after provisioning may run before the email lands, and
+  /// nothing else is guaranteed to reload the list. Periodically re-query it
+  /// until the tile shows up. Each pump also yields to the event loop, which
+  /// waitUntilVisible's frame-only retry loop does not (web XHR callbacks).
+  Future<void> openEmailTile(PatrolFinder emailFinder) async {
+    final sinceLastRefresh = Stopwatch()..start();
+    await waitForCondition(
+      () async {
+        await $.pump();
+        if (emailFinder.evaluate().isNotEmpty) return true;
+        if (sinceLastRefresh.elapsed >= _emailListRefreshInterval) {
+          sinceLastRefresh.reset();
+          await Get.find<ThreadController>().refreshAllEmail();
+        }
+        return false;
+      },
+      timeout: TestTimeouts.long,
+      reason: 'email tile to appear in the list',
+    );
+    await emailFinder.tap();
+    await $.pump(_emailOpenPumpDuration);
   }
 
   Future<void> openMailbox() async {

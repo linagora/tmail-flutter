@@ -73,15 +73,82 @@ void main() {
   group('HideDraftSignatureTransformer', () {
     const transformer = HideDraftSignatureTransformer();
 
-    test('hides a visible signature', () async {
+    Future<String?> styleAfterHide(String html) async {
       final document = await run(
         (doc) => transformer.process(document: doc, dioClient: dioClient),
+        html,
+      );
+      return document.querySelector('.tmail-signature')!.attributes['style'];
+    }
+
+    test('hides a visible signature nested in quoted content', () async {
+      final style = await styleAfterHide(
+        '<blockquote><div class="tmail-signature" style="display: block;">Sig</div></blockquote>',
+      );
+      expect(style, contains('display: none'));
+    });
+
+    test('keeps a top-level signature without style visible', () async {
+      expect(await styleAfterHide('<div class="tmail-signature">Sig</div>'), isNull);
+    });
+
+    test('keeps a top-level signature with visible style visible', () async {
+      final style = await styleAfterHide(
         '<div class="tmail-signature" style="display: block;">Sig</div>',
       );
+      expect(style, 'display: block;');
+    });
+
+    test('hides a nested signature that has no style attribute', () async {
       expect(
-        document.querySelector('.tmail-signature')!.attributes['style'],
-        contains('display: none'),
+        await styleAfterHide(
+          '<blockquote><div class="tmail-signature">Sig</div></blockquote>',
+        ),
+        'display: none !important;',
       );
+    });
+
+    test('hides a nested signature whose style has no trailing semicolon', () async {
+      final style = await styleAfterHide(
+        '<blockquote><div class="tmail-signature" style="color: red">Sig</div></blockquote>',
+      );
+      expect(style, 'color: red; display: none !important;');
+    });
+
+    test('hides a nested signature whose display uses !important', () async {
+      final style = await styleAfterHide(
+        '<blockquote><div class="tmail-signature" '
+        'style="display: block !important;">Sig</div></blockquote>',
+      );
+      expect(style, 'display: none !important;');
+      expect(style, isNot(contains('display: block')));
+    });
+
+    test('keeps semicolons inside a data URL of a nested signature', () async {
+      final style = await styleAfterHide(
+        '<blockquote><div class="tmail-signature" style="display: block !important; '
+        'background-image: url(data:image/gif;base64,R0lGOD)">Sig</div></blockquote>',
+      );
+      expect(
+        style,
+        'background-image: url(data:image/gif;base64,R0lGOD); display: none !important;',
+      );
+    });
+
+    test('keeps semicolons inside a quoted URL of a nested signature', () async {
+      final style = await styleAfterHide(
+        '<blockquote><div class="tmail-signature" '
+        'style="background: url(\'a;display:block\')">Sig</div></blockquote>',
+      );
+      expect(style, "background: url('a;display:block'); display: none !important;");
+    });
+
+    test('hides a nested signature whose style is malformed', () async {
+      final style = await styleAfterHide(
+        '<blockquote><div class="tmail-signature" '
+        'style="background: url(\'unterminated">Sig</div></blockquote>',
+      );
+      expect(style, 'display: none !important;');
     });
   });
 

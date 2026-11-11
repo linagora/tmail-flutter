@@ -17,6 +17,7 @@ import '../abstract/abstract_composer_editor_keyboard_robot.dart';
 import '../abstract/abstract_composer_recipient_robot.dart';
 import '../abstract/abstract_composer_reload_robot.dart';
 import '../abstract/abstract_composer_robot.dart';
+import '../abstract/abstract_composer_signature_robot.dart';
 import '../composer_recipient_robot.dart';
 import '../composer_robot.dart';
 import '../../utils/wait_for_condition.dart';
@@ -34,12 +35,16 @@ class MobileComposerRobot extends ComposerRobot implements AbstractComposerRobot
   @override
   final AbstractComposerCodeViewRobot? codeView;
 
+  @override
+  final AbstractComposerSignatureRobot? signature;
+
   MobileComposerRobot(
     PatrolIntegrationTester $, {
     AbstractComposerRecipientRobot? recipientRobot,
     this.reload,
     this.editorKeyboard,
     this.codeView,
+    this.signature,
   })  : recipient = recipientRobot ?? ComposerRecipientRobot($),
         super($);
 
@@ -55,6 +60,22 @@ class MobileComposerRobot extends ComposerRobot implements AbstractComposerRobot
       () => discardButton.exists || !$(ComposerView).exists,
     );
     if (discardButton.exists) await tapDiscardChanges();
+    await waitForCondition(() => !$(ComposerView).exists);
+  }
+
+  @override
+  Future<void> expectComposerClosedWithoutSavePrompt() async {
+    final discardButton = $(AppLocalizations().discardChanges);
+    await tapCloseComposer();
+    await waitForCondition(
+      () => discardButton.exists || !$(ComposerView).exists,
+      reason: 'composer to close or ask to save the draft',
+    );
+    expect(
+      discardButton.exists,
+      isFalse,
+      reason: 'closing an unmodified composer must not ask to save the draft',
+    );
     await waitForCondition(() => !$(ComposerView).exists);
   }
 

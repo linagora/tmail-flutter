@@ -1,6 +1,5 @@
 
 import 'package:collection/collection.dart';
-import 'package:core/core.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
@@ -9,9 +8,10 @@ extension SetupSelectedIdentityExtension on ComposerController {
 
   Future<void> setupSelectedIdentity() async {
     if (identitySelected.value != null) {
+      // The identity comes from the email header, so nothing below runs. These
+      // actions still need their baseline draft hash taken here.
       if (currentEmailActionType == EmailActionType.editAsNewEmail ||
-          (PlatformInfo.isMobile &&
-              currentEmailActionType == EmailActionType.editDraft)) {
+          currentEmailActionType == EmailActionType.editDraft) {
         onCompleteSetupComposer();
       }
       return;

@@ -8,13 +8,16 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.d
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/web_editor_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
+import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
 import '../mobile/mobile_composer_robot.dart';
 import 'web_composer_code_view_robot.dart';
 import 'web_composer_controller_finder.dart';
+import 'web_composer_editor_dom.dart';
 import 'web_composer_editor_keyboard_robot.dart';
 import 'web_composer_recipient_robot.dart';
 import 'web_composer_reload_robot.dart';
+import 'web_composer_signature_assertion_robot.dart';
 
 /// Web-specific composer robot. Overrides [addContent] because InAppWebView
 /// is unavailable on web — content is injected via Patrol's web automator.
@@ -26,6 +29,7 @@ class WebComposerRobot extends MobileComposerRobot {
           reload: WebComposerReloadRobot($),
           editorKeyboard: WebComposerEditorKeyboardRobot($),
           codeView: WebComposerCodeViewRobot($),
+          signature: WebComposerSignatureAssertionRobot($),
         );
 
   @override
@@ -101,5 +105,21 @@ class WebComposerRobot extends MobileComposerRobot {
   @override
   Future<void> expectInsertLinkDialogVisible(AppLocalizations appLocalizations) async {
     await $.waitUntilVisible($(find.text(appLocalizations.apply)));
+  }
+
+  /// Waits on the live Summernote iframe only. Cached `textEditorWeb` can hold
+  /// the signature HTML before the iframe paints, which races later asserts.
+  /// Requires the signature not to be `display: none` so a hidden draft
+  /// signature does not satisfy the wait (TF-5094 failure mode).
+  @override
+  Future<void> waitForSignatureToLoad() {
+    return waitForCondition(
+      () {
+        final signature = findSignatureElement();
+        return signature != null && !signatureStyleIsHidden(signature);
+      },
+      timeout: TestTimeouts.long,
+      reason: 'visible identity signature in the web editor iframe',
+    );
   }
 }
