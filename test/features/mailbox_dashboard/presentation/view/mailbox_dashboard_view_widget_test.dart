@@ -1022,7 +1022,7 @@ void main() {
           addTearDown(() => when(responsiveUtils.isDesktop(any)).thenReturn(false));
           await pumpDesktopDashboard(tester, canOpenSettings: canOpenSettings);
 
-          expect(find.byKey(const Key('recover_deleted_messages_button')), expected);
+          expect(find.byKey(const Key(UiKeys.recoverDeletedMessagesButton)), expected);
 
           WidgetFixtures.resetResponsive(tester);
         });

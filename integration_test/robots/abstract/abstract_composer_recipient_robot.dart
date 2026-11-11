@@ -19,4 +19,7 @@ abstract class AbstractComposerRecipientRobot {
   });
 
   Future<void> tapRecipientInput(PrefixEmailAddress prefix);
+
+  /// Opens the action menu of the first chip in the [prefix] field.
+  Future<void> openFirstRecipientMenu(PrefixEmailAddress prefix);
 }
