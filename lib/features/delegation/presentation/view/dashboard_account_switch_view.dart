@@ -47,6 +47,7 @@ class DashboardAccountSwitchView implements AccountSwitchView {
   @override
   void catchUpAccount(ActiveAccount account, int switchAttemptId) {
     _dashboard.resetForNewAccount();
+    _dashboard.reloadLabelSettingForShownAccount();
     if (!_loads.hasFoldersLoad(switchAttemptId)) _requestReload(switchAttemptId);
   }
 
