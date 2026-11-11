@@ -6,6 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/email_address_action_type.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_tag_item_widget.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_capabilities.dart';
@@ -18,7 +20,11 @@ import '../../../../fixtures/delegation_fixtures.dart';
 void main() {
   final recipient = EmailAddress('Recipient', 'recipient@example.com');
 
-  Future<void> openRecipientMenu(WidgetTester tester, {required ActiveAccount? shownAccount}) async {
+  Future<void> openRecipientMenu(
+    WidgetTester tester, {
+    required ActiveAccount? shownAccount,
+    OnEditRecipientAction? onEditRecipientAction,
+  }) async {
     await tester.pumpWidget(ProviderScope(
       overrides: [
         shownAccountCapabilitiesProvider.overrideWithValue(ShownAccountCapabilities.of(shownAccount)),
@@ -42,6 +48,7 @@ void main() {
               currentEmailAddress: recipient,
               currentListEmailAddress: [recipient],
               imagePaths: ImagePaths(),
+              onEditRecipientAction: onEditRecipientAction,
             ),
           ),
         ),
@@ -65,6 +72,25 @@ void main() {
     );
 
     expect(find.text('Edit email'), findsOneWidget);
+    expect(find.text('Create a rule'), findsNothing);
+  });
+
+  testWidgets('choosing create a rule closes the recipient menu and asks to create a rule for that recipient', (tester) async {
+    final actions = <EmailAddressActionType>[];
+    await openRecipientMenu(
+      tester,
+      shownAccount: null,
+      onEditRecipientAction: (_, prefix, emailAddress, actionType) {
+        expect(prefix, PrefixEmailAddress.to);
+        expect(emailAddress, recipient);
+        actions.add(actionType);
+      },
+    );
+
+    await tester.tap(find.text('Create a rule'));
+    await tester.pumpAndSettle();
+
+    expect(actions, [EmailAddressActionType.createRule]);
     expect(find.text('Create a rule'), findsNothing);
   });
 }

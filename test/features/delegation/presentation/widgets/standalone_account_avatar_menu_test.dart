@@ -4,62 +4,27 @@ import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/account_switch_result.dart';
-import 'package:tmail_ui_user/features/delegation/presentation/model/account_switch_state.dart';
-import 'package:tmail_ui_user/features/delegation/presentation/model/account_switch_view.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/account_switch_view_factory_provider.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/utils/account_switch_failure_toast.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/widgets/standalone_account_avatar_menu.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/profile_setting/profile_setting_action_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/profile_setting/profile_setting_icon.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/profile_setting/profile_setting_menu_overlay.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/providers/app_toast_provider.dart';
 
+import '../../../../fixtures/account_switch_fakes.dart';
 import '../../../../fixtures/delegation_fixtures.dart';
 import '../../../../fixtures/recording_app_toast.dart';
-
-class _FakeSwitchView implements AccountSwitchView {
-  @override
-  bool get hasOpenComposer => false;
-
-  @override
-  void blockInput() {}
-
-  @override
-  void unblockInput() {}
-
-  @override
-  void clearSelectionAndSearch() {}
-
-  @override
-  Future<void> loadAccount(account, int switchAttemptId) async {}
-
-  @override
-  void catchUpAccount(account, int switchAttemptId) {}
-}
-
-class _RecordingSwitchNotifier extends AccountSwitchNotifier {
-  final List<AccountId> switchToCalls = [];
-  AccountSwitchResult nextResult = const AccountSwitched();
-
-  @override
-  AccountSwitchState build() => const AccountSwitchIdle();
-
-  @override
-  Future<AccountSwitchResult> switchTo(
-    AccountId targetAccountId,
-    AccountSwitchView view,
-  ) async {
-    switchToCalls.add(targetAccountId);
-    return nextResult;
-  }
-}
 
 Widget _app(ProviderContainer container, {required Widget child}) {
   return UncontrolledProviderScope(
@@ -85,27 +50,28 @@ Widget _app(ProviderContainer container, {required Widget child}) {
 
 StandaloneAccountAvatarMenu _menu({
   List<ProfileSettingActionType>? settingActionTypes,
+  OnProfileSettingActionTypeClick? onProfileSettingActionTypeClick,
 }) =>
     StandaloneAccountAvatarMenu(
       ownEmailAddress: DelegationFixtures.aliceAddress,
       settingActionTypes: settingActionTypes ??
           ProfileSettingActionType.shown(canOpenSettings: true),
-      onProfileSettingActionTypeClick: (_) {},
+      onProfileSettingActionTypeClick: onProfileSettingActionTypeClick ?? (_) {},
     );
 
 void main() {
   late ProviderContainer container;
-  late _RecordingSwitchNotifier switchNotifier;
+  late RecordingAccountSwitchNotifier switchNotifier;
   late RecordingAppToast appToast;
 
   setUp(() {
-    switchNotifier = _RecordingSwitchNotifier();
+    switchNotifier = RecordingAccountSwitchNotifier();
     appToast = RecordingAppToast();
     container = ProviderContainer(
       overrides: [
         accountSwitchProvider.overrideWith(() => switchNotifier),
         accountSwitchViewFactoryProvider
-            .overrideWithValue((_) => _FakeSwitchView()),
+            .overrideWithValue((_) => FakeAccountSwitchView()),
         appToastProvider.overrideWithValue(appToast.toast),
       ],
     );
@@ -151,6 +117,33 @@ void main() {
     expect(find.byKey(LinagoraAccountMenuActions.manageKey), findsOneWidget);
     expect(find.byKey(LinagoraAccountMenuActions.signOutKey), findsOneWidget);
   });
+
+  for (final (actionKey, actionType) in [
+    (LinagoraAccountMenuActions.manageKey, ProfileSettingActionType.manageAccount),
+    (LinagoraAccountMenuActions.signOutKey, ProfileSettingActionType.signOut),
+  ]) {
+    testWidgets('choosing $actionType closes the account menu and reports it',
+        (tester) async {
+      container
+          .read(activeAccountProvider.notifier)
+          .applySession(DelegationFixtures.session());
+      DelegationFixtures.turnDelegationOn(container);
+      final clicked = <ProfileSettingActionType>[];
+
+      await tester.pumpWidget(_app(
+        container,
+        child: _menu(onProfileSettingActionTypeClick: clicked.add),
+      ));
+      await tester.pump();
+      await tester.tap(find.byKey(const ValueKey(UiKeys.userAvatar)));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(actionKey));
+      await tester.pumpAndSettle();
+
+      expect(clicked, [actionType]);
+      expect(find.byKey(const ValueKey(UiKeys.accountSwitcherMenu)), findsNothing);
+    });
+  }
 
   testWidgets('the account menu and its outside-tap barrier take the clicks above a web composer editor',
       (tester) async {
@@ -254,6 +247,36 @@ void main() {
     expect(switchNotifier.switchToCalls, [DelegationFixtures.bobAccountId]);
   });
 
+  testWidgets('selecting a delegated row releases the focus of the shown mailbox',
+      (tester) async {
+    container
+        .read(activeAccountProvider.notifier)
+        .applySession(DelegationFixtures.session());
+    DelegationFixtures.turnDelegationOn(container);
+    final searchFocus = FocusNode();
+    addTearDown(searchFocus.dispose);
+
+    await tester.pumpWidget(_app(
+      container,
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        _menu(),
+        SizedBox(width: 200, child: TextField(focusNode: searchFocus)),
+      ]),
+    ));
+    await tester.pump();
+    searchFocus.requestFocus();
+    await tester.tap(find.byKey(const ValueKey(UiKeys.userAvatar)));
+    await tester.pumpAndSettle();
+    expect(searchFocus.hasFocus, isTrue);
+
+    await tester.tap(
+      find.byKey(LinagoraAccountMenu.itemKey(DelegationFixtures.bobAccountId)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(searchFocus.hasFocus, isFalse);
+  });
+
   testWidgets('toasts when switchTo fails after a menu select', (tester) async {
     switchNotifier.nextResult =
         AccountSwitchFailed(Exception('load'), StackTrace.current);
@@ -324,6 +347,39 @@ void main() {
     expect(
       appToast.successMessages,
       [AppLocalizations().email_address_copied_to_clipboard],
+    );
+  });
+
+  testWidgets('a failed switch to an account the session no longer lists toasts its id',
+      (tester) async {
+    switchNotifier.nextResult = const AccountSwitchTimedOut();
+    container
+        .read(activeAccountProvider.notifier)
+        .applySession(DelegationFixtures.session());
+    final unlistedAccountId = AccountId(Id('unlisted-account'));
+    late BuildContext capturedContext;
+    late WidgetRef capturedRef;
+
+    await tester.pumpWidget(_app(
+      container,
+      child: Consumer(builder: (context, ref, _) {
+        capturedContext = context;
+        capturedRef = ref;
+        return const SizedBox.shrink();
+      }),
+    ));
+    await tester.pump();
+    await switchShownAccountOrToastFailure(
+      context: capturedContext,
+      ref: capturedRef,
+      shown: container.read(activeAccountProvider)!,
+      targetAccountId: unlistedAccountId,
+    );
+
+    expect(switchNotifier.switchToCalls, [unlistedAccountId]);
+    expect(
+      appToast.errorMessages,
+      [AppLocalizations().couldNotOpenOwnerMailbox('unlisted-account')],
     );
   });
 }

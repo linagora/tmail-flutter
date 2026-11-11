@@ -3962,6 +3962,20 @@ void main() {
               .called(1);
         },
       );
+
+      test(
+        'SHOULD offer the server default identities of a refetch '
+        'WHEN a delegated account that has no editable identity is shown',
+        () {
+          arrangeShownAccount(bobShown, [serverDefault]);
+
+          composerController!.handleSuccessViewState(
+            GetAllIdentitiesSuccess([serverDefault], null),
+          );
+
+          expect(composerController!.listFromIdentities, [serverDefault]);
+        },
+      );
     });
   });
 }

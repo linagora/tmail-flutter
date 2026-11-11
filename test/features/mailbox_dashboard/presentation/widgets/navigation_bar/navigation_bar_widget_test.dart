@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/profile_setting/profile_setting_action_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/navigation_bar_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/profile_setting/profile_setting_icon.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 
@@ -32,12 +33,38 @@ void main() {
       ResponsiveUtils.defaultSizeMenu,
     );
   });
+
+  for (final withSearchForm in [true, false]) {
+    final layout = withSearchForm ? 'with' : 'without';
+
+    testWidgets('shows the supplied profile menu in place of the profile icon $layout a search form',
+        (tester) async {
+      await _pumpNavigationBar(
+        tester,
+        withSearchForm: withSearchForm,
+        profileMenu: const SizedBox(key: Key('profile-menu')),
+      );
+
+      expect(find.byKey(const Key('profile-menu')), findsOneWidget);
+      expect(find.byType(ProfileSettingIcon), findsNothing);
+    });
+
+    testWidgets('keeps the profile icon when no profile menu is supplied $layout a search form',
+        (tester) async {
+      await _pumpNavigationBar(tester, withSearchForm: withSearchForm);
+
+      expect(find.byType(ProfileSettingIcon), findsOneWidget);
+    });
+  }
 }
 
 Future<void> _pumpNavigationBar(
   WidgetTester tester, {
   double? leadingWidth,
+  bool withSearchForm = true,
+  Widget? profileMenu,
 }) async {
+  const searchForm = SizedBox(key: Key('search-form'));
   Get.put<ImagePaths>(ImagePaths());
   addTearDown(Get.reset);
   final dpi = tester.view.devicePixelRatio;
@@ -49,17 +76,19 @@ Future<void> _pumpNavigationBar(
           imagePaths: ImagePaths(),
           accountId: null,
           ownEmailAddress: 'user@example.com',
-          searchForm: const SizedBox(key: Key('search-form')),
+          searchForm: withSearchForm ? searchForm : null,
           settingActionTypes: const <ProfileSettingActionType>[],
           onProfileSettingActionTypeClick: (_) {},
+          profileMenu: profileMenu,
         )
       : NavigationBarWidget(
           imagePaths: ImagePaths(),
           accountId: null,
           ownEmailAddress: 'user@example.com',
-          searchForm: const SizedBox(key: Key('search-form')),
+          searchForm: withSearchForm ? searchForm : null,
           settingActionTypes: const <ProfileSettingActionType>[],
           onProfileSettingActionTypeClick: (_) {},
+          profileMenu: profileMenu,
           leadingWidth: leadingWidth,
         );
 
