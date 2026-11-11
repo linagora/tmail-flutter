@@ -27,6 +27,7 @@ import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/token_oidc_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/manager/sentry_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/caching/manager/session_cache_manger.dart';
+import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_login_url_cache_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_login_username_cache_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_search_cache_manager.dart';
@@ -91,7 +92,9 @@ class LocalBindings extends Bindings {
     Get.put(EncryptionKeyCacheClient());
     Get.put(EncryptionKeyCacheManager(Get.find<EncryptionKeyCacheClient>()));
     Get.put(AuthenticationInfoCacheClient());
-    Get.put(AuthenticationInfoCacheManager(Get.find<AuthenticationInfoCacheClient>()));
+    Get.put(AuthenticationInfoCacheManager(
+      Get.find<AuthenticationInfoCacheClient>(),
+      Get.find<SessionStorageManager>()));
     Get.put(OidcConfigurationCacheClient());
     Get.put(OidcConfigurationCacheManager(Get.find<SharedPreferences>(), Get.find<OidcConfigurationCacheClient>()));
     Get.put(LanguageCacheManager(Get.find<SharedPreferences>()));
