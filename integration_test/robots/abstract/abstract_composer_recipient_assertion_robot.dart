@@ -5,4 +5,5 @@ abstract class AbstractComposerRecipientAssertionRobot {
   void expectRecipientInputOnOwnLine(PrefixEmailAddress prefix);
   void expectRecipientInputFocused(PrefixEmailAddress prefix);
   Future<void> expectRecipientVisible(PrefixEmailAddress prefix, String email);
+  Future<void> expectFromSelected(String email);
 }
