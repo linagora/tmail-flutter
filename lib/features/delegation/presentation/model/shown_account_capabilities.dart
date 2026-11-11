@@ -30,6 +30,10 @@ class ShownAccountCapabilities with EquatableMixin {
   /// editable one, so my own account never offers them.
   final bool offersServerDefaultIdentities;
 
+  /// The vacation banner holds and ends my own vacation, so it stays off while a delegated
+  /// account is shown.
+  final bool showsMyVacationBanner;
+
   const ShownAccountCapabilities._({
     required this.canOpenSettings,
     required this.canCreateFilter,
@@ -38,6 +42,7 @@ class ShownAccountCapabilities with EquatableMixin {
     required this.canApplyMyComposerSettings,
     required this.showsViewingOwnerChrome,
     required this.offersServerDefaultIdentities,
+    required this.showsMyVacationBanner,
   });
 
   factory ShownAccountCapabilities.of(ActiveAccount? shownAccount) {
@@ -51,6 +56,7 @@ class ShownAccountCapabilities with EquatableMixin {
       canApplyMyComposerSettings: !delegatedShown,
       showsViewingOwnerChrome: delegatedShown,
       offersServerDefaultIdentities: delegatedShown,
+      showsMyVacationBanner: !delegatedShown,
     );
   }
 
@@ -63,5 +69,6 @@ class ShownAccountCapabilities with EquatableMixin {
         canApplyMyComposerSettings,
         showsViewingOwnerChrome,
         offersServerDefaultIdentities,
+        showsMyVacationBanner,
       ];
 }

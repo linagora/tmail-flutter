@@ -998,12 +998,11 @@ void main() {
         WidgetFixtures.resetResponsive(tester);
       });
 
-      testWidgets('the vacation banner of the email list has no link to the vacation settings while Settings cannot open',
+      testWidgets('the email list does not show my vacation banner while a delegated mailbox is shown',
           (tester) async {
         await pumpDesktopDashboard(tester, canOpenSettings: false);
 
-        expect(find.byType(VacationNotificationMessageWidget), findsOneWidget);
-        expect(find.text('Vacation setting'), findsNothing);
+        expect(find.byType(VacationNotificationMessageWidget), findsNothing);
 
         WidgetFixtures.resetResponsive(tester);
       });
