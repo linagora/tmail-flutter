@@ -212,6 +212,18 @@ void main() {
     expect(_newController().canCreateFilter, isTrue);
   });
 
+  test('the folder menu offers no deleted messages recovery while a delegated account is shown', () {
+    ActiveAccountSourceFixtures.put(DelegationFixtures.session(), shownAccountId: DelegationFixtures.bobAccountId);
+
+    expect(_newController().canRecoverDeletedMessages, isFalse);
+  });
+
+  test('the folder menu offers deleted messages recovery while my own account is shown', () {
+    ActiveAccountSourceFixtures.put(DelegationFixtures.session());
+
+    expect(_newController().canRecoverDeletedMessages, isTrue);
+  });
+
   test('the folders of an account shown before never reach folder search once another one is shown',
       () async {
     final myFolders = StreamController<Either<Failure, Success>>();

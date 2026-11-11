@@ -6,12 +6,14 @@ import 'package:tmail_ui_user/features/paywall/presentation/providers/premium_ct
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 extension PremiumCtaContextExtension on MailboxDashBoardController {
-  PremiumCtaContext? get currentPremiumCtaContext => _buildPremiumCtaContext(
-        session: sessionCurrent,
-        accountId: accountId.value,
-        ownerEmail: ownEmailAddress.value,
-        jmapUrl: dynamicUrlInterceptors.jmapUrl,
-      );
+  PremiumCtaContext? get currentPremiumCtaContext => shownAccountCapabilities.offersMyPremium
+      ? _buildPremiumCtaContext(
+          session: sessionCurrent,
+          accountId: accountId.value,
+          ownerEmail: ownEmailAddress.value,
+          jmapUrl: dynamicUrlInterceptors.jmapUrl,
+        )
+      : null;
 }
 
 extension ManageAccountPremiumCtaContextExtension

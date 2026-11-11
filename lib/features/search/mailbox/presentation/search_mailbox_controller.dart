@@ -118,6 +118,8 @@ class SearchMailboxController extends BaseMailboxController
 
   bool get canCreateFilter => shownAccountCapabilities.canCreateFilter;
 
+  bool get canRecoverDeletedMessages => shownAccountCapabilities.canRecoverDeletedMessages;
+
   SearchMailboxController(
     this._searchMailboxInteractor,
     this._renameMailboxInteractor,

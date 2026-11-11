@@ -19,6 +19,8 @@ void main() {
           showsViewingOwnerChrome,
           offersServerDefaultIdentities,
           showsMyVacationBanner,
+          canRecoverDeletedMessages,
+          offersMyPremium,
         ) in [
       (
         'my own account',
@@ -30,6 +32,8 @@ void main() {
         true,
         false,
         false,
+        true,
+        true,
         true,
       ),
       (
@@ -43,6 +47,8 @@ void main() {
         true,
         true,
         false,
+        false,
+        false,
       ),
       (
         'no account yet',
@@ -55,6 +61,8 @@ void main() {
         false,
         false,
         true,
+        true,
+        true,
       ),
     ]) {
       test(
@@ -65,7 +73,9 @@ void main() {
         '${canApplyMyComposerSettings ? 'applies' : 'does not apply'} my composer settings, '
         '${showsViewingOwnerChrome ? 'shows' : 'does not show'} Viewing owner chrome and '
         '${offersServerDefaultIdentities ? 'offers' : 'does not offer'} server default identities, '
-        '${showsMyVacationBanner ? 'shows' : 'does not show'} my vacation banner '
+        '${showsMyVacationBanner ? 'shows' : 'does not show'} my vacation banner, '
+        '${canRecoverDeletedMessages ? 'allows' : 'does not allow'} recovering deleted messages, '
+        '${offersMyPremium ? 'offers' : 'does not offer'} my premium '
         'while $shown is shown',
         () {
           final capabilities = ShownAccountCapabilities.of(shownAccount);
@@ -78,6 +88,8 @@ void main() {
           expect(capabilities.showsViewingOwnerChrome, showsViewingOwnerChrome);
           expect(capabilities.offersServerDefaultIdentities, offersServerDefaultIdentities);
           expect(capabilities.showsMyVacationBanner, showsMyVacationBanner);
+          expect(capabilities.canRecoverDeletedMessages, canRecoverDeletedMessages);
+          expect(capabilities.offersMyPremium, offersMyPremium);
         },
       );
     }

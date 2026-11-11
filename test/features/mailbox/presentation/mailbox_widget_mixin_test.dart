@@ -22,6 +22,9 @@ class _MailboxWidgetMixinHolder with MailboxWidgetMixin {}
 class _DelegatedFoldersHolder with MailboxWidgetMixin {
   @override
   bool get canCreateFilter => false;
+
+  @override
+  bool get canRecoverDeletedMessages => false;
 }
 
 void main() {
@@ -201,6 +204,47 @@ void main() {
       expect(contextMenuActionsOf(holder, personalFolder), isNot(contains(MailboxActions.createFilter)));
       expect(popupMenuActionsOf(holder, inbox), [MailboxActions.newSubfolder]);
       expect(popupMenuActionsOf(holder, personalFolder), isNot(contains(MailboxActions.createFilter)));
+    });
+  });
+
+  group('MailboxWidgetMixin::recoverDeletedMessages', () {
+    final trash = PresentationMailbox(
+      MailboxId(Id('trash')),
+      role: PresentationMailbox.roleTrash,
+    );
+
+    List<MailboxActions> contextMenuActionsOf(MailboxWidgetMixin mixinHolder, {required bool vaultSupported}) =>
+        mixinHolder
+            .listContextMenuItemAction(trash, false, vaultSupported, false, ImagePaths(), AppLocalizations())
+            .map((item) => item.action)
+            .toList();
+
+    List<MailboxActions> popupMenuActionsOf(MailboxWidgetMixin mixinHolder, {required bool vaultSupported}) =>
+        mixinHolder
+            .getListPopupMenuItemAction(AppLocalizations(), ImagePaths(), trash, false, vaultSupported, false)
+            .map((item) => item.action)
+            .whereType<MailboxActions>()
+            .toList();
+
+    test('should offer recover deleted messages on Trash when the vault is supported', () {
+      final holder = _MailboxWidgetMixinHolder();
+
+      expect(contextMenuActionsOf(holder, vaultSupported: true), contains(MailboxActions.recoverDeletedMessages));
+      expect(popupMenuActionsOf(holder, vaultSupported: true), contains(MailboxActions.recoverDeletedMessages));
+    });
+
+    test('should not offer recover deleted messages on Trash when the vault is not supported', () {
+      final holder = _MailboxWidgetMixinHolder();
+
+      expect(contextMenuActionsOf(holder, vaultSupported: false), isNot(contains(MailboxActions.recoverDeletedMessages)));
+      expect(popupMenuActionsOf(holder, vaultSupported: false), isNot(contains(MailboxActions.recoverDeletedMessages)));
+    });
+
+    test('should not offer recover deleted messages on Trash when the holder turns it off', () {
+      final holder = _DelegatedFoldersHolder();
+
+      expect(contextMenuActionsOf(holder, vaultSupported: true), isNot(contains(MailboxActions.recoverDeletedMessages)));
+      expect(popupMenuActionsOf(holder, vaultSupported: true), isNot(contains(MailboxActions.recoverDeletedMessages)));
     });
   });
 }
