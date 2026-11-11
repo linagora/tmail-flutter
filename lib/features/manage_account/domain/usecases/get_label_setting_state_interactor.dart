@@ -16,7 +16,7 @@ class GetLabelSettingStateInteractor {
       final isEnabled = await _manageAccountRepository.getLabelSettingState();
       yield Right(GetLabelSettingStateSuccess(isEnabled, accountId));
     } catch (e) {
-      yield Left(GetLabelSettingStateFailure(e));
+      yield Left(GetLabelSettingStateFailure(e, accountId));
     }
   }
 }

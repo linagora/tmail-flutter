@@ -209,6 +209,14 @@ void main() {
       expect(dashboard.resetCount, 1);
     });
 
+    test('catching up reloads the label setting of the account shown again once', () {
+      container.read(shownAccountLoadTrackerProvider).reportFolders(_loadedIn(3));
+
+      view.catchUpAccount(account, 3);
+
+      expect(dashboard.labelReloadCount, 1);
+    });
+
     test('catching up an account nothing reloaded in the attempt asks for a reload', () {
       view.catchUpAccount(account, 3);
 
