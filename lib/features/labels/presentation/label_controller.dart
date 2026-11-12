@@ -260,6 +260,7 @@ class LabelController extends BaseController
   @override
   void handleFailureViewState(Failure failure) {
     if (failure is GetAllLabelFailure) {
+      if (failure.accountId != _accountId) return;
       setLabelLoaded();
     } else if (failure is GetLabelSettingStateFailure) {
       if (failure.accountId != _accountId) return;

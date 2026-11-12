@@ -107,7 +107,7 @@ void main() {
 
     test('should keep the last labels when fetching labels fails', () {
       harness.controller.handleFailureViewState(
-        GetAllLabelFailure(Exception()),
+        GetAllLabelFailure(Exception(), AccountFixtures.aliceAccountId),
       );
 
       expect(harness.controller.labels, [home, work]);
@@ -151,6 +151,15 @@ void main() {
 
       expect(harness.controller.labels, [work]);
       expect(harness.controller.isLabelsLoaded.isTrue, isTrue);
+    });
+
+    test('should not report the labels of a newly shown account loaded when fetching labels of mine fails late', () async {
+      harness.controller.checkLabelSettingState(SessionFixtures.aliceSession, DelegationFixtures.bobAccountId);
+      await pumpEventQueue();
+
+      harness.controller.handleFailureViewState(GetAllLabelFailure(Exception(), AccountFixtures.aliceAccountId));
+
+      expect(harness.controller.isLabelsLoaded.isTrue, isFalse);
     });
 
     test('should keep the labels loaded when the label setting of the same account is read again', () async {
