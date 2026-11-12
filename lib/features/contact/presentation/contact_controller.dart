@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_suggestion_box_item.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
@@ -160,8 +161,10 @@ class ContactController extends BaseController with AutoCompleteResultMixin {
   }
 
   Future<List<EmailAddress>> _getAutoCompleteSuggestion(String queryString) async {
-    _getAllAutoCompleteInteractor = getBinding<GetAllAutoCompleteInteractor>();
-    _getAutoCompleteInteractor = getBinding<GetAutoCompleteInteractor>();
+    final tmailContactsAvailable = contactArguments.value?.session
+        .supportsTMailContactAutocomplete(_accountId) == true;
+    _getAllAutoCompleteInteractor = tmailContactsAvailable ? getBinding<GetAllAutoCompleteInteractor>() : null;
+    _getAutoCompleteInteractor = tmailContactsAvailable ? getBinding<GetAutoCompleteInteractor>() : null;
     _getDeviceContactSuggestionsInteractor = getBinding<GetDeviceContactSuggestionsInteractor>();
 
     final autoCompletePattern = AutoCompletePattern(

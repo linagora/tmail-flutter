@@ -9,7 +9,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:contact/contact/model/capability_contact.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -749,10 +751,31 @@ void main() {
   });
 
   group('AdvancedFilterController::getAutoCompleteSuggestion', () {
-    test('suggests the contacts of the shown account, not of my own', () async {
+    void showBobWith(Set<CapabilityIdentifier> bobCapabilities) {
       ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
       when(mockMailboxDashBoardController.accountId).thenReturn(Rxn(DelegationFixtures.aliceAccountId));
-      addTearDown(() => when(mockMailboxDashBoardController.accountId).thenReturn(Rxn<AccountId>()));
+      when(mockMailboxDashBoardController.sessionCurrent)
+          .thenReturn(DelegationFixtures.sessionWithBobCapabilities(
+            bobCapabilities,
+            myExtraCapabilities: {tmailContactCapabilityIdentifier},
+          ));
+      addTearDown(() {
+        when(mockMailboxDashBoardController.accountId).thenReturn(Rxn<AccountId>());
+        when(mockMailboxDashBoardController.sessionCurrent).thenReturn(null);
+      });
+    }
+
+    test('SHOULD NOT query contacts while the shown account has no contact autocomplete, even though mine has', () async {
+      showBobWith({CapabilityIdentifier.jmapMail});
+
+      final suggestions = await advancedFilterController.getAutoCompleteSuggestion('car');
+
+      expect(suggestions, isEmpty);
+      verifyNever(mockGetAutoCompleteInteractor.execute(any));
+    });
+
+    test('suggests the contacts of the shown account, not of my own', () async {
+      showBobWith({CapabilityIdentifier.jmapMail, tmailContactCapabilityIdentifier});
       when(mockGetAutoCompleteInteractor.execute(any))
           .thenAnswer((_) async => Right(GetAutoCompleteSuccess([])));
 

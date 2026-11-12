@@ -26,6 +26,12 @@ import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_t
 import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_detail_info.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:contact/contact/model/capability_contact.dart';
+import 'package:model/ai/ai_capabilities.dart';
+import 'package:model/autocomplete/auto_complete_pattern.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_needs_action_extension.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/state/get_identity_cache_on_web_state.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -1583,6 +1589,60 @@ void main() {
 
     test('currentAccountId of the label mixins is the shown account', () {
       expect(mailboxDashboardController.currentAccountId, bob);
+    });
+  });
+
+  group('capabilities of the shown account:', () {
+    final alice = DelegationFixtures.aliceAccountId;
+    final bob = DelegationFixtures.bobAccountId;
+    late MockGetAutoCompleteInteractor getAutoCompleteInteractor;
+
+    void showBobWith(Set<CapabilityIdentifier> bobCapabilities) {
+      final session = DelegationFixtures.sessionWithBobCapabilities(
+        {CapabilityIdentifier.jmapMail, ...bobCapabilities},
+        myExtraCapabilities: {AiCapabilities.aiCapability, tmailContactCapabilityIdentifier},
+      );
+      mailboxDashboardController.sessionCurrent = session;
+      mailboxDashboardController.accountId.value = alice;
+      ActiveAccountSourceFixtures.putForThisTest(session, shownAccountId: bob);
+    }
+
+    setUp(() {
+      getAutoCompleteInteractor = MockGetAutoCompleteInteractor();
+      Get.put<GetAutoCompleteInteractor>(getAutoCompleteInteractor);
+      when(getAutoCompleteInteractor.execute(any)).thenAnswer((_) async => Right(GetAutoCompleteSuccess([])));
+    });
+
+    tearDown(() => Get.delete<GetAutoCompleteInteractor>());
+
+    test('SHOULD NOT offer AI Needs Action while the shown delegated account has no AI, even though mine has', () {
+      showBobWith({});
+
+      expect(mailboxDashboardController.isAiCapabilitySupported, isFalse);
+    });
+
+    test('offers AI Needs Action while the shown delegated account has AI', () {
+      showBobWith({AiCapabilities.aiCapability});
+
+      expect(mailboxDashboardController.isAiCapabilitySupported, isTrue);
+    });
+
+    test('SHOULD NOT suggest contacts while the shown delegated account has no contact autocomplete, even though mine has', () async {
+      showBobWith({});
+
+      final suggestions = await mailboxDashboardController.getContactSuggestion('carol');
+
+      expect(suggestions, isEmpty);
+      verifyNever(getAutoCompleteInteractor.execute(any));
+    });
+
+    test('suggests the contacts of the shown delegated account, not of my own', () async {
+      showBobWith({tmailContactCapabilityIdentifier});
+
+      await mailboxDashboardController.getContactSuggestion('carol');
+
+      final pattern = verify(getAutoCompleteInteractor.execute(captureAny)).captured.single as AutoCompletePattern;
+      expect(pattern.accountId, bob);
     });
   });
 

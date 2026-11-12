@@ -93,6 +93,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_arguments.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/state/get_identity_cache_on_web_state.dart';
@@ -2284,10 +2285,11 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   Future<void> selectFromSearchFilter({required AppLocalizations appLocalizations}) async {
-    if (accountId.value == null || sessionCurrent == null) return;
+    final shownAccountId = activeAccountId;
+    if (shownAccountId == null || sessionCurrent == null) return;
 
     final contactArgument = ContactArguments(
-      accountId: accountId.value!,
+      accountId: shownAccountId,
       session: sessionCurrent!,
       selectedContactList: searchController.committedSearchFilter.from,
       contactViewTitle: '${appLocalizations.findEmails} ${appLocalizations.from_email_address_prefix.toLowerCase()}'
@@ -2307,10 +2309,11 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   Future<void> selectToSearchFilter({required AppLocalizations appLocalizations}) async {
-    if (accountId.value == null || sessionCurrent == null) return;
+    final shownAccountId = activeAccountId;
+    if (shownAccountId == null || sessionCurrent == null) return;
 
     final contactArgument = ContactArguments(
-      accountId: accountId.value!,
+      accountId: shownAccountId,
       session: sessionCurrent!,
       selectedContactList: searchController.committedSearchFilter.to,
       contactViewTitle: '${appLocalizations.findEmails} ${appLocalizations.to_email_address_prefix.toLowerCase()}'
@@ -3064,9 +3067,11 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   Future<List<EmailAddress>> getContactSuggestion(String query) async {
+    final shownAccountId = activeAccountId;
     _getAutoCompleteInteractor = getBinding<GetAutoCompleteInteractor>();
 
-    if (_getAutoCompleteInteractor == null || accountId.value == null) {
+    if (_getAutoCompleteInteractor == null ||
+        sessionCurrent?.supportsTMailContactAutocomplete(shownAccountId) != true) {
       return <EmailAddress>[];
     }
 
@@ -3075,7 +3080,7 @@ class MailboxDashBoardController extends ReloadableController
     }
 
     final listEmailAddress = await _getAutoCompleteInteractor!
-      .execute(AutoCompletePattern(word: query, accountId: accountId.value!, limit: 2))
+      .execute(AutoCompletePattern(word: query, accountId: shownAccountId, limit: 2))
       .then((value) => value.fold(
         (failure) => <EmailAddress>[],
         (success) => success is GetAutoCompleteSuccess ? success.listEmailAddress : <EmailAddress>[]
