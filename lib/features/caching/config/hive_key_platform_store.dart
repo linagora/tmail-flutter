@@ -37,6 +37,7 @@ class HiveKeyPlatformStore {
       await _storage.write(key: keyName, value: value);
       if (await _storage.read(key: keyName) != value) {
         logError('HiveKeyPlatformStore::initialize: platform_key_verify_failed=true');
+        await _deletePlatformKey();
         return false;
       }
       await _deleteLegacyBox(legacyManager);
@@ -55,6 +56,14 @@ class HiveKeyPlatformStore {
     } catch (e, st) {
       logError('HiveKeyPlatformStore::read: platform_key_read_failed=true', exception: e, stackTrace: st);
       return null;
+    }
+  }
+
+  Future<void> _deletePlatformKey() async {
+    try {
+      await _storage.delete(key: keyName);
+    } catch (e) {
+      logWarning('HiveKeyPlatformStore::_deletePlatformKey: $e');
     }
   }
 

@@ -30,6 +30,26 @@ class _FakeLegacyKeyManager extends Fake implements EncryptionKeyCacheManager {
 // Any call throws UnimplementedError, which stands in for a platform failure.
 class _UnavailableStorage extends Fake implements FlutterSecureStorage {}
 
+// Write lands as a different value; models a read-back mismatch.
+class _MismatchAfterWriteStorage extends Fake implements FlutterSecureStorage {
+  String? value;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    final name = invocation.memberName;
+    if (name == #write) {
+      value = 'other';
+      return Future<void>.value();
+    }
+    if (name == #read) return Future<String?>.value(value);
+    if (name == #delete) {
+      value = null;
+      return Future<void>.value();
+    }
+    return super.noSuchMethod(invocation);
+  }
+}
+
 void main() {
   const storage = FlutterSecureStorage();
   const store = HiveKeyPlatformStore(storage: storage);
@@ -87,6 +107,20 @@ void main() {
           .initialize(manager);
 
       expect(result, isFalse);
+      expect(manager.deleteCalls, 0);
+    });
+  });
+
+  group('HiveKeyPlatformStore.initialize read-back', () {
+    test('clears a mismatched write and keeps the legacy box', () async {
+      final legacyValue = base64Encode(List<int>.generate(32, (i) => i));
+      final manager = _FakeLegacyKeyManager(legacy: EncryptionKeyCache(legacyValue));
+      final mismatched = _MismatchAfterWriteStorage();
+
+      final result = await HiveKeyPlatformStore(storage: mismatched).initialize(manager);
+
+      expect(result, isFalse);
+      expect(mismatched.value, isNull);
       expect(manager.deleteCalls, 0);
     });
   });
