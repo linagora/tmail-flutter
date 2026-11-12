@@ -2,6 +2,7 @@ import 'package:core/presentation/views/button/multi_click_widget.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/preferences/preferences_view.dart';
 
 import '../base/core_robot.dart';
 import 'abstract/abstract_preferences_robot.dart';
@@ -10,8 +11,6 @@ abstract class PreferencesRobot extends CoreRobot implements AbstractPreferences
   PreferencesRobot(super.$);
 
   static const _revealTapCount = 7;
-  // e2e runs with --lang=en-US; Thread is always listed above experimental rows.
-  static const _preferencesListAnchorTitle = 'Thread';
 
   @override
   Future<void> ensureDelegationPreferenceReady() async {
@@ -40,26 +39,15 @@ abstract class PreferencesRobot extends CoreRobot implements AbstractPreferences
     await $(ValueKey(title)).$(ValueKey(key)).waitUntilVisible();
   }
 
+  // Without a view, scrollTo drives the first Scrollable on screen (the settings menu).
   Future<void> _bringPreferenceOnScreen(String title) async {
-    final preferenceKey = ValueKey(title);
-    if ($(preferenceKey).exists) {
-      await $(preferenceKey).scrollTo();
-      return;
-    }
-    // Lazy ListView: below-fold rows are not hit-testable until scrolled into view.
-    await _scrollPreferencesListToEnd(shownTitle: _preferencesListAnchorTitle);
-    await $(preferenceKey).scrollTo();
-  }
-
-  Future<void> _scrollPreferencesListToEnd({required String shownTitle}) async {
-    await $(ValueKey(shownTitle)).waitUntilVisible();
-    final preferencesList = find
-        .ancestor(
-          of: find.byKey(ValueKey(shownTitle)),
-          matching: find.byType(Scrollable),
-        )
-        .first;
-    await $.tester.drag(preferencesList, const Offset(0, -10000));
-    await $.pumpAndSettle();
+    await $(ValueKey(title)).scrollTo(
+      view: find
+          .descendant(
+            of: find.byType(PreferencesView),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
   }
 }
