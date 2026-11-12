@@ -25,7 +25,7 @@ class WebUrlNamesShownDelegatedAccountScenario extends BaseTestScenario
     await switcher.assertion.expectUrlNamesOpenedFolder();
     await switcher.assertion.expectUrlNamesShownAccount();
 
-    await switcher.dismissViewingBanner();
+    await switcher.leaveDelegatedMailbox();
     await switcher.assertion.expectSwitcherOnMine();
     await switcher.assertion.expectUrlNamesNoAccount();
   }

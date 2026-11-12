@@ -22,5 +22,6 @@ abstract class AbstractAccountSwitcherRobot {
   /// notifier during the show-delay window before the dialog appears.
   Future<void> cancelInFlightSwitch();
 
-  Future<void> dismissViewingBanner();
+  /// Shows `mine` again from the chrome of the shown delegated mailbox.
+  Future<void> leaveDelegatedMailbox();
 }

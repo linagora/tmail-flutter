@@ -2,14 +2,15 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/account
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/base_test_scenario.dart';
-import '../robots/web/web_account_switcher_robot.dart';
+import '../robots/abstract/abstract_account_switcher_robot.dart';
 
-/// Shared stand-alone web setup for T-07 account-switcher scenarios.
+/// Shared setup of the stand-alone web and the Android and iOS app account-switcher scenarios.
 mixin DelegationStandaloneScenarioMixin on BaseTestScenario {
   static const ownerAddress = 'alice@example.com';
   static const ownAddress = 'bob@example.com';
 
-  WebAccountSwitcherRobot get accountSwitcher => WebAccountSwitcherRobot($);
+  AbstractAccountSwitcherRobot get accountSwitcher =>
+      robots.accountSwitcherRobot();
 
   /// Turns Delegation on in Preferences and returns to the mailbox chrome.
   Future<void> enableDelegationAndReturnToMailbox() async {
@@ -28,6 +29,7 @@ mixin DelegationStandaloneScenarioMixin on BaseTestScenario {
       l10n.delegation,
       switchedOn: true,
     );
+    await settingsRobot.leaveSettingsDetail();
     await settingsRobot.closeSettings();
     await robots.commonRobot().waitForMailboxReady();
   }

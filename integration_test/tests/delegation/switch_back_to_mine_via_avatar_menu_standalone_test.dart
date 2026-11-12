@@ -8,6 +8,6 @@ void main() {
         'Should switch back to mine from the avatar menu while Viewing a delegated mailbox',
     scenarioBuilder: ($, robots) =>
         SwitchBackToMineViaAvatarMenuStandaloneScenario($, robots),
-    tags: [TestTags.web],
+    tags: [TestTags.android, TestTags.ios, TestTags.web],
   );
 }
