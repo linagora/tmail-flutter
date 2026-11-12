@@ -18,6 +18,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -137,6 +138,7 @@ import 'package:tmail_ui_user/features/upload/domain/usecases/local_image_picker
 import 'package:tmail_ui_user/features/upload/presentation/controller/upload_controller.dart';
 import 'package:tmail_ui_user/features/upload/presentation/providers/upload_from_url_providers.dart';
 import 'package:tmail_ui_user/features/upload/presentation/validator/attachment_upload_validation_service.dart';
+import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
@@ -820,6 +822,15 @@ class ComposerController extends BaseController
     }
   }
 
+  /// A refused EmailSubmission leaves the created copy in Outbox, so a mailbox without send rights stops here.
+  bool get _isSubmissionAvailableOnShownAccount {
+    final session = mailboxDashBoardController.sessionCurrent;
+    final accountId = mailboxDashBoardController.activeAccountId;
+    return session != null &&
+        accountId != null &&
+        CapabilityIdentifier.jmapSubmission.isSupported(session, accountId);
+  }
+
   void handleClickSendButton(BuildContext context) async {
     if (_sendButtonState == ButtonState.disabled) {
       log('ComposerController::handleClickSendButton: SENDING EMAIL');
@@ -837,6 +848,19 @@ class ComposerController extends BaseController
     }
 
     final appLocalizations = AppLocalizations.of(context);
+
+    if (!_isSubmissionAvailableOnShownAccount) {
+      MessageDialogActionManager().showConfirmDialogAction(
+        context,
+        appLocalizations.sendingNotAllowedFromThisMailbox,
+        appLocalizations.got_it,
+        title: appLocalizations.sending_failed,
+        showAsBottomSheet: true,
+        hasCancelButton: false,
+        dialogMargin: MediaQuery.paddingOf(context).add(const EdgeInsets.only(bottom: 12)),
+      ).whenComplete(() => _sendButtonState = ButtonState.enabled);
+      return;
+    }
 
     if (isEditedEmailContentLoadFailed) {
       MessageDialogActionManager().showConfirmDialogAction(

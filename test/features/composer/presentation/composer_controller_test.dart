@@ -3742,6 +3742,61 @@ void main() {
           ..subjectEmail.value = 'subject';
       }
 
+      void showBobWith(Set<CapabilityIdentifier> capabilities) {
+        mockMailboxDashBoardController.currentSession =
+            DelegationFixtures.sessionWithBobCapabilities(capabilities);
+        mockMailboxDashBoardController.shownAccountIdOverride = DelegationFixtures.bobAccountId;
+        addTearDown(() {
+          mockMailboxDashBoardController.currentSession = SessionFixtures.aliceSession;
+          mockMailboxDashBoardController.shownAccountIdOverride = null;
+        });
+      }
+
+      testWidgets(
+        'Should show the sending not allowed dialog and not send the email\n'
+        'When send is clicked while the shown mailbox has no submission capability',
+      (tester) async {
+        final context = await pumpContext(tester);
+        arrangeOtherwiseSendableEmail();
+        composerController?.isEmailBodyLoaded = true;
+        showBobWith({CapabilityIdentifier.jmapMail});
+
+        composerController?.handleClickSendButton(context);
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text(AppLocalizations.of(context).sendingNotAllowedFromThisMailbox),
+          findsOneWidget,
+        );
+        verifyNever(mockCreateNewAndSendEmailInteractor.execute(
+          createEmailRequest: anyNamed('createEmailRequest'),
+        ));
+      });
+
+      testWidgets(
+        'Should go on to the next send check\n'
+        'When send is clicked while the shown mailbox has the submission capability',
+      (tester) async {
+        final context = await pumpContext(tester);
+        arrangeOtherwiseSendableEmail();
+        composerController?.isEmailBodyLoaded = true;
+        composerController?.emailContentsViewState.value =
+          Right(GetEmailContentLoading());
+        showBobWith({CapabilityIdentifier.jmapMail, CapabilityIdentifier.jmapSubmission});
+
+        composerController?.handleClickSendButton(context);
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text(AppLocalizations.of(context).messageDialogSendEmailContentLoading),
+          findsOneWidget,
+        );
+        expect(
+          find.text(AppLocalizations.of(context).sendingNotAllowedFromThisMailbox),
+          findsNothing,
+        );
+      });
+
       testWidgets(
         'Should show the content loading dialog and not send the email\n'
         'When send is clicked while email content is still loading',
