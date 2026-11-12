@@ -1,4 +1,8 @@
 import 'dart:async';
+import 'package:contact/contact/model/autocomplete_capability.dart';
+import 'package:server_settings/server_settings/tmail_server_settings.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/ai_scribe/setup_ai_needs_action_setting_extension.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
@@ -1599,14 +1603,40 @@ void main() {
     final bob = DelegationFixtures.bobAccountId;
     late MockGetAutoCompleteInteractor getAutoCompleteInteractor;
 
-    void showBobWith(Set<CapabilityIdentifier> bobCapabilities) {
-      final session = DelegationFixtures.sessionWithBobCapabilities(
-        {CapabilityIdentifier.jmapMail, ...bobCapabilities},
-        myExtraCapabilities: {AiCapabilities.aiCapability, tmailContactCapabilityIdentifier},
-      );
+    Session sessionWithBob(Set<CapabilityIdentifier> bobCapabilities) =>
+        DelegationFixtures.sessionWithBobCapabilities(
+          {CapabilityIdentifier.jmapMail, ...bobCapabilities},
+          myExtraCapabilities: {AiCapabilities.aiCapability, tmailContactCapabilityIdentifier},
+        );
+
+    void showBobIn(Session session) {
       mailboxDashboardController.sessionCurrent = session;
       mailboxDashboardController.accountId.value = alice;
       ActiveAccountSourceFixtures.putForThisTest(session, shownAccountId: bob);
+    }
+
+    void showBobWith(Set<CapabilityIdentifier> bobCapabilities) => showBobIn(sessionWithBob(bobCapabilities));
+
+    Session sessionWithBobAutocompleteMinLength(UnsignedInt? minInputLength) {
+      final base = sessionWithBob({});
+      final bobAccount = base.accounts[bob]!;
+      return Session(
+        base.capabilities,
+        {
+          ...base.accounts,
+          bob: Account(bobAccount.name, false, false, {
+            ...bobAccount.accountCapabilities,
+            tmailContactCapabilityIdentifier: AutocompleteCapability(minInputLength: minInputLength),
+          }),
+        },
+        base.primaryAccounts,
+        base.username,
+        base.apiUrl,
+        base.downloadUrl,
+        base.uploadUrl,
+        base.eventSourceUrl,
+        base.state,
+      );
     }
 
     setUp(() {
@@ -1646,6 +1676,39 @@ void main() {
       final pattern = verify(getAutoCompleteInteractor.execute(captureAny)).captured.single as AutoCompletePattern;
       expect(pattern.accountId, bob);
     });
+
+    test('a switch takes the autocomplete length of the shown delegated account', () {
+      showBobIn(sessionWithBobAutocompleteMinLength(UnsignedInt(5)));
+
+      GetXAccountSwitchDashboard(mailboxDashboardController).setUpAutocompleteForShownAccount();
+
+      expect(mailboxDashboardController.minInputLengthAutocomplete, 5);
+    });
+
+    test('SHOULD NOT keep my own autocomplete length after a switch to a delegated account that sets none', () {
+      mailboxDashboardController.minInputLengthAutocomplete = 7;
+      showBobIn(sessionWithBobAutocompleteMinLength(null));
+
+      GetXAccountSwitchDashboard(mailboxDashboardController).setUpAutocompleteForShownAccount();
+
+      expect(mailboxDashboardController.minInputLengthAutocomplete, AppConfig.defaultMinInputLengthAutocomplete);
+    });
+
+    for (final bobHasAi in [false, true]) {
+      test('the Needs Action folder is ${bobHasAi ? 'created' : 'removed'} while the setting is on and '
+          'the shown delegated account ${bobHasAi ? 'has' : 'has no'} AI', () {
+        showBobWith({if (bobHasAi) AiCapabilities.aiCapability});
+
+        mailboxDashboardController.setupAINeedsActionSetting(
+          options: TMailServerSettingOptions(aiLabelCategorizationEnabled: true),
+        );
+
+        expect(
+          mailboxDashboardController.mailboxUIAction.value,
+          bobHasAi ? isA<AutoCreateActionRequiredFolderMailboxAction>() : isA<AutoRemoveActionRequiredFolderMailboxAction>(),
+        );
+      });
+    }
   });
 
   group('label push of my WebSocket:', () {
