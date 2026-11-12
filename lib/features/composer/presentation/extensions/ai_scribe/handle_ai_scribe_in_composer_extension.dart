@@ -4,9 +4,11 @@ import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/string_convert.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:model/ai/ai_capabilities.dart';
 import 'package:scribe/scribe.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/text_selection_mixin.dart';
+import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
 extension HandleAiScribeInComposerExtension on ComposerController {
   bool get isAIScribeAvailable {
@@ -19,7 +21,18 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     final isAIScribeConfigEnabled =
         mailboxDashBoardController.cachedAIScribeConfig.value.isEnabled;
 
-    return isAIScribeConfigEnabled && isAIScribeEndpointAvailable;
+    return isAIScribeConfigEnabled &&
+        isAIScribeEndpointAvailable &&
+        _isAIAllowedOnShownAccount;
+  }
+
+  /// Scribe runs on my own endpoint, so a delegated mailbox must also have AI to use it.
+  bool get _isAIAllowedOnShownAccount {
+    final session = mailboxDashBoardController.sessionCurrent;
+    final shownAccountId = mailboxDashBoardController.activeAccountId;
+    return session != null &&
+        shownAccountId != null &&
+        AiCapabilities.aiCapability.isSupported(session, shownAccountId);
   }
 
   bool get isScribeMobile {

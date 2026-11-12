@@ -16,13 +16,11 @@ const _personalAccountReaders = <String, int>{
   'lib/features/mailbox_dashboard/presentation/extensions/premium_cta_context_extension.dart': 2,
   'lib/features/manage_account/presentation/menu/manage_account_menu_controller.dart': 1,
   'lib/features/thread_detail/presentation/thread_detail_controller.dart': 1,
-  // AI Scribe, ecosystem and Drive: my own services.
+  // AI Scribe endpoint and ecosystem: my own services. AI on the shown account is checked too.
   'lib/features/composer/presentation/extensions/ai_scribe/handle_ai_scribe_in_composer_extension.dart': 1,
   'lib/features/composer/presentation/extensions/setup_email_request_read_receipt_flag_extension.dart': 1,
-  'lib/features/composer/presentation/providers/composer_attachment_extension_registry_provider.dart': 1,
   'lib/features/mailbox_dashboard/presentation/delegates/ecosystem_provider_listener_delegate.dart': 2,
-  'lib/features/mailbox_dashboard/presentation/extensions/handle_ai_needs_action_extension.dart': 1,
-  // Autocomplete bindings: registered once at start, for my own account.
+  // Autocomplete bindings: registered once at start, for my own account. Queries use the shown one.
   'lib/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart': 1,
   // WebSocket connection account stays mine (ADR-0114). Label capability itself reads the shown account.
   'lib/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart': 1,
@@ -49,11 +47,8 @@ const _dashboardPersonalAccountReaders = <String, int>{
   // Sending queue: each mail keeps the account it was written in (T-04).
   'getAllSendingEmails': 2,
   '_handleSendEmailSuccess': 2,
-  // Contact autocomplete and the contact pickers of the search filter: my own contacts.
-  'getContactSuggestion': 2,
+  // Minimum autocomplete length: read once at start from my own account.
   '_setUpMinInputLengthAutocomplete': 2,
-  'selectFromSearchFilter': 2,
-  'selectToSearchFilter': 2,
   // Notification taps stay on my own account until delegated accounts are included.
   '_handleNotificationMessageFromEmailId': 1,
   // Username-only personal: session owner empty, identities fill ownEmailAddress.

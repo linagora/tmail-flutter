@@ -5,11 +5,14 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/account/account.dart';
 import 'package:jmap_dart_client/jmap/core/capability/calendar_event_capability.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_properties.dart';
+import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
 import 'package:jmap_dart_client/jmap/core/capability/default_capability.dart';
 import 'package:jmap_dart_client/jmap/core/capability/empty_capability.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/error_type_handler/unknown_address_exception.dart';
 import 'package:model/error_type_handler/unknown_uri_exception.dart';
@@ -176,6 +179,70 @@ void main() {
       // assert
       expect(result.isAvailable, true);
       expect(result.calendarEventCapability, calendarEventCapability);
+    });
+  });
+
+  group('getCapabilityProperties:', () {
+    final personalAccountId = AccountId(Id('personal'));
+    final delegatedAccountId = AccountId(Id('delegated'));
+    final sessionCalendar = CalendarEventCapability(counterSupport: true);
+    final sessionCore = CoreCapability(maxSizeUpload: UnsignedInt(100));
+
+    Session sessionWith({required Map<CapabilityIdentifier, CapabilityProperties> delegatedCapabilities}) => Session(
+      {CapabilityIdentifier.jamesCalendarEvent: sessionCalendar, CapabilityIdentifier.jmapCore: sessionCore},
+      {
+        personalAccountId: Account(AccountName('me@example.com'), true, false, {}),
+        delegatedAccountId: Account(AccountName('owner@example.com'), false, false, delegatedCapabilities),
+      },
+      {}, UserName('me@example.com'), Uri(), Uri(), Uri(), Uri(), State(''));
+
+    test('should fall back to the session-level capability for my own account', () {
+      final session = sessionWith(delegatedCapabilities: {});
+
+      expect(
+        session.getCapabilityProperties<CalendarEventCapability>(personalAccountId, CapabilityIdentifier.jamesCalendarEvent),
+        sessionCalendar,
+      );
+    });
+
+    test('should return null for a delegated account that lacks the capability', () {
+      final session = sessionWith(delegatedCapabilities: {});
+
+      expect(
+        session.getCapabilityProperties<CalendarEventCapability>(delegatedAccountId, CapabilityIdentifier.jamesCalendarEvent),
+        isNull,
+      );
+      expect(session.validateCalendarEventCapability(delegatedAccountId).isAvailable, isFalse);
+      expect(session.validateAcceptCounterCalendarEventCapability(delegatedAccountId), isFalse);
+    });
+
+    test('should return null for a delegated account whose capability is empty', () {
+      final session = sessionWith(delegatedCapabilities: {CapabilityIdentifier.jamesCalendarEvent: EmptyCapability()});
+
+      expect(
+        session.getCapabilityProperties<CalendarEventCapability>(delegatedAccountId, CapabilityIdentifier.jamesCalendarEvent),
+        isNull,
+      );
+    });
+
+    test('should return the delegated account own capability', () {
+      final delegatedCalendar = CalendarEventCapability(counterSupport: false);
+      final session = sessionWith(delegatedCapabilities: {CapabilityIdentifier.jamesCalendarEvent: delegatedCalendar});
+
+      expect(
+        session.getCapabilityProperties<CalendarEventCapability>(delegatedAccountId, CapabilityIdentifier.jamesCalendarEvent),
+        delegatedCalendar,
+      );
+      expect(session.validateAcceptCounterCalendarEventCapability(delegatedAccountId), isFalse);
+    });
+
+    test('should keep the session-level core capability for a delegated account', () {
+      final session = sessionWith(delegatedCapabilities: {});
+
+      expect(
+        session.getCapabilityProperties<CoreCapability>(delegatedAccountId, CapabilityIdentifier.jmapCore),
+        sessionCore,
+      );
     });
   });
 

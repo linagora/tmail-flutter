@@ -86,6 +86,11 @@ extension SessionExtensions on Session {
     }
   }
 
+  /// TMail contact bindings are registered once for my own account, so a caller checks the
+  /// account it queries before using them.
+  bool supportsTMailContactAutocomplete(AccountId? accountId) =>
+      accountId != null && tmailContactCapabilityIdentifier.isSupported(this, accountId);
+
   UnsignedInt? getMinInputLengthAutocomplete(AccountId accountId) {
     try {
       final autocompleteCapability = getCapabilityProperties<AutocompleteCapability>(
