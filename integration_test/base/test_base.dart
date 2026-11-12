@@ -14,6 +14,7 @@ import '../utils/dom_focus_logger.dart';
 import '../utils/failure_diagnostics.dart';
 import '../utils/mock_text_input.dart';
 import '../utils/test_backend.dart';
+import '../utils/toast_focus_logger.dart';
 import 'base_scenario.dart';
 import '../factories/robot_factory.dart';
 import '../factories/robot_factory_provider.dart';
@@ -93,6 +94,8 @@ class TestBase {
     WidgetsBinding.instance.addObserver(viewFocusLogger);
     addTearDown(() => WidgetsBinding.instance.removeObserver(viewFocusLogger));
     addTearDown(startDomFocusLogging());
+    final toastFocusLogger = ToastFocusLogger()..start();
+    addTearDown(toastFocusLogger.stop);
     runApp(const TMailApp());
 
     final originalOnError = FlutterError.onError!;
