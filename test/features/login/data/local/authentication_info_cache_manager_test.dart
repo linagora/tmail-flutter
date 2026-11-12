@@ -11,6 +11,7 @@ class _FakeClient extends Fake implements AuthenticationInfoCacheClient {
   AuthenticationInfoCache? item;
   int insertCalls = 0;
   int clearCalls = 0;
+  int clearFailures = 0;
 
   @override
   Future<void> insertItem(String key, AuthenticationInfoCache newObject, {bool isolated = true}) async {
@@ -24,6 +25,10 @@ class _FakeClient extends Fake implements AuthenticationInfoCacheClient {
   @override
   Future<void> clearAllData({bool isolated = true}) async {
     clearCalls++;
+    if (clearFailures > 0) {
+      clearFailures--;
+      throw Exception('clear failed');
+    }
     item = null;
   }
 }
@@ -71,14 +76,25 @@ void main() {
       expect(client.item, isNull);
     });
 
-    test('get reads from session storage first', () async {
+    test('get reads from session storage first and purges the Hive box', () async {
       await manager.storeAuthenticationInfo(info);
       client.clearCalls = 0;
 
       final result = await manager.getAuthenticationInfoStored();
 
       expect(result, info);
-      expect(client.clearCalls, 0);
+      expect(client.clearCalls, 1);
+    });
+
+    test('get retries the Hive purge after a failed store purge', () async {
+      client.item = info;
+      client.clearFailures = 1;
+      await manager.storeAuthenticationInfo(info);
+      expect(client.item, info);
+
+      await manager.getAuthenticationInfoStored();
+
+      expect(client.item, isNull);
     });
 
     test('get moves an earlier Hive login to session storage', () async {

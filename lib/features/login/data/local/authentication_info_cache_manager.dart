@@ -38,7 +38,10 @@ class AuthenticationInfoCacheManager extends CacheManagerInteraction {
   Future<AuthenticationInfoCache> getAuthenticationInfoStored() async {
     if (PlatformInfo.isWeb) {
       final fromSession = _readFromSession();
-      if (fromSession != null) return fromSession;
+      if (fromSession != null) {
+        await _purgeLegacyHive();
+        return fromSession;
+      }
     }
     final authenticationInfoCache = await _authenticationInfoCacheClient.getItem(AuthenticationInfoCache.keyCacheValue);
     if (authenticationInfoCache == null) {
