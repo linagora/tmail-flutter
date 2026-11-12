@@ -7,14 +7,21 @@ final delegationCapability =
     CapabilityIdentifier(Uri.parse('urn:apache:james:params:jmap:delegation'));
 
 extension SessionDelegationExtension on Session {
-  bool isDelegatedAccount(AccountId accountId) =>
-      accounts[accountId]?.isPersonal == false;
+  /// An owner mailbox I can open: `isPersonal: false` with `jmap:mail`.
+  bool isDelegatedAccount(AccountId accountId) {
+    final account = accounts[accountId];
+    return account != null && _isOpenableDelegatedAccount(account);
+  }
 
   bool get supportsDelegation => capabilities.containsKey(delegationCapability);
 
-  /// Owner mailboxes listed on this session (`isPersonal: false`).
+  /// Owner mailboxes on this session that [isDelegatedAccount] accepts.
   Iterable<MapEntry<AccountId, Account>> get delegatedAccounts =>
-      accounts.entries.where((entry) => entry.value.isPersonal == false);
+      accounts.entries.where((entry) => _isOpenableDelegatedAccount(entry.value));
 
   bool get hasDelegatedAccounts => delegatedAccounts.isNotEmpty;
+
+  static bool _isOpenableDelegatedAccount(Account account) =>
+      account.isPersonal == false &&
+      account.accountCapabilities.containsKey(CapabilityIdentifier.jmapMail);
 }

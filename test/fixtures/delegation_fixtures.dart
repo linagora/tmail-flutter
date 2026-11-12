@@ -72,6 +72,36 @@ class DelegationFixtures {
     );
   }
 
+  /// [session] with Bob's delegated account replaced by one that has exactly [capabilities], and
+  /// my own account given [myExtraCapabilities] on top of its usual ones.
+  static Session sessionWithBobCapabilities(
+    Set<CapabilityIdentifier> capabilities, {
+    Set<CapabilityIdentifier> myExtraCapabilities = const {},
+  }) {
+    final base = session();
+    final mine = base.accounts[aliceAccountId]!;
+    return Session(
+      base.capabilities,
+      {
+        ...base.accounts,
+        aliceAccountId: Account(mine.name, true, false, {
+          ...mine.accountCapabilities,
+          for (final capability in myExtraCapabilities) capability: DefaultCapability(<String, dynamic>{}),
+        }),
+        bobAccountId: Account(AccountName(bobAddress), false, false, {
+          for (final capability in capabilities) capability: DefaultCapability(<String, dynamic>{}),
+        }),
+      },
+      base.primaryAccounts,
+      base.username,
+      base.apiUrl,
+      base.downloadUrl,
+      base.uploadUrl,
+      base.eventSourceUrl,
+      base.state,
+    );
+  }
+
   /// Turns the local "Delegation" preference on in [container].
   static void turnDelegationOn(ProviderContainer container) => container
       .read(localSettingsProvider.notifier)
@@ -102,6 +132,8 @@ class DelegationFixtures {
         {
           delegatedOnlyCapability: DefaultCapability(<String, dynamic>{}),
           sharedCapability: DefaultCapability(<String, dynamic>{}),
+          // A delegated account without it is not openable (SessionDelegationExtension).
+          CapabilityIdentifier.jmapMail: DefaultCapability(<String, dynamic>{}),
         },
       );
 }

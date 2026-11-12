@@ -1327,14 +1327,17 @@ class ComposerController extends BaseController
 
   Future<List<EmailAddress>> getAutoCompleteSuggestion(String queryString, {int? limit}) async {
     log('ComposerController::getAutoCompleteSuggestion():queryString = $queryString | limit = $limit | $_contactSuggestionSource');
-    _getAllAutoCompleteInteractor = getBinding<GetAllAutoCompleteInteractor>();
-    _getAutoCompleteInteractor = getBinding<GetAutoCompleteInteractor>();
+    final shownAccountId = mailboxDashBoardController.activeAccountId;
+    final tmailContactsAvailable = mailboxDashBoardController.sessionCurrent
+        ?.supportsTMailContactAutocomplete(shownAccountId) == true;
+    _getAllAutoCompleteInteractor = tmailContactsAvailable ? getBinding<GetAllAutoCompleteInteractor>() : null;
+    _getAutoCompleteInteractor = tmailContactsAvailable ? getBinding<GetAutoCompleteInteractor>() : null;
     _getDeviceContactSuggestionsInteractor = getBinding<GetDeviceContactSuggestionsInteractor>();
 
     final autoCompletePattern = AutoCompletePattern(
       word: queryString,
       limit: limit,
-      accountId: mailboxDashBoardController.activeAccountId);
+      accountId: shownAccountId);
 
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
       if (_getAllAutoCompleteInteractor != null) {

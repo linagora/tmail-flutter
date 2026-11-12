@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/delegation/domain/extensions/session_delegation_extension.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.dart';
@@ -39,6 +41,16 @@ void main() {
       notifierOf().applySession(reReadSession);
 
       expect(stateOf(), ActiveAccount.delegated(reReadSession, DelegationFixtures.bobAccountId));
+    });
+
+    test('goes back to my own account when the shown delegated account loses jmap:mail', () {
+      notifierOf().applySession(DelegationFixtures.session());
+      notifierOf().select(DelegationFixtures.bobAccountId);
+      final reReadSession = DelegationFixtures.sessionWithBobCapabilities({CapabilityIdentifier.jmapSubmission});
+
+      notifierOf().applySession(reReadSession);
+
+      expect(stateOf(), ActiveAccount.personal(reReadSession));
     });
 
     test('goes back to my own account when the new session no longer lists the shown delegated account', () {
@@ -100,6 +112,15 @@ void main() {
 
       expect(notifierOf().canSelect(DelegationFixtures.bobAccountId), isFalse);
       expect(notifierOf().canSelect(DelegationFixtures.unknownAccountId), isFalse);
+    });
+
+    test('refuses a delegated account that has no jmap:mail, so the switcher never lists it', () {
+      final session = DelegationFixtures.sessionWithBobCapabilities({CapabilityIdentifier.jmapSubmission});
+      notifierOf().applySession(session);
+
+      expect(notifierOf().canSelect(DelegationFixtures.bobAccountId), isFalse);
+      expect(notifierOf().canSelect(DelegationFixtures.carolAccountId), isTrue);
+      expect(session.delegatedAccounts.map((entry) => entry.key), [DelegationFixtures.carolAccountId]);
     });
 
     test('refuses any account before a session is applied', () {

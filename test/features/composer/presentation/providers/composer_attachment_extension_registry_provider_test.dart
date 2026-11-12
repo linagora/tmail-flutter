@@ -1,6 +1,15 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:core/data/network/config/dynamic_url_interceptors.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/account/account.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_properties.dart';
+import 'package:jmap_dart_client/jmap/core/capability/default_capability.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:model/upload/upload_from_url_capability.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -28,6 +37,7 @@ import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:workplace/presentation/extension/workplace_composer_attachment_extension.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
 
+import '../../../../fixtures/delegation_fixtures.dart';
 import '../../../../fixtures/oidc_fixtures.dart';
 import 'composer_attachment_extension_registry_provider_test.mocks.dart';
 
@@ -254,6 +264,63 @@ void main() {
 
       verify(authenticationClient.refreshingTokensOIDC(any, any, any, any, any)).called(1);
       expect(realInterceptor.authenticationType, AuthenticationType.oidc);
+    });
+  });
+
+  group('uploadFromUrlSupported::', () {
+    final uploadFromUrl = UploadFromUrlCapability(
+      uploadUrl: Uri.parse('https://mail.example.com/upload-from-url/{accountId}'),
+    );
+
+    Session sessionWhereBobHas(Map<CapabilityIdentifier, CapabilityProperties> bobCapabilities) {
+      final base = DelegationFixtures.session();
+      return Session(
+        base.capabilities,
+        {
+          DelegationFixtures.aliceAccountId: Account(AccountName(DelegationFixtures.aliceAddress), true, false, {
+            SessionExtensions.linagoraUploadFromUrlCapability: uploadFromUrl,
+          }),
+          DelegationFixtures.bobAccountId: Account(AccountName(DelegationFixtures.bobAddress), false, false, {
+            CapabilityIdentifier.jmapMail: DefaultCapability(<String, dynamic>{}),
+            ...bobCapabilities,
+          }),
+        },
+        base.primaryAccounts,
+        base.username,
+        base.apiUrl,
+        base.downloadUrl,
+        base.uploadUrl,
+        base.eventSourceUrl,
+        base.state,
+      );
+    }
+
+    void showAccount(Session session, AccountId shownAccountId) {
+      when(dashboard.dynamicUrlInterceptors).thenReturn(DynamicUrlInterceptors()..setJmapUrl('https://mail.example.com/jmap'));
+      when(dashboard.sessionCurrent).thenReturn(session);
+      when(dashboard.accountId).thenReturn(Rxn<AccountId>(DelegationFixtures.aliceAccountId));
+      when(dashboard.activeAccountId).thenReturn(shownAccountId);
+    }
+
+    test('is offered while my own account is shown and supports it', () {
+      showAccount(sessionWhereBobHas({}), DelegationFixtures.aliceAccountId);
+
+      expect(readExtension().uploadFromUrlSupported(), isTrue);
+    });
+
+    test('SHOULD NOT be offered while a delegated account without upload-from-url is shown, even though mine has it', () {
+      showAccount(sessionWhereBobHas({}), DelegationFixtures.bobAccountId);
+
+      expect(readExtension().uploadFromUrlSupported(), isFalse);
+    });
+
+    test('is offered while a delegated account that supports it is shown', () {
+      showAccount(
+        sessionWhereBobHas({SessionExtensions.linagoraUploadFromUrlCapability: uploadFromUrl}),
+        DelegationFixtures.bobAccountId,
+      );
+
+      expect(readExtension().uploadFromUrlSupported(), isTrue);
     });
   });
 
