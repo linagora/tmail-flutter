@@ -456,6 +456,25 @@ void main() {
       expect(RouteUtils.shownDelegatedAccountId, isNull);
     });
 
+    test('names the shown delegated account in a dashboard navigation route', () {
+      showOnWeb(DelegationFixtures.bobAccountId);
+
+      expect(
+        RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
+        '${AppRoutes.dashboard}?${RouteUtils.paramType}=normal'
+            '&${RouteUtils.paramAccount}=${DelegationFixtures.bobAccountId.id.value}',
+      );
+    });
+
+    test('should not name my own account in a dashboard navigation route', () {
+      showOnWeb(DelegationFixtures.aliceAccountId);
+
+      expect(
+        RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
+        '${AppRoutes.dashboard}?${RouteUtils.paramType}=normal',
+      );
+    });
+
     test('parses the account of a start URL', () {
       final router = RouteUtils.parsingRouteParametersToNavigationRouter({
         RouteUtils.paramAccount: DelegationFixtures.bobAccountId.id.value,

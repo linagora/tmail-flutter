@@ -49,7 +49,11 @@ abstract class RouteUtils {
   static String generateNavigationRoute(String route, {NavigationRouter? router}) {
     if (PlatformInfo.isWeb) {
       if (route == AppRoutes.dashboard) {
-        return _createDashboardServicePath(route, router: router).path;
+        return _createDashboardServicePath(
+          route,
+          router: router,
+          shownDelegatedAccountId: shownDelegatedAccountId,
+        ).path;
       } else if (route == AppRoutes.settings) {
         return _createSettingServicePath(route, router: router).path;
       } else {
