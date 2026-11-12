@@ -468,5 +468,15 @@ void main() {
       expect(RouteUtils.parseAccountId({}), isNull);
       expect(RouteUtils.parseAccountId({RouteUtils.paramAccount: ''}), isNull);
     });
+
+    test('parses no account from a malformed one instead of throwing', () {
+      for (final accountParam in ['not an id', '-starts-with-dash', 'a' * 255]) {
+        expect(
+          RouteUtils.parseAccountId({RouteUtils.paramAccount: accountParam}),
+          isNull,
+          reason: accountParam,
+        );
+      }
+    });
   });
 }

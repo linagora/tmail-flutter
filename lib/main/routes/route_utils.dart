@@ -235,9 +235,13 @@ abstract class RouteUtils {
 
   static AccountId? parseAccountId(Map<String, dynamic> parameters) {
     final accountParam = parameters[paramAccount];
-    return accountParam is String && accountParam.isNotEmpty
-        ? AccountId(Id(accountParam))
-        : null;
+    if (accountParam is! String || accountParam.isEmpty) return null;
+    try {
+      return AccountId(Id(accountParam));
+    } on ArgumentError {
+      // A malformed account in a pasted URL names no account, so it lands on mine like an unlisted one.
+      return null;
+    }
   }
 
   static List<EmailAddress>? _emailAddressesFromMailtoAddress(dynamic mailtoAddress) {
