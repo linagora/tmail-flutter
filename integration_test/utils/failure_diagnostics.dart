@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:patrol/patrol.dart';
 
 import 'dom_focus_logger.dart';
+import 'stack_lines_printer.dart';
 
 // Keeps the dump under the logcat buffer limit; the top route prints last, so keep the tail.
 const _maxTreeLines = 1500;
@@ -102,6 +103,7 @@ class ViewFocusLogger with WidgetsBindingObserver {
       for (final node in detached) {
         debugPrintSynchronously('[VIEW FOCUS DETACHED] ${_describeFocusNode(node)}');
       }
+      if (detached.isNotEmpty) printStackLines('[VIEW FOCUS STACK]');
     } catch (e) {
       debugPrintSynchronously('[VIEW FOCUS] log failed: $e');
     }

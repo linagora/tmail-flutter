@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:web/web.dart' as web;
 
+import 'stack_lines_printer.dart';
+
 String _describe(web.EventTarget? target) {
   if (target == null) return 'null';
   if (!target.isA<web.Element>()) return 'non-element';
@@ -29,6 +31,10 @@ void Function() startDomFocusLogging() {
           'phase=${SchedulerBinding.instance.schedulerPhase.name} '
           'target=${_describe(event.target)} related=${_describe(event.relatedTarget)} '
           'active=${_describe(web.document.activeElement)}');
+      // A mid-frame focus move comes from framework code; its stack names the caller.
+      if (SchedulerBinding.instance.schedulerPhase != SchedulerPhase.idle) {
+        printStackLines('[DOM FOCUS STACK]');
+      }
     } catch (e) {
       debugPrintSynchronously('[DOM FOCUS] log failed: $e');
     }
