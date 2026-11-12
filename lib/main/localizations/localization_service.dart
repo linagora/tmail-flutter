@@ -61,6 +61,8 @@ class LocalizationService extends Translations {
 
   static void changeLocale(Locale newLocale) {
     final normalizedLocale = _normalizeLocale(newLocale);
+    // Get.updateLocale reassembles the whole app and locks input events until that frame ends.
+    if (normalizedLocale == Get.locale) return;
     log('LocalizationService::changeLocale(): New locale is $normalizedLocale');
     Get.updateLocale(normalizedLocale);
   }
