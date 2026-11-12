@@ -22,6 +22,7 @@ void main() {
           canRecoverDeletedMessages,
           offersMyPremium,
           namesShownAccountInWebUrl,
+          opensInboxForMissingLinkTarget,
         ) in [
       (
         'my own account',
@@ -36,6 +37,7 @@ void main() {
         true,
         true,
         true,
+        false,
         false,
       ),
       (
@@ -52,6 +54,7 @@ void main() {
         false,
         false,
         true,
+        true,
       ),
       (
         'no account yet',
@@ -67,6 +70,7 @@ void main() {
         true,
         true,
         false,
+        false,
       ),
     ]) {
       test(
@@ -80,7 +84,8 @@ void main() {
         '${showsMyVacationBanner ? 'shows' : 'does not show'} my vacation banner, '
         '${canRecoverDeletedMessages ? 'allows' : 'does not allow'} recovering deleted messages, '
         '${offersMyPremium ? 'offers' : 'does not offer'} my premium, '
-        '${namesShownAccountInWebUrl ? 'names' : 'does not name'} the account in web URLs '
+        '${namesShownAccountInWebUrl ? 'names' : 'does not name'} the account in web URLs, '
+        '${opensInboxForMissingLinkTarget ? 'opens Inbox' : 'opens the unknown page'} for a missing link target '
         'while $shown is shown',
         () {
           final capabilities = ShownAccountCapabilities.of(shownAccount);
@@ -96,6 +101,7 @@ void main() {
           expect(capabilities.canRecoverDeletedMessages, canRecoverDeletedMessages);
           expect(capabilities.offersMyPremium, offersMyPremium);
           expect(capabilities.namesShownAccountInWebUrl, namesShownAccountInWebUrl);
+          expect(capabilities.opensInboxForMissingLinkTarget, opensInboxForMissingLinkTarget);
         },
       );
     }

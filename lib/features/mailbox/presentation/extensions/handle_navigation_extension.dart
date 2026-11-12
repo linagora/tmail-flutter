@@ -7,14 +7,12 @@ import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_la
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/presentation_label_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension HandleNavigationExtension on MailboxController {
   void handleLabelNavigation(NavigationRouter router, Id labelId) {
     if (!_isLabelCapabilityValid()) {
-      _navigateToUnknown();
+      openMissingTargetFromLocationBar();
       return;
     }
 
@@ -79,7 +77,7 @@ extension HandleNavigationExtension on MailboxController {
     final matchedLabel = mailboxDashBoardController.getLabelById(labelId);
 
     if (matchedLabel == null) {
-      _navigateToUnknown();
+      openMissingTargetFromLocationBar();
       return;
     }
 
@@ -95,10 +93,5 @@ extension HandleNavigationExtension on MailboxController {
     }
 
     mailboxDashBoardController.scrollToLabelListView();
-  }
-
-  void _navigateToUnknown() {
-    clearNavigationRouter();
-    popAndPush(AppRoutes.unknownRoutePage);
   }
 }

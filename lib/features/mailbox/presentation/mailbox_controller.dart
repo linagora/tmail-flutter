@@ -878,8 +878,7 @@ class MailboxController extends BaseMailboxController
               _openMailboxFromLocationBar(matchedMailboxNode.item);
             }
           } else {
-            _clearNavigationRouter();
-            popAndPush(AppRoutes.unknownRoutePage);
+            openMissingTargetFromLocationBar();
           }
         } else if (_navigationRouter!.emailId != null) {
           _openEmailWithoutMailboxFromLocationBar(_navigationRouter!.emailId!);
@@ -971,7 +970,16 @@ class MailboxController extends BaseMailboxController
     _clearNavigationRouter();
   }
 
-  void clearNavigationRouter() => _clearNavigationRouter();
+  /// A delegated link may outlive its folder or label, so it opens Inbox instead of the unknown page.
+  void openMissingTargetFromLocationBar() {
+    _clearNavigationRouter();
+    if (!shownAccountCapabilities.opensInboxForMissingLinkTarget) {
+      popAndPush(AppRoutes.unknownRoutePage);
+      return;
+    }
+    _selectSelectedMailboxDefault();
+    _replaceBrowserHistory();
+  }
 
   void _clearNavigationRouter() {
     _navigationRouter = null;

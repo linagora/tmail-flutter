@@ -10,6 +10,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:labels/labels.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
@@ -17,6 +18,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/extensions/mailbox_extension.dart';
 import 'package:rxdart/subjects.dart';
+import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/account_switch_result.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/account_switch_state.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/account_switch_view.dart';
@@ -238,6 +240,88 @@ void main() {
       expect(switchNotifier.switchToCalls, isEmpty);
       expect(mailboxDashboardController.dashBoardAction.value, isNull);
       expect(selectedMailboxId(), MailboxFixtures.inboxMailbox.id!.id.value);
+    });
+  });
+
+  group('a web start URL whose folder is missing:', () {
+    Map<String, dynamic> missingFolderUrlOf(AccountId? accountId) => {
+          RouteUtils.paramContext: 'missing-folder',
+          if (accountId != null) RouteUtils.paramAccount: accountId.id.value,
+        };
+
+    testWidgets('opens the Inbox of the delegated account it names', (tester) async {
+      source.show(
+        DelegationFixtures.bobAccountId,
+        ActiveAccount.delegated(DelegationFixtures.session(), DelegationFixtures.bobAccountId),
+      );
+
+      await startOn(tester, missingFolderUrlOf(DelegationFixtures.bobAccountId));
+
+      expect(switchNotifier.switchToCalls, isEmpty);
+      expect(selectedMailboxId(), MailboxFixtures.inboxMailbox.id!.id.value);
+      expect(Get.currentRoute, isNot(AppRoutes.unknownRoutePage));
+    });
+
+    testWidgets('of my account still opens the unknown page', (tester) async {
+      await startOn(tester, missingFolderUrlOf(null));
+
+      expect(Get.currentRoute, AppRoutes.unknownRoutePage);
+      expect(selectedMailboxId(), isNull);
+    });
+
+    testWidgets('naming my account still opens the unknown page', (tester) async {
+      await startOn(tester, missingFolderUrlOf(DelegationFixtures.aliceAccountId));
+
+      expect(switchNotifier.switchToCalls, isEmpty);
+      expect(Get.currentRoute, AppRoutes.unknownRoutePage);
+      expect(selectedMailboxId(), isNull);
+    });
+  });
+
+  group('a web start URL whose label is missing:', () {
+    Map<String, dynamic> missingLabelUrlOf(AccountId? accountId) => {
+          RouteUtils.paramLabelId: 'missing-label',
+          if (accountId != null) RouteUtils.paramAccount: accountId.id.value,
+        };
+
+    void showBob() => source.show(
+          DelegationFixtures.bobAccountId,
+          ActiveAccount.delegated(DelegationFixtures.session(), DelegationFixtures.bobAccountId),
+        );
+
+    void stubLabels({required bool supported}) {
+      when(labelController.isLabelCapabilitySupported(any, any)).thenReturn(supported);
+      when(labelController.isLabelsLoaded).thenReturn(RxBool(true));
+      when(labelController.labels).thenReturn(<Label>[].obs);
+    }
+
+    testWidgets('opens the Inbox of the delegated account when labels are not supported', (tester) async {
+      showBob();
+      stubLabels(supported: false);
+
+      await startOn(tester, missingLabelUrlOf(DelegationFixtures.bobAccountId));
+
+      expect(selectedMailboxId(), MailboxFixtures.inboxMailbox.id!.id.value);
+      expect(Get.currentRoute, isNot(AppRoutes.unknownRoutePage));
+    });
+
+    testWidgets('opens the Inbox of the delegated account when the label is unknown', (tester) async {
+      showBob();
+      stubLabels(supported: true);
+
+      await startOn(tester, missingLabelUrlOf(DelegationFixtures.bobAccountId));
+
+      expect(selectedMailboxId(), MailboxFixtures.inboxMailbox.id!.id.value);
+      expect(Get.currentRoute, isNot(AppRoutes.unknownRoutePage));
+    });
+
+    testWidgets('of my account still opens the unknown page', (tester) async {
+      stubLabels(supported: true);
+
+      await startOn(tester, missingLabelUrlOf(null));
+
+      expect(Get.currentRoute, AppRoutes.unknownRoutePage);
+      expect(selectedMailboxId(), isNull);
     });
   });
 }

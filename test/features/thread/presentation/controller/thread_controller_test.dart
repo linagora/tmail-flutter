@@ -56,6 +56,7 @@ import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_acc
 import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
@@ -1045,6 +1046,32 @@ void main() {
           getLatestChanges: anyNamed('getLatestChanges'),
           useCache: anyNamed('useCache'),
         )).called(1);
+      });
+    });
+
+    group('email of a start URL missing from the shown account:', () {
+      test('opens Inbox of a shown delegated account', () {
+        ActiveAccountSourceFixtures.putForThisTest(
+          DelegationFixtures.session(),
+          shownAccountId: DelegationFixtures.bobAccountId,
+        );
+
+        threadController.handleFailureViewState(GetEmailByIdFailure(Exception('not found')));
+
+        verify(mockMailboxDashBoardController.dispatchMailboxUIAction(
+          argThat(isA<SelectMailboxDefaultAction>()),
+        )).called(1);
+      });
+
+      test('should not open Inbox of mine', () {
+        ActiveAccountSourceFixtures.putForThisTest(
+          DelegationFixtures.session(),
+          shownAccountId: DelegationFixtures.aliceAccountId,
+        );
+
+        threadController.handleFailureViewState(GetEmailByIdFailure(Exception('not found')));
+
+        verifyNever(mockMailboxDashBoardController.dispatchMailboxUIAction(any));
       });
     });
 

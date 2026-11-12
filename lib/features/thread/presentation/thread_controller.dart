@@ -29,6 +29,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
@@ -269,7 +270,7 @@ class ThreadController extends BaseController
       _syncLoadMoreStatus();
     } else if (failure is GetEmailByIdFailure) {
       openingEmail.value = false;
-      popAndPush(AppRoutes.unknownRoutePage);
+      _openMissingEmailFromLocationBar();
     } else if (failure is GetAllEmailFailure || failure is CleanAndGetAllEmailFailure) {
       mailboxDashBoardController.updateRefreshAllEmailState(Left(RefreshAllEmailFailure()));
     }
@@ -1526,6 +1527,15 @@ class ThreadController extends BaseController
       return emailOnWeb;
     } else {
       return currentEmail;
+    }
+  }
+
+  /// A delegated link may outlive its email, so it opens Inbox instead of the unknown page.
+  void _openMissingEmailFromLocationBar() {
+    if (shownAccountCapabilities.opensInboxForMissingLinkTarget) {
+      mailboxDashBoardController.dispatchMailboxUIAction(SelectMailboxDefaultAction());
+    } else {
+      popAndPush(AppRoutes.unknownRoutePage);
     }
   }
 
