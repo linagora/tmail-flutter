@@ -32,12 +32,16 @@ class _FakeDashboard implements AccountSwitchDashboard {
 
   int resetCount = 0;
   int labelReloadCount = 0;
+  int autocompleteSetUpCount = 0;
 
   @override
   void resetForNewAccount() => resetCount++;
 
   @override
   void reloadLabelSettingForShownAccount() => labelReloadCount++;
+
+  @override
+  void setUpAutocompleteForShownAccount() => autocompleteSetUpCount++;
 }
 
 ShownAccountLoad _loadedIn(int attemptId) =>
@@ -181,6 +185,14 @@ void main() {
       expect(dashboard.labelReloadCount, 1);
     });
 
+    test('a switch to another account sets up the contact autocomplete of that account once', () async {
+      container.read(shownAccountLoadTrackerProvider).reportFolders(_loadedIn(2));
+
+      await view.loadAccount(account, 2);
+
+      expect(dashboard.autocompleteSetUpCount, 1);
+    });
+
     test('loading an account nothing loads yet in the attempt asks for a reload', () {
       view.loadAccount(account, 2);
 
@@ -215,6 +227,14 @@ void main() {
       view.catchUpAccount(account, 3);
 
       expect(dashboard.labelReloadCount, 1);
+    });
+
+    test('catching up sets up the contact autocomplete of the account shown again once', () {
+      container.read(shownAccountLoadTrackerProvider).reportFolders(_loadedIn(3));
+
+      view.catchUpAccount(account, 3);
+
+      expect(dashboard.autocompleteSetUpCount, 1);
     });
 
     test('catching up an account nothing reloaded in the attempt asks for a reload', () {
