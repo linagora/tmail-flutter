@@ -13,4 +13,9 @@ class WebComposerRecipientRobot extends ComposerRecipientRobot {
     // of the expand chevron.
     await $(Key('prefix_${PrefixEmailAddress.to.name}${UiKeys.recipientCcButtonSuffix}')).tap();
   }
+
+  @override
+  Future<void> openFromField() async {
+    await $(Key('prefix_${PrefixEmailAddress.to.name}_recipient_from_button')).tap();
+  }
 }

@@ -1,7 +1,7 @@
 import '../../base/base_test_scenario.dart';
 import '../../mixin/delegation_standalone_scenario_mixin.dart';
 
-/// Switch to owner, then return to mine via the avatar menu (not Viewing ✕).
+/// Switch to owner, then return to mine via the switcher menu (not Viewing ✕).
 class SwitchBackToMineViaAvatarMenuStandaloneScenario extends BaseTestScenario
     with DelegationStandaloneScenarioMixin {
   const SwitchBackToMineViaAvatarMenuStandaloneScenario(super.$, super.robots);

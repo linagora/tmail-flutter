@@ -8,6 +8,6 @@ void main() {
         'Should show the account-switch loading dialog while opening a delegated mailbox',
     scenarioBuilder: ($, robots) =>
         SwitchDelegatedMailboxLoadingDialogStandaloneScenario($, robots),
-    tags: [TestTags.web],
+    tags: [TestTags.android, TestTags.ios, TestTags.web],
   );
 }

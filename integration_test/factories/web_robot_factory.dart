@@ -2,7 +2,9 @@ import 'package:patrol/patrol.dart';
 
 import '../robots/abstract/abstract_hardware_keyboard_robot.dart';
 import '../robots/abstract/abstract_common_robot.dart';
+import '../robots/abstract/abstract_account_switcher_robot.dart';
 import '../robots/abstract/abstract_settings_robot.dart';
+import '../robots/web/web_account_switcher_robot.dart';
 import '../robots/web/web_common_robot.dart';
 import '../robots/web/web_email_robot.dart';
 import '../robots/abstract/abstract_app_grid_robot.dart';
@@ -60,6 +62,9 @@ class WebRobotFactory implements RobotFactory {
 
   @override
   AbstractSearchRobot searchRobot() => WebSearchRobot($);
+
+  @override
+  AbstractAccountSwitcherRobot accountSwitcherRobot() => WebAccountSwitcherRobot($);
 
   @override
   AbstractSettingsRobot settingsRobot() => WebSettingsRobot($);

@@ -4,7 +4,7 @@ import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import '../../base/core_robot.dart';
 import '../abstract/abstract_workplace_account_switcher_assertion_robot.dart';
 import '../abstract/abstract_workplace_account_switcher_robot.dart';
-import 'account_switch_robot_mixin.dart';
+import '../account_switch_robot_mixin.dart';
 import 'web_workplace_account_switcher_assertion_robot.dart';
 
 /// Web Workplace account-switcher chip (#4977 §8).

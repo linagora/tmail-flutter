@@ -2,7 +2,9 @@ import 'package:patrol/patrol.dart';
 
 import '../robots/abstract/abstract_hardware_keyboard_robot.dart';
 import '../robots/abstract/abstract_common_robot.dart';
+import '../robots/abstract/abstract_account_switcher_robot.dart';
 import '../robots/abstract/abstract_settings_robot.dart';
+import '../robots/mobile/mobile_account_switcher_robot.dart';
 import '../robots/mobile/mobile_common_robot.dart';
 import '../robots/abstract/abstract_app_grid_robot.dart';
 import '../robots/abstract/abstract_composer_robot.dart';
@@ -60,6 +62,9 @@ class MobileRobotFactory implements RobotFactory {
   @override
   AbstractSearchRobot searchRobot() => MobileSearchRobot($);
   
+  @override
+  AbstractAccountSwitcherRobot accountSwitcherRobot() => MobileAccountSwitcherRobot($);
+
   @override
   AbstractSettingsRobot settingsRobot() => MobileSettingsRobot($);
 
