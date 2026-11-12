@@ -6161,6 +6161,13 @@ class AppLocalizations {
     );
   }
 
+  String get sendingNotAllowedFromThisMailbox {
+    return Intl.message(
+      'You cannot send emails from this mailbox.',
+      name: 'sendingNotAllowedFromThisMailbox',
+    );
+  }
+
   String endedDelegationLostItems(int count) {
     return Intl.message(
       'Access ended. $count unsent or draft messages were removed.',
