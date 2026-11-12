@@ -12,8 +12,11 @@ import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/material.dart' hide SearchController, State;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/method_level_exception.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -1056,21 +1059,51 @@ void main() {
           shownAccountId: DelegationFixtures.bobAccountId,
         );
 
-        threadController.handleFailureViewState(GetEmailByIdFailure(Exception('not found')));
+        threadController.handleFailureViewState(GetEmailByIdFailure(NotFoundEmailException()));
 
         verify(mockMailboxDashBoardController.dispatchMailboxUIAction(
-          argThat(isA<SelectMailboxDefaultAction>()),
+          argThat(isA<SystemBackToInboxAction>()),
         )).called(1);
       });
 
-      test('should not open Inbox of mine', () {
+      Future<void> failToOpenEmailOf(
+        WidgetTester tester,
+        AccountId shownAccountId,
+        GetEmailByIdFailure failure,
+      ) async {
         ActiveAccountSourceFixtures.putForThisTest(
           DelegationFixtures.session(),
-          shownAccountId: DelegationFixtures.aliceAccountId,
+          shownAccountId: shownAccountId,
+        );
+        await tester.pumpWidget(GetMaterialApp(
+          getPages: [GetPage(name: AppRoutes.unknownRoutePage, page: () => const SizedBox.shrink())],
+          home: const SizedBox.shrink(),
+        ));
+        addTearDown(() => Get.routing.current = '');
+
+        threadController.handleFailureViewState(failure);
+        await tester.pumpAndSettle();
+      }
+
+      testWidgets('opens the unknown page of a shown delegated account when fetching the email fails for another reason', (tester) async {
+        await failToOpenEmailOf(
+          tester,
+          DelegationFixtures.bobAccountId,
+          GetEmailByIdFailure(const NoNetworkError()),
         );
 
-        threadController.handleFailureViewState(GetEmailByIdFailure(Exception('not found')));
+        expect(Get.currentRoute, AppRoutes.unknownRoutePage);
+        verifyNever(mockMailboxDashBoardController.dispatchMailboxUIAction(any));
+      });
 
+      testWidgets('opens the unknown page of mine', (tester) async {
+        await failToOpenEmailOf(
+          tester,
+          DelegationFixtures.aliceAccountId,
+          GetEmailByIdFailure(NotFoundEmailException()),
+        );
+
+        expect(Get.currentRoute, AppRoutes.unknownRoutePage);
         verifyNever(mockMailboxDashBoardController.dispatchMailboxUIAction(any));
       });
     });

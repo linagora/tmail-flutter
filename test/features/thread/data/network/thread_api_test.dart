@@ -18,6 +18,7 @@ import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet.d
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:model/extensions/email_id_extensions.dart';
+import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_email.dart';
@@ -559,6 +560,57 @@ void main() {
         expect(
           result?.map((e) => e.id!.asString).toList(),
           ['id3', 'id1', 'id2', 'id4'],
+        );
+      });
+    });
+
+    group('getEmailById:', () {
+      final emailId = EmailId(Id('missing-email'));
+
+      void stubEmailGet(List<Map<String, dynamic>> list, List<String> notFound) {
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(200, {
+            'sessionState': sessionState.value,
+            'methodResponses': [
+              [
+                'Email/get',
+                {
+                  'accountId': AccountFixtures.aliceAccountId.id.value,
+                  'state': state.value,
+                  'list': list,
+                  'notFound': notFound,
+                },
+                'c0',
+              ],
+            ],
+          }),
+          data: Matchers.any,
+        );
+      }
+
+      test('should return the email the server found', () async {
+        stubEmailGet([{'id': emailId.id.value}], []);
+
+        final email = await threadApi.getEmailById(
+          SessionFixtures.aliceSession,
+          AccountFixtures.aliceAccountId,
+          emailId,
+        );
+
+        expect(email.id, emailId);
+      });
+
+      test('should throw NotFoundEmailException when the server does not find the email', () async {
+        stubEmailGet([], [emailId.id.value]);
+
+        await expectLater(
+          threadApi.getEmailById(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            emailId,
+          ),
+          throwsA(isA<NotFoundEmailException>()),
         );
       });
     });

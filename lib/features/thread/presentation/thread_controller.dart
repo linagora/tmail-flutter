@@ -17,6 +17,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
@@ -270,7 +271,7 @@ class ThreadController extends BaseController
       _syncLoadMoreStatus();
     } else if (failure is GetEmailByIdFailure) {
       openingEmail.value = false;
-      _openMissingEmailFromLocationBar();
+      _openMissingEmailFromLocationBar(failure);
     } else if (failure is GetAllEmailFailure || failure is CleanAndGetAllEmailFailure) {
       mailboxDashBoardController.updateRefreshAllEmailState(Left(RefreshAllEmailFailure()));
     }
@@ -1531,9 +1532,10 @@ class ThreadController extends BaseController
   }
 
   /// A delegated link may outlive its email, so it opens Inbox instead of the unknown page.
-  void _openMissingEmailFromLocationBar() {
-    if (shownAccountCapabilities.opensInboxForMissingLinkTarget) {
-      mailboxDashBoardController.dispatchMailboxUIAction(SelectMailboxDefaultAction());
+  void _openMissingEmailFromLocationBar(GetEmailByIdFailure failure) {
+    if (failure.exception is NotFoundEmailException &&
+        shownAccountCapabilities.opensInboxForMissingLinkTarget) {
+      mailboxDashBoardController.dispatchMailboxUIAction(SystemBackToInboxAction());
     } else {
       popAndPush(AppRoutes.unknownRoutePage);
     }
