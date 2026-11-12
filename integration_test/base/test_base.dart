@@ -88,6 +88,10 @@ class TestBase {
     // The preload reloads env.file, whose SERVER_URL the web login reads.
     if (TestBackend.leased != null) dotenv.env['SERVER_URL'] = TestBackend.current.url;
     await scenario.prepare();
+    // Added before runApp so it logs ahead of the View's own focus handler.
+    final viewFocusLogger = ViewFocusLogger();
+    WidgetsBinding.instance.addObserver(viewFocusLogger);
+    addTearDown(() => WidgetsBinding.instance.removeObserver(viewFocusLogger));
     runApp(const TMailApp());
 
     final originalOnError = FlutterError.onError!;

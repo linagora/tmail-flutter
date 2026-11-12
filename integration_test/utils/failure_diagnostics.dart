@@ -1,3 +1,5 @@
+import 'dart:ui' show ViewFocusEvent;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -14,6 +16,50 @@ void _printLines(String text, {int? maxLines}) {
       : lines.skip(lines.length - maxLines);
   for (final line in shown) {
     debugPrintSynchronously(line);
+  }
+}
+
+const _maxAncestors = 8;
+
+String _ancestorChain(BuildContext context) {
+  final types = <String>[context.widget.runtimeType.toString()];
+  context.visitAncestorElements((element) {
+    types.add(element.widget.runtimeType.toString());
+    return types.length < _maxAncestors;
+  });
+  return types.join(' < ');
+}
+
+String _describeFocusNode(FocusNode node) {
+  final context = node.context;
+  if (context == null) return '${node.runtimeType} context=null';
+  if (!context.mounted) return '${node.runtimeType} mounted=false';
+  final renderObject = context.findRenderObject();
+  return '${node.runtimeType} canFocus=${node.canRequestFocus} '
+      'skip=${node.skipTraversal} primary=${node.hasPrimaryFocus} '
+      'ro=${renderObject.runtimeType} attached=${renderObject?.attached} '
+      'chain=${_ancestorChain(context)}';
+}
+
+// Profile web builds print diagnostics as "Instance of ...", so list focus nodes field by field.
+void _dumpFocusNodes() {
+  final root = FocusManager.instance.rootScope;
+  final nodes = [root, ...root.descendants];
+  for (var i = 0; i < nodes.length; i++) {
+    try {
+      debugPrintSynchronously('[FOCUS NODE] $i ${_describeFocusNode(nodes[i])}');
+    } catch (e) {
+      debugPrintSynchronously('[FOCUS NODE] $i describe failed: $e');
+    }
+  }
+}
+
+// Logs the browser focus event that makes the framework re-sort focus nodes.
+class ViewFocusLogger with WidgetsBindingObserver {
+  @override
+  void didChangeViewFocus(ViewFocusEvent event) {
+    debugPrintSynchronously('[VIEW FOCUS] view=${event.viewId} '
+        'state=${event.state.name} direction=${event.direction.name}');
   }
 }
 
@@ -36,9 +82,10 @@ void dumpFailureState(PatrolIntegrationTester $) {
     final views = WidgetsBinding.instance.platformDispatcher.views;
     final keyboardInset = views.isEmpty ? 'n/a' : '${views.first.viewInsets.bottom}';
     final summary = '[FAILURE STATE] route=${Get.currentRoute} '
-        'focus=${FocusManager.instance.primaryFocus} keyboardInset=$keyboardInset';
+        'focus=${FocusManager.instance.primaryFocus?.runtimeType} keyboardInset=$keyboardInset';
     $.log(summary);
     debugPrintSynchronously(summary);
+    _dumpFocusNodes();
     _printLines(FocusManager.instance.toStringDeep());
     _printLines(
       WidgetsBinding.instance.rootElement?.toStringDeep() ?? 'no root element',
