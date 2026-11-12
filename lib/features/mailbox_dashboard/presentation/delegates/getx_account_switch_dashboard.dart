@@ -32,4 +32,17 @@ class GetXAccountSwitchDashboard implements AccountSwitchDashboard {
 
   @override
   void reloadLabelSettingForShownAccount() => _dashboard.reloadLabelSettingForShownAccount();
+
+  /// Session setup registers the autocomplete bindings and minimum length of my own account only.
+  @override
+  void setUpAutocompleteForShownAccount() {
+    final session = _dashboard.sessionCurrent;
+    final accountId = _dashboard.activeAccountId;
+    if (session == null || accountId == null) return;
+    _dashboard.injectAutoCompleteBindings(session, accountId);
+    _dashboard.minInputLengthAutocomplete = _dashboard.getMinInputLengthAutocomplete(
+      session: session,
+      accountId: accountId,
+    );
+  }
 }
