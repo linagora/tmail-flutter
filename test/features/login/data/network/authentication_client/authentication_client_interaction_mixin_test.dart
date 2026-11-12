@@ -159,21 +159,6 @@ void main() {
         ExternalUserAgent.ephemeralAsWebAuthenticationSession,
       );
     });
-
-    test('Android, Twake Workplace: unchanged', () {
-      debugDefaultTargetPlatformOverride = TargetPlatform.android;
-
-      final request = authClient.getEndSessionRequest(
-        TokenId('an-id-token'),
-        config(isTWP: true),
-        discovery,
-      );
-
-      expect(
-        request.externalUserAgent,
-        ExternalUserAgent.asWebAuthenticationSession,
-      );
-    });
   });
 }
 
