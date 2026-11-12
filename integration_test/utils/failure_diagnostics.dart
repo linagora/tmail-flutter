@@ -6,6 +6,8 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:patrol/patrol.dart';
 
+import 'dom_focus_logger.dart';
+
 // Keeps the dump under the logcat buffer limit; the top route prints last, so keep the tail.
 const _maxTreeLines = 1500;
 
@@ -40,6 +42,16 @@ String _detachedRoot(RenderObject renderObject) {
   return '${top.runtimeType} renderParent=${top.parent?.runtimeType}';
 }
 
+// A deactivated subtree loses its parent link until finalizeTree unmounts it.
+bool _reachesRootElement(BuildContext context) {
+  Element? top;
+  context.visitAncestorElements((element) {
+    top = element;
+    return true;
+  });
+  return top == WidgetsBinding.instance.rootElement;
+}
+
 String _describeFocusNode(FocusNode node) {
   final context = node.context;
   if (context == null) return '${node.runtimeType} context=null';
@@ -51,6 +63,7 @@ String _describeFocusNode(FocusNode node) {
   return '${node.runtimeType} canFocus=${node.canRequestFocus} '
       'skip=${node.skipTraversal} primary=${node.hasPrimaryFocus} '
       'ro=${renderObject.runtimeType} attached=${renderObject?.attached}$detached '
+      'inTree=${_reachesRootElement(context)} '
       'chain=${_ancestorChain(context)}';
 }
 
@@ -84,7 +97,7 @@ class ViewFocusLogger with WidgetsBindingObserver {
           .toList();
       debugPrintSynchronously('[VIEW FOCUS] view=${event.viewId} '
           'state=${event.state.name} direction=${event.direction.name} '
-          'phase=${SchedulerBinding.instance.schedulerPhase.name} detached=${detached.length}');
+          'phase=${SchedulerBinding.instance.schedulerPhase.name} detached=${detached.length} dom=${describeDomActiveElement()}');
       // These are the nodes the View's own handler is about to sort.
       for (final node in detached) {
         debugPrintSynchronously('[VIEW FOCUS DETACHED] ${_describeFocusNode(node)}');
