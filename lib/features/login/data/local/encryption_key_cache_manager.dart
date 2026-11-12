@@ -18,8 +18,6 @@ class EncryptionKeyCacheManager extends CacheManagerInteraction {
     return _encryptionKeyCacheClient.getItem(EncryptionKeyCache.keyCacheValue);
   }
 
-  Future<void> deleteLegacyBox() => _encryptionKeyCacheClient.deleteBox();
-
   @override
   Future<void> migrateHiveToIsolatedHive() async {
     try {
