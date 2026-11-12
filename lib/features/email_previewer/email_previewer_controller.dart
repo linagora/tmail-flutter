@@ -1,7 +1,6 @@
 
 import 'dart:async';
 
-import 'package:collection/collection.dart';
 import 'package:core/data/constants/constant.dart';
 import 'package:core/data/network/download/download_manager.dart';
 import 'package:core/presentation/state/failure.dart';
@@ -22,7 +21,6 @@ import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dar
 import 'package:tmail_ui_user/features/caching/exceptions/local_storage_exception.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/preview_email_eml_request.dart';
-import 'package:tmail_ui_user/features/delegation/domain/extensions/session_delegation_extension.dart';
 import 'package:tmail_ui_user/features/download/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/download/domain/state/get_preview_email_eml_content_shared_state.dart';
 import 'package:tmail_ui_user/features/download/domain/state/get_preview_eml_content_in_memory_state.dart';
@@ -64,7 +62,6 @@ class EmailPreviewerController extends ReloadableController {
   Session? _session;
   AccountId? _accountId;
   String? _keyStored;
-  String? _accountParam;
   bool _isDownloadingAttachment = false;
   CancelToken? _downloadAttachmentCancelToken;
   StreamController<Either<Failure, Success>>? _downloadAttachmentStreamController;
@@ -100,7 +97,6 @@ class EmailPreviewerController extends ReloadableController {
     _accountId = null;
     _session = null;
     _keyStored = null;
-    _accountParam = null;
     _isDownloadingAttachment = false;
     _downloadAttachmentCancelToken?.cancel();
     _downloadAttachmentCancelToken = null;
@@ -171,14 +167,9 @@ class EmailPreviewerController extends ReloadableController {
   @override
   void handleReloaded(Session session) {
     _session = session;
-    _accountId = previewAccountId(session, _accountParam);
+    _accountId = session.accountId;
 
     if (_keyStored != null) {
-      if (_accountId == null) {
-        consumeState(Stream.value(Left(ParseEmailByBlobIdFailure(NotFoundAccountIdException()))));
-        return;
-      }
-
       _parseEmailByBlobId(
         accountId: _accountId!,
         session: _session!,
@@ -197,7 +188,6 @@ class EmailPreviewerController extends ReloadableController {
       return;
     }
 
-    _accountParam = parameters[RouteUtils.paramAccount];
     final keyStored = parameters[RouteUtils.paramID];
     if (keyStored?.trim().isNotEmpty == true) {
       consumeState(_getPreviewEmailEMLContentSharedInteractor.execute(keyStored!));
@@ -235,24 +225,6 @@ class EmailPreviewerController extends ReloadableController {
     }
   }
 
-  /// The account in the URL of a delegated `.eml` tab, my own account when the URL has none.
-  @visibleForTesting
-  static AccountId? previewAccountId(Session session, String? accountParam) {
-    if (accountParam == null) return session.accountId;
-    return session.delegatedAccounts
-        .map((entry) => entry.key)
-        .firstWhereOrNull((accountId) => accountId.id.value == accountParam);
-  }
-
-  /// A nested `.eml` link opens on the account of this tab, whatever account the message put in it.
-  @visibleForTesting
-  static Uri emlPreviewUriOnAccount(Uri uri, String? accountParam) {
-    final queryParameters = Map<String, String>.of(uri.queryParameters)
-      ..remove(RouteUtils.paramAccount);
-    if (accountParam != null) queryParameters[RouteUtils.paramAccount] = accountParam;
-    return uri.replace(queryParameters: queryParameters);
-  }
-
   @visibleForTesting
   static bool opensWithNoOpener(Uri uri, {required bool isEmlPreview}) =>
       !isEmlPreview && !uri.isScheme(RouteUtils.mailtoPrefix);
@@ -268,9 +240,7 @@ class EmailPreviewerController extends ReloadableController {
       return;
     }
 
-    final url = isEMlPreview
-        ? emlPreviewUriOnAccount(uri, _accountParam).toString()
-        : _standardizeURL(uri);
+    final url = _standardizeURL(uri);
     log('EmailPreviewerController::_openNewWindowByHyperLink: url = $url');
 
     bool isOpen = HtmlUtils.openNewWindowByUrl(
@@ -450,12 +420,9 @@ class EmailPreviewerController extends ReloadableController {
     final sessionViewState = await getSessionInteractor.execute().last;
     final sessionSuccessState = sessionViewState.getOrElse(() => UIState.idle);
 
-    final session = sessionSuccessState is GetSessionSuccess ? sessionSuccessState.session : null;
-    final accountId = session == null ? null : previewAccountId(session, _accountParam);
-
-    if (session != null && accountId != null) {
-      _session = session;
-      _accountId = accountId;
+    if (sessionSuccessState is GetSessionSuccess) {
+      _session = sessionSuccessState.session;
+      _accountId = _session?.accountId;
 
       _startDownloadAttachment(attachment);
     } else {
