@@ -6,4 +6,7 @@ abstract interface class AccountSwitchDashboard {
 
   /// Labels of the account already selected for this switch (session setup has its own path).
   void reloadLabelSettingForShownAccount();
+
+  /// Contact autocomplete of the account already selected for this switch.
+  void setUpAutocompleteForShownAccount();
 }

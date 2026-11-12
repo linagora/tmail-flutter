@@ -39,6 +39,7 @@ class DashboardAccountSwitchView implements AccountSwitchView {
   @override
   Future<void> loadAccount(ActiveAccount account, int switchAttemptId) {
     _dashboard.reloadLabelSettingForShownAccount();
+    _dashboard.setUpAutocompleteForShownAccount();
     if (!_loads.hasFoldersLoad(switchAttemptId)) _requestReload(switchAttemptId);
     return _loads.waitFor(switchAttemptId);
   }
@@ -48,6 +49,7 @@ class DashboardAccountSwitchView implements AccountSwitchView {
   void catchUpAccount(ActiveAccount account, int switchAttemptId) {
     _dashboard.resetForNewAccount();
     _dashboard.reloadLabelSettingForShownAccount();
+    _dashboard.setUpAutocompleteForShownAccount();
     if (!_loads.hasFoldersLoad(switchAttemptId)) _requestReload(switchAttemptId);
   }
 
