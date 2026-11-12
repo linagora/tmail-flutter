@@ -73,9 +73,15 @@ extension SessionExtension on Session {
     AccountId accountId,
     CapabilityIdentifier identifier
   ) {
-    var capability = accounts[accountId]?.accountCapabilities[identifier];
-    if (capability == null || capability is EmptyCapability) {
-      capability = capabilities[identifier];
+    final account = accounts[accountId];
+    var capability = account?.accountCapabilities[identifier];
+    // Session-level properties describe my own account, so a delegated account never inherits them (ADR-0114).
+    final missingOnAccount = capability == null || capability is EmptyCapability;
+    if (missingOnAccount) {
+      final isDelegatedAccount = account?.isPersonal == false;
+      if (!isDelegatedAccount || identifier == CapabilityIdentifier.jmapCore) {
+        capability = capabilities[identifier];
+      }
     }
     if (capability is T) {
       return capability;

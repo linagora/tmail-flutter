@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/input_field_focus_manager.dart';
@@ -166,7 +167,10 @@ class AdvancedFilterController extends BaseController with ActiveAccountReader {
 
   Future<List<EmailAddress>> getAutoCompleteSuggestion(String word, {int? limit}) async {
     log('AdvancedFilterController::getAutoCompleteSuggestion():word = $word | limit = $limit');
-    _getAutoCompleteInteractor = getBinding<GetAutoCompleteInteractor>();
+    _getAutoCompleteInteractor = _mailboxDashBoardController.sessionCurrent
+            ?.supportsTMailContactAutocomplete(activeAccountId) == true
+        ? getBinding<GetAutoCompleteInteractor>()
+        : null;
 
     return await _getAutoCompleteInteractor
       ?.execute(AutoCompletePattern(
