@@ -1,6 +1,7 @@
 import 'dart:ui' show ViewFocusEvent;
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:patrol/patrol.dart';
@@ -19,7 +20,7 @@ void _printLines(String text, {int? maxLines}) {
   }
 }
 
-const _maxAncestors = 8;
+const _maxAncestors = 24;
 
 String _ancestorChain(BuildContext context) {
   final types = <String>[context.widget.runtimeType.toString()];
@@ -30,14 +31,26 @@ String _ancestorChain(BuildContext context) {
   return types.join(' < ');
 }
 
+// Topmost detached render ancestor tells whether the subtree was dropped from its parent.
+String _detachedRoot(RenderObject renderObject) {
+  var top = renderObject;
+  while (top.parent != null && !top.parent!.attached) {
+    top = top.parent!;
+  }
+  return '${top.runtimeType} renderParent=${top.parent?.runtimeType}';
+}
+
 String _describeFocusNode(FocusNode node) {
   final context = node.context;
   if (context == null) return '${node.runtimeType} context=null';
   if (!context.mounted) return '${node.runtimeType} mounted=false';
   final renderObject = context.findRenderObject();
+  final detached = renderObject != null && !renderObject.attached
+      ? ' detachedRoot=${_detachedRoot(renderObject)}'
+      : '';
   return '${node.runtimeType} canFocus=${node.canRequestFocus} '
       'skip=${node.skipTraversal} primary=${node.hasPrimaryFocus} '
-      'ro=${renderObject.runtimeType} attached=${renderObject?.attached} '
+      'ro=${renderObject.runtimeType} attached=${renderObject?.attached}$detached '
       'chain=${_ancestorChain(context)}';
 }
 
@@ -54,12 +67,31 @@ void _dumpFocusNodes() {
   }
 }
 
+bool _hasDetachedRenderObject(FocusNode node) {
+  final context = node.context;
+  if (context == null || !context.mounted) return false;
+  final renderObject = context.findRenderObject();
+  return renderObject != null && !renderObject.attached;
+}
+
 // Logs the browser focus event that makes the framework re-sort focus nodes.
 class ViewFocusLogger with WidgetsBindingObserver {
   @override
   void didChangeViewFocus(ViewFocusEvent event) {
-    debugPrintSynchronously('[VIEW FOCUS] view=${event.viewId} '
-        'state=${event.state.name} direction=${event.direction.name}');
+    try {
+      final detached = FocusManager.instance.rootScope.descendants
+          .where(_hasDetachedRenderObject)
+          .toList();
+      debugPrintSynchronously('[VIEW FOCUS] view=${event.viewId} '
+          'state=${event.state.name} direction=${event.direction.name} '
+          'phase=${SchedulerBinding.instance.schedulerPhase.name} detached=${detached.length}');
+      // These are the nodes the View's own handler is about to sort.
+      for (final node in detached) {
+        debugPrintSynchronously('[VIEW FOCUS DETACHED] ${_describeFocusNode(node)}');
+      }
+    } catch (e) {
+      debugPrintSynchronously('[VIEW FOCUS] log failed: $e');
+    }
   }
 }
 
