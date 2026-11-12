@@ -32,6 +32,8 @@ extension ListCapabilityIdentifierExtension on List<CapabilityIdentifier> {
     try {
       requireCapability(session, accountId, this);
       return true;
+    } on SessionMissingCapability {
+      return false;
     } catch (error) {
       logWarning('ListCapabilityIdentifierExtension::isSupported(): $error');
       return false;
@@ -49,6 +51,9 @@ extension CapabilityIdentifierExtension on CapabilityIdentifier {
     try {
       requireCapability(session, accountId, [this]);
       return true;
+    } on SessionMissingCapability {
+      // A missing capability is an answer, and getters ask it on every build.
+      return false;
     } catch (error) {
       logWarning('CapabilityIdentifierExtension::isSupported(): $error');
       return false;
