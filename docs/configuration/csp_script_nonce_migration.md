@@ -3,7 +3,7 @@
 ### What changes
 Enforcing `script-src` no longer allows `'unsafe-inline'`. Each response gets a fresh nonce (`$request_id`). Nginx rewrites `__CSP_NONCE__` in `index.html` to that value. Flutter bootstrap, the composer, the mail viewer and print HTML stamp the same nonce on their own scripts. `printing` 5.12.0 `layoutPdf` still injects a fixed no-nonce inline helper, so `script-src` also allows `'sha256-+M0fGRkOqgYlCQCff9oNQn6k6a7Si4Et8iofLMceadE='`.
 
-Without the nginx rewrite and matching CSP header, every inline script is blocked and the web app fails to boot.
+Without the nginx rewrite and matching CSP header, the app still boots, but scripts stamped with `__CSP_NONCE__` are blocked, so the viewer, composer and print break silently.
 
 ### Who must change
 
