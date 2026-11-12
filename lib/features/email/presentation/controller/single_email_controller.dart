@@ -428,7 +428,9 @@ class SingleEmailController extends BaseController
     _injectCalendarEventBindings(session, accountId);
 
     _createNewEmailRuleFilterInteractor = getBinding<CreateNewEmailRuleFilterInteractor>();
-    _sendReceiptToSenderInteractor = getBinding<SendReceiptToSenderInteractor>();
+    // A binding registered for an earlier account stays, so MDN is checked on this account.
+    final isMdnSupported = session != null && CapabilityIdentifier.jmapMdn.isSupported(session, accountId);
+    _sendReceiptToSenderInteractor = isMdnSupported ? getBinding<SendReceiptToSenderInteractor>() : null;
     _parseCalendarEventInteractor = getBinding<ParseCalendarEventInteractor>();
     _acceptCalendarEventInteractor = getBinding<AcceptCalendarEventInteractor>();
     _maybeCalendarEventInteractor = getBinding<MaybeCalendarEventInteractor>();
@@ -1010,6 +1012,9 @@ class SingleEmailController extends BaseController
       imagePaths: imagePaths,
     );
   }
+
+  @visibleForTesting
+  bool get isSendReceiptToSenderAvailable => _sendReceiptToSenderInteractor != null;
 
   void _handleSendReceiptToSenderAction(BuildContext context) {
     if (accountId == null || session == null) {
