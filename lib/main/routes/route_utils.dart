@@ -4,12 +4,15 @@ import 'package:core/data/network/config/service_path.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/email_id_extensions.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_capabilities.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/service_path_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
@@ -32,6 +35,7 @@ abstract class RouteUtils {
   static const String paramTo = 'to';
   static const String paramCc = 'cc';
   static const String paramBcc = 'bcc';
+  static const String paramAccount = 'account';
 
   static const String mailtoPrefix = 'mailto';
   static const String uriPrefix = 'uri';
@@ -56,7 +60,11 @@ abstract class RouteUtils {
     }
   }
 
-  static ServicePath _createDashboardServicePath(String route, {NavigationRouter? router}) {
+  static ServicePath _createDashboardServicePath(
+    String route, {
+    NavigationRouter? router,
+    AccountId? shownDelegatedAccountId,
+  }) {
     ServicePath servicePath = ServicePath(route);
     if (router != null) {
       if (router.emailId != null) {
@@ -70,10 +78,12 @@ abstract class RouteUtils {
           StringQueryParameter(paramContext, router.mailboxId!.id.value),
         if (router.searchQuery != null)
           StringQueryParameter(paramQuery, router.searchQuery!.value),
+        ..._accountQueryParameters(shownDelegatedAccountId),
       ]);
     } else {
       servicePath = servicePath.withQueryParameters([
-        StringQueryParameter(paramType, DashboardType.normal.name)
+        StringQueryParameter(paramType, DashboardType.normal.name),
+        ..._accountQueryParameters(shownDelegatedAccountId),
       ]);
     }
     return servicePath;
@@ -89,14 +99,32 @@ abstract class RouteUtils {
     return servicePath;
   }
 
-  static ServicePath _createEmailEMLPreviewerServicePath(String route, {String? previewId}) {
+  static ServicePath _createEmailEMLPreviewerServicePath(
+    String route, {
+    String? previewId,
+    AccountId? shownDelegatedAccountId,
+  }) {
     ServicePath servicePath = ServicePath(route);
     if (previewId?.trim().isNotEmpty == true) {
       servicePath = servicePath.withQueryParameters([
-        StringQueryParameter(paramID, previewId!)
+        StringQueryParameter(paramID, previewId!),
+        ..._accountQueryParameters(shownDelegatedAccountId),
       ]);
     }
     return servicePath;
+  }
+
+  static List<StringQueryParameter> _accountQueryParameters(AccountId? accountId) => [
+    if (accountId != null) StringQueryParameter(paramAccount, accountId.id.value),
+  ];
+
+  /// Mine is never named, so a URL without `account` keeps meaning mine.
+  static AccountId? get shownDelegatedAccountId {
+    if (!PlatformInfo.isWeb || !Get.isRegistered<ActiveAccountSource>()) return null;
+    final shown = Get.find<ActiveAccountSource>().activeAccount;
+    return shown != null && ShownAccountCapabilities.of(shown).namesShownAccountInWebUrl
+        ? shown.accountId
+        : null;
   }
 
   static ServicePath _createServicePath(String route) {
@@ -108,7 +136,8 @@ abstract class RouteUtils {
     if (route == AppRoutes.dashboard) {
       final servicePath = _createDashboardServicePath(
         '$baseOriginUrl$route',
-        router: router
+        router: router,
+        shownDelegatedAccountId: shownDelegatedAccountId,
       );
       return Uri.parse(servicePath.path);
     } else if (route == AppRoutes.settings) {
@@ -118,6 +147,7 @@ abstract class RouteUtils {
       final servicePath = _createEmailEMLPreviewerServicePath(
         '$baseOriginUrl$route',
         previewId: previewId,
+        shownDelegatedAccountId: shownDelegatedAccountId,
       );
       return Uri.parse(servicePath.path);
     } else {
@@ -199,7 +229,15 @@ abstract class RouteUtils {
       subject: subject,
       body: body,
       accountMenuItem: settingType,
+      accountId: parseAccountId(parameters),
     );
+  }
+
+  static AccountId? parseAccountId(Map<String, dynamic> parameters) {
+    final accountParam = parameters[paramAccount];
+    return accountParam is String && accountParam.isNotEmpty
+        ? AccountId(Id(accountParam))
+        : null;
   }
 
   static List<EmailAddress>? _emailAddressesFromMailtoAddress(dynamic mailtoAddress) {

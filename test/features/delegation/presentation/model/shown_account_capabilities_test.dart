@@ -21,6 +21,7 @@ void main() {
           showsMyVacationBanner,
           canRecoverDeletedMessages,
           offersMyPremium,
+          namesShownAccountInWebUrl,
         ) in [
       (
         'my own account',
@@ -35,6 +36,7 @@ void main() {
         true,
         true,
         true,
+        false,
       ),
       (
         'a delegated account',
@@ -49,6 +51,7 @@ void main() {
         false,
         false,
         false,
+        true,
       ),
       (
         'no account yet',
@@ -63,6 +66,7 @@ void main() {
         true,
         true,
         true,
+        false,
       ),
     ]) {
       test(
@@ -75,7 +79,8 @@ void main() {
         '${offersServerDefaultIdentities ? 'offers' : 'does not offer'} server default identities, '
         '${showsMyVacationBanner ? 'shows' : 'does not show'} my vacation banner, '
         '${canRecoverDeletedMessages ? 'allows' : 'does not allow'} recovering deleted messages, '
-        '${offersMyPremium ? 'offers' : 'does not offer'} my premium '
+        '${offersMyPremium ? 'offers' : 'does not offer'} my premium, '
+        '${namesShownAccountInWebUrl ? 'names' : 'does not name'} the account in web URLs '
         'while $shown is shown',
         () {
           final capabilities = ShownAccountCapabilities.of(shownAccount);
@@ -90,6 +95,7 @@ void main() {
           expect(capabilities.showsMyVacationBanner, showsMyVacationBanner);
           expect(capabilities.canRecoverDeletedMessages, canRecoverDeletedMessages);
           expect(capabilities.offersMyPremium, offersMyPremium);
+          expect(capabilities.namesShownAccountInWebUrl, namesShownAccountInWebUrl);
         },
       );
     }
@@ -100,6 +106,13 @@ void main() {
 
       expect(mine.canOpenSettings, none.canOpenSettings);
       expect(mine.canCreateFilter, none.canCreateFilter);
+    });
+
+    test('equals the capabilities of the same shown account and differs from another', () {
+      final delegated = ActiveAccount.delegated(session, DelegationFixtures.bobAccountId);
+
+      expect(ShownAccountCapabilities.of(delegated), ShownAccountCapabilities.of(delegated));
+      expect(ShownAccountCapabilities.of(delegated), isNot(ShownAccountCapabilities.of(ActiveAccount.personal(session))));
     });
   });
 }

@@ -1,4 +1,6 @@
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -10,6 +12,9 @@ import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
+
+import '../../fixtures/active_account_source_fixtures.dart';
+import '../../fixtures/delegation_fixtures.dart';
 
 /// Asserts the route, address and subject of a parsed mailto map, so tests read
 /// in domain terms instead of repeating `expect`s. [address]/[subject] default
@@ -400,6 +405,68 @@ void main() {
 
       expect(router.bcc ?? [], isEmpty);
       expect(router.body, 'hi&bcc=eve@example.com');
+    });
+  });
+
+  group('account query parameter test', () {
+    tearDown(() {
+      PlatformInfo.isTestingForWeb = false;
+      ActiveAccountSourceFixtures.unregister();
+    });
+
+    void showOnWeb(AccountId shownAccountId) {
+      PlatformInfo.isTestingForWeb = true;
+      ActiveAccountSourceFixtures.put(
+        DelegationFixtures.session(),
+        shownAccountId: shownAccountId,
+      );
+    }
+
+    test('names the shown delegated account on web', () {
+      showOnWeb(DelegationFixtures.bobAccountId);
+
+      expect(RouteUtils.shownDelegatedAccountId, DelegationFixtures.bobAccountId);
+    });
+
+    test('should not name my own account', () {
+      showOnWeb(DelegationFixtures.aliceAccountId);
+
+      expect(RouteUtils.shownDelegatedAccountId, isNull);
+    });
+
+    test('should not name an account off web', () {
+      ActiveAccountSourceFixtures.put(
+        DelegationFixtures.session(),
+        shownAccountId: DelegationFixtures.bobAccountId,
+      );
+
+      expect(RouteUtils.shownDelegatedAccountId, isNull);
+    });
+
+    test('should not name an account before one is shown', () {
+      PlatformInfo.isTestingForWeb = true;
+      ActiveAccountSourceFixtures.putEmpty();
+
+      expect(RouteUtils.shownDelegatedAccountId, isNull);
+    });
+
+    test('should not name an account without an account source', () {
+      PlatformInfo.isTestingForWeb = true;
+
+      expect(RouteUtils.shownDelegatedAccountId, isNull);
+    });
+
+    test('parses the account of a start URL', () {
+      final router = RouteUtils.parsingRouteParametersToNavigationRouter({
+        RouteUtils.paramAccount: DelegationFixtures.bobAccountId.id.value,
+      });
+
+      expect(router.accountId, DelegationFixtures.bobAccountId);
+    });
+
+    test('parses no account from a URL without it or with it empty', () {
+      expect(RouteUtils.parseAccountId({}), isNull);
+      expect(RouteUtils.parseAccountId({RouteUtils.paramAccount: ''}), isNull);
     });
   });
 }
