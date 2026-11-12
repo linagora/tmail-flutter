@@ -3,7 +3,9 @@ import 'package:core/data/model/query/query_parameter.dart';
 import 'package:core/data/network/config/service_path.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -21,6 +23,7 @@ import 'package:universal_html/html.dart' as html;
 abstract class RouteUtils {
 
   static const String paramID = 'id';
+  static const String paramAccount = 'account';
   static const String paramType = 'type';
   static const String paramContext = 'context';
   static const String paramLabelId = 'labelId';
@@ -89,11 +92,18 @@ abstract class RouteUtils {
     return servicePath;
   }
 
-  static ServicePath _createEmailEMLPreviewerServicePath(String route, {String? previewId}) {
+  @visibleForTesting
+  static ServicePath createEmailEMLPreviewerServicePath(
+    String route, {
+    String? previewId,
+    AccountId? delegatedAccountId,
+  }) {
     ServicePath servicePath = ServicePath(route);
     if (previewId?.trim().isNotEmpty == true) {
       servicePath = servicePath.withQueryParameters([
-        StringQueryParameter(paramID, previewId!)
+        StringQueryParameter(paramID, previewId!),
+        if (delegatedAccountId != null)
+          StringQueryParameter(paramAccount, delegatedAccountId.id.value),
       ]);
     }
     return servicePath;
@@ -104,7 +114,12 @@ abstract class RouteUtils {
     return servicePath;
   }
 
-  static Uri createUrlWebLocationBar(String route, {NavigationRouter? router, String? previewId}) {
+  static Uri createUrlWebLocationBar(
+    String route, {
+    NavigationRouter? router,
+    String? previewId,
+    AccountId? delegatedAccountId,
+  }) {
     if (route == AppRoutes.dashboard) {
       final servicePath = _createDashboardServicePath(
         '$baseOriginUrl$route',
@@ -115,9 +130,10 @@ abstract class RouteUtils {
       final servicePath = _createSettingServicePath('$baseOriginUrl$route', router: router);
       return Uri.parse(servicePath.path);
     } else if (route == AppRoutes.emailEMLPreviewer) {
-      final servicePath = _createEmailEMLPreviewerServicePath(
+      final servicePath = createEmailEMLPreviewerServicePath(
         '$baseOriginUrl$route',
         previewId: previewId,
+        delegatedAccountId: delegatedAccountId,
       );
       return Uri.parse(servicePath.path);
     } else {
@@ -307,7 +323,7 @@ abstract class RouteUtils {
   }
 
   static String get emailEMLPreviewerRoutePath =>
-      _createEmailEMLPreviewerServicePath('$baseOriginUrl${AppRoutes.emailEMLPreviewer}').path;
+      createEmailEMLPreviewerServicePath('$baseOriginUrl${AppRoutes.emailEMLPreviewer}').path;
 
   static String generateMailtoLink(String mailAddress) {
     return '$baseOriginUrl/$mailtoPrefix/?uri=$mailtoPrefix:$mailAddress';

@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -32,6 +33,26 @@ void expectSameParsing(Iterable<Map<String, dynamic>> results) {
 }
 
 void main() {
+  group('createEmailEMLPreviewerServicePath', () {
+    const route = 'https://mail.example.com/mail/eml/preview';
+
+    test('carries the account of a delegated account', () {
+      final path = RouteUtils.createEmailEMLPreviewerServicePath(
+        route,
+        previewId: 'blob1',
+        delegatedAccountId: AccountId(Id('bob-account-id')),
+      ).path;
+
+      expect(Uri.parse(path).queryParameters, {'id': 'blob1', 'account': 'bob-account-id'});
+    });
+
+    test('SHOULD NOT carry an account for my own account', () {
+      final path = RouteUtils.createEmailEMLPreviewerServicePath(route, previewId: 'blob1').path;
+
+      expect(Uri.parse(path).queryParameters, {'id': 'blob1'});
+    });
+  });
+
   group('dashboardRouterForMailboxOrSearch test', () {
     final mailboxId = MailboxId(Id('mailbox-1'));
     final regularMailbox = PresentationMailbox(mailboxId);
