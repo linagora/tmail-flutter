@@ -977,8 +977,7 @@ class MailboxController extends BaseMailboxController
       popAndPush(AppRoutes.unknownRoutePage);
       return;
     }
-    _selectSelectedMailboxDefault();
-    _replaceBrowserHistory();
+    _switchBackToMailboxDefault();
   }
 
   void _clearNavigationRouter() {

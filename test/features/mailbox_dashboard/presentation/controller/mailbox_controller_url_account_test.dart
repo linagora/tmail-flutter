@@ -262,6 +262,18 @@ void main() {
       expect(Get.currentRoute, isNot(AppRoutes.unknownRoutePage));
     });
 
+    testWidgets('opens the Inbox of the delegated account instead of the folder shown before', (tester) async {
+      source.show(
+        DelegationFixtures.bobAccountId,
+        ActiveAccount.delegated(DelegationFixtures.session(), DelegationFixtures.bobAccountId),
+      );
+      mailboxDashboardController.setSelectedMailbox(MailboxFixtures.sentMailbox.toPresentationMailbox());
+
+      await startOn(tester, missingFolderUrlOf(DelegationFixtures.bobAccountId));
+
+      expect(selectedMailboxId(), MailboxFixtures.inboxMailbox.id!.id.value);
+    });
+
     testWidgets('of my account still opens the unknown page', (tester) async {
       await startOn(tester, missingFolderUrlOf(null));
 
