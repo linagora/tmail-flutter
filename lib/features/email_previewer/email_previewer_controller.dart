@@ -232,6 +232,15 @@ class EmailPreviewerController extends ReloadableController {
     }
   }
 
+  /// A nested `.eml` link opens on the account of this tab, whatever account the message put in it.
+  @visibleForTesting
+  static Uri emlPreviewUriOnAccount(Uri uri, AccountId? tabAccountId) {
+    final queryParameters = Map<String, String>.of(uri.queryParameters)
+      ..remove(RouteUtils.paramAccount);
+    if (tabAccountId != null) queryParameters[RouteUtils.paramAccount] = tabAccountId.id.value;
+    return uri.replace(queryParameters: queryParameters);
+  }
+
   @visibleForTesting
   static bool opensWithNoOpener(Uri uri, {required bool isEmlPreview}) =>
       !isEmlPreview && !uri.isScheme(RouteUtils.mailtoPrefix);
@@ -247,7 +256,9 @@ class EmailPreviewerController extends ReloadableController {
       return;
     }
 
-    final url = _standardizeURL(uri);
+    final url = isEMlPreview
+        ? emlPreviewUriOnAccount(uri, RouteUtils.parseAccountId(Get.parameters)).toString()
+        : _standardizeURL(uri);
     log('EmailPreviewerController::_openNewWindowByHyperLink: url = $url');
 
     bool isOpen = HtmlUtils.openNewWindowByUrl(

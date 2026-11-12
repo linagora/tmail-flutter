@@ -62,4 +62,34 @@ void main() {
       );
     });
   });
+
+  group('EmailPreviewerController.emlPreviewUriOnAccount', () {
+    final emlPreviewUri = Uri.parse('https://mail.example.com/mail/eml/preview?id=blob1');
+    final bobLink = Uri.parse(
+      'https://mail.example.com/mail/eml/preview?id=blob1&account=${DelegationFixtures.bobAccountId.id.value}',
+    );
+
+    test('adds the account of a delegated tab to a nested link', () {
+      expect(
+        EmailPreviewerController.emlPreviewUriOnAccount(emlPreviewUri, DelegationFixtures.bobAccountId),
+        bobLink,
+      );
+    });
+
+    test('leaves a nested link of my own tab without account', () {
+      expect(EmailPreviewerController.emlPreviewUriOnAccount(emlPreviewUri, null), emlPreviewUri);
+    });
+
+    test('replaces the account a message put in the link by the account of the tab', () {
+      final carolLink = Uri.parse(
+        'https://mail.example.com/mail/eml/preview?id=blob1&account=${DelegationFixtures.carolAccountId.id.value}',
+      );
+
+      expect(
+        EmailPreviewerController.emlPreviewUriOnAccount(carolLink, DelegationFixtures.bobAccountId),
+        bobLink,
+      );
+      expect(EmailPreviewerController.emlPreviewUriOnAccount(carolLink, null), emlPreviewUri);
+    });
+  });
 }
