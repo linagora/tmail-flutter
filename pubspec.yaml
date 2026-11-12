@@ -86,7 +86,7 @@ dependencies:
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: improvement/web-script-nonce
+      ref: main
 
   jmap_dart_client:
 
