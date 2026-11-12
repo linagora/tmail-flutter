@@ -49,6 +49,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interac
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/calendar_event_interactor_bindings.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/send_receipt_to_sender_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_event.dart';
@@ -116,6 +117,7 @@ const fallbackGenerators = {
   MockSpec<DioClient>(),
   MockSpec<TwakeAppManager>(),
   MockSpec<FileUploader>(),
+  MockSpec<SendReceiptToSenderInteractor>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -698,6 +700,44 @@ void main() {
         singleEmailController.emailLoadedViewState.value.fold((failure) => failure, (success) => success),
         isA<GetEmailContentLoading>(),
       );
+    });
+  });
+
+  group('read receipt of the shown account:', () {
+    setUp(() {
+      // Stands for a binding an earlier account with MDN registered, which outlives the switch.
+      Get.put<SendReceiptToSenderInteractor>(MockSendReceiptToSenderInteractor());
+      addTearDown(() {
+        Get.delete<SendReceiptToSenderInteractor>();
+        when(mailboxDashboardController.sessionCurrent).thenReturn(testSession);
+      });
+      when(mailboxDashboardController.selectedEmail).thenReturn(Rxn(null));
+      when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(null));
+      when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+      when(mailboxDashboardController.downloadController).thenReturn(downloadController);
+      when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
+      ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+    });
+
+    test('SHOULD NOT send a read receipt while the shown account has no MDN, even though mine has', () {
+      when(mailboxDashboardController.sessionCurrent).thenReturn(DelegationFixtures.sessionWithBobCapabilities(
+        {CapabilityIdentifier.jmapMail},
+        myExtraCapabilities: {CapabilityIdentifier.jmapMdn},
+      ));
+
+      singleEmailController.onInit();
+
+      expect(singleEmailController.isSendReceiptToSenderAvailable, isFalse);
+    });
+
+    test('sends a read receipt while the shown account has MDN', () {
+      when(mailboxDashboardController.sessionCurrent).thenReturn(DelegationFixtures.sessionWithBobCapabilities(
+        {CapabilityIdentifier.jmapMail, CapabilityIdentifier.jmapMdn},
+      ));
+
+      singleEmailController.onInit();
+
+      expect(singleEmailController.isSendReceiptToSenderAvailable, isTrue);
     });
   });
 
