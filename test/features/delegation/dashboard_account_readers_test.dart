@@ -22,8 +22,8 @@ const _personalAccountReaders = <String, int>{
   'lib/features/mailbox_dashboard/presentation/delegates/ecosystem_provider_listener_delegate.dart': 2,
   // Autocomplete bindings: registered once at start, for my own account. Queries use the shown one.
   'lib/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart': 1,
-  // WebSocket connection account stays mine (ADR-0114). Label capability itself reads the shown account.
-  'lib/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart': 1,
+  // WebSocket connection account stays mine (ADR-0114), and only my own label setting sets its push types.
+  'lib/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart': 2,
   // Send queue: each mail keeps the account it was written in (T-04).
   'lib/features/sending_queue/presentation/sending_queue_controller.dart': 2,
 };
