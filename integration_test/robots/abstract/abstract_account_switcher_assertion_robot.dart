@@ -11,6 +11,12 @@ abstract class AbstractAccountSwitcherAssertionRobot {
 
   Future<void> expectShownIdentitiesInclude(String email);
 
+  Future<void> expectUrlNamesShownAccount();
+
+  Future<void> expectUrlNamesNoAccount();
+
+  Future<void> expectUrlNamesOpenedFolder();
+
   Future<void> expectLoadingDialogVisible(String ownerAddress);
 
   Future<void> expectLoadingDialogGone();
