@@ -5,6 +5,7 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/controller/web_socket_controller.dart';
 
 extension HandleLogicLabelExtension on MailboxDashBoardController  {
   bool get isLabelCapabilitySupported {
@@ -30,9 +31,15 @@ extension HandleLogicLabelExtension on MailboxDashBoardController  {
     );
   }
 
+  /// The WebSocket pushes for my own account, so a delegated account's label setting keeps the
+  /// push types my socket already has.
+  bool labelPushOfMySocket(bool isLabelSettingEnabled) => activeAccountId == accountId.value
+      ? isLabelSettingEnabled && isLabelCapabilitySupported
+      : WebSocketController.instance.isLabelAvailable;
+
   void _onLabelSettingEnabledChanged(bool isEnabled) {
     log('$runtimeType::_onLabelSettingEnabledChanged: isEnabled is $isEnabled');
-    final isLabelAvailable = isEnabled && isLabelCapabilitySupported;
+    final isLabelAvailable = labelPushOfMySocket(isEnabled);
     injectWebSocket(
       session: sessionCurrent,
       personalAccountId: accountId.value,
