@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/caching/clients/authentication_info_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/exceptions/local_storage_exception.dart';
@@ -47,6 +50,9 @@ class _FakeSession extends Fake implements SessionStorageManager {
   void remove(String key) => values.remove(key);
 }
 
+// Any call throws UnimplementedError, which stands in for a platform failure.
+class _UnavailableStorage extends Fake implements FlutterSecureStorage {}
+
 void main() {
   late _FakeClient client;
   late _FakeSession session;
@@ -58,7 +64,8 @@ void main() {
   setUp(() {
     client = _FakeClient();
     session = _FakeSession();
-    manager = AuthenticationInfoCacheManager(client, session);
+    FlutterSecureStorage.setMockInitialValues({});
+    manager = AuthenticationInfoCacheManager(client, session, secureStorage: const FlutterSecureStorage());
   });
 
   tearDown(() => PlatformInfo.isTestingForWeb = false);
@@ -132,18 +139,73 @@ void main() {
   });
 
   group('mobile', () {
-    test('store writes to the Hive box only', () async {
+    const secure = FlutterSecureStorage();
+
+    Future<AuthenticationInfoCache?> readSecure() async {
+      final raw = await secure.read(key: key);
+      if (raw == null) return null;
+      final json = jsonDecode(raw) as Map<String, dynamic>;
+      return AuthenticationInfoCache(json['username'] as String, json['password'] as String);
+    }
+
+    test('store writes to secure storage and empties the Hive box', () async {
+      client.item = info;
+
       await manager.storeAuthenticationInfo(info);
 
-      expect(client.insertCalls, 1);
+      expect(await readSecure(), info);
+      expect(client.item, isNull);
       expect(session.values, isEmpty);
     });
 
-    test('get reads from the Hive box', () async {
+    test('get reads secure storage and retries the Hive purge', () async {
+      client.item = info;
+      client.clearFailures = 1;
+      await manager.storeAuthenticationInfo(info);
+      expect(client.item, info);
+
+      expect(await manager.getAuthenticationInfoStored(), info);
+
+      expect(client.item, isNull);
+    });
+
+    test('get moves an earlier Hive login to secure storage', () async {
       client.item = info;
 
       expect(await manager.getAuthenticationInfoStored(), info);
-      expect(session.values, isEmpty);
+
+      expect(await readSecure(), info);
+      expect(client.item, isNull);
+    });
+
+    test('get throws when neither store has a login', () async {
+      expect(
+        manager.getAuthenticationInfoStored(),
+        throwsA(isA<NotFoundAuthenticationInfoCache>()),
+      );
+    });
+
+    test('unavailable secure storage still empties the Hive box', () async {
+      manager = AuthenticationInfoCacheManager(client, session, secureStorage: _UnavailableStorage());
+      client.item = info;
+
+      expect(await manager.getAuthenticationInfoStored(), info);
+
+      expect(client.item, isNull);
+      expect(
+        manager.getAuthenticationInfoStored(),
+        throwsA(isA<NotFoundAuthenticationInfoCache>()),
+      );
+    });
+
+    test('clear removes the secure value and empties the Hive box', () async {
+      await manager.storeAuthenticationInfo(info);
+      client.item = info;
+
+      await manager.clear();
+
+      expect(await readSecure(), isNull);
+      expect(client.item, isNull);
     });
   });
 }
