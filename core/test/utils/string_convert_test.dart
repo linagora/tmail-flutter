@@ -822,6 +822,17 @@ void main() {
       final result = StringConvert.extractNamedAddresses(input);
       expect(result.first.address, equals('useruser'));
     });
+    test('extractNamedAddresses keeps a plain entry that happens to be valid base64', () {
+      final result = StringConvert.extractNamedAddresses('YWxpY2U=');
+      expect(result, equals([NamedAddress(name: '', address: 'YWxpY2U=')]));
+    });
+    test('extractEmailAddress keeps a plain entry that happens to be valid base64', () {
+      expect(StringConvert.extractEmailAddress('YWxpY2U='), equals(['YWxpY2U=']));
+    });
+    test('extractNamedAddresses keeps addresses with literal percent signs', () {
+      final result = StringConvert.extractNamedAddresses('100%sure@example.com');
+      expect(result, equals([NamedAddress(name: '', address: '100%sure@example.com')]));
+    });
     test('Handles brackets with no name', () {
       const input = '<only-email@example.com>';
       final result = StringConvert.extractNamedAddresses(input);

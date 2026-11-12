@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:core/utils/app_logger.dart';
 import 'package:core/domain/exceptions/string_exception.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/mail/named_address.dart';
 import 'package:flutter/widgets.dart' show visibleForTesting;
 import 'package:html/dom.dart';
@@ -20,7 +20,9 @@ class StringConvert {
     multiLine: false,
   );
   static final _asciiArtRegex = RegExp(r'[+\-|/\\=]');
-  static final _namedAddressRegex = RegExp(r'''(?:(?:"([^"]+)"|'([^']+)')\s*)?<([^>]+)>''');
+  static final _namedAddressRegex = RegExp(
+    r'''(?:(?:"([^"]+)"|'([^']+)')\s*)?<([^>]+)>''',
+  );
   static final _emailLocalhostRegex = RegExp(
     r'^(?:"[^"\r\n]+"|[^<>()[\]\\.,;:\s@"]+(?:\.[^<>()[\]\\.,;:\s@"]+)*)@localhost$',
   );
@@ -60,7 +62,11 @@ class StringConvert {
     try {
       // 1. URL Decoding
       if (input.contains('%')) {
-        input = Uri.decodeComponent(input);
+        try {
+          input = Uri.decodeComponent(input);
+        } catch (_) {
+          // Ignore if decoding fails
+        }
       }
 
       // 2. Base64 Check - Using a non-regex check first is faster
@@ -68,7 +74,10 @@ class StringConvert {
         // Only run regex if basic length/whitespace checks pass
         if (_base64ValidationRegex.hasMatch(input)) {
           try {
-            input = utf8.decode(base64.decode(input));
+            final tempDecoded = utf8.decode(base64.decode(input));
+            if (tempDecoded.contains('@')) {
+              input = tempDecoded;
+            }
           } catch (_) {
             // Ignore if decoding fails
           }
@@ -118,7 +127,9 @@ class StringConvert {
 
   static Uint8List convertBase64ImageTagToBytes(String base64ImageTag) {
     if (!base64ImageTag.contains('base64,')) {
-      throw ArgumentError('The string is not valid Base64 data from an <img> tag.');
+      throw ArgumentError(
+        'The string is not valid Base64 data from an <img> tag.',
+      );
     }
 
     final base64Data = base64ImageTag.split(',').last;
@@ -128,7 +139,8 @@ class StringConvert {
 
   static MediaType? getMediaTypeFromBase64ImageTag(String base64ImageTag) {
     try {
-      if (!base64ImageTag.startsWith("data:") || !base64ImageTag.contains(";base64,")) {
+      if (!base64ImageTag.startsWith("data:") ||
+          !base64ImageTag.contains(";base64,")) {
         return null;
       }
 
@@ -154,8 +166,10 @@ class StringConvert {
 
   /// Checks if the given text is a table (supports Markdown or ASCII art format).
   static bool isTextTable(String text) {
-    final lines =
-        text.split('\n').where((line) => line.trim().isNotEmpty).toList();
+    final lines = text
+        .split('\n')
+        .where((line) => line.trim().isNotEmpty)
+        .toList();
     if (lines.length < 2) return false;
 
     bool isMarkdown = false;
@@ -178,12 +192,24 @@ class StringConvert {
   static List<NamedAddress> extractNamedAddresses(String input) {
     try {
       if (input.contains('%')) {
-        input = Uri.decodeComponent(input);
+        try {
+          input = Uri.decodeComponent(input);
+        } catch (_) {
+          // Ignore if decoding fails
+        }
       }
 
-      if (input.length % 4 == 0 && !input.contains(' ') && _base64ValidationRegex.hasMatch(input)) {
+      if (input.length % 4 == 0 &&
+          !input.contains(' ') &&
+          _base64ValidationRegex.hasMatch(input)) {
         try {
-          input = utf8.decode(base64.decode(input));
+          final tempDecoded = utf8.decode(base64.decode(input));
+          if (tempDecoded.contains('@')) {
+            log(
+              'StringConvert::extractNamedAddresses:Base64 decoded successfully',
+            );
+            input = tempDecoded;
+          }
         } catch (_) {}
       }
 
@@ -236,7 +262,8 @@ class StringConvert {
       // Each paragraph is surrounded by block tags so we add a /n for each block tag
       // Even <br> are surrounded by block tags so we can ignore <br> and treat them
       // as paragraph
-      const blockTags = 'p, div, li, section, blockquote, article, header, footer, h1, h2, h3, h4, h5, h6';
+      const blockTags =
+          'p, div, li, section, blockquote, article, header, footer, h1, h2, h3, h4, h5, h6';
 
       document.querySelectorAll(blockTags).forEach((element) {
         element.append(Text('\n'));
@@ -246,7 +273,9 @@ class StringConvert {
 
       return textContent.trim();
     } catch (e) {
-      logWarning('StringConvert::convertHtmlContentToTextContent:Exception = $e');
+      logWarning(
+        'StringConvert::convertHtmlContentToTextContent:Exception = $e',
+      );
       return htmlContent.trim();
     }
   }
