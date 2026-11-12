@@ -2,6 +2,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 
 void main() {
@@ -119,6 +120,61 @@ void main() {
     });
   });
 
+  group('LocalizationService.changeLocale test:', () {
+    const french = Locale('fr', 'FR');
+    late int reassembleCount;
+
+    Future<void> pumpAppWithLocale(WidgetTester tester, Locale locale) async {
+      reassembleCount = 0;
+      await tester.pumpWidget(GetMaterialApp(
+        locale: locale,
+        home: _ReassembleCounter(onReassemble: () => reassembleCount++),
+      ));
+    }
+
+    tearDown(() => Get.locale = null);
+
+    testWidgets('should not reassemble the app when the locale is already applied', (tester) async {
+      await pumpAppWithLocale(tester, english);
+
+      LocalizationService.changeLocale(english);
+      await tester.pumpAndSettle();
+
+      expect(reassembleCount, 0);
+      expect(Get.locale, english);
+    });
+
+    testWidgets('should not reassemble the app when a Portuguese locale normalizes to the applied one', (tester) async {
+      await pumpAppWithLocale(tester, LocalizationService.brazilianPortugueseLocale);
+
+      LocalizationService.changeLocale(const Locale('pt', 'PT'));
+      await tester.pumpAndSettle();
+
+      expect(reassembleCount, 0);
+      expect(Get.locale, LocalizationService.brazilianPortugueseLocale);
+    });
+
+    testWidgets('should apply and reassemble the app when the locale differs', (tester) async {
+      await pumpAppWithLocale(tester, english);
+
+      LocalizationService.changeLocale(french);
+      await tester.pumpAndSettle();
+
+      expect(reassembleCount, 1);
+      expect(Get.locale, french);
+    });
+
+    testWidgets('should apply and reassemble the app when only the country differs', (tester) async {
+      await pumpAppWithLocale(tester, english);
+
+      LocalizationService.changeLocale(const Locale('en', 'GB'));
+      await tester.pumpAndSettle();
+
+      expect(reassembleCount, 1);
+      expect(Get.locale, const Locale('en', 'GB'));
+    });
+  });
+
   test('supportedLocalesToLanguageTags should keep the full catalog', () {
     allowLanguages('mn,en');
 
@@ -129,4 +185,24 @@ void main() {
           .join(', '),
     );
   });
+}
+
+class _ReassembleCounter extends StatefulWidget {
+  const _ReassembleCounter({required this.onReassemble});
+
+  final VoidCallback onReassemble;
+
+  @override
+  State<_ReassembleCounter> createState() => _ReassembleCounterState();
+}
+
+class _ReassembleCounterState extends State<_ReassembleCounter> {
+  @override
+  void reassemble() {
+    super.reassemble();
+    widget.onReassemble();
+  }
+
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
 }
