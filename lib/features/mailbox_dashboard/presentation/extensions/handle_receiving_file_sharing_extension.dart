@@ -1,15 +1,51 @@
+import 'dart:async';
+
 import 'package:core/core.dart';
+import 'package:flutter/widgets.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/shared_media_file_extension.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/utils/show_mine_before_intent.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_preview_attachment_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 extension HandleReceivingFileSharingExtension on MailboxDashBoardController {
+  /// Opens the composer of `mine` for a share or `mailto` intent, switching back from a delegated mailbox first.
+  void openComposerFromSharedFiles(List<SharedMediaFile> sharedMediaFiles) {
+    if (!shownAccountCapabilities.switchesToMineBeforeIntent) {
+      _openComposerFromSharedFiles(sharedMediaFiles);
+      return;
+    }
+    final context = currentContext;
+    if (context != null) unawaited(_openComposerOnMine(context, sharedMediaFiles));
+  }
+
+  Future<void> _openComposerOnMine(
+    BuildContext context,
+    List<SharedMediaFile> sharedMediaFiles,
+  ) async {
+    if (await showMineBeforeIntent(context)) {
+      _openComposerFromSharedFiles(sharedMediaFiles);
+    }
+  }
+
+  void _openComposerFromSharedFiles(List<SharedMediaFile> sharedMediaFiles) {
+    if (sharedMediaFiles.length == 1) {
+      final sharedMediaFile = sharedMediaFiles.first;
+      if (sharedMediaFile.path.trim().isEmpty) return;
+
+      openComposerFromSingleShare(sharedMediaFile);
+      return;
+    }
+
+    openComposer(ComposerArguments.fromFileShared(sharedMediaFiles));
+  }
+
   void openComposerFromSingleShare(SharedMediaFile sharedMediaFile) {
     switch (sharedMediaFile.type) {
       case SharedMediaType.image:
