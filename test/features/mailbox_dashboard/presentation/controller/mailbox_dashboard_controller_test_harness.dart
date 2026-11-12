@@ -5,6 +5,7 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/widgets.dart' hide State;
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -175,19 +176,25 @@ final testSession =
 final testMailboxId = MailboxId(Id('1'));
 final testAccountId = AccountId(Id('123'));
 
-Future<void> pumpLocalizedApp(WidgetTester tester) async {
+Future<void> pumpLocalizedApp(
+  WidgetTester tester, {
+  ProviderContainer? container,
+}) async {
+  const app = GetMaterialApp(
+    locale: LocalizationService.defaultLocale,
+    supportedLocales: LocalizationService.supportedLocales,
+    localizationsDelegates: [
+      AppLocalizationsDelegate(),
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    home: SizedBox(),
+  );
   await tester.pumpWidget(
-    const GetMaterialApp(
-      locale: LocalizationService.defaultLocale,
-      supportedLocales: LocalizationService.supportedLocales,
-      localizationsDelegates: [
-        AppLocalizationsDelegate(),
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      home: SizedBox(),
-    ),
+    container == null
+        ? app
+        : UncontrolledProviderScope(container: container, child: app),
   );
   await tester.pump();
 }
