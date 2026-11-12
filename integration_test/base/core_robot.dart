@@ -1,8 +1,8 @@
-import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:patrol/patrol.dart';
 
+import '../utils/mock_text_input.dart';
 import '../utils/test_timeouts.dart';
 import '../utils/wait_for_condition.dart';
 
@@ -30,6 +30,6 @@ abstract class CoreRobot {
       reason: 'Keyboard was not hidden',
     );
     // The mock input must own the connection again before the next enterText.
-    if (!kIsWeb || !kDebugMode) $.tester.testTextInput.register();
+    if (registerMockTextInput) $.tester.testTextInput.register();
   }
 }

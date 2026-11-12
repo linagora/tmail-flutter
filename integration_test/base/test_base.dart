@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/main/main_entry.dart';
 import '../models/test_tags.dart';
 import '../utils/backend_reset_client.dart';
 import '../utils/failure_diagnostics.dart';
+import '../utils/mock_text_input.dart';
 import '../utils/test_backend.dart';
 import 'base_scenario.dart';
 import '../factories/robot_factory.dart';
@@ -58,9 +59,7 @@ class TestBase {
       ),
       framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive,
       ($) async {
-        // On mobile the mock input owns the connection so the platform IME never overwrites
-        // entered text; web profile builds drop text sent to client -1, web debug keeps the browser's.
-        if (!kIsWeb || !kDebugMode) {
+        if (registerMockTextInput) {
           $.tester.testTextInput.register();
           addTearDown($.tester.testTextInput.unregister);
         }
