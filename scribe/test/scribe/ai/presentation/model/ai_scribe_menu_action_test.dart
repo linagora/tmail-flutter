@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:intl/intl.dart';
 import 'package:scribe/scribe/ai/data/service/prompt_service.dart';
 import 'package:scribe/scribe/ai/localizations/scribe_localizations.dart';
 import 'package:scribe/scribe/ai/presentation/model/ai_scribe_menu_action.dart';
@@ -31,52 +30,60 @@ void main() {
     await ScribeLocalizations.load(const Locale('en'));
   });
 
-  const newIds = [
+  const translatePromptIds = [
+    'translate-french',
+    'translate-english',
+    'translate-russian',
+    'translate-vietnamese',
     'translate-mongolian',
     'translate-german',
     'translate-spanish',
     'translate-italian',
   ];
 
+  const newLanguageByPromptId = {
+    'translate-mongolian': 'Mongolian',
+    'translate-german': 'German',
+    'translate-spanish': 'Spanish',
+    'translate-italian': 'Italian',
+  };
+
   group('AIScribeMenuCategory.translate', () {
-    test('translate menu offers Mongolian, German, Spanish and Italian', () {
-      final promptIds = AIScribeMenuCategory.translate.actions
-          .map((action) => action.promptId)
-          .toList();
-
-      expect(promptIds, containsAll(newIds));
-    });
-
-    test('translate menu labels include the new languages', () {
+    test('translate menu lists every language in order with matching labels', () {
       final localizations = ScribeLocalizations();
-      final labels = AIScribeMenuCategory.translate.actions
-          .map((action) => action.getLabel(localizations))
-          .toList();
+      final actions = AIScribeMenuCategory.translate.actions;
 
-      expect(labels, containsAll(['Mongolian', 'German', 'Spanish', 'Italian']));
+      expect(
+        actions.map((action) => action.promptId).toList(),
+        translatePromptIds,
+      );
+      expect(
+        actions.map((action) => action.getLabel(localizations)).toList(),
+        [
+          'French',
+          'English',
+          'Russian',
+          'Vietnamese',
+          'Mongolian',
+          'German',
+          'Spanish',
+          'Italian',
+        ],
+      );
     });
 
-    test('bundled prompts exist for the new languages', () async {
+    test('bundled prompts exist for the new languages with the right instruction',
+        () async {
       final service = PromptService(_throwingDio());
 
-      for (final id in newIds) {
-        final prompt = await service.getPromptByName(id);
-        expect(prompt.name, id);
+      for (final entry in newLanguageByPromptId.entries) {
+        final prompt = await service.getPromptByName(entry.key);
+        expect(prompt.name, entry.key);
+        expect(
+          prompt.messages.last.content,
+          contains('Translate the text to ${entry.value}.'),
+        );
       }
-    });
-
-    test('existing languages keep their order and ids', () {
-      final promptIds = AIScribeMenuCategory.translate.actions
-          .map((action) => action.promptId)
-          .take(4)
-          .toList();
-
-      expect(promptIds, [
-        'translate-french',
-        'translate-english',
-        'translate-russian',
-        'translate-vietnamese',
-      ]);
     });
 
     test('translate actions are in the translate category without icon', () {
