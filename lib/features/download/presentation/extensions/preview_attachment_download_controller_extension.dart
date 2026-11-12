@@ -22,7 +22,6 @@ import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:tmail_ui_user/features/delegation/domain/extensions/session_delegation_extension.dart';
 import 'package:tmail_ui_user/features/download/domain/exceptions/download_attachment_exceptions.dart';
 import 'package:tmail_ui_user/features/download/domain/model/download_source_view.dart';
 import 'package:tmail_ui_user/features/download/domain/state/download_and_get_html_content_from_attachment_state.dart';
@@ -497,9 +496,6 @@ extension PreviewAttachmentDownloadControllerExtension on DownloadController {
   ) {
     previewEMLFile(
       emlPreviewer: success.emlPreviewer,
-      delegatedAccountId: success.session.isDelegatedAccount(success.accountId)
-          ? success.accountId
-          : null,
       context: currentContext,
       onMailtoAction: (uri) async {
         if (uri == null) return;
@@ -524,7 +520,6 @@ extension PreviewAttachmentDownloadControllerExtension on DownloadController {
 
   void previewEMLFile({
     required EMLPreviewer emlPreviewer,
-    AccountId? delegatedAccountId,
     required BuildContext? context,
     required OnMailtoDelegateAction onMailtoAction,
     required OnDownloadAttachmentDelegateAction onDownloadAction,
@@ -537,7 +532,6 @@ extension PreviewAttachmentDownloadControllerExtension on DownloadController {
         RouteUtils.createUrlWebLocationBar(
           AppRoutes.emailEMLPreviewer,
           previewId: emlPreviewer.id,
-          delegatedAccountId: delegatedAccountId,
         ).toString(),
       );
 
