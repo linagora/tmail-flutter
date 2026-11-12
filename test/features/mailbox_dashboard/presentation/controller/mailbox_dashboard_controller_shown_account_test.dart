@@ -32,6 +32,8 @@ import 'package:model/autocomplete/auto_complete_pattern.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_needs_action_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/controller/web_socket_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/state/get_identity_cache_on_web_state.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -1643,6 +1645,33 @@ void main() {
 
       final pattern = verify(getAutoCompleteInteractor.execute(captureAny)).captured.single as AutoCompletePattern;
       expect(pattern.accountId, bob);
+    });
+  });
+
+  group('label push of my WebSocket:', () {
+    final session = DelegationFixtures.session();
+
+    void show(AccountId shownAccountId) {
+      mailboxDashboardController.sessionCurrent = session;
+      mailboxDashboardController.accountId.value = DelegationFixtures.aliceAccountId;
+      ActiveAccountSourceFixtures.putForThisTest(session, shownAccountId: shownAccountId);
+      when(labelController.isLabelCapabilitySupported(any, any)).thenReturn(true);
+      clearInteractions(labelController);
+      expect(WebSocketController.instance.isLabelAvailable, isFalse);
+    }
+
+    test('SHOULD NOT take the label setting of a delegated account for my socket', () {
+      show(DelegationFixtures.bobAccountId);
+
+      expect(mailboxDashboardController.labelPushOfMySocket(true), isFalse);
+    });
+
+    test('takes my own label setting while my own account is shown', () {
+      show(DelegationFixtures.aliceAccountId);
+
+      expect(mailboxDashboardController.labelPushOfMySocket(true), isTrue);
+      expect(mailboxDashboardController.labelPushOfMySocket(false), isFalse);
+      verify(labelController.isLabelCapabilitySupported(session, DelegationFixtures.aliceAccountId)).called(1);
     });
   });
 

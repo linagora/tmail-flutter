@@ -83,6 +83,9 @@ class WebSocketController extends PushBaseController {
 
   AccountId? get personalAccountId => accountId;
 
+  /// Whether the push types of the socket include labels.
+  bool get isLabelAvailable => _isLabelAvailable;
+
   /// Starts the 2 s debouncer if needed, then merges [stateChange] like the socket listen path.
   @visibleForTesting
   void receiveStateChangeFrame(
@@ -134,7 +137,12 @@ class WebSocketController extends PushBaseController {
     bool isLabelAvailable = false,
   }) {
     log('WebSocketController::initialize:personalAccountId = ${accountId?.asString}, isLabelAvailable = $isLabelAvailable');
+    final keepsOpenSocket = _webSocketChannel != null && accountId == this.accountId;
     super.initialize(accountId: accountId, session: session);
+    if (keepsOpenSocket) {
+      _updateLabelPush(isLabelAvailable);
+      return;
+    }
     _isLabelAvailable = isLabelAvailable;
     _connectWebSocket();
     _listenToAppLifeCycle();
@@ -242,6 +250,14 @@ class WebSocketController extends PushBaseController {
       _retryRemained--;
       _connectWebSocket();
     }
+  }
+
+  /// A new WebSocketPushEnable replaces the push types of the open socket (RFC 8887), so it
+  /// is not reconnected.
+  void _updateLabelPush(bool isLabelAvailable) {
+    if (isLabelAvailable == _isLabelAvailable) return;
+    _isLabelAvailable = isLabelAvailable;
+    _enableWebSocketPush();
   }
 
   void _enableWebSocketPush() {
