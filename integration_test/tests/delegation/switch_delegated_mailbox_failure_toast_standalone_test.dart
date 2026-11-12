@@ -8,6 +8,6 @@ void main() {
         "Should toast Couldn't open owner's mailbox when the switch is cancelled",
     scenarioBuilder: ($, robots) =>
         SwitchDelegatedMailboxFailureToastStandaloneScenario($, robots),
-    tags: [TestTags.web],
+    tags: [TestTags.android, TestTags.ios, TestTags.web],
   );
 }

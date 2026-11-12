@@ -8,6 +8,6 @@ void main() {
         'Should switch to a delegated mailbox from the stand-alone avatar menu',
     scenarioBuilder: ($, robots) =>
         SwitchDelegatedMailboxStandaloneScenario($, robots),
-    tags: [TestTags.web],
+    tags: [TestTags.android, TestTags.ios, TestTags.web],
   );
 }

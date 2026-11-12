@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/core_robot.dart';
 import '../abstract/abstract_workplace_account_switcher_assertion_robot.dart';
-import 'account_switch_robot_mixin.dart';
+import '../account_switch_robot_mixin.dart';
 
 class WebWorkplaceAccountSwitcherAssertionRobot extends CoreRobot
     with AccountSwitchRobotMixin

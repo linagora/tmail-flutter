@@ -8,10 +8,10 @@ import 'package:tmail_ui_user/features/delegation/domain/extensions/session_dele
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 
-import '../../base/core_robot.dart';
-import '../../utils/wait_for_condition.dart';
+import '../base/core_robot.dart';
+import '../utils/wait_for_condition.dart';
 
-/// Account lookup and switch-state waits shared by the web account switchers.
+/// Account lookup and switch-state waits shared by the account switchers.
 mixin AccountSwitchRobotMixin on CoreRobot {
   ProviderContainer appContainer() {
     final element = $.tester.element(find.byType(MaterialApp));
