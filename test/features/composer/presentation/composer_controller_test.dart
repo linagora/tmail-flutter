@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
 
+import 'package:contact/contact/model/capability_contact.dart';
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/utils/logging/app_logger_registry.dart';
 import 'package:core/presentation/resources/image_paths.dart';
@@ -24,11 +25,13 @@ import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/account/account.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/default_capability.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:model/autocomplete/auto_complete_pattern.dart';
 import 'package:server_settings/server_settings/capability_server_settings.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -53,9 +56,12 @@ import 'package:tmail_ui_user/features/composer/domain/exceptions/forbidden_to_s
 import 'package:tmail_ui_user/features/composer/domain/exceptions/invalid_recipients_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/ai_scribe/handle_ai_scribe_in_composer_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
@@ -222,9 +228,12 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
 
   @override
   Rxn<AccountId> get accountId => Rxn(currentAccountId);
+  /// The shown mailbox when it is not my own account.
+  AccountId? shownAccountIdOverride;
+
   // Composer reads the shown mailbox through activeAccountId (ADR-0114).
   @override
-  AccountId? get activeAccountId => currentAccountId;
+  AccountId? get activeAccountId => shownAccountIdOverride ?? currentAccountId;
   @override
   Session? get sessionCurrent => currentSession;
 
@@ -291,9 +300,12 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   @override
   Rx<AIScribeConfig> get cachedAIScribeConfig => AIScribeConfig.initial().obs;
 
+  /// Accounts whose AI capability has a Scribe endpoint.
+  Set<AccountId> scribeEndpointAccountIds = {};
+
   @override
   bool isAIScribeEndpointAvailable({Session? session, AccountId? accountId}) {
-    return false;
+    return scribeEndpointAccountIds.contains(accountId);
   }
 
   @override
@@ -542,6 +554,7 @@ List<List<String>> _recordStartedDriveBatches(ProviderContainer container) {
   MockSpec<PrintEmailInteractor>(),
   MockSpec<ComposerRepository>(),
   MockSpec<SaveTemplateEmailInteractor>(),
+  MockSpec<GetAutoCompleteInteractor>(),
   MockSpec<AttachmentUploadValidationService>(),
 
   // Additional Getx dependencies mock specs
@@ -2153,6 +2166,68 @@ void main() {
 
     // Runs when the app is forced to log out (e.g. rejected OIDC refresh) with
     // a composer open: web saves the draft to cache before the redirect.
+    group('capabilities of the shown account:', () {
+      void showBob(Session session) {
+        mockMailboxDashBoardController.currentSession = session;
+        mockMailboxDashBoardController.shownAccountIdOverride = DelegationFixtures.bobAccountId;
+        addTearDown(() {
+          mockMailboxDashBoardController.currentSession = SessionFixtures.aliceSession;
+          mockMailboxDashBoardController.shownAccountIdOverride = null;
+          mockMailboxDashBoardController.scribeEndpointAccountIds = {};
+        });
+      }
+
+      test('SHOULD NOT offer AI Scribe while the shown account has no Scribe endpoint, even though mine has', () {
+        showBob(DelegationFixtures.session());
+        mockMailboxDashBoardController.scribeEndpointAccountIds = {AccountFixtures.aliceAccountId};
+
+        expect(composerController!.isAIScribeAvailable, isFalse);
+      });
+
+      test('offers AI Scribe while both my own and the shown account have a Scribe endpoint', () {
+        showBob(DelegationFixtures.session());
+        mockMailboxDashBoardController.scribeEndpointAccountIds = {
+          AccountFixtures.aliceAccountId,
+          DelegationFixtures.bobAccountId,
+        };
+
+        expect(composerController!.isAIScribeAvailable, isTrue);
+      });
+
+      group('getAutoCompleteSuggestion:', () {
+        late MockGetAutoCompleteInteractor getAutoCompleteInteractor;
+
+        setUp(() {
+          getAutoCompleteInteractor = MockGetAutoCompleteInteractor();
+          Get.put<GetAutoCompleteInteractor>(getAutoCompleteInteractor);
+          when(getAutoCompleteInteractor.execute(any))
+              .thenAnswer((_) async => Right(GetAutoCompleteSuccess([])));
+        });
+
+        test('SHOULD NOT query contacts while the shown account has no contact autocomplete, even though mine has', () async {
+          showBob(DelegationFixtures.sessionWithBobCapabilities(
+            {CapabilityIdentifier.jmapMail},
+            myExtraCapabilities: {tmailContactCapabilityIdentifier},
+          ));
+
+          await composerController!.getAutoCompleteSuggestion('car');
+
+          verifyNever(getAutoCompleteInteractor.execute(any));
+        });
+
+        test('queries the contacts of the shown account, not of my own', () async {
+          showBob(DelegationFixtures.sessionWithBobCapabilities(
+            {CapabilityIdentifier.jmapMail, tmailContactCapabilityIdentifier},
+          ));
+
+          await composerController!.getAutoCompleteSuggestion('car');
+
+          final pattern = verify(getAutoCompleteInteractor.execute(captureAny)).captured.single as AutoCompletePattern;
+          expect(pattern.accountId, DelegationFixtures.bobAccountId);
+        });
+      });
+    });
+
     group('onBeforeReconnect:', () {
       const emailContent = '<p>unsent draft</p>';
 
