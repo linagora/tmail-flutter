@@ -6276,4 +6276,11 @@ class AppLocalizations {
       name: 'backToYourMailbox',
     );
   }
+
+  String get delegatedMailboxUnavailable {
+    return Intl.message(
+      "This delegated mailbox isn't available, so your mailbox is shown",
+      name: 'delegatedMailboxUnavailable',
+    );
+  }
 }

@@ -26,6 +26,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_draft
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/utils/start_on_url_account.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
@@ -829,6 +830,12 @@ class MailboxController extends BaseMailboxController
       return;
     }
 
+    final urlAccountId = _navigationRouter!.accountId;
+    if (urlAccountId != null && urlAccountId != activeAccountId) {
+      _startOnUrlAccount(urlAccountId);
+      return;
+    }
+
     if (_navigationRouter?.routeName == AppRoutes.mailtoURL) {
       mailboxDashBoardController.openComposer(
         ComposerArguments.fromMailtoUri(
@@ -883,6 +890,21 @@ class MailboxController extends BaseMailboxController
         }
         break;
     }
+  }
+
+  /// The router waits for its account, so a fallback to mine never opens another account's folder or email.
+  Future<void> _startOnUrlAccount(AccountId urlAccountId) async {
+    final router = _navigationRouter!;
+    _clearNavigationRouter();
+    final context = currentContext;
+    final isShown = context != null &&
+        await startOnUrlAccount(context: context, urlAccountId: urlAccountId) &&
+        activeAccountId == urlAccountId;
+    if (isClosed) return;
+    if (isShown) {
+      _navigationRouter = router;
+    }
+    _handleDataFromNavigationRouter();
   }
 
   void openEmailInsideMailboxFromLocationBar(
