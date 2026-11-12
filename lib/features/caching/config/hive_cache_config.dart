@@ -103,7 +103,7 @@ class HiveCacheConfig {
 
   Future<void> initializeEncryptionKey() async {
     final encryptionKeyCacheManager = _encryptionKeyCacheManager();
-    if (PlatformInfo.isMobile) {
+    if (PlatformInfo.isIOS) {
       if (await keyPlatformStore.initialize(encryptionKeyCacheManager)) return;
     }
     if (encryptionKeyCacheManager == null) {
@@ -122,7 +122,7 @@ class HiveCacheConfig {
       getBinding<EncryptionKeyCacheManager>(tag: BindingTag.isolateTag);
 
   Future<Uint8List?> getEncryptionKey() async {
-    if (PlatformInfo.isMobile) {
+    if (PlatformInfo.isIOS) {
       final platformKey = await keyPlatformStore.read();
       if (platformKey != null) return platformKey;
     }
@@ -145,7 +145,7 @@ class HiveCacheConfig {
       final encryptionKeyDecode = base64Decode(encryptionKeyCache.value);
       return encryptionKeyDecode;
     } else {
-      if (PlatformInfo.isMobile) {
+      if (PlatformInfo.isIOS) {
         final platformKey = await keyPlatformStore.read();
         if (platformKey != null) return platformKey;
       }
