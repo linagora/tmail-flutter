@@ -42,6 +42,9 @@ check() {
     [[ $policy == *"'nonce-$nonce'"* ]] || fail "$path" "$header nonce differs from the body"
     printf '%s' "$policy" | grep -o "script-src[^;]*" | grep -q "unsafe-inline" \
       && fail "$path" "$header script-src allows unsafe-inline"
+    printf '%s' "$policy" | grep -o "script-src[^;]*" \
+      | grep -Fq "sha256-+M0fGRkOqgYlCQCff9oNQn6k6a7Si4Et8iofLMceadE=" \
+      || fail "$path" "$header script-src missing printing layoutPdf sha256"
   done
   printf '%s' "$nonce"
 }

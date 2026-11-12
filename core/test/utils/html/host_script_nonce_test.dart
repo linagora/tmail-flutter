@@ -24,6 +24,18 @@ void main() {
     expect(HostScriptNonce.stampOwnScriptTags(scripts, 'bad nonce'), scripts);
   });
 
+  test('stamps SCRIPT tags and leaves script-x and bare <script tokens alone', () {
+    const html = '<SCRIPT src="a.js"></SCRIPT>'
+        '<script-x>keep</script-x>'
+        '<script type="text/javascript">var re=/<script|<style/;</script>';
+    expect(
+      HostScriptNonce.stampOwnScriptTags(html, valid),
+      '<script nonce="$valid" src="a.js"></SCRIPT>'
+      '<script-x>keep</script-x>'
+      '<script nonce="$valid" type="text/javascript">var re=/<script|<style/;</script>',
+    );
+  });
+
   test('rejects a 1 MB invalid nonce', () {
     final nonce = '${'a' * (1024 * 1024)}!';
     expect(HostScriptNonce.isValid(nonce), isFalse);
