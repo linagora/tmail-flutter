@@ -6,16 +6,12 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:tmail_ui_user/features/login/data/local/encryption_key_cache_manager.dart';
 
-/// Holds the Hive box key in Keychain/Keystore instead of a Hive box.
+/// Holds the Hive box key in the iOS Keychain instead of a Hive box.
 class HiveKeyPlatformStore {
   static const String keyName = 'tmail_hive_box_key';
 
-  // Own Android prefs file / iOS service: KeychainSharingManager.delete() calls deleteAll() on logout.
+  // Own iOS service: KeychainSharingManager.delete() calls deleteAll() on logout.
   static const FlutterSecureStorage defaultStorage = FlutterSecureStorage(
-    aOptions: AndroidOptions(
-      encryptedSharedPreferences: true,
-      sharedPreferencesName: 'tmail_hive_key_store',
-    ),
     iOptions: IOSOptions(
       accountName: 'tmail_hive_key_store',
       accessibility: KeychainAccessibility.first_unlock_this_device,
@@ -27,7 +23,7 @@ class HiveKeyPlatformStore {
   const HiveKeyPlatformStore({FlutterSecureStorage storage = defaultStorage})
       : _storage = storage;
 
-  /// Main isolate, app start. Returns false when Keychain/Keystore is unusable,
+  /// Main isolate, app start. Returns false when the Keychain is unusable,
   /// so the caller falls back to the legacy box and the app keeps working.
   Future<bool> initialize(EncryptionKeyCacheManager? legacyManager) async {
     try {
