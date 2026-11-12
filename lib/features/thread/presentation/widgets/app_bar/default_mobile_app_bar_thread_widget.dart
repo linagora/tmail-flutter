@@ -1,6 +1,5 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
@@ -76,13 +75,12 @@ class DefaultMobileAppBarThreadWidget extends StatelessWidget {
             onTapActionCallback: () => onContextMenuFilterEmailAction?.call(filterOption),
             onTapActionAtPositionCallback: (position) => onPopupMenuFilterEmailAction?.call(filterOption, position),
           ),
-          if (PlatformInfo.isWeb)
-            const HideInsideCozyWidget(
-              child: Padding(
-                padding: EdgeInsetsDirectional.only(start: 8),
-                child: CompactAccountSwitcher(),
-              ),
+          const HideInsideCozyWidget(
+            child: Padding(
+              padding: EdgeInsetsDirectional.only(start: 8),
+              child: CompactAccountSwitcher(),
             ),
+          ),
         ],
       ),
     );
