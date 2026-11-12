@@ -12,7 +12,7 @@ import 'package:tmail_ui_user/features/delegation/presentation/utils/account_swi
 import 'package:tmail_ui_user/features/delegation/presentation/widgets/account_switcher_avatar.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-/// Avatar + chevron account switcher for the mobile and tablet web thread app bar.
+/// Avatar + chevron account switcher for the mobile and tablet thread app bar.
 class CompactAccountSwitcher extends ConsumerWidget {
   static const Key switcherKey = ValueKey(UiKeys.compactAccountSwitcher);
 
