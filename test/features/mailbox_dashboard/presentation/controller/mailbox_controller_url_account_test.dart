@@ -99,8 +99,10 @@ void main() {
   final urlEmailId = EmailId(Id('url-email'));
   late FakeActiveAccountSource source;
   late _ScriptedSwitchNotifier switchNotifier;
+  late bool insideCozy;
 
   setUp(() {
+    insideCozy = false;
     PlatformInfo.isTestingForWeb = true;
     // onReady, queued by Get.replace, reads dotenv on the first frame.
     dotenv.testLoad(mergeWith: {'APP_GRID_AVAILABLE': 'unsupported'});
@@ -126,7 +128,7 @@ void main() {
       accountSwitchProvider.overrideWith(() => switchNotifier),
       accountSwitchViewFactoryProvider.overrideWithValue((_) => _FakeSwitchView()),
       appToastProvider.overrideWithValue(appToast),
-      insideCozyProvider.overrideWith((ref) async => false),
+      insideCozyProvider.overrideWith((ref) async => insideCozy),
     ]);
     addTearDown(container.dispose);
     await tester.pumpWidget(UncontrolledProviderScope(
@@ -165,6 +167,17 @@ void main() {
       await startOn(tester, emailUrlOf(DelegationFixtures.bobAccountId));
 
       expect(switchNotifier.switchToCalls, [DelegationFixtures.bobAccountId]);
+      expect(mailboxDashboardController.dashBoardAction.value, OpenEmailWithoutMailboxFromLocationBar(urlEmailId));
+      verifyNever(appToast.showToastWarningMessage(any, any));
+    });
+
+    testWidgets('inside Cozy opens its email once the switch to that account shows it', (tester) async {
+      insideCozy = true;
+
+      await startOn(tester, emailUrlOf(DelegationFixtures.bobAccountId));
+
+      expect(switchNotifier.switchToCalls, [DelegationFixtures.bobAccountId]);
+      expect(source.accountId, DelegationFixtures.bobAccountId);
       expect(mailboxDashboardController.dashBoardAction.value, OpenEmailWithoutMailboxFromLocationBar(urlEmailId));
       verifyNever(appToast.showToastWarningMessage(any, any));
     });

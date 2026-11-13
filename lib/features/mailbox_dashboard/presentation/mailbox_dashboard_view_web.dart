@@ -35,6 +35,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/filter_message_button_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/mailbox_dashboard_view_web_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/compose_button_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/cozy_header_row.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/empty_trash_banner_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/mark_mailbox_as_read_loading_banner.dart';
@@ -123,19 +124,16 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
                                   return Padding(
                                     padding: const EdgeInsets.only(bottom: 16),
-                                    child: Row(
-                                      children: [
-                                        SizedBox(
-                                          width: MediaQuery.sizeOf(context).width * 0.4,
-                                          height: 44,
-                                          child: SearchInputFormWidget(
-                                            fontSize: 15,
-                                            contentPadding: const EdgeInsets.only(bottom: 4),
-                                          ),
+                                    child: CozyHeaderRow(
+                                      search: SizedBox(
+                                        width: MediaQuery.sizeOf(context).width * 0.4,
+                                        height: 44,
+                                        child: SearchInputFormWidget(
+                                          fontSize: 15,
+                                          contentPadding: const EdgeInsets.only(bottom: 4),
                                         ),
-                                        const Spacer(),
-                                        CozyProfileSettingIcon(),
-                                      ],
+                                      ),
+                                      trailing: CozyProfileSettingIcon(),
                                     ),
                                   );
                                 }
