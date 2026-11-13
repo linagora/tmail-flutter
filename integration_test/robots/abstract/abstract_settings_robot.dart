@@ -15,4 +15,7 @@ abstract class AbstractSettingsRobot {
 
   /// Leave Settings back to the mailbox dashboard.
   Future<void> closeSettings();
+
+  /// Leave Settings back to the mailbox dashboard from an open detail.
+  Future<void> closeSettingsFromDetail();
 }
