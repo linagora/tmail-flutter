@@ -10,11 +10,9 @@ import 'package:tmail_ui_user/main/main_entry.dart';
 
 import '../models/test_tags.dart';
 import '../utils/backend_reset_client.dart';
-import '../utils/dom_focus_logger.dart';
 import '../utils/failure_diagnostics.dart';
 import '../utils/mock_text_input.dart';
 import '../utils/test_backend.dart';
-import '../utils/toast_focus_logger.dart';
 import 'base_scenario.dart';
 import '../factories/robot_factory.dart';
 import '../factories/robot_factory_provider.dart';
@@ -89,13 +87,6 @@ class TestBase {
     // The preload reloads env.file, whose SERVER_URL the web login reads.
     if (TestBackend.leased != null) dotenv.env['SERVER_URL'] = TestBackend.current.url;
     await scenario.prepare();
-    // Added before runApp so it logs ahead of the View's own focus handler.
-    final viewFocusLogger = ViewFocusLogger();
-    WidgetsBinding.instance.addObserver(viewFocusLogger);
-    addTearDown(() => WidgetsBinding.instance.removeObserver(viewFocusLogger));
-    addTearDown(startDomFocusLogging());
-    final toastFocusLogger = ToastFocusLogger()..start();
-    addTearDown(toastFocusLogger.stop);
     runApp(const TMailApp());
 
     final originalOnError = FlutterError.onError!;
