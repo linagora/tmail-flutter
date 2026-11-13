@@ -11,6 +11,8 @@ import 'package:tmail_ui_user/main/main_entry.dart';
 import '../models/test_tags.dart';
 import '../utils/backend_reset_client.dart';
 import '../utils/failure_diagnostics.dart';
+import '../utils/mock_text_input.dart';
+import '../utils/primary_focus_logger.dart';
 import '../utils/test_backend.dart';
 import 'base_scenario.dart';
 import '../factories/robot_factory.dart';
@@ -58,8 +60,7 @@ class TestBase {
       ),
       framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive,
       ($) async {
-        // Profile builds drop text sent to client -1, so the mock input must own the connection.
-        if (!kDebugMode) {
+        if (registerMockTextInput) {
           $.tester.testTextInput.register();
           addTearDown($.tester.testTextInput.unregister);
         }
@@ -87,6 +88,8 @@ class TestBase {
     // The preload reloads env.file, whose SERVER_URL the web login reads.
     if (TestBackend.leased != null) dotenv.env['SERVER_URL'] = TestBackend.current.url;
     await scenario.prepare();
+    PrimaryFocusLogger.instance.start();
+    addTearDown(PrimaryFocusLogger.instance.stop);
     runApp(const TMailApp());
 
     final originalOnError = FlutterError.onError!;
