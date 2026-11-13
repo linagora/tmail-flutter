@@ -58,33 +58,38 @@ class StringConvert {
     }
   }
 
+  static String _decodeInputIfNeeded(String input) {
+    var result = input;
+
+    if (result.contains('%')) {
+      try {
+        result = Uri.decodeComponent(result);
+      } catch (_) {
+        // Ignore if decoding fails
+      }
+    }
+
+    final isLikelyBase64 = result.length % 4 == 0 &&
+        !result.contains(' ') &&
+        _base64ValidationRegex.hasMatch(result);
+
+    if (isLikelyBase64) {
+      try {
+        final decoded = utf8.decode(base64.decode(result));
+        if (decoded.contains('@')) {
+          result = decoded;
+        }
+      } catch (_) {}
+    }
+
+    return result;
+  }
+
   static List<String> extractStrings(String input, String separatorPattern) {
     try {
-      // 1. URL Decoding
-      if (input.contains('%')) {
-        try {
-          input = Uri.decodeComponent(input);
-        } catch (_) {
-          // Ignore if decoding fails
-        }
-      }
+      input = _decodeInputIfNeeded(input);
 
-      // 2. Base64 Check - Using a non-regex check first is faster
-      if (input.length % 4 == 0 && !input.contains(' ')) {
-        // Only run regex if basic length/whitespace checks pass
-        if (_base64ValidationRegex.hasMatch(input)) {
-          try {
-            final tempDecoded = utf8.decode(base64.decode(input));
-            if (tempDecoded.contains('@')) {
-              input = tempDecoded;
-            }
-          } catch (_) {
-            // Ignore if decoding fails
-          }
-        }
-      }
-
-      // 3. Optimized Split
+      // Optimized Split
       // We use the pattern directly and skip the redundant .replaceAll() and .trim()
       final RegExp separator = RegExp(separatorPattern);
       final listStrings = input
@@ -191,28 +196,7 @@ class StringConvert {
 
   static List<NamedAddress> extractNamedAddresses(String input) {
     try {
-      if (input.contains('%')) {
-        try {
-          input = Uri.decodeComponent(input);
-        } catch (_) {
-          // Ignore if decoding fails
-        }
-      }
-
-      if (input.length % 4 == 0 &&
-          !input.contains(' ') &&
-          _base64ValidationRegex.hasMatch(input)) {
-        try {
-          final tempDecoded = utf8.decode(base64.decode(input));
-          if (tempDecoded.contains('@')) {
-            log(
-              'StringConvert::extractNamedAddresses:Base64 decoded successfully',
-            );
-            input = tempDecoded;
-          }
-        } catch (_) {}
-      }
-
+      input = _decodeInputIfNeeded(input);
       input = input.replaceAll('\n', ' ');
       final results = <NamedAddress>[];
 
