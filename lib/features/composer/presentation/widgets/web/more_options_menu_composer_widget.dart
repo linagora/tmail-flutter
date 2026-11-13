@@ -51,6 +51,7 @@ class MoreOptionsMenuComposerWidget extends StatelessWidget {
     return PopupMenuOverlayWidget(
       controller: menuController,
       iconButton: HighlightSVGIconOnHover(
+        key: const Key(UiKeys.composerMoreButton),
         icon: imagePaths.icMore,
         size: MobileAppBarComposerWidgetStyle.iconSize,
         iconColor: MobileAppBarComposerWidgetStyle.iconColor,

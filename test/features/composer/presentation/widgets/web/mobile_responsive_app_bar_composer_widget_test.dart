@@ -130,6 +130,10 @@ void main() {
         findsOneWidget,
       );
       expect(find.byType(PopupMenuOverlayWidget), findsOneWidget);
+      expect(
+        find.byKey(const Key(UiKeys.composerMoreButton)),
+        findsOneWidget,
+      );
       for (final key in [
         const Key(UiKeys.closeComposerButton),
         const ValueKey(UiKeys.sendEmailButton),
