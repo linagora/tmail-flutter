@@ -88,6 +88,10 @@ bool _hasDetachedRenderObject(FocusNode node) {
   return renderObject != null && !renderObject.attached;
 }
 
+// The View's focus handler sorts its scope's descendants without entering nested scopes.
+bool _isSortedByView(FocusNode node) =>
+    node.enclosingScope?.parent == FocusManager.instance.rootScope;
+
 // Logs the browser focus event that makes the framework re-sort focus nodes.
 class ViewFocusLogger with WidgetsBindingObserver {
   @override
@@ -98,10 +102,10 @@ class ViewFocusLogger with WidgetsBindingObserver {
           .toList();
       debugPrintSynchronously('[VIEW FOCUS] view=${event.viewId} '
           'state=${event.state.name} direction=${event.direction.name} '
-          'phase=${SchedulerBinding.instance.schedulerPhase.name} detached=${detached.length} dom=${describeDomActiveElement()}');
+          'phase=${SchedulerBinding.instance.schedulerPhase.name} detached=${detached.length} viewSorted=${detached.where(_isSortedByView).length} dom=${describeDomActiveElement()}');
       // These are the nodes the View's own handler is about to sort.
       for (final node in detached) {
-        debugPrintSynchronously('[VIEW FOCUS DETACHED] ${_describeFocusNode(node)}');
+        debugPrintSynchronously('[VIEW FOCUS DETACHED] viewSorted=${_isSortedByView(node)} ${_describeFocusNode(node)}');
       }
       if (detached.isNotEmpty) printStackLines('[VIEW FOCUS STACK]');
     } catch (e) {
