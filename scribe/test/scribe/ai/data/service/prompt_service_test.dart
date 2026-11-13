@@ -5,6 +5,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:scribe/scribe/ai/data/service/prompt_service.dart';
 import 'package:scribe/scribe/ai/domain/model/ai_message.dart';
+import 'package:scribe/scribe/ai/domain/model/prompt_data.dart';
+import 'package:scribe/scribe/ai/presentation/model/ai_action.dart';
+import 'package:scribe/scribe/ai/presentation/model/ai_scribe_menu_action.dart';
 
 class _ThrowingAdapter implements HttpClientAdapter {
   @override
@@ -106,6 +109,24 @@ void main() {
 
       expect(prompt.name, 'change-tone-casual');
       expect(prompt.messages.length, greaterThan(0));
+    });
+
+    test(
+        'bundled prompts should cover every menu action '
+        'and the custom prompt', () async {
+      final service = PromptService(_throwingDio());
+      final promptIds = [
+        ...AIScribeMenuAction.values.map((action) => action.promptId),
+        CustomPromptAction.promptId,
+      ];
+
+      for (final promptId in promptIds) {
+        await expectLater(
+          service.getPromptByName(promptId),
+          completion(isA<Prompt>().having((p) => p.name, 'name', promptId)),
+          reason: 'Missing bundled prompt: $promptId',
+        );
+      }
     });
 
     test('getPromptByName should throw exception for non-existent prompt',
