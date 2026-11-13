@@ -17,53 +17,47 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 extension HandleReceivingFileSharingExtension on MailboxDashBoardController {
   /// Opens the composer of `mine` for a share or `mailto` intent, switching back from a delegated mailbox first.
   void openComposerFromSharedFiles(List<SharedMediaFile> sharedMediaFiles) {
+    final openComposerForShare = _composerOpenerFor(sharedMediaFiles);
+    if (openComposerForShare == null) return;
     if (!shownAccountCapabilities.switchesToMineBeforeIntent) {
-      _openComposerFromSharedFiles(sharedMediaFiles);
+      openComposerForShare();
       return;
     }
     final context = currentContext;
-    if (context != null) unawaited(_openComposerOnMine(context, sharedMediaFiles));
+    if (context != null) unawaited(_openComposerOnMine(context, openComposerForShare));
   }
 
   Future<void> _openComposerOnMine(
     BuildContext context,
-    List<SharedMediaFile> sharedMediaFiles,
+    VoidCallback openComposerForShare,
   ) async {
-    if (await showMineBeforeIntent(context)) {
-      _openComposerFromSharedFiles(sharedMediaFiles);
-    }
+    if (await showMineBeforeIntent(context)) openComposerForShare();
   }
 
-  void _openComposerFromSharedFiles(List<SharedMediaFile> sharedMediaFiles) {
-    if (sharedMediaFiles.length == 1) {
-      final sharedMediaFile = sharedMediaFiles.first;
-      if (sharedMediaFile.path.trim().isEmpty) return;
-
-      openComposerFromSingleShare(sharedMediaFile);
-      return;
+  // Null for an event that opens no composer, so it never triggers a switch to mine.
+  VoidCallback? _composerOpenerFor(List<SharedMediaFile> sharedMediaFiles) {
+    if (sharedMediaFiles.length != 1) {
+      return () => openComposer(ComposerArguments.fromFileShared(sharedMediaFiles));
     }
-
-    openComposer(ComposerArguments.fromFileShared(sharedMediaFiles));
+    final sharedMediaFile = sharedMediaFiles.first;
+    if (sharedMediaFile.path.trim().isEmpty) return null;
+    return _composerOpenerForSingleShare(sharedMediaFile);
   }
 
-  void openComposerFromSingleShare(SharedMediaFile sharedMediaFile) {
+  VoidCallback? _composerOpenerForSingleShare(SharedMediaFile sharedMediaFile) {
     switch (sharedMediaFile.type) {
       case SharedMediaType.image:
       case SharedMediaType.video:
       case SharedMediaType.file:
-        _openComposerWithFile(sharedMediaFile);
-        break;
+        return () => _openComposerWithFile(sharedMediaFile);
       case SharedMediaType.text:
-        _openComposerFromText(sharedMediaFile);
-        break;
+        return () => _openComposerFromText(sharedMediaFile);
       case SharedMediaType.url:
-        _openComposerFromUrl(sharedMediaFile);
-        break;
+        return _composerOpenerForUrl(sharedMediaFile);
       case SharedMediaType.mailto:
-        _openComposerFromMailtoAddress(sharedMediaFile);
-        break;
+        return _composerOpenerForMailtoAddress(sharedMediaFile);
       case SharedMediaType.unreadable:
-        break;
+        return null;
     }
   }
 
@@ -90,28 +84,26 @@ extension HandleReceivingFileSharingExtension on MailboxDashBoardController {
     }
   }
 
-  void _openComposerFromUrl(SharedMediaFile sharedMediaFile) {
+  VoidCallback? _composerOpenerForUrl(SharedMediaFile sharedMediaFile) {
     if (sharedMediaFile.path.startsWith(RouteUtils.mailtoPrefix)) {
       final uri = Uri.tryParse(sharedMediaFile.path);
-      if (uri != null) openComposerFromMailToLink(uri);
-    } else if (PlatformInfo.isIOS) {
-      // On iOS a url-type event can only originate from the share
-      // extension (the plugin ignores every other URL), so a non-mailto
-      // link share goes into the email body. On Android, shared links
-      // arrive as text/plain and never reach here — its url-type events
-      // are deep-link VIEW intents (e.g. twakemail.mobile://openApp)
-      // owned by DeepLinksManager and must stay ignored.
-      _openComposerWithContent(sharedMediaFile);
+      return uri == null ? null : () => openComposerFromMailToLink(uri);
     }
+    // On iOS a url-type event can only originate from the share
+    // extension (the plugin ignores every other URL), so a non-mailto
+    // link share goes into the email body. On Android, shared links
+    // arrive as text/plain and never reach here — its url-type events
+    // are deep-link VIEW intents (e.g. twakemail.mobile://openApp)
+    // owned by DeepLinksManager and must stay ignored.
+    return PlatformInfo.isIOS ? () => _openComposerWithContent(sharedMediaFile) : null;
   }
 
-  void _openComposerFromMailtoAddress(SharedMediaFile sharedMediaFile) {
-    if (EmailUtils.isEmailAddressValid(sharedMediaFile.path)) {
-      openComposer(
-        ComposerArguments.fromEmailAddress(
-          EmailAddress(null, sharedMediaFile.path),
-        ),
-      );
-    }
+  VoidCallback? _composerOpenerForMailtoAddress(SharedMediaFile sharedMediaFile) {
+    if (!EmailUtils.isEmailAddressValid(sharedMediaFile.path)) return null;
+    return () => openComposer(
+      ComposerArguments.fromEmailAddress(
+        EmailAddress(null, sharedMediaFile.path),
+      ),
+    );
   }
 }

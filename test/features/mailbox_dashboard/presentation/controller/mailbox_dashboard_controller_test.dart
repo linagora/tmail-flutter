@@ -1322,6 +1322,27 @@ void main() {
         verifyNever(composerManager.addComposer(any));
         expect(recordingAppToast.errorMessages, [AppLocalizations().closeComposerBeforeSwitchingAccounts]);
       });
+
+      for (final ignoredShare in [
+        SharedMediaFile(path: 'twakemail.mobile://openApp?type=openApp', type: SharedMediaType.url),
+        SharedMediaFile(path: 'content://unreadable', type: SharedMediaType.unreadable),
+        SharedMediaFile(path: 'not-an-address', type: SharedMediaType.mailto),
+        SharedMediaFile(path: '  ', type: SharedMediaType.text),
+      ]) {
+        testWidgets(
+          'SHOULD NOT switch to mine for an ignored ${ignoredShare.type.name} event',
+          (tester) async {
+            await pumpLocalizedApp(tester, container: container);
+
+            mailboxDashboardController.handleReceivingFileSharing([ignoredShare]);
+            await tester.pump();
+
+            expect(switchNotifier.switchToCalls, isEmpty);
+            verifyNever(composerManager.addComposer(any));
+            expect(recordingAppToast.errorMessages, isEmpty);
+          },
+        );
+      }
     });
 
     test(
