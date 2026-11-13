@@ -36,6 +36,12 @@ extension SessionExtension on Session {
     }
   }
 
+  int getRestorationHorizonInDays() {
+    final restorationDuration = getRestorationHorizonAsDuration();
+    final days = (restorationDuration.inSeconds / Duration.secondsPerDay).ceil();
+    return days < 1 ? 1 : days;
+  }
+
   DateTime getRestorationHorizonAsDateTime() {
     return DateTime.now().subtract(getRestorationHorizonAsDuration());
   }
