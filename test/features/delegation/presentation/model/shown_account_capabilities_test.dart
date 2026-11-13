@@ -23,6 +23,7 @@ void main() {
           offersMyPremium,
           namesShownAccountInWebUrl,
           opensInboxForMissingLinkTarget,
+          switchesToMineBeforeIntent,
         ) in [
       (
         'my own account',
@@ -37,6 +38,7 @@ void main() {
         true,
         true,
         true,
+        false,
         false,
         false,
       ),
@@ -55,6 +57,7 @@ void main() {
         false,
         true,
         true,
+        true,
       ),
       (
         'no account yet',
@@ -71,6 +74,7 @@ void main() {
         true,
         false,
         false,
+        false,
       ),
     ]) {
       test(
@@ -85,7 +89,8 @@ void main() {
         '${canRecoverDeletedMessages ? 'allows' : 'does not allow'} recovering deleted messages, '
         '${offersMyPremium ? 'offers' : 'does not offer'} my premium, '
         '${namesShownAccountInWebUrl ? 'names' : 'does not name'} the account in web URLs, '
-        '${opensInboxForMissingLinkTarget ? 'opens Inbox' : 'opens the unknown page'} for a missing link target '
+        '${opensInboxForMissingLinkTarget ? 'opens Inbox' : 'opens the unknown page'} for a missing link target, '
+        '${switchesToMineBeforeIntent ? 'switches' : 'does not switch'} to mine before an intent '
         'while $shown is shown',
         () {
           final capabilities = ShownAccountCapabilities.of(shownAccount);
@@ -102,6 +107,7 @@ void main() {
           expect(capabilities.offersMyPremium, offersMyPremium);
           expect(capabilities.namesShownAccountInWebUrl, namesShownAccountInWebUrl);
           expect(capabilities.opensInboxForMissingLinkTarget, opensInboxForMissingLinkTarget);
+          expect(capabilities.switchesToMineBeforeIntent, switchesToMineBeforeIntent);
         },
       );
     }

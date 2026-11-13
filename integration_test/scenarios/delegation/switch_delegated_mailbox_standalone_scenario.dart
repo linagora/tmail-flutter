@@ -1,7 +1,7 @@
 import '../../base/base_test_scenario.dart';
 import '../../mixin/delegation_standalone_scenario_mixin.dart';
 
-/// Bob has alice's mailbox delegated (reset-server seed). Stand-alone web only.
+/// Bob has alice's mailbox delegated (reset-server seed). Stand-alone web and the Android and iOS app.
 class SwitchDelegatedMailboxStandaloneScenario extends BaseTestScenario
     with DelegationStandaloneScenarioMixin {
   const SwitchDelegatedMailboxStandaloneScenario(super.$, super.robots);
@@ -36,9 +36,9 @@ class SwitchDelegatedMailboxStandaloneScenario extends BaseTestScenario
       DelegationStandaloneScenarioMixin.ownerAddress,
     );
     await composer.tapCloseComposer();
-    await $.pumpAndTrySettle();
+    await composer.expectComposerClosedDiscardingChanges();
 
-    await switcher.dismissViewingBanner();
+    await switcher.leaveDelegatedMailbox();
     await switcher.assertion.expectSwitcherOnMine();
   }
 }

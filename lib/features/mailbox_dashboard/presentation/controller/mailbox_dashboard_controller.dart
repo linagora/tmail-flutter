@@ -89,7 +89,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/remove_a_label_from
 import 'package:tmail_ui_user/features/email/domain/usecases/restore_deleted_message_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
-import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_arguments.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
@@ -157,7 +156,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/notify_thread_detail_setting_updated.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_composer_restore_on_mobile_extension.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/quick_search_emails_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/reopen_composer_cache_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/select_search_filter_action_extension.dart';
@@ -750,17 +748,7 @@ class MailboxDashBoardController extends ReloadableController
     final listSharedMediaFile = sharedMediaFiles.readableFiles;
     if (listSharedMediaFile.isEmpty) return;
 
-    if (listSharedMediaFile.length == 1) {
-      final sharedMediaFile = listSharedMediaFile.first;
-      if (sharedMediaFile.path.trim().isEmpty) return;
-
-      openComposerFromSingleShare(sharedMediaFile);
-      return;
-    }
-
-    openComposer(
-      ComposerArguments.fromFileShared(listSharedMediaFile),
-    );
+    openComposerFromSharedFiles(listSharedMediaFile);
   }
 
   void _showUnreadableSharedFilesToast(int count) {

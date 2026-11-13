@@ -47,6 +47,9 @@ class ShownAccountCapabilities with EquatableMixin {
   /// A link to a delegated account may outlive its folder, label or email, so it opens Inbox instead of the unknown page.
   final bool opensInboxForMissingLinkTarget;
 
+  /// A share or `mailto` intent composes as me, so it shows `mine` first.
+  final bool switchesToMineBeforeIntent;
+
   const ShownAccountCapabilities._({
     required this.canOpenSettings,
     required this.canCreateFilter,
@@ -60,6 +63,7 @@ class ShownAccountCapabilities with EquatableMixin {
     required this.offersMyPremium,
     required this.namesShownAccountInWebUrl,
     required this.opensInboxForMissingLinkTarget,
+    required this.switchesToMineBeforeIntent,
   });
 
   factory ShownAccountCapabilities.of(ActiveAccount? shownAccount) {
@@ -78,6 +82,7 @@ class ShownAccountCapabilities with EquatableMixin {
       offersMyPremium: !delegatedShown,
       namesShownAccountInWebUrl: delegatedShown,
       opensInboxForMissingLinkTarget: delegatedShown,
+      switchesToMineBeforeIntent: delegatedShown,
     );
   }
 
@@ -95,5 +100,6 @@ class ShownAccountCapabilities with EquatableMixin {
         offersMyPremium,
         namesShownAccountInWebUrl,
         opensInboxForMissingLinkTarget,
+        switchesToMineBeforeIntent,
       ];
 }

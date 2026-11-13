@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
 import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
 import 'package:tmail_ui_user/features/download/domain/usecase/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/download/domain/usecase/parse_email_by_blob_id_interactor.dart';
 import 'dart:io';
@@ -21,6 +22,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart' hide State;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/account_switch_result.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/providers/account_switch_view_factory_provider.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/providers/app_toast_provider.dart' show appToastProvider;
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -153,6 +161,9 @@ import 'package:uuid/uuid.dart';
 
 import 'mailbox_dashboard_controller_test.mocks.dart';
 
+import '../../../../fixtures/delegation_fixtures.dart';
+import '../../../../fixtures/account_switch_fakes.dart';
+import '../../../../fixtures/recording_app_toast.dart';
 import '../../../../fixtures/active_account_source_fixtures.dart';
 import 'mailbox_dashboard_controller_test_harness.dart';
 
@@ -1261,6 +1272,78 @@ void main() {
     ComposerArguments capturedComposerArguments() =>
         verify(composerManager.addComposer(captureAny)).captured.single
             as ComposerArguments;
+
+    group('while a delegated mailbox is shown', () {
+      late RecordingAccountSwitchNotifier switchNotifier;
+      late RecordingAppToast recordingAppToast;
+      late ProviderContainer container;
+
+      setUp(() {
+        switchNotifier = RecordingAccountSwitchNotifier();
+        recordingAppToast = RecordingAppToast();
+        container = ProviderContainer(overrides: [
+          accountSwitchProvider.overrideWith(() => switchNotifier),
+          accountSwitchViewFactoryProvider.overrideWithValue((_) => FakeAccountSwitchView()),
+          appToastProvider.overrideWithValue(recordingAppToast.toast),
+        ]);
+        addTearDown(container.dispose);
+        container.read(activeAccountProvider.notifier).applySession(DelegationFixtures.session());
+        DelegationFixtures.turnDelegationOn(container);
+        container.read(activeAccountProvider.notifier).select(DelegationFixtures.bobAccountId);
+        (mailboxDashboardController.activeAccountSource as FakeActiveAccountSource).show(
+          DelegationFixtures.bobAccountId,
+          ActiveAccount.delegated(DelegationFixtures.session(), DelegationFixtures.bobAccountId),
+        );
+      });
+
+      Future<SharedMediaFile> shareVCard(WidgetTester tester) async {
+        await pumpLocalizedApp(tester, container: container);
+        final share = textFileShare('contact.vcf', 'text/vcard');
+        mailboxDashboardController.handleReceivingFileSharing([share]);
+        await tester.pump();
+        return share;
+      }
+
+      testWidgets('SHOULD switch to mine, then open the composer from a share', (tester) async {
+        final share = await shareVCard(tester);
+
+        expect(switchNotifier.switchToCalls, [DelegationFixtures.aliceAccountId]);
+        final arguments = capturedComposerArguments();
+        expect(arguments.emailActionType, EmailActionType.composeFromFileShared);
+        expect(arguments.listSharedMediaFile?.single.path, share.path);
+      });
+
+      testWidgets('SHOULD NOT open the composer from a share when the switch to mine is refused', (tester) async {
+        switchNotifier.nextResult = const AccountSwitchRefused(AccountSwitchRefusal.composerOpen);
+
+        await shareVCard(tester);
+
+        expect(switchNotifier.switchToCalls, [DelegationFixtures.aliceAccountId]);
+        verifyNever(composerManager.addComposer(any));
+        expect(recordingAppToast.errorMessages, [AppLocalizations().closeComposerBeforeSwitchingAccounts]);
+      });
+
+      for (final ignoredShare in [
+        SharedMediaFile(path: 'twakemail.mobile://openApp?type=openApp', type: SharedMediaType.url),
+        SharedMediaFile(path: 'content://unreadable', type: SharedMediaType.unreadable),
+        SharedMediaFile(path: 'not-an-address', type: SharedMediaType.mailto),
+        SharedMediaFile(path: '  ', type: SharedMediaType.text),
+      ]) {
+        testWidgets(
+          'SHOULD NOT switch to mine for an ignored ${ignoredShare.type.name} event',
+          (tester) async {
+            await pumpLocalizedApp(tester, container: container);
+
+            mailboxDashboardController.handleReceivingFileSharing([ignoredShare]);
+            await tester.pump();
+
+            expect(switchNotifier.switchToCalls, isEmpty);
+            verifyNever(composerManager.addComposer(any));
+            expect(recordingAppToast.errorMessages, isEmpty);
+          },
+        );
+      }
+    });
 
     test(
       'a vCard file whose mime carries a charset parameter still opens the '
