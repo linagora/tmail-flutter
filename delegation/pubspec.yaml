@@ -1,0 +1,36 @@
+name: delegation
+description: TMail Delegation extension
+publish_to: "none"
+
+resolution: workspace
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.13.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  ### Dependencies from git ###
+  jmap_dart_client:
+
+  ### Dependencies from pub.dev ###
+  equatable: 2.0.5
+
+  json_annotation: 4.8.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: 2.0.1
+
+  build_runner: ^2.15.0
+
+  json_serializable: ^6.11.3
+
+  dio: 5.2.0
+
+  http_mock_adapter: 0.4.2
