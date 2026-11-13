@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
@@ -20,6 +21,46 @@ class _ThrowingAdapter implements HttpClientAdapter {
 }
 
 Dio _throwingDio() => Dio()..httpClientAdapter = _ThrowingAdapter();
+
+class _JsonAdapter implements HttpClientAdapter {
+  _JsonAdapter(this.body);
+
+  final Map<String, dynamic> body;
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async {
+    return ResponseBody.fromString(
+      jsonEncode(body),
+      200,
+      headers: {
+        Headers.contentTypeHeader: [Headers.jsonContentType],
+      },
+    );
+  }
+
+  @override
+  void close({bool force = false}) {}
+}
+
+Dio _remoteDio(Map<String, dynamic> body) =>
+    Dio()..httpClientAdapter = _JsonAdapter(body);
+
+const _remotePromptUrl = 'https://domain.tld/scribe/prompts.json';
+
+Map<String, dynamic> _remoteCatalog(List<Map<String, dynamic>> prompts) =>
+    {'prompts': prompts};
+
+Map<String, dynamic> _remotePrompt(String name, String userContent) => {
+      'name': name,
+      'messages': [
+        {'role': 'system', 'content': 'Remote system prompt'},
+        {'role': 'user', 'content': userContent},
+      ],
+    };
 
 void main() {
   setUpAll(() {
@@ -70,6 +111,51 @@ void main() {
     test('getPromptByName should throw exception for non-existent prompt',
         () async {
       final service = PromptService(_throwingDio());
+
+      await expectLater(
+        service.getPromptByName('non-existent-prompt'),
+        throwsException,
+      );
+    });
+  });
+
+  group('PromptService with a remote prompt catalog', () {
+    test(
+        'getPromptByName should fall back to the bundled prompt '
+        'when the remote catalog lacks it', () async {
+      final service = PromptService(_remoteDio(_remoteCatalog([
+        _remotePrompt('translate-english', 'Remote: {{input}}'),
+      ])))
+        ..setPromptUrl(_remotePromptUrl);
+
+      final prompt = await service.getPromptByName('translate-mongolian');
+
+      expect(prompt.name, 'translate-mongolian');
+      expect(prompt.messages.last.content, contains('Mongolian'));
+    });
+
+    test(
+        'getPromptByName should prefer the remote prompt '
+        'over the bundled one with the same name', () async {
+      final service = PromptService(_remoteDio(_remoteCatalog([
+        _remotePrompt('translate-english', 'Remote: {{input}}'),
+      ])))
+        ..setPromptUrl(_remotePromptUrl);
+
+      final messages =
+          await service.buildPromptByName('translate-english', 'Bonjour');
+
+      expect(messages.first.content, 'Remote system prompt');
+      expect(messages.last.content, 'Remote: Bonjour');
+    });
+
+    test(
+        'getPromptByName should still throw for a name '
+        'neither the remote nor the bundled catalog has', () async {
+      final service = PromptService(_remoteDio(_remoteCatalog([
+        _remotePrompt('translate-english', 'Remote: {{input}}'),
+      ])))
+        ..setPromptUrl(_remotePromptUrl);
 
       await expectLater(
         service.getPromptByName('non-existent-prompt'),
