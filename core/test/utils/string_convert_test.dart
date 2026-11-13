@@ -839,6 +839,16 @@ void main() {
         equals(['100%sure@example.com']),
       );
     });
+    test('keeps addresses when raw already has an at-sign and a valid percent escape', () {
+      expect(
+        StringConvert.extractNamedAddresses('100%20sure@example.com'),
+        equals([NamedAddress(name: '', address: '100%20sure@example.com')]),
+      );
+      expect(
+        StringConvert.extractEmailAddress('100%20sure@example.com'),
+        equals(['100%20sure@example.com']),
+      );
+    });
     test('keeps every address of a list when one has a literal percent sign', () {
       const input = 'a@b.com, 100%sure@x.com';
 

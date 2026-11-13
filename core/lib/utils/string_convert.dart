@@ -61,13 +61,11 @@ class StringConvert {
   static String _decodeInputIfNeeded(String input) {
     var result = input;
 
-    if (result.contains('%')) {
+    // Only decode when raw has no at-sign.
+    // Also requiring at-sign in decoded drops stacked URL then base64 (`…%3D`).
+    if (result.contains('%') && !result.contains('@')) {
       try {
-        final decoded = Uri.decodeComponent(result);
-        // Only when raw has no at-sign. Also requiring at-sign in decoded drops stacked URL then base64 (`…%3D`).
-        if (!result.contains('@')) {
-          result = decoded;
-        }
+        result = Uri.decodeComponent(result);
       } catch (_) {
         // Ignore if decoding fails
       }
