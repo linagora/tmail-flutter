@@ -29,8 +29,7 @@ mixin DelegationStandaloneScenarioMixin on BaseTestScenario {
       l10n.delegation,
       switchedOn: true,
     );
-    await settingsRobot.leaveSettingsDetail();
-    await settingsRobot.closeSettings();
+    await settingsRobot.closeSettingsFromDetail();
     await robots.commonRobot().waitForMailboxReady();
   }
 }

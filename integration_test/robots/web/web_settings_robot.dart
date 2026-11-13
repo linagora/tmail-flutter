@@ -29,4 +29,8 @@ class WebSettingsRobot extends MobileSettingsRobot {
   Future<void> closeSettings() async {
     await $(#back_to_dashboard_button).tap();
   }
+
+  /// The sidebar Back stays on screen while a detail is open.
+  @override
+  Future<void> closeSettingsFromDetail() => closeSettings();
 }
