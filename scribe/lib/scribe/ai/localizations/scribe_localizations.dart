@@ -134,6 +134,34 @@ class ScribeLocalizations {
     );
   }
 
+  String get languageMongolian {
+    return Intl.message(
+      'Mongolian',
+      name: 'languageMongolian',
+    );
+  }
+
+  String get languageGerman {
+    return Intl.message(
+      'German',
+      name: 'languageGerman',
+    );
+  }
+
+  String get languageSpanish {
+    return Intl.message(
+      'Spanish',
+      name: 'languageSpanish',
+    );
+  }
+
+  String get languageItalian {
+    return Intl.message(
+      'Italian',
+      name: 'languageItalian',
+    );
+  }
+
   // Input Bar
   String get customPromptAction {
     return Intl.message(

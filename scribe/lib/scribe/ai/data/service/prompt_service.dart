@@ -46,16 +46,40 @@ class PromptService {
   // Prioritize loading from remote or fallback to load local assets
   Future<PromptData> _fetchAndCachePrompts() async {
     if (_promptUrl != null) {
+      PromptData? remotePromptData;
       try {
-        _promptData = await _fetchPromptsFromUrl(_promptUrl!);
-        return _promptData!;
+        remotePromptData = await _fetchPromptsFromUrl(_promptUrl!);
       } catch (e) {
         log('PromptService::loadPrompts: failed to fetch from remote URL: $e');
       }
+      if (remotePromptData != null) {
+        _promptData = await _withBundledFallback(remotePromptData);
+        return _promptData!;
+      }
     }
-    
+
     _promptData = await _loadPromptsFromAssets();
     return _promptData!;
+  }
+
+  // Remote prompts override bundled ones by name; bundled prompts stand in
+  // for the names the remote catalog lacks.
+  Future<PromptData> _withBundledFallback(PromptData remotePromptData) async {
+    final PromptData bundledPromptData;
+    try {
+      bundledPromptData = await _loadPromptsFromAssets();
+    } catch (e) {
+      log('PromptService::_withBundledFallback: failed to load local prompts: $e');
+      return remotePromptData;
+    }
+
+    final remoteNames = remotePromptData.prompts.map((p) => p.name).toSet();
+    return PromptData(
+      prompts: [
+        ...remotePromptData.prompts,
+        ...bundledPromptData.prompts.where((p) => !remoteNames.contains(p.name)),
+      ],
+    );
   }
 
   Future<PromptData> _fetchPromptsFromUrl(String url) async {
