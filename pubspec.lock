@@ -1489,8 +1489,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "fix/tf-5022-account-menu-item-key"
-      resolved-ref: bdab56ffc23741e1895cdb87fa56378929540e08
+      ref: master
+      resolved-ref: "58235abe45fbdca32a1095823f26e06e9c626cec"
       url: "https://github.com/linagora/linagora-design-flutter.git"
     source: git
     version: "0.4.2"
