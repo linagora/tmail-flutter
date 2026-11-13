@@ -122,6 +122,23 @@ void main() {
 
       expect(tester.takeException(), isNull);
       expect(
+        find.byKey(const Key(UiKeys.closeComposerButton)),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey(UiKeys.sendEmailButton)),
+        findsOneWidget,
+      );
+      expect(find.byType(PopupMenuOverlayWidget), findsOneWidget);
+      for (final key in [
+        const Key(UiKeys.closeComposerButton),
+        const ValueKey(UiKeys.sendEmailButton),
+      ]) {
+        final rect = tester.getRect(find.byKey(key));
+        expect(rect.left, greaterThanOrEqualTo(0));
+        expect(rect.right, lessThanOrEqualTo(320));
+      }
+      expect(
         tester.getRect(find.byType(PopupMenuOverlayWidget)).right,
         lessThanOrEqualTo(320),
       );
