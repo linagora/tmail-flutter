@@ -833,6 +833,63 @@ void main() {
       final result = StringConvert.extractNamedAddresses('100%sure@example.com');
       expect(result, equals([NamedAddress(name: '', address: '100%sure@example.com')]));
     });
+    test('extractEmailAddress keeps addresses with literal percent signs', () {
+      expect(
+        StringConvert.extractEmailAddress('100%sure@example.com'),
+        equals(['100%sure@example.com']),
+      );
+    });
+    test('keeps every address of a list when one has a literal percent sign', () {
+      const input = 'a@b.com, 100%sure@x.com';
+
+      expect(
+        StringConvert.extractNamedAddresses(input),
+        equals([
+          NamedAddress(name: '', address: 'a@b.com'),
+          NamedAddress(name: '', address: '100%sure@x.com'),
+        ]),
+      );
+      expect(
+        StringConvert.extractEmailAddress(input),
+        equals(['a@b.com', '100%sure@x.com']),
+      );
+    });
+    test('keeps an address ending with a dangling percent sign', () {
+      expect(
+        StringConvert.extractNamedAddresses('a@b.com%'),
+        equals([NamedAddress(name: '', address: 'a@b.com%')]),
+      );
+      expect(
+        StringConvert.extractEmailAddress('a@b.com%'),
+        equals(['a@b.com%']),
+      );
+    });
+    test('still decodes a single base64 encoded address', () {
+      // 'YUBiLmNvbQ==' is base64 of 'a@b.com'
+      expect(
+        StringConvert.extractNamedAddresses('YUBiLmNvbQ=='),
+        equals([NamedAddress(name: '', address: 'a@b.com')]),
+      );
+      expect(
+        StringConvert.extractEmailAddress('YUBiLmNvbQ=='),
+        equals(['a@b.com']),
+      );
+    });
+    test('keeps base64 looking entries untouched inside a separated list', () {
+      const input = 'YWxpY2U=, a@b.com';
+
+      expect(
+        StringConvert.extractNamedAddresses(input),
+        equals([
+          NamedAddress(name: '', address: 'YWxpY2U='),
+          NamedAddress(name: '', address: 'a@b.com'),
+        ]),
+      );
+      expect(
+        StringConvert.extractEmailAddress(input),
+        equals(['YWxpY2U=', 'a@b.com']),
+      );
+    });
     test('Handles brackets with no name', () {
       const input = '<only-email@example.com>';
       final result = StringConvert.extractNamedAddresses(input);
