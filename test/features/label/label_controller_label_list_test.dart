@@ -30,6 +30,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oi
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_label_setting_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_label_setting_state_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_message.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
@@ -61,6 +62,7 @@ import 'label_controller_label_list_test.mocks.dart';
   MockSpec<GetAllLabelInteractor>(),
   MockSpec<DeleteALabelInteractor>(),
   MockSpec<GetLabelChangesInteractor>(),
+  MockSpec<GetLabelSettingStateInteractor>(),
 ])
 void main() {
   late LabelListHarness harness;
@@ -105,7 +107,7 @@ void main() {
 
     test('should keep the last labels when fetching labels fails', () {
       harness.controller.handleFailureViewState(
-        GetAllLabelFailure(Exception()),
+        GetAllLabelFailure(Exception(), AccountFixtures.aliceAccountId),
       );
 
       expect(harness.controller.labels, [home, work]);
@@ -118,6 +120,53 @@ void main() {
       );
 
       expect(harness.controller.labels, isEmpty);
+    });
+  });
+
+  group('LabelController labels loaded flag', () {
+    late StreamController<Either<Failure, Success>> labelSetting;
+
+    setUp(() {
+      labelSetting = StreamController<Either<Failure, Success>>();
+      addTearDown(labelSetting.close);
+      final getLabelSettingStateInteractor = MockGetLabelSettingStateInteractor();
+      when(getLabelSettingStateInteractor.execute(any)).thenAnswer((_) => labelSetting.stream);
+      Get.put<GetLabelSettingStateInteractor>(getLabelSettingStateInteractor);
+    });
+
+    test('should wait for the labels of a newly shown account before reporting them loaded', () async {
+      final delegatedAccountId = DelegationFixtures.bobAccountId;
+      when(harness.getAllLabelInteractor.execute(delegatedAccountId)).thenAnswer(
+        (_) => Stream.value(Right(GetAllLabelSuccess([work], jmap.State('bob-state'), delegatedAccountId))),
+      );
+      expect(harness.controller.isLabelsLoaded.isTrue, isTrue);
+
+      harness.controller.checkLabelSettingState(SessionFixtures.aliceSession, delegatedAccountId);
+      await pumpEventQueue();
+
+      expect(harness.controller.isLabelsLoaded.isTrue, isFalse);
+
+      labelSetting.add(Right(GetLabelSettingStateSuccess(true, delegatedAccountId)));
+      await pumpEventQueue();
+
+      expect(harness.controller.labels, [work]);
+      expect(harness.controller.isLabelsLoaded.isTrue, isTrue);
+    });
+
+    test('should not report the labels of a newly shown account loaded when fetching labels of mine fails late', () async {
+      harness.controller.checkLabelSettingState(SessionFixtures.aliceSession, DelegationFixtures.bobAccountId);
+      await pumpEventQueue();
+
+      harness.controller.handleFailureViewState(GetAllLabelFailure(Exception(), AccountFixtures.aliceAccountId));
+
+      expect(harness.controller.isLabelsLoaded.isTrue, isFalse);
+    });
+
+    test('should keep the labels loaded when the label setting of the same account is read again', () async {
+      harness.controller.checkLabelSettingState(SessionFixtures.aliceSession, AccountFixtures.aliceAccountId);
+      await pumpEventQueue();
+
+      expect(harness.controller.isLabelsLoaded.isTrue, isTrue);
     });
   });
 

@@ -18,5 +18,10 @@ class GetAllLabelSuccess extends UIState {
 }
 
 class GetAllLabelFailure extends FeatureFailure {
-  GetAllLabelFailure(dynamic exception) : super(exception: exception);
+  final AccountId accountId;
+
+  GetAllLabelFailure(dynamic exception, this.accountId) : super(exception: exception);
+
+  @override
+  List<Object?> get props => [...super.props, accountId];
 }

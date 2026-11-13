@@ -41,6 +41,12 @@ class ShownAccountCapabilities with EquatableMixin {
   /// Premium upgrades my own storage, so it is not offered on the quota of a delegated account.
   final bool offersMyPremium;
 
+  /// Web URLs name a delegated shown account, so a reload or a shared link reopens it. Mine is never named.
+  final bool namesShownAccountInWebUrl;
+
+  /// A link to a delegated account may outlive its folder, label or email, so it opens Inbox instead of the unknown page.
+  final bool opensInboxForMissingLinkTarget;
+
   const ShownAccountCapabilities._({
     required this.canOpenSettings,
     required this.canCreateFilter,
@@ -52,6 +58,8 @@ class ShownAccountCapabilities with EquatableMixin {
     required this.showsMyVacationBanner,
     required this.canRecoverDeletedMessages,
     required this.offersMyPremium,
+    required this.namesShownAccountInWebUrl,
+    required this.opensInboxForMissingLinkTarget,
   });
 
   factory ShownAccountCapabilities.of(ActiveAccount? shownAccount) {
@@ -68,6 +76,8 @@ class ShownAccountCapabilities with EquatableMixin {
       showsMyVacationBanner: !delegatedShown,
       canRecoverDeletedMessages: !delegatedShown,
       offersMyPremium: !delegatedShown,
+      namesShownAccountInWebUrl: delegatedShown,
+      opensInboxForMissingLinkTarget: delegatedShown,
     );
   }
 
@@ -83,5 +93,7 @@ class ShownAccountCapabilities with EquatableMixin {
         showsMyVacationBanner,
         canRecoverDeletedMessages,
         offersMyPremium,
+        namesShownAccountInWebUrl,
+        opensInboxForMissingLinkTarget,
       ];
 }
