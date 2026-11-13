@@ -53,6 +53,32 @@ class _FakeSession extends Fake implements SessionStorageManager {
 // Any call throws UnimplementedError, which stands in for a platform failure.
 class _UnavailableStorage extends Fake implements FlutterSecureStorage {}
 
+// Write returns normally but keeps nothing, like an fss 8 iOS OSStatus result.
+class _DroppingStorage extends Fake implements FlutterSecureStorage {
+  @override
+  Future<void> write({
+    required String key,
+    required String? value,
+    IOSOptions? iOptions,
+    AndroidOptions? aOptions,
+    LinuxOptions? lOptions,
+    WebOptions? webOptions,
+    MacOsOptions? mOptions,
+    WindowsOptions? wOptions,
+  }) async {}
+
+  @override
+  Future<String?> read({
+    required String key,
+    IOSOptions? iOptions,
+    AndroidOptions? aOptions,
+    LinuxOptions? lOptions,
+    WebOptions? webOptions,
+    MacOsOptions? mOptions,
+    WindowsOptions? wOptions,
+  }) async => null;
+}
+
 void main() {
   late _FakeClient client;
   late _FakeSession session;
@@ -194,17 +220,24 @@ void main() {
       );
     });
 
-    test('unavailable secure storage still empties the Hive box', () async {
+    test('unavailable secure storage keeps the Hive login', () async {
       manager = AuthenticationInfoCacheManager(client, session, secureStorage: _UnavailableStorage());
       client.item = info;
 
       expect(await manager.getAuthenticationInfoStored(), info);
 
-      expect(client.item, isNull);
-      expect(
-        manager.getAuthenticationInfoStored(),
-        throwsA(isA<NotFoundAuthenticationInfoCache>()),
-      );
+      expect(client.item, info);
+      expect(await manager.getAuthenticationInfoStored(), info);
+    });
+
+    test('a dropped secure write keeps the Hive login', () async {
+      manager = AuthenticationInfoCacheManager(client, session, secureStorage: _DroppingStorage());
+      client.item = info;
+
+      expect(await manager.getAuthenticationInfoStored(), info);
+
+      expect(client.item, info);
+      expect(client.clearCalls, 0);
     });
 
     test('clear removes the secure value and empties the Hive box', () async {

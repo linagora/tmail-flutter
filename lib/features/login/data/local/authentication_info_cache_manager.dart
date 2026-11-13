@@ -33,11 +33,13 @@ class AuthenticationInfoCacheManager extends CacheManagerInteraction {
   });
 
   Future<void> storeAuthenticationInfo(AuthenticationInfoCache authenticationInfoCache) async {
-    await _writeOutsideHive(jsonEncode({
+    final saved = await _writeOutsideHive(jsonEncode({
       _usernameField: authenticationInfoCache.username,
       _passwordField: authenticationInfoCache.password,
     }));
-    await _purgeLegacyHive();
+    if (saved) {
+      await _purgeLegacyHive();
+    }
   }
 
   Future<AuthenticationInfoCache> getAuthenticationInfoStored() async {
@@ -60,17 +62,23 @@ class AuthenticationInfoCacheManager extends CacheManagerInteraction {
     await _authenticationInfoCacheClient.clearAllData();
   }
 
-  Future<void> _writeOutsideHive(String value) async {
+  // True only when secure storage reads the value back; fss 8 on iOS can drop a write without throwing.
+  Future<bool> _writeOutsideHive(String value) async {
     if (PlatformInfo.isWeb) {
       _sessionStorageManager.save(_key, value);
-      return;
+      return true;
     }
     try {
       await _secureStorage.write(key: _key, value: value);
+      if (await _secureStorage.read(key: _key) == value) {
+        return true;
+      }
+      logError('$runtimeType::_writeOutsideHive: secure_write_verify_failed=true');
     } catch (e, st) {
-      // Login still works this run; the user signs in again next start.
+      // Login still works this run; the Hive copy is kept so the move retries on next read.
       logError('$runtimeType::_writeOutsideHive: secure_write_failed=true', exception: e, stackTrace: st);
     }
+    return false;
   }
 
   Future<String?> _readOutsideHive() async {
