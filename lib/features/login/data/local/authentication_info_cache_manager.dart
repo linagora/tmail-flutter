@@ -26,6 +26,9 @@ class AuthenticationInfoCacheManager extends CacheManagerInteraction {
   final SessionStorageManager _sessionStorageManager;
   final FlutterSecureStorage _secureStorage;
 
+  // Login whose secure write failed; keeps this run signed in until the next cold start.
+  AuthenticationInfoCache? _unsavedLogin;
+
   AuthenticationInfoCacheManager(
     this._authenticationInfoCacheClient,
     this._sessionStorageManager, {
@@ -38,11 +41,18 @@ class AuthenticationInfoCacheManager extends CacheManagerInteraction {
       _passwordField: authenticationInfoCache.password,
     }));
     if (saved) {
+      _unsavedLogin = null;
       await _purgeLegacyHive();
+    } else {
+      _unsavedLogin = authenticationInfoCache;
     }
   }
 
   Future<AuthenticationInfoCache> getAuthenticationInfoStored() async {
+    final unsaved = _unsavedLogin;
+    if (unsaved != null) {
+      return unsaved;
+    }
     final stored = _decode(await _readOutsideHive());
     if (stored != null) {
       await _purgeLegacyHive();
@@ -58,6 +68,7 @@ class AuthenticationInfoCacheManager extends CacheManagerInteraction {
   }
 
   Future<void> clear() async {
+    _unsavedLogin = null;
     await _removeOutsideHive();
     await _authenticationInfoCacheClient.clearAllData();
   }

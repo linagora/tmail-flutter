@@ -240,6 +240,27 @@ void main() {
       expect(client.clearCalls, 0);
     });
 
+    test('a dropped secure write on a fresh login keeps it for this run', () async {
+      manager = AuthenticationInfoCacheManager(client, session, secureStorage: _DroppingStorage());
+
+      await manager.storeAuthenticationInfo(info);
+
+      expect(await manager.getAuthenticationInfoStored(), info);
+      expect(client.insertCalls, 0);
+    });
+
+    test('clear drops a login kept for this run', () async {
+      manager = AuthenticationInfoCacheManager(client, session, secureStorage: _DroppingStorage());
+      await manager.storeAuthenticationInfo(info);
+
+      await manager.clear();
+
+      expect(
+        manager.getAuthenticationInfoStored(),
+        throwsA(isA<NotFoundAuthenticationInfoCache>()),
+      );
+    });
+
     test('clear removes the secure value and empties the Hive box', () async {
       await manager.storeAuthenticationInfo(info);
       client.item = info;
