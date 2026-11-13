@@ -9,6 +9,10 @@ class MobileAppBarComposerWidgetStyle {
   static const double space = 4;
   static const double sendButtonIconSize = 30;
   static const double richTextIconSize = 28;
+  // Widest collapsible action incl. spacing (Drive/Image: 4 + 40).
+  static const double actionSlotWidth = 44;
+  // Space + Send (36) + space + More (34).
+  static const double trailingReservedWidth = 80;
 
   static const Color backgroundColor = AppColor.colorComposerAppBar;
   static const Color iconColor = AppColor.steelGrayA540;
