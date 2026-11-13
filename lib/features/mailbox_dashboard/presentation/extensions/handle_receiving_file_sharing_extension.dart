@@ -24,7 +24,11 @@ extension HandleReceivingFileSharingExtension on MailboxDashBoardController {
       return;
     }
     final context = currentContext;
-    if (context != null) unawaited(_openComposerOnMine(context, openComposerForShare));
+    if (context == null) {
+      logWarning('HandleReceivingFileSharingExtension::openComposerFromSharedFiles: no context to switch to mine, intent dropped');
+      return;
+    }
+    unawaited(_openComposerOnMine(context, openComposerForShare));
   }
 
   Future<void> _openComposerOnMine(
