@@ -137,15 +137,12 @@ void main() {
       for (final key in [
         const Key(UiKeys.closeComposerButton),
         const ValueKey(UiKeys.sendEmailButton),
+        const Key(UiKeys.composerMoreButton),
       ]) {
         final rect = tester.getRect(find.byKey(key));
         expect(rect.left, greaterThanOrEqualTo(0));
         expect(rect.right, lessThanOrEqualTo(320));
       }
-      expect(
-        tester.getRect(find.byType(PopupMenuOverlayWidget)).right,
-        lessThanOrEqualTo(320),
-      );
       expect(find.byTooltip(_insertImage), findsNothing);
       expect(
         find.byKey(const ValueKey('fake-plugin-button-1')),
