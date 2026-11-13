@@ -327,9 +327,9 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: MediaQuery(
-            data: const MediaQueryData(textScaler: TextScaler.linear(1.3)),
-            child: const MaterialApp(
+          child: const MediaQuery(
+            data: MediaQueryData(textScaler: TextScaler.linear(1.3)),
+            child: MaterialApp(
               localizationsDelegates: [
                 AppLocalizationsDelegate(),
                 GlobalMaterialLocalizations.delegate,

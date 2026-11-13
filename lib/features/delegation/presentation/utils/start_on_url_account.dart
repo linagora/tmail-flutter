@@ -9,7 +9,6 @@ import 'package:tmail_ui_user/features/delegation/presentation/providers/account
 import 'package:tmail_ui_user/features/delegation/presentation/utils/account_switch_failure_toast.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/providers/app_toast_provider.dart';
-import 'package:tmail_ui_user/main/providers/cozy/inside_cozy_provider.dart';
 
 /// Shows the `account` of a web start URL through a switch (ADR-0114 Start on a delegated account).
 /// Returns false when mine stays shown, after its toast.
@@ -18,15 +17,9 @@ Future<bool> startOnUrlAccount({
   required AccountId urlAccountId,
 }) async {
   final container = ProviderScope.containerOf(context, listen: false);
-  // The switcher is hidden inside Cozy, so a switch there could not be undone.
-  final hasEntryPoint = !await container.read(insideCozyProvider.future);
-  if (!context.mounted) return false;
-
-  final result = hasEntryPoint
-      ? await container
-          .read(accountSwitchProvider.notifier)
-          .switchTo(urlAccountId, container.read(accountSwitchViewFactoryProvider)(context))
-      : null;
+  final result = await container
+      .read(accountSwitchProvider.notifier)
+      .switchTo(urlAccountId, container.read(accountSwitchViewFactoryProvider)(context));
   if (result is AccountSwitched) return true;
   if (!context.mounted) return false;
 
@@ -34,7 +27,7 @@ Future<bool> startOnUrlAccount({
     context: context,
     appToast: container.read(appToastProvider),
     args: AccountSwitchFailureToastArgs(
-      result: result ?? const AccountSwitchRefused(AccountSwitchRefusal.accountNotListed),
+      result: result,
       ownerDisplayName: _ownerDisplayName(container, urlAccountId),
     ),
   );
