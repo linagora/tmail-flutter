@@ -63,7 +63,11 @@ class StringConvert {
 
     if (result.contains('%')) {
       try {
-        result = Uri.decodeComponent(result);
+        final decoded = Uri.decodeComponent(result);
+        // Only when raw has no at-sign. Also requiring at-sign in decoded drops stacked URL then base64 (`…%3D`).
+        if (!result.contains('@')) {
+          result = decoded;
+        }
       } catch (_) {
         // Ignore if decoding fails
       }
