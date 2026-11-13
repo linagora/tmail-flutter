@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
-import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -12,15 +10,12 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import '../../base/core_robot.dart';
 import '../../utils/wait_for_condition.dart';
 import '../abstract/abstract_account_switcher_assertion_robot.dart';
+import 'account_switch_robot_mixin.dart';
 
 class WebAccountSwitcherAssertionRobot extends CoreRobot
+    with AccountSwitchRobotMixin
     implements AbstractAccountSwitcherAssertionRobot {
   WebAccountSwitcherAssertionRobot(super.$);
-
-  ProviderContainer _appContainer() {
-    final element = $.tester.element(find.byType(MaterialApp));
-    return ProviderScope.containerOf(element, listen: false);
-  }
 
   @override
   Future<void> expectSwitcherInactive() async {
@@ -52,29 +47,12 @@ class WebAccountSwitcherAssertionRobot extends CoreRobot
 
   @override
   Future<void> expectSwitcherOnMine() async {
-    await waitForCondition(
-      () {
-        final container = _appContainer();
-        final active = container.read(activeAccountProvider);
-        return active != null &&
-            !active.isDelegated &&
-            !container.read(accountSwitchProvider).isSwitching;
-      },
-      reason: 'showing mine and switch idle',
-    );
+    await waitSwitchIdleOnMine();
   }
 
   @override
   Future<void> expectSwitchSettled(String ownerAddress) async {
-    await waitForCondition(
-      () {
-        final container = _appContainer();
-        if (container.read(accountSwitchProvider).isSwitching) return false;
-        final active = container.read(activeAccountProvider);
-        return active != null && active.ownerEmailAddress == ownerAddress;
-      },
-      reason: 'switched to $ownerAddress and idle',
-    );
+    await waitSwitchIdleOn(ownerAddress);
     await expectLoadingDialogGone();
     FocusManager.instance.primaryFocus?.unfocus();
     await $.pumpAndTrySettle();
@@ -94,7 +72,7 @@ class WebAccountSwitcherAssertionRobot extends CoreRobot
   Future<void> expectUrlNamesShownAccount() async {
     await waitForCondition(
       () {
-        final active = _appContainer().read(activeAccountProvider);
+        final active = appContainer().read(activeAccountProvider);
         return active != null &&
             active.isDelegated &&
             _urlAccount() == active.accountId.id.value;
@@ -147,14 +125,7 @@ class WebAccountSwitcherAssertionRobot extends CoreRobot
   }
 
   @override
-  Future<void> expectLoadingDialogGone() async {
-    await waitForCondition(
-      () => $(const ValueKey(UiKeys.accountSwitchLoadingDialog))
-          .evaluate()
-          .isEmpty,
-      reason: 'account switch loading dialog closed',
-    );
-  }
+  Future<void> expectLoadingDialogGone() => waitLoadingDialogGone();
 
   @override
   Future<void> expectCouldNotOpenToast(String ownerAddress) async {

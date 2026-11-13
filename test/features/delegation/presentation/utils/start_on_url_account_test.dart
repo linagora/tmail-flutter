@@ -154,13 +154,27 @@ void main() {
     );
   });
 
-  testWidgets('should not switch inside Cozy and keeps mine with the unavailable toast', (tester) async {
+  testWidgets('shows the URL account through a switch inside Cozy without a toast', (tester) async {
     insideCozy = true;
 
-    final (shown, l10n) = await start(tester, DelegationFixtures.bobAccountId);
+    final (shown, _) = await start(tester, DelegationFixtures.bobAccountId);
+
+    expect(shown, isTrue);
+    expect(switchNotifier.switchToCalls, [DelegationFixtures.bobAccountId]);
+    expect(appToast.warningMessages, isEmpty);
+    expect(appToast.errorMessages, isEmpty);
+  });
+
+  testWidgets('keeps mine with the unavailable toast inside Cozy when the account is not listed', (tester) async {
+    insideCozy = true;
+    switchNotifier.nextResult =
+        const AccountSwitchRefused(AccountSwitchRefusal.accountNotListed);
+
+    final (shown, l10n) = await start(tester, DelegationFixtures.unknownAccountId);
 
     expect(shown, isFalse);
-    expect(switchNotifier.switchToCalls, isEmpty);
+    expect(switchNotifier.switchToCalls, [DelegationFixtures.unknownAccountId]);
     expect(appToast.warningMessages, [l10n.delegatedMailboxUnavailable]);
+    expect(appToast.errorMessages, isEmpty);
   });
 }

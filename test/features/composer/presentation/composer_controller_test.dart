@@ -80,6 +80,7 @@ import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_mobile_auto_save_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_draft_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/refresh_composer_attachments_extension.dart';
@@ -4104,6 +4105,56 @@ void main() {
           );
 
           expect(composerController!.listFromIdentities, [serverDefault]);
+        },
+      );
+    });
+
+    group('onKeyboardShortcutDispose:', () {
+      testWidgets(
+        'SHOULD NOT cut the composer focus subtree before the composer view unmounts '
+        'WHEN a recipient scope is still marked for focus',
+        (tester) async {
+          PlatformInfo.isTestingForWeb = true;
+          addTearDown(() => PlatformInfo.isTestingForWeb = false);
+          composerController!.onKeyboardShortcutInit();
+          final recipientFocusNode = FocusNode();
+          addTearDown(recipientFocusNode.dispose);
+          final isComposerMounted = ValueNotifier(true);
+          addTearDown(isComposerMounted.dispose);
+
+          await tester.pumpWidget(ValueListenableBuilder<bool>(
+            valueListenable: isComposerMounted,
+            builder: (_, mounted, __) {
+              if (!mounted) {
+                // Like a provider listener unfocusing during the build of the frame that unmounts the composer.
+                recipientFocusNode.unfocus();
+                return const SizedBox();
+              }
+              return Focus(
+                focusNode: composerController!.keyboardShortcutFocusNode,
+                child: FocusScope(
+                  child: Focus(
+                    focusNode: recipientFocusNode,
+                    child: const SizedBox(),
+                  ),
+                ),
+              );
+            },
+          ));
+          recipientFocusNode.requestFocus();
+          await tester.pump();
+
+          final keyboardShortcutFocusNode = composerController!.keyboardShortcutFocusNode!;
+          composerController!.onKeyboardShortcutDispose();
+          isComposerMounted.value = false;
+          await tester.pump();
+
+          expect(tester.takeException(), isNull);
+          expect(recipientFocusNode.hasFocus, isFalse);
+          expect(
+            () => ChangeNotifier.debugAssertNotDisposed(keyboardShortcutFocusNode),
+            throwsFlutterError,
+          );
         },
       );
     });
