@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/composer_attachment_plugin.dart';
 import 'package:core/presentation/extensions/composer_toolbar_button_style.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
@@ -67,6 +68,9 @@ class MobileResponsiveAppBarComposerWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final plugins = ref
+        .watch(composerAttachmentExtensionRegistryProvider)
+        .extensions;
     return Container(
       height: MobileAppBarComposerWidgetStyle.height,
       color: MobileAppBarComposerWidgetStyle.backgroundColor,
@@ -83,43 +87,49 @@ class MobileResponsiveAppBarComposerWidget extends ConsumerWidget {
             onTapActionCallback: onCloseViewAction
           ),
           Expanded(
-            child: ComposerOverflowActionBar(
-              actions: _buildOverflowActions(context, ref),
-              slotWidth: MobileAppBarComposerWidgetStyle.actionSlotWidth,
-              reservedWidth: MobileAppBarComposerWidgetStyle.trailingReservedWidth,
-              trailingBuilder: (overflowMenuItems) => Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
-                  TMailButtonWidget.fromIcon(
-                    key: const ValueKey(UiKeys.sendEmailButton),
-                    icon: isSendButtonEnabled
-                      ? imagePaths.icSendMobile
-                      : imagePaths.icSendDisable,
-                    backgroundColor: Colors.transparent,
-                    padding: MobileAppBarComposerWidgetStyle.iconPadding,
-                    iconSize: MobileAppBarComposerWidgetStyle.sendButtonIconSize,
-                    tooltipMessage: AppLocalizations.of(context).send,
-                    onTapActionCallback: sendMessageAction,
+            // Rebuild when a plugin starts or stops showing its button.
+            child: ListenableBuilder(
+              listenable: Listenable.merge([
+                for (final plugin in plugins) plugin.availability,
+              ]),
+              builder: (context, _) => ComposerOverflowActionBar(
+                  actions: _buildOverflowActions(context, plugins),
+                  slotWidth: MobileAppBarComposerWidgetStyle.actionSlotWidth,
+                  reservedWidth: MobileAppBarComposerWidgetStyle.trailingReservedWidth,
+                  trailingBuilder: (overflowMenuItems) => Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
+                      TMailButtonWidget.fromIcon(
+                        key: const ValueKey(UiKeys.sendEmailButton),
+                        icon: isSendButtonEnabled
+                          ? imagePaths.icSendMobile
+                          : imagePaths.icSendDisable,
+                        backgroundColor: Colors.transparent,
+                        padding: MobileAppBarComposerWidgetStyle.iconPadding,
+                        iconSize: MobileAppBarComposerWidgetStyle.sendButtonIconSize,
+                        tooltipMessage: AppLocalizations.of(context).send,
+                        onTapActionCallback: sendMessageAction,
+                      ),
+                      const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
+                      MoreOptionsMenuComposerWidget(
+                        imagePaths: imagePaths,
+                        menuController: menuMoreOptionController,
+                        overflowMenuItems: overflowMenuItems,
+                        isCodeViewEnabled: isCodeViewEnabled,
+                        hasRequestReadReceipt: hasRequestReadReceipt,
+                        isMarkAsImportant: isMarkAsImportant,
+                        isEmailChanged: isEmailChanged,
+                        toggleCodeViewAction: toggleCodeViewAction,
+                        toggleRequestReadReceiptAction: toggleRequestReadReceiptAction,
+                        printDraftAction: printDraftAction,
+                        saveToDraftsAction: saveToDraftsAction,
+                        saveToTemplateAction: saveToTemplateAction,
+                        deleteComposerAction: deleteComposerAction,
+                        toggleMarkAsImportantAction: toggleMarkAsImportantAction,
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
-                  MoreOptionsMenuComposerWidget(
-                    imagePaths: imagePaths,
-                    menuController: menuMoreOptionController,
-                    overflowMenuItems: overflowMenuItems,
-                    isCodeViewEnabled: isCodeViewEnabled,
-                    hasRequestReadReceipt: hasRequestReadReceipt,
-                    isMarkAsImportant: isMarkAsImportant,
-                    isEmailChanged: isEmailChanged,
-                    toggleCodeViewAction: toggleCodeViewAction,
-                    toggleRequestReadReceiptAction: toggleRequestReadReceiptAction,
-                    printDraftAction: printDraftAction,
-                    saveToDraftsAction: saveToDraftsAction,
-                    saveToTemplateAction: saveToTemplateAction,
-                    deleteComposerAction: deleteComposerAction,
-                    toggleMarkAsImportantAction: toggleMarkAsImportantAction,
-                  ),
-                ],
               ),
             ),
           ),
@@ -130,12 +140,9 @@ class MobileResponsiveAppBarComposerWidget extends ConsumerWidget {
 
   List<ComposerOverflowAction> _buildOverflowActions(
     BuildContext context,
-    WidgetRef ref,
+    List<ComposerAttachmentPlugin> plugins,
   ) {
     final appLocalizations = AppLocalizations.of(context);
-    final plugins = ref
-        .watch(composerAttachmentExtensionRegistryProvider)
-        .extensions;
     return [
       if (onOpenAiAssistantModal != null)
         ComposerOverflowAction(
@@ -195,7 +202,7 @@ class MobileResponsiveAppBarComposerWidget extends ConsumerWidget {
           onTap: attachFileAction,
         ),
       ),
-      for (final plugin in plugins)
+      for (final plugin in plugins.where((plugin) => plugin.isAvailable))
         ComposerOverflowAction(
           button: plugin.buildToolbarButton(
             context,

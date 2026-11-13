@@ -19,8 +19,15 @@ const _fakePlugin = 'Fake plugin 1';
 
 class _FakePlugin implements ComposerAttachmentPlugin {
   final int index;
+  final ValueNotifier<bool> available;
 
-  const _FakePlugin(this.index);
+  _FakePlugin(this.index, this.available);
+
+  @override
+  Listenable get availability => available;
+
+  @override
+  bool get isAvailable => available.value;
 
   @override
   Widget buildToolbarButton(
@@ -46,14 +53,16 @@ class _FakePlugin implements ComposerAttachmentPlugin {
 void main() {
   late ProviderContainer container;
   late CustomPopupMenuController menuController;
+  late ValueNotifier<bool> secondPluginAvailable;
 
   setUp(() {
+    secondPluginAvailable = ValueNotifier(true);
     container = ProviderContainer(
       overrides: [
         composerAttachmentExtensionRegistryProvider.overrideWith(
-          (ref) => const ComposerAttachmentExtensionRegistry([
-            _FakePlugin(1),
-            _FakePlugin(2),
+          (ref) => ComposerAttachmentExtensionRegistry([
+            _FakePlugin(1, ValueNotifier(true)),
+            _FakePlugin(2, secondPluginAvailable),
           ]),
         ),
       ],
@@ -64,6 +73,7 @@ void main() {
   tearDown(() {
     container.dispose();
     menuController.dispose();
+    secondPluginAvailable.dispose();
   });
 
   Future<void> pumpBar(
@@ -182,4 +192,36 @@ void main() {
       expect(find.text(_insertImage), findsNothing);
     },
   );
+
+  testWidgets('Should give no bar slot to an unavailable plugin', (
+    tester,
+  ) async {
+    addTearDown(() => WidgetFixtures.resetResponsive(tester));
+    secondPluginAvailable.value = false;
+
+    await pumpBar(tester, 1024);
+
+    expect(tester.takeException(), isNull);
+    expect(find.byKey(const ValueKey('fake-plugin-button-2')), findsNothing);
+    expect(find.byTooltip(_insertImage), findsOneWidget);
+
+    secondPluginAvailable.value = true;
+    await tester.pump();
+
+    expect(find.byKey(const ValueKey('fake-plugin-button-2')), findsOneWidget);
+  });
+
+  testWidgets('Should leave an unavailable plugin out of the More menu', (
+    tester,
+  ) async {
+    addTearDown(() => WidgetFixtures.resetResponsive(tester));
+    secondPluginAvailable.value = false;
+
+    await pumpBar(tester, 200);
+    await tester.tap(find.byType(PopupMenuOverlayWidget));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_fakePlugin), findsOneWidget);
+    expect(find.text('Fake plugin 2'), findsNothing);
+  });
 }

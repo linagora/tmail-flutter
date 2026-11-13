@@ -91,6 +91,12 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
       );
 
   @override
+  Listenable get availability => workplaceUri;
+
+  @override
+  bool get isAvailable => workplaceUri.value != null;
+
+  @override
   Widget buildToolbarButton(
     BuildContext context, {
     required String composerId,

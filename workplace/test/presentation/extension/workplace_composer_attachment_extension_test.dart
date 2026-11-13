@@ -583,4 +583,18 @@ void main() {
       });
     });
   });
+
+  group('WorkplaceComposerAttachmentExtension::isAvailable::', () {
+    test('follows workplaceUri', () {
+      final notifier = ValueNotifier<Uri?>(null);
+      final ext = _makeExtension(notifier);
+
+      expect(ext.isAvailable, isFalse);
+      expect(ext.availability, same(notifier));
+
+      notifier.value = _platformUri;
+
+      expect(ext.isAvailable, isTrue);
+    });
+  });
 }
