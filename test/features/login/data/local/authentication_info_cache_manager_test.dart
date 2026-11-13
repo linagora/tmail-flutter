@@ -280,6 +280,25 @@ void main() {
       expect(client.insertCalls, 0);
     });
 
+    test('a dropped overwrite clears the earlier secure login', () async {
+      final bob = AuthenticationInfoCache('bob@example.com', 'bob');
+      final storage = _MapSecureStorage()
+        ..values[key] = jsonEncode({'username': info.username, 'password': info.password});
+      manager = AuthenticationInfoCacheManager(client, session, secureStorage: storage);
+
+      await manager.storeAuthenticationInfo(bob);
+
+      expect(await manager.getAuthenticationInfoStored(), bob);
+      expect(storage.values.containsKey(key), isFalse);
+
+      // Cold start: no stale login survives.
+      manager = AuthenticationInfoCacheManager(client, session, secureStorage: storage);
+      expect(
+        manager.getAuthenticationInfoStored(),
+        throwsA(isA<NotFoundAuthenticationInfoCache>()),
+      );
+    });
+
     test('a later successful store clears the in-memory login and purges Hive', () async {
       final storage = _MapSecureStorage(writesToDrop: 1);
       manager = AuthenticationInfoCacheManager(client, session, secureStorage: storage);
