@@ -4,6 +4,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/file_utils.dart';
+import 'package:core/utils/html/host_script_nonce.dart';
 import 'package:core/utils/print_utils.dart';
 import 'package:filesize/filesize.dart';
 import 'package:model/email/attachment.dart';
@@ -67,7 +68,8 @@ class PrintFileDataSourceImpl extends PrintFileDataSource {
         bccAddress: emailPrint.bccAddress,
         replyToAddress: emailPrint.replyToAddress,
         titleAttachment: emailPrint.titleAttachment,
-        listAttachment: listPrintAttachment
+        listAttachment: listPrintAttachment,
+        scriptNonce: HostScriptNonce.read(),
       );
     }).catchError(_exceptionThrower.throwException);
   }
