@@ -1,0 +1,25 @@
+on:
+  pull_request:
+    paths:
+      - "server/**"
+      - "web/index.html"
+      - "Dockerfile"
+      - "scripts/csp-nonce-smoke.sh"
+      - ".github/workflows/csp-nonce-smoke.yaml"
+
+name: CSP nonce smoke
+
+permissions:
+  contents: read
+
+jobs:
+  # Patrol web runs on the dev server, which sends no CSP: this is the only CI check of the nginx nonce wiring.
+  csp-nonce-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+
+      - name: Check nonce on entry paths
+        run: ./scripts/csp-nonce-smoke.sh

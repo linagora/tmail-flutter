@@ -1,4 +1,5 @@
 import 'package:core/presentation/views/html_viewer/html_content_viewer_configuration.dart';
+import 'package:core/utils/html/host_script_nonce.dart';
 import 'package:core/utils/html/html_interaction.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
@@ -31,6 +32,7 @@ class HtmlWebViewerDocumentInput {
     this.useLinkTooltipOverlay = false,
     this.isWebTouchDevice = false,
     this.isWebDesktop = false,
+    this.scriptNonce,
   });
 
   final String content;
@@ -52,6 +54,7 @@ class HtmlWebViewerDocumentInput {
   final bool useLinkTooltipOverlay;
   final bool isWebTouchDevice;
   final bool isWebDesktop;
+  final String? scriptNonce;
 }
 
 /// Builds the exact HTML document each email viewer loads, so tests render
@@ -148,7 +151,10 @@ class HtmlViewerDocumentBuilder {
       minHeight: input.minHeight,
       minWidth: input.minWidth,
       styleCSS: _webStyles(input),
-      javaScripts: _webScripts(input),
+      javaScripts: HostScriptNonce.stampOwnScriptTags(
+        _webScripts(input),
+        input.scriptNonce,
+      ),
       direction: input.direction,
       contentPadding: input.contentPadding,
       useDefaultFontStyle: input.useDefaultFontStyle,

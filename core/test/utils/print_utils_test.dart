@@ -1,4 +1,5 @@
 import 'package:core/data/model/print_attachment.dart';
+import 'package:core/utils/html/html_interaction.dart';
 import 'package:core/utils/print_utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:html/parser.dart';
@@ -76,5 +77,48 @@ void main() {
       expect(document.querySelector('.main-content font b')!.text, injected);
       expect(document.querySelector('.attachments b:not([style])')!.text, injected);
     });
+
+    test('stamps the print script and leaves a script in the email content', () async {
+      const nonce = 'printNonce_1';
+      const emailScript = '<p>Body</p><script>alert(1)</script>';
+      final stamped = await _printDocument(emailContent: emailScript, scriptNonce: nonce);
+      final baseline = await _printDocument(emailContent: emailScript);
+
+      expect(stamped, contains('<script nonce="$nonce"'));
+      expect(stamped, contains('window.print'));
+      expect(stamped, contains('<script>alert(1)</script>'));
+      expect(baseline, isNot(contains('nonce=')));
+      expect(await _printDocument(emailContent: emailScript, scriptNonce: ''), baseline);
+      expect(await _printDocument(emailContent: emailScript, scriptNonce: 'bad nonce'), baseline);
+      expect(
+        baseline.contains(HtmlInteraction.scriptHandleInvokePrinterOnBrowser.trim()),
+        isTrue,
+      );
+    });
   });
+}
+
+Future<String> _printDocument({
+  required String emailContent,
+  String? scriptNonce,
+}) async {
+  late String printed;
+  final printUtils = PrintUtils(openHtmlDocument: (html) => printed = html);
+  await printUtils.printEmail(
+    appName: 'Twake Mail',
+    userName: 'alice@example.com',
+    subject: 'Subject',
+    emailContent: emailContent,
+    senderName: 'Bob',
+    senderEmailAddress: 'bob@example.com',
+    dateTime: 'today',
+    fromPrefix: 'From',
+    toPrefix: 'To',
+    ccPrefix: 'Cc',
+    bccPrefix: 'Bcc',
+    replyToPrefix: 'Reply to',
+    titleAttachment: 'attachment',
+    scriptNonce: scriptNonce,
+  );
+  return printed;
 }

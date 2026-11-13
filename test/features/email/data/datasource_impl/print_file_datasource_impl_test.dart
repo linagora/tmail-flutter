@@ -38,6 +38,7 @@ class _CapturingPrintUtils extends PrintUtils {
     String? bccAddress,
     String? replyToAddress,
     List<PrintAttachment>? listAttachment,
+    String? scriptNonce,
   }) async {
     this.subject = subject;
     this.senderName = senderName;

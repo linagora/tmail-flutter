@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:core/data/model/print_attachment.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/html/host_script_nonce.dart';
 import 'package:core/utils/html/html_interaction.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
@@ -232,6 +233,7 @@ class PrintUtils {
     String? bccAddress,
     String? replyToAddress,
     List<PrintAttachment>? listAttachment,
+    String? scriptNonce,
   }) async {
     Document document = parse(HtmlUtils.createTemplateHtmlDocument(title: _escapeText('$appName - $subject')));
 
@@ -310,7 +312,12 @@ class PrintUtils {
 
     document.body?.append(bodyContainerElement);
 
-    Element scriptElement = Element.html(HtmlInteraction.scriptHandleInvokePrinterOnBrowser);
+    Element scriptElement = Element.html(
+      HostScriptNonce.stampOwnScriptTags(
+        HtmlInteraction.scriptHandleInvokePrinterOnBrowser,
+        scriptNonce,
+      ),
+    );
     document.body?.append(scriptElement);
 
     final htmlDocument = document.outerHtml;

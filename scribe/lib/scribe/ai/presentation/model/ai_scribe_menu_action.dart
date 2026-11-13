@@ -13,7 +13,11 @@ enum AIScribeMenuAction {
   translateFrench,
   translateEnglish,
   translateRussian,
-  translateVietnamese;
+  translateVietnamese,
+  translateMongolian,
+  translateGerman,
+  translateSpanish,
+  translateItalian;
 
   String getLabel(ScribeLocalizations localizations) {
     switch (this) {
@@ -41,6 +45,14 @@ enum AIScribeMenuAction {
         return localizations.languageRussian;
       case AIScribeMenuAction.translateVietnamese:
         return localizations.languageVietnamese;
+      case AIScribeMenuAction.translateMongolian:
+        return localizations.languageMongolian;
+      case AIScribeMenuAction.translateGerman:
+        return localizations.languageGerman;
+      case AIScribeMenuAction.translateSpanish:
+        return localizations.languageSpanish;
+      case AIScribeMenuAction.translateItalian:
+        return localizations.languageItalian;
     }
   }
 
@@ -61,6 +73,10 @@ enum AIScribeMenuAction {
       case AIScribeMenuAction.translateEnglish:
       case AIScribeMenuAction.translateRussian:
       case AIScribeMenuAction.translateVietnamese:
+      case AIScribeMenuAction.translateMongolian:
+      case AIScribeMenuAction.translateGerman:
+      case AIScribeMenuAction.translateSpanish:
+      case AIScribeMenuAction.translateItalian:
         return AIScribeMenuCategory.translate;
     }
   }
@@ -79,6 +95,10 @@ enum AIScribeMenuAction {
       AIScribeMenuAction.translateEnglish => 'translate-english',
       AIScribeMenuAction.translateRussian => 'translate-russian',
       AIScribeMenuAction.translateVietnamese => 'translate-vietnamese',
+      AIScribeMenuAction.translateMongolian => 'translate-mongolian',
+      AIScribeMenuAction.translateGerman => 'translate-german',
+      AIScribeMenuAction.translateSpanish => 'translate-spanish',
+      AIScribeMenuAction.translateItalian => 'translate-italian',
     };
   }
 
@@ -170,6 +190,10 @@ enum AIScribeMenuCategory {
           AIScribeMenuAction.translateEnglish,
           AIScribeMenuAction.translateRussian,
           AIScribeMenuAction.translateVietnamese,
+          AIScribeMenuAction.translateMongolian,
+          AIScribeMenuAction.translateGerman,
+          AIScribeMenuAction.translateSpanish,
+          AIScribeMenuAction.translateItalian,
         ];
     }
   }
