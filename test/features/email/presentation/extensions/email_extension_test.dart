@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_header.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_header_value.dart';
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
@@ -275,6 +276,29 @@ void main() {
       );
 
       expect(email.sMimeStatus, SMimeSignatureStatus.notSigned);
+    });
+  });
+
+  group('EmailExtension::fromShownAddresses / recipientsIncludeShownAddresses', () {
+    test('matches on emailAddress (email ?? empty), not raw nullable email', () {
+      final email = Email(
+        from: {EmailAddress(null, 'me@domain.tld')},
+        to: {EmailAddress(null, 'other@domain.tld')},
+      );
+
+      expect(email.fromShownAddresses({'me@domain.tld'}), isTrue);
+      expect(email.recipientsIncludeShownAddresses({'other@domain.tld'}), isTrue);
+    });
+
+    test('null email is not me', () {
+      final email = Email(
+        from: {EmailAddress('Name', null)},
+        to: {EmailAddress('Name', null)},
+      );
+
+      expect(email.fromShownAddresses({''}), isTrue);
+      expect(email.fromShownAddresses({'me@domain.tld'}), isFalse);
+      expect(email.recipientsIncludeShownAddresses({'me@domain.tld'}), isFalse);
     });
   });
 }

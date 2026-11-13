@@ -19,7 +19,7 @@ class EmailViewBottomBarWidget extends StatelessWidget {
   final ResponsiveUtils responsiveUtils;
   final PresentationEmail presentationEmail;
   final EmailLoaded emailLoaded;
-  final String userName;
+  final Set<String> ownerEmailAddresses;
   final OnEmailActionCallback emailActionCallback;
   final BoxDecoration? bottomBarDecoration;
   final EdgeInsetsGeometry? padding;
@@ -30,7 +30,7 @@ class EmailViewBottomBarWidget extends StatelessWidget {
     required this.responsiveUtils,
     required this.presentationEmail,
     required this.emailLoaded,
-    required this.userName,
+    required this.ownerEmailAddresses,
     required this.emailActionCallback,
     this.bottomBarDecoration,
     this.padding,
@@ -38,7 +38,8 @@ class EmailViewBottomBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final countMailAddress = presentationEmail.getCountMailAddressWithoutMe(userName);
+    final countMailAddress =
+        presentationEmail.getCountMailAddressWithoutShownAddresses(ownerEmailAddresses);
     final isReplyToListEnabled = EmailUtils.isReplyToListEnabled(
       emailLoaded.emailCurrent?.listPost ?? '',
     );

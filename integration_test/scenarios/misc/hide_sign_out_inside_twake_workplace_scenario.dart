@@ -22,5 +22,6 @@ class HideSignOutInsideTwakeWorkplaceScenario extends BaseTestScenario {
 
     await profileMenuRobot.assertion.expectManageAccountVisible();
     await profileMenuRobot.assertion.expectSignOutHidden();
+    await profileMenuRobot.assertion.expectStandaloneAccountMenuHidden();
   }
 }

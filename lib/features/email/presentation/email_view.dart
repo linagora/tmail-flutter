@@ -47,8 +47,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/verify_display_overlay_view_on_iframe_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/dashboard_vacation_banner.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
@@ -108,7 +108,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                         position: position,
                         responsiveUtils: controller.responsiveUtils,
                         imagePaths: controller.imagePaths,
-                        ownEmailAddress: controller.ownEmailAddress,
+                        ownerEmailAddresses: controller.ownerEmailAddresses,
                         handleEmailAction: controller.handleEmailAction,
                         additionalActions: [],
                         emailIsRead: presentationEmail.hasRead,
@@ -158,15 +158,13 @@ class EmailView extends GetWidget<SingleEmailController> {
                           isPlatformSupportVacationVisible;
 
                   if (isVacationBannerVisible) {
-                    return VacationNotificationMessageWidget(
-                      margin: const EdgeInsetsDirectional.only(
-                        start: 12,
-                        end: 12,
-                        top: 8,
-                      ),
-                      vacationResponse: vacation!,
-                      actionGotoVacationSetting: controller.mailboxDashBoardController.goToVacationSetting,
-                      actionEndNow: controller.mailboxDashBoardController.disableVacationResponder,
+                    return DashboardVacationBanner(
+                        margin: const EdgeInsetsDirectional.only(
+                          start: 12,
+                          end: 12,
+                          top: 8,
+                        ),
+                        vacationResponse: vacation!,
                     );
                   } else {
                     return const SizedBox.shrink();
@@ -196,7 +194,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                   responsiveUtils: controller.responsiveUtils,
                   emailLoaded: emailLoaded,
                   presentationEmail: currentEmail,
-                  userName: controller.ownEmailAddress,
+                  ownerEmailAddresses: controller.ownerEmailAddresses,
                   emailActionCallback: controller.pressEmailAction,
                 );
               }),
@@ -323,7 +321,7 @@ class EmailView extends GetWidget<SingleEmailController> {
             position: position,
             responsiveUtils: controller.responsiveUtils,
             imagePaths: controller.imagePaths,
-            ownEmailAddress: controller.ownEmailAddress,
+            ownerEmailAddresses: controller.ownerEmailAddresses,
             handleEmailAction: controller.handleEmailAction,
             additionalActions: [
               EmailActionType.reply,
@@ -379,6 +377,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                 calendarEvent: calendarEvent,
                 viewState: CalendarEventCardViewState(
                   ownEmailAddress: controller.ownEmailAddress,
+                  ownerEmailAddresses: controller.ownerEmailAddresses,
                   listEmailAddressSender: emailAddressSender ?? [],
                   attendanceStatus: controller.attendanceStatus.value,
                   replying: controller.calendarEventProcessing,

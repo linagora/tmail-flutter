@@ -20,7 +20,7 @@ class GetThreadByIdInteractor {
     Session session,
     AccountId accountId,
     MailboxId sentMailboxId,
-    String ownEmailAddress, {
+    Set<String> ownerEmailAddresses, {
     required bool isSentMailbox,
     bool updateCurrentThreadDetail = false,
   }) async* {
@@ -33,7 +33,7 @@ class GetThreadByIdInteractor {
         session,
         accountId,
         sentMailboxId,
-        ownEmailAddress,
+        ownerEmailAddresses,
       );
 
       yield Right(GetThreadByIdSuccess(
@@ -51,7 +51,7 @@ class GetThreadByIdInteractor {
           session,
           accountId,
           sentMailboxId,
-          ownEmailAddress,
+          ownerEmailAddresses,
           isSentMailbox: isSentMailbox,
           updateCurrentThreadDetail: updateCurrentThreadDetail,
         ),

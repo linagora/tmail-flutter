@@ -992,6 +992,7 @@ CalendarEventCardViewState _viewState({
 }) {
   return CalendarEventCardViewState(
     ownEmailAddress: _ownEmailAddress,
+    ownerEmailAddresses: {_ownEmailAddress},
     listEmailAddressSender: listEmailAddressSender,
     attendanceStatus: attendanceStatus,
     replying: replying,

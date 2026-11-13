@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/base/setting_detail_view_builder.dart';
@@ -6,6 +7,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/preferences_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/widgets/preferences_option_item.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/providers/experimental_preferences_revealed_provider.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_header_widget.dart';
 
 class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMixin {
@@ -57,27 +59,40 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                     ),
                   Obx(() {
                     final preferencesContext = controller.preferencesContext;
-                    final availableSettingOptions =
-                        controller.registry.available(preferencesContext);
+                    return Consumer(
+                      builder: (context, ref, _) {
+                        final experimentalRevealed = ref
+                                .watch(experimentalPreferencesRevealedProvider)
+                                .asData
+                                ?.value ??
+                            false;
+                        final availableSettingOptions = controller.registry
+                            .visible(
+                              preferencesContext,
+                              experimentalRevealed: experimentalRevealed,
+                            );
 
-                    if (availableSettingOptions.isEmpty) {
-                      return const SizedBox.shrink();
-                    }
+                        if (availableSettingOptions.isEmpty) {
+                          return const SizedBox.shrink();
+                        }
 
-                    return Expanded(
-                      child: ListView.separated(
-                        itemCount: availableSettingOptions.length,
-                        itemBuilder: (context, index) {
-                          return PreferencesOptionItem(
-                            imagePaths: controller.imagePaths,
-                            option: availableSettingOptions[index],
-                            preferencesContext: preferencesContext,
-                            onTapPreferencesOptionAction:
-                                controller.updateStateSettingOption,
-                          );
-                        },
-                        separatorBuilder: (_, __) => const SizedBox(height: 49),
-                      ),
+                        return Expanded(
+                          child: ListView.separated(
+                            itemCount: availableSettingOptions.length,
+                            itemBuilder: (context, index) {
+                              return PreferencesOptionItem(
+                                imagePaths: controller.imagePaths,
+                                option: availableSettingOptions[index],
+                                preferencesContext: preferencesContext,
+                                onTapPreferencesOptionAction:
+                                    controller.updateStateSettingOption,
+                              );
+                            },
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(height: 49),
+                          ),
+                        );
+                      },
                     );
                   }),
                 ],

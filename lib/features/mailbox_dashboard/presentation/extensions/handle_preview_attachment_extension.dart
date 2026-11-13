@@ -27,9 +27,9 @@ extension HandlePreviewAttachmentExtension on MailboxDashBoardController {
       downloadController.previewAttachment(
         context: context,
         attachment: attachment,
-        accountId: accountId.value,
+        accountId: activeAccountId,
         session: sessionCurrent,
-        ownEmailAddress: ownEmailAddress.value,
+        ownEmailAddress: ownerEmailAddress,
         sourceView: sourceView,
         onPreviewOrDownloadAction: onPreviewOrDownloadAction,
         isDialogLoadingVisible: isDialogLoadingVisible,
@@ -44,9 +44,9 @@ extension HandlePreviewAttachmentExtension on MailboxDashBoardController {
       downloadController.previewUploadFile(
         context: context,
         uploadFile: uploadFile,
-        accountId: accountId.value,
+        accountId: activeAccountId,
         session: sessionCurrent,
-        ownEmailAddress: ownEmailAddress.value,
+        ownEmailAddress: ownerEmailAddress,
         onPreviewOrDownloadAction: onPreviewOrDownloadAction,
         isDialogLoadingVisible: isDialogLoadingVisible,
       );
@@ -65,9 +65,9 @@ extension HandlePreviewAttachmentExtension on MailboxDashBoardController {
         onPreviewAction: (uri) => downloadController.openEMLPreviewer(
           appLocalizations: AppLocalizations.of(context),
           uri: uri,
-          accountId: accountId.value,
+          accountId: activeAccountId,
           session: sessionCurrent,
-          ownEmailAddress: ownEmailAddress.value,
+          ownEmailAddress: ownerEmailAddress,
         ),
         onDownloadAction: (uri) async => downloadController.downloadAttachmentInEMLPreview(
           uri: uri,

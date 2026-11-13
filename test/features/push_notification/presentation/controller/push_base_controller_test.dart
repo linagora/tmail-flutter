@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/controller
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/label_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/mailbox_change_listener.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/model/state_change_action_roles.dart';
 
 import 'push_base_controller_test.mocks.dart';
 
@@ -316,6 +317,128 @@ void main() {
         ).called(1);
         verifyNever(emailChangeListener.dispatchActions(any));
         verifyNever(mailboxChangeListener.dispatchActions(any));
+      });
+
+      test(
+        'skips mailbox and label sync in the foreground when roles.refreshView is false',
+      () {
+        final state = State('some-state');
+        final mapTypeState = {
+          TypeName.emailType.value: state.value,
+          TypeName.mailboxType.value: state.value,
+          TypeName.labelType.value: state.value,
+        };
+
+        TestPushController().mappingTypeStateToAction(
+          mapTypeState,
+          accountId,
+          userName,
+          isForeground: true,
+          roles: const StateChangeActionRoles(
+            refreshView: false,
+            storeOfflineBodies: true,
+            updateDeliveryAndNotifications: true,
+          ),
+          emailChangeListener: emailChangeListener,
+          mailboxChangeListener: mailboxChangeListener,
+          labelChangeListener: labelChangeListener,
+        );
+
+        verify(
+          emailChangeListener.dispatchActions([
+            SynchronizeEmailOnForegroundAction(
+              TypeName.emailType,
+              state,
+              accountId,
+              null,
+              refreshView: false,
+            ),
+          ]),
+        ).called(1);
+        verifyNever(mailboxChangeListener.dispatchActions(any));
+        verifyNever(labelChangeListener.dispatchActions(any));
+      });
+
+      test(
+        'skips the email foreground action when no role is enabled',
+      () {
+        final state = State('some-state');
+        final mapTypeState = {TypeName.emailType.value: state.value};
+
+        TestPushController().mappingTypeStateToAction(
+          mapTypeState,
+          accountId,
+          userName,
+          isForeground: true,
+          roles: const StateChangeActionRoles(
+            refreshView: false,
+            storeOfflineBodies: false,
+            updateDeliveryAndNotifications: false,
+          ),
+          emailChangeListener: emailChangeListener,
+          mailboxChangeListener: mailboxChangeListener,
+          labelChangeListener: labelChangeListener,
+        );
+
+        verifyNever(emailChangeListener.dispatchActions(any));
+        verifyNever(mailboxChangeListener.dispatchActions(any));
+        verifyNever(labelChangeListener.dispatchActions(any));
+      });
+
+      test(
+        'skips a background PushNotificationAction when delivery is not kept',
+      () {
+        final state = State('some-state');
+        final mapTypeState = {TypeName.emailDelivery.value: state.value};
+
+        TestPushController().mappingTypeStateToAction(
+          mapTypeState,
+          accountId,
+          userName,
+          isForeground: false,
+          roles: const StateChangeActionRoles(
+            updateDeliveryAndNotifications: false,
+          ),
+          emailChangeListener: emailChangeListener,
+          mailboxChangeListener: mailboxChangeListener,
+          labelChangeListener: labelChangeListener,
+        );
+
+        verifyNever(emailChangeListener.dispatchActions(any));
+      });
+
+      test(
+        'passes storeOfflineBodies onto a background PushNotificationAction',
+      () {
+        final state = State('some-state');
+        final mapTypeState = {TypeName.emailDelivery.value: state.value};
+
+        TestPushController().mappingTypeStateToAction(
+          mapTypeState,
+          accountId,
+          userName,
+          isForeground: false,
+          roles: const StateChangeActionRoles(
+            updateDeliveryAndNotifications: true,
+            storeOfflineBodies: false,
+          ),
+          emailChangeListener: emailChangeListener,
+          mailboxChangeListener: mailboxChangeListener,
+          labelChangeListener: labelChangeListener,
+        );
+
+        verify(
+          emailChangeListener.dispatchActions([
+            PushNotificationAction(
+              TypeName.emailDelivery,
+              state,
+              null,
+              accountId,
+              userName,
+              storeOfflineBodies: false,
+            ),
+          ]),
+        ).called(1);
       });
     });
   });

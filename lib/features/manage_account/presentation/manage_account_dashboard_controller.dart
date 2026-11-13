@@ -41,6 +41,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindi
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/identity_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/bindings/mailbox_visibility_bindings.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_session_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
@@ -138,10 +139,7 @@ class ManageAccountDashBoardController extends ReloadableController
     final arguments = Get.arguments;
     if (arguments is ManageAccountArguments) {
       previousUri = arguments.previousUri;
-      _setUpComponentsFromSession(
-        session: arguments.session,
-        quota: arguments.quota,
-      );
+      _setUpComponentsFromSession(session: arguments.session);
       selectedMenu = arguments.menuSettingCurrent;
       if (selectedMenu != null && selectedMenu != AccountMenuItem.storage) {
         selectAccountMenuItem(selectedMenu!);
@@ -152,10 +150,7 @@ class ManageAccountDashBoardController extends ReloadableController
     }
   }
 
-  void _setUpComponentsFromSession({
-    Session? session,
-    Quota? quota,
-  }) {
+  void _setUpComponentsFromSession({Session? session}) {
     sessionCurrent = session;
     accountId.value = session?.accountId;
     synchronizeOwnEmailAddress(session?.getOwnEmailAddressOrEmpty() ?? '');
@@ -176,9 +171,7 @@ class ManageAccountDashBoardController extends ReloadableController
     _getVacationResponse();
     injectAIScribeBindings(sessionCurrent, accountId.value);
 
-    if (quota != null) {
-      octetsQuota.value = quota;
-    } else if (isStorageCapabilitySupported) {
+    if (isStorageCapabilitySupported) {
       getQuotas(accountId.value);
     }
 
@@ -293,9 +286,15 @@ class ManageAccountDashBoardController extends ReloadableController
       popBack(result: Tuple2(vacationResponse.value, previousUri));
     } else {
       log('ManageAccountDashBoardController::backToMailboxDashBoard(): canBack: FALSE');
+      final session = sessionCurrent;
       pushAndPopAll(
         RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
-        arguments: sessionCurrent);
+        arguments: session == null
+            ? null
+            : DashboardSessionArguments(
+                session: session,
+                fromCache: sessionLoadedFromCache,
+              ));
     }
   }
 

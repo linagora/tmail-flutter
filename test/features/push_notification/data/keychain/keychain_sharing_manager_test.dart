@@ -7,6 +7,8 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/push_notification/data/extensions/keychain_sharing_session_extension.dart';
+import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_delegated_account.dart';
 import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_session.dart';
 
@@ -183,6 +185,49 @@ void main() {
       expect(keychainSession?.tokenEndpoint, equals('https://jmap.domain.com/oidc/jmap',));
       expect(keychainSession?.oidcScopes, equals(['email']));
       expect(keychainSession?.isTWP, isTrue);
+    });
+
+    test('updating keeps delegatedAccounts on the personal entry', () {
+      final delegated = KeychainDelegatedAccount(
+        accountId: AccountId(Id('delegated-account')),
+        emailDeliveryState: 'delivery-1',
+      );
+      final session = KeychainSharingSession(
+        accountId: AccountId(Id('personal-account')),
+        userName: UserName('username@domain.com'),
+        authenticationType: AuthenticationType.oidc,
+        apiUrl: 'https://jmap.domain.com/oidc/jmap',
+        emailState: 'email-1',
+        delegatedAccounts: [delegated],
+      );
+
+      final updated = session.updating(emailState: 'email-2');
+
+      expect(updated.emailState, 'email-2');
+      expect(updated.delegatedAccounts, [delegated]);
+    });
+
+    test('round-trips delegatedAccounts through JSON', () async {
+      final session = KeychainSharingSession(
+        accountId: AccountId(Id('personal-account')),
+        userName: UserName('username@domain.com'),
+        authenticationType: AuthenticationType.oidc,
+        apiUrl: 'https://jmap.domain.com/oidc/jmap',
+        delegatedAccounts: [
+          KeychainDelegatedAccount(
+            accountId: AccountId(Id('delegated-account')),
+            emailDeliveryState: 'delivery-1',
+          ),
+        ],
+      );
+      FlutterSecureStorage.setMockInitialValues({});
+
+      await keychainSharingManager.saveSharingSession(session);
+      final loaded = await keychainSharingManager.getSharingSession(
+        AccountId(Id('personal-account')),
+      );
+
+      expect(loaded?.delegatedAccounts, session.delegatedAccounts);
     });
   });
 }

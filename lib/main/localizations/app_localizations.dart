@@ -6216,4 +6216,127 @@ class AppLocalizations {
       name: 'domainActivationPendingMessage',
     );
   }
+
+  String get sendingNotAllowedFromThisMailbox {
+    return Intl.message(
+      'You cannot send emails from this mailbox.',
+      name: 'sendingNotAllowedFromThisMailbox',
+    );
+  }
+
+  String endedDelegationLostItems(int count) {
+    return Intl.message(
+      'Access ended. $count unsent or draft messages were removed.',
+      name: 'endedDelegationLostItems',
+      args: [count],
+    );
+  }
+
+  String get delegation {
+    return Intl.message(
+      'Delegation',
+      name: 'delegation',
+    );
+  }
+
+  String get delegationSettingExplanation {
+    return Intl.message(
+      'Open the mailboxes other users delegated to you',
+      name: 'delegationSettingExplanation',
+    );
+  }
+
+  String get delegationToggleDescription {
+    return Intl.message(
+      'Enable delegation',
+      name: 'delegationToggleDescription',
+    );
+  }
+
+  String openingOwnerMailbox(String name) {
+    return Intl.message(
+      "Opening $name's mailbox…",
+      name: 'openingOwnerMailbox',
+      args: [name],
+    );
+  }
+
+  String get openingYourMailbox {
+    return Intl.message(
+      'Opening your mailbox…',
+      name: 'openingYourMailbox',
+    );
+  }
+
+  String viewingOwnerMailbox(String name) {
+    return Intl.message(
+      'Viewing $name',
+      name: 'viewingOwnerMailbox',
+      args: [name],
+    );
+  }
+
+  String get yourMailbox {
+    return Intl.message(
+      'Your mailbox',
+      name: 'yourMailbox',
+    );
+  }
+
+  String get delegatedToYou {
+    return Intl.message(
+      'Delegated to you',
+      name: 'delegatedToYou',
+    );
+  }
+
+  String get accountSwitcherMenu {
+    return Intl.message(
+      'Account switcher',
+      name: 'accountSwitcherMenu',
+    );
+  }
+
+  String couldNotOpenOwnerMailbox(String name) {
+    return Intl.message(
+      "Couldn't open $name's mailbox",
+      name: 'couldNotOpenOwnerMailbox',
+      args: [name],
+    );
+  }
+
+  String get couldNotReturnToYourMailbox {
+    return Intl.message(
+      "Couldn't return to your mailbox",
+      name: 'couldNotReturnToYourMailbox',
+    );
+  }
+
+  String get closeComposerBeforeSwitchingAccounts {
+    return Intl.message(
+      'Close the composer before switching accounts',
+      name: 'closeComposerBeforeSwitchingAccounts',
+    );
+  }
+
+  String get delegatedMailbox {
+    return Intl.message(
+      'Delegated mailbox',
+      name: 'delegatedMailbox',
+    );
+  }
+
+  String get backToYourMailbox {
+    return Intl.message(
+      'Back to your mailbox',
+      name: 'backToYourMailbox',
+    );
+  }
+
+  String get delegatedMailboxUnavailable {
+    return Intl.message(
+      "This delegated mailbox isn't available, so your mailbox is shown",
+      name: 'delegatedMailboxUnavailable',
+    );
+  }
 }

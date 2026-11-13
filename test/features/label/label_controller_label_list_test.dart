@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:dartz/dartz.dart';
@@ -26,6 +30,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oi
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_label_setting_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_label_setting_state_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_message.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
@@ -34,6 +39,7 @@ import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../fixtures/account_fixtures.dart';
+import '../../fixtures/delegation_fixtures.dart';
 import '../../fixtures/session_fixtures.dart';
 import 'label_controller_label_list_test.mocks.dart';
 
@@ -56,6 +62,7 @@ import 'label_controller_label_list_test.mocks.dart';
   MockSpec<GetAllLabelInteractor>(),
   MockSpec<DeleteALabelInteractor>(),
   MockSpec<GetLabelChangesInteractor>(),
+  MockSpec<GetLabelSettingStateInteractor>(),
 ])
 void main() {
   late LabelListHarness harness;
@@ -100,7 +107,7 @@ void main() {
 
     test('should keep the last labels when fetching labels fails', () {
       harness.controller.handleFailureViewState(
-        GetAllLabelFailure(Exception()),
+        GetAllLabelFailure(Exception(), AccountFixtures.aliceAccountId),
       );
 
       expect(harness.controller.labels, [home, work]);
@@ -109,10 +116,115 @@ void main() {
 
     test('should clear the labels when reading the label setting fails', () {
       harness.controller.handleFailureViewState(
-        GetLabelSettingStateFailure(Exception()),
+        GetLabelSettingStateFailure(Exception(), AccountFixtures.aliceAccountId),
       );
 
       expect(harness.controller.labels, isEmpty);
+    });
+  });
+
+  group('LabelController labels loaded flag', () {
+    late StreamController<Either<Failure, Success>> labelSetting;
+
+    setUp(() {
+      labelSetting = StreamController<Either<Failure, Success>>();
+      addTearDown(labelSetting.close);
+      final getLabelSettingStateInteractor = MockGetLabelSettingStateInteractor();
+      when(getLabelSettingStateInteractor.execute(any)).thenAnswer((_) => labelSetting.stream);
+      Get.put<GetLabelSettingStateInteractor>(getLabelSettingStateInteractor);
+    });
+
+    test('should wait for the labels of a newly shown account before reporting them loaded', () async {
+      final delegatedAccountId = DelegationFixtures.bobAccountId;
+      when(harness.getAllLabelInteractor.execute(delegatedAccountId)).thenAnswer(
+        (_) => Stream.value(Right(GetAllLabelSuccess([work], jmap.State('bob-state'), delegatedAccountId))),
+      );
+      expect(harness.controller.isLabelsLoaded.isTrue, isTrue);
+
+      harness.controller.checkLabelSettingState(SessionFixtures.aliceSession, delegatedAccountId);
+      await pumpEventQueue();
+
+      expect(harness.controller.isLabelsLoaded.isTrue, isFalse);
+
+      labelSetting.add(Right(GetLabelSettingStateSuccess(true, delegatedAccountId)));
+      await pumpEventQueue();
+
+      expect(harness.controller.labels, [work]);
+      expect(harness.controller.isLabelsLoaded.isTrue, isTrue);
+    });
+
+    test('should not report the labels of a newly shown account loaded when fetching labels of mine fails late', () async {
+      harness.controller.checkLabelSettingState(SessionFixtures.aliceSession, DelegationFixtures.bobAccountId);
+      await pumpEventQueue();
+
+      harness.controller.handleFailureViewState(GetAllLabelFailure(Exception(), AccountFixtures.aliceAccountId));
+
+      expect(harness.controller.isLabelsLoaded.isTrue, isFalse);
+    });
+
+    test('should keep the labels loaded when the label setting of the same account is read again', () async {
+      harness.controller.checkLabelSettingState(SessionFixtures.aliceSession, AccountFixtures.aliceAccountId);
+      await pumpEventQueue();
+
+      expect(harness.controller.isLabelsLoaded.isTrue, isTrue);
+    });
+  });
+
+  group('LabelController late result of another account', () {
+    final delegatedAccountId = DelegationFixtures.bobAccountId;
+    final delegatedState = jmap.State('delegated-state');
+    final myState = jmap.State('my-state');
+
+    test('should keep my labels and label state when the labels of a previously shown account arrive late', () async {
+      final delegatedLabels = StreamController<Either<Failure, Success>>();
+      addTearDown(delegatedLabels.close);
+      when(harness.getAllLabelInteractor.execute(delegatedAccountId))
+          .thenAnswer((_) => delegatedLabels.stream);
+      when(harness.getAllLabelInteractor.execute(AccountFixtures.aliceAccountId)).thenAnswer(
+        (_) => Stream.value(Right(GetAllLabelSuccess([home], myState, AccountFixtures.aliceAccountId))),
+      );
+
+      harness.controller
+        ..checkLabelSettingState(SessionFixtures.aliceSession, delegatedAccountId)
+        ..getAllLabels(delegatedAccountId)
+        ..checkLabelSettingState(SessionFixtures.aliceSession, AccountFixtures.aliceAccountId)
+        ..getAllLabels(AccountFixtures.aliceAccountId);
+      await pumpEventQueue();
+      expect(harness.controller.labels, [home]);
+
+      delegatedLabels.add(Right(GetAllLabelSuccess([work], delegatedState, delegatedAccountId)));
+      await pumpEventQueue();
+
+      expect(harness.controller.labels, [home]);
+      expect(harness.controller.currentLabelState, myState);
+    });
+
+    test('should not load the labels of a previously shown account when its label setting arrives late', () {
+      harness.controller.handleSuccessViewState(GetLabelSettingStateSuccess(true, delegatedAccountId));
+
+      verifyNever(harness.getAllLabelInteractor.execute(any));
+      expect(harness.controller.labels, [home, work]);
+    });
+
+    test('should keep my labels when reading the label setting of a previously shown account fails late', () {
+      harness.controller.handleFailureViewState(GetLabelSettingStateFailure(Exception(), delegatedAccountId));
+
+      expect(harness.controller.labels, [home, work]);
+    });
+
+    test('should not apply the label changes of a previously shown account that arrive after a switch', () async {
+      final delegatedChanges = StreamController<Either<Failure, Success>>();
+      when(harness.getLabelChangesInteractor.execute(any, any, any))
+          .thenAnswer((_) => delegatedChanges.stream);
+
+      final handling = harness.controller.handleWebSocketMessage(WebSocketMessage(newState: newState));
+      harness.controller.checkLabelSettingState(SessionFixtures.aliceSession, delegatedAccountId);
+      delegatedChanges.add(Right(GetLabelChangesSuccess(changes(updated: [renamedWork]))));
+      await delegatedChanges.close();
+      await handling;
+
+      expect(harness.controller.labels, isEmpty);
+      expect(harness.controller.currentLabelState, jmap.State('old-state'));
     });
   });
 }
@@ -151,7 +263,7 @@ void registerBaseControllerDependencies() {
 class LabelListHarness {
   LabelListHarness() {
     // Registered first, so the bindings keep these instead of the real ones
-    Get.put<GetAllLabelInteractor>(MockGetAllLabelInteractor());
+    Get.put<GetAllLabelInteractor>(getAllLabelInteractor);
     Get.put<DeleteALabelInteractor>(MockDeleteALabelInteractor());
     Get.put<GetLabelChangesInteractor>(getLabelChangesInteractor);
 
@@ -170,6 +282,7 @@ class LabelListHarness {
   }
 
   final controller = LabelController();
+  final getAllLabelInteractor = MockGetAllLabelInteractor();
   final getLabelChangesInteractor = MockGetLabelChangesInteractor();
   final emitted = <List<Label>>[];
 }

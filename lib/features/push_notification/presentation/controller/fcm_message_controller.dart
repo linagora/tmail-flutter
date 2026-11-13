@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -5,6 +7,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:core/utils/sentry/sentry_manager.dart';
+import 'package:flutter/foundation.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
@@ -29,13 +32,122 @@ import 'package:tmail_ui_user/features/push_notification/presentation/bindings/f
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_token_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/push_base_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/extensions/state_change_extension.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/extensions/state_change_merge_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/label_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/mailbox_change_listener.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/model/state_change_account_filter.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/model/state_change_action_roles.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+
+/// Accumulates payloads and emits one batch after [debounce] of quiet time.
+///
+/// A burst that never goes quiet still flushes [debounce] after the first
+/// payload of the window, so pending cannot grow without a bound.
+/// Prefer this over `buffer(debounce)`: that misses the first event on a broadcast stream.
+@visibleForTesting
+StreamSubscription<Map<String, dynamic>> listenDebouncedBackgroundMessageBatches(
+  Stream<Map<String, dynamic>> source,
+  void Function(List<Map<String, dynamic>> batch) onBatch,
+  void Function(Object error, StackTrace stackTrace) onError, {
+  Duration debounce = const Duration(
+    milliseconds: FcmUtils.durationBackgroundMessageComing,
+  ),
+}) {
+  final pending = <Map<String, dynamic>>[];
+  Timer? trailing;
+  Timer? maxWait;
+
+  void flush() {
+    trailing?.cancel();
+    trailing = null;
+    maxWait?.cancel();
+    maxWait = null;
+    if (pending.isEmpty) return;
+    final batch = List.of(pending);
+    pending.clear();
+    onBatch(batch);
+  }
+
+  void cancelTimers() {
+    trailing?.cancel();
+    trailing = null;
+    maxWait?.cancel();
+    maxWait = null;
+  }
+
+  final subscription = source.listen((payload) {
+    pending.add(payload);
+    trailing?.cancel();
+    trailing = Timer(debounce, flush);
+    maxWait ??= Timer(debounce, flush);
+  }, onError: onError, onDone: cancelTimers);
+
+  return _OnCancelSubscription<Map<String, dynamic>>(subscription, cancelTimers);
+}
+
+class _OnCancelSubscription<T> implements StreamSubscription<T> {
+  _OnCancelSubscription(this._inner, this._onCancel);
+
+  final StreamSubscription<T> _inner;
+  final void Function() _onCancel;
+  var _didCancel = false;
+
+  @override
+  Future<void> cancel() {
+    if (!_didCancel) {
+      _didCancel = true;
+      _onCancel();
+    }
+    return _inner.cancel();
+  }
+
+  @override
+  void onData(void Function(T data)? handleData) => _inner.onData(handleData);
+
+  @override
+  void onError(Function? handleError) => _inner.onError(handleError);
+
+  @override
+  void onDone(void Function()? handleDone) => _inner.onDone(handleDone);
+
+  @override
+  void pause([Future<void>? resumeSignal]) => _inner.pause(resumeSignal);
+
+  @override
+  void resume() => _inner.resume();
+
+  @override
+  bool get isPaused => _inner.isPaused;
+
+  @override
+  Future<E> asFuture<E>([E? futureValue]) => _inner.asFuture<E>(futureValue);
+}
+
+/// Converts each payload on its own. One malformed payload does not drop the rest.
+@visibleForTesting
+StateChange? mergeBackgroundMessagePayloads(
+  List<Map<String, dynamic>> payloads,
+) {
+  return payloads
+      .map((payload) {
+        try {
+          return FcmUtils.instance.convertFirebaseDataMessageToStateChange(payload);
+        } catch (e, st) {
+          logError(
+            'FcmMessageController::_handleBackgroundMessageBatch',
+            exception: e,
+            stackTrace: st,
+          );
+          return null;
+        }
+      })
+      .whereType<StateChange>()
+      .mergeAll();
+}
 
 class FcmSentryRuntime {
   const FcmSentryRuntime();
@@ -98,20 +210,19 @@ class FcmMessageController extends PushBaseController {
   }
 
   void _listenBackgroundMessageStream() {
-    FcmService.instance.backgroundMessageStreamController?.stream
-        .debounceTime(const Duration(
-          milliseconds: FcmUtils.durationBackgroundMessageComing,
-        ))
-        .listen(
-          _handleBackgroundMessageAction,
-          onError: (e, st) {
-            logError(
-              'FcmMessageController::_listenBackgroundMessageStream',
-              exception: e,
-              stackTrace: st,
-            );
-          },
+    final source = FcmService.instance.backgroundMessageStreamController?.stream;
+    if (source == null) return;
+    listenDebouncedBackgroundMessageBatches(
+      source,
+      _handleBackgroundMessageBatch,
+      (e, st) {
+        logError(
+          'FcmMessageController::_listenBackgroundMessageStream',
+          exception: e,
+          stackTrace: st,
         );
+      },
+    );
   }
 
   void _listenTokenStream() {
@@ -130,15 +241,14 @@ class FcmMessageController extends PushBaseController {
       );
   }
 
-  void _handleBackgroundMessageAction(Map<String, dynamic> payloadData) async {
-    logTrace('FcmMessageController::_handleBackgroundMessageAction():payloadData keys: ${payloadData.keys.toList()}');
-    final stateChange = FcmUtils.instance.convertFirebaseDataMessageToStateChange(payloadData);
+  void _handleBackgroundMessageBatch(List<Map<String, dynamic>> payloads) async {
+    logTrace('FcmMessageController::_handleBackgroundMessageBatch():payloads = ${payloads.length}');
+    final stateChange = mergeBackgroundMessagePayloads(payloads);
     if (stateChange == null) {
-      logTrace('FcmMessageController::_handleBackgroundMessageAction(): stateChange is null');
+      logTrace('FcmMessageController::_handleBackgroundMessageBatch(): stateChange is null');
       return;
-    } else {
-      logTrace('FcmMessageController::_handleBackgroundMessageAction(): stateChange: ${stateChange.toString()}');
     }
+    logTrace('FcmMessageController::_handleBackgroundMessageBatch(): stateChange: ${stateChange.toString()}');
     _getAuthenticatedAccount(stateChange: stateChange);
   }
 
@@ -517,17 +627,27 @@ class FcmMessageController extends PushBaseController {
     required StateChange stateChange,
     Session? session
   }) {
-    final mapTypeState = stateChange.getMapTypeState(accountId);
-    logTrace('FcmMessageController::_pushActionFromRemoteMessageBackground: Mapping type state to action ${mapTypeState.toString()}');
-    mappingTypeStateToAction(
-      mapTypeState,
-      accountId,
-      userName,
-      emailChangeListener: EmailChangeListener.instance,
-      mailboxChangeListener: MailboxChangeListener.instance,
-      labelChangeListener: LabelChangeListener.instance,
-      isForeground: false,
-      session: session);
+    // Delegated entries are dropped until the delegation toggle turns includeDelegated on.
+    final filter = StateChangeAccountFilter(personalAccountId: accountId);
+    for (final changedAccountId in filter.accountsToProcess(stateChange)) {
+      final mapTypeState = stateChange.getMapTypeState(changedAccountId);
+      if (mapTypeState.isEmpty) continue;
+      logTrace('FcmMessageController::_pushActionFromRemoteMessageBackground: Mapping type state to action ${mapTypeState.toString()}');
+      mappingTypeStateToAction(
+        mapTypeState,
+        changedAccountId,
+        userName,
+        emailChangeListener: EmailChangeListener.instance,
+        mailboxChangeListener: MailboxChangeListener.instance,
+        labelChangeListener: LabelChangeListener.instance,
+        isForeground: false,
+        session: session,
+        roles: StateChangeActionRoles(
+          updateDeliveryAndNotifications: filter.shouldKeepDelivery(changedAccountId),
+          storeOfflineBodies: filter.shouldStoreOfflineBodies(changedAccountId),
+        ),
+      );
+    }
   }
 
   @override

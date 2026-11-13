@@ -21,8 +21,11 @@ import 'package:tmail_ui_user/features/base/mixin/emit_state_mixin.dart';
 import 'package:tmail_ui_user/features/base/extensions/discard_web_composers_on_logout_extension.dart';
 import 'package:tmail_ui_user/features/base/extensions/handle_company_server_login_info_extension.dart';
 import 'package:tmail_ui_user/features/base/mixin/logout_mixin.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/cleanup_ended_delegations.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/providers/delegation_session_cleanup.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/mdn_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
@@ -435,28 +438,28 @@ abstract class BaseController extends GetxController
 
   void injectWebSocket({
     Session? session,
-    AccountId? accountId,
+    AccountId? personalAccountId,
     bool isLabelAvailable = false,
   }) {
     try {
       log('$runtimeType::injectWebSocket: isLabelAvailable is $isLabelAvailable');
       requireCapability(
         session!,
-        accountId!,
+        personalAccountId!,
         [
           CapabilityIdentifier.jmapWebSocket,
           CapabilityIdentifier.jmapWebSocketTicket
         ]
       );
       final wsCapability = session.getCapabilityProperties<WebSocketCapability>(
-        accountId,
+        personalAccountId,
         CapabilityIdentifier.jmapWebSocket);
       if (wsCapability?.supportsPush != true) {
         throw WebSocketPushNotSupportedException();
       }
       WebSocketInteractorBindings().dependencies();
       WebSocketController.instance.initialize(
-        accountId: accountId,
+        accountId: personalAccountId,
         session: session,
         isLabelAvailable: isLabelAvailable,
       );
@@ -534,6 +537,10 @@ abstract class BaseController extends GetxController
     }
 
     await discardWebComposersOnLogout(session, accountId);
+    await removeDelegatedComposerSnapshotsOnLogout(
+      session: session,
+      personalAccountId: accountId,
+    );
     await cachingManager.clearMailDataCached();
 
     _isFcmEnabled = _isFcmActivated(session, accountId);
@@ -559,6 +566,10 @@ abstract class BaseController extends GetxController
   }) async {
     _LogoutToSignInOutcome outcome;
     try {
+      await removeDelegatedComposerSnapshotsOnLogout(
+        session: session,
+        personalAccountId: accountId,
+      );
       _isFcmEnabled = _isFcmActivated(session, accountId);
       outcome = await _logoutToSignIn();
     } catch (e) {
@@ -671,9 +682,25 @@ abstract class BaseController extends GetxController
   /// Several entry points call this, some without awaiting. Overlapping runs
   /// used to close Hive while another run was still writing to it, so they are
   /// serialised through a single shared future.
-  Future<void> clearAllData() => twakeAppManager.runClearDataOnce(_clearAllData);
+  Future<void> clearAllData({BuildContext? context}) =>
+      twakeAppManager.runClearDataOnce(
+        () => _clearAllData(context ?? currentContext),
+      );
 
-  Future<void> _clearAllData() async {
+  Future<void> _clearAllData(BuildContext? context) async {
+    if (context != null) {
+      try {
+        endDelegationSession(context);
+      } catch (error, stackTrace) {
+        logError(
+          'BaseController::_clearAllData: could not end delegation session',
+          exception: error,
+          stackTrace: stackTrace,
+        );
+      }
+    }
+    // Also covers a logout without context, where endDelegationSession never runs.
+    getBinding<ActiveAccountWriter>()?.clear();
     await _clearSentryForSessionEnd();
     try {
       // Read before clear() flips it to none.
@@ -721,6 +748,9 @@ abstract class BaseController extends GetxController
     return minInputLength?.value.toInt() ?? AppConfig.defaultMinInputLengthAutocomplete;
   }
 
+  /// Built when the retry toast shows, which may be long before Retry is tapped.
+  VoidCallback retryActionOf(Stream<Either<Failure, Success>> retry) => () => consumeState(retry);
+
   void showRetryToast(FeatureFailure failure) {
     if (currentOverlayContext == null || currentContext == null) return;
 
@@ -736,7 +766,7 @@ abstract class BaseController extends GetxController
         if (failure.onRetry != null)
           (
             actionName: AppLocalizations.of(currentContext!).retry,
-            onActionClick: () => consumeState(failure.onRetry!),
+            onActionClick: retryActionOf(failure.onRetry!),
             actionIcon: SvgPicture.asset(imagePaths.icUndo),
           ),
         (

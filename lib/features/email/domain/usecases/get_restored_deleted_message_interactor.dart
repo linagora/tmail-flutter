@@ -37,19 +37,19 @@ class GetRestoredDeletedMessageInterator {
           );
           final recoveredMailbox = getMailboxByRoleResponse.mailbox;
 
-          yield Right<Failure, Success>(GetRestoredDeletedMessageCompleted(emailRecovery, recoveredMailbox: recoveredMailbox));
+          yield Right<Failure, Success>(GetRestoredDeletedMessageCompleted(emailRecovery, accountId, recoveredMailbox: recoveredMailbox));
           break;
         case EmailRecoveryStatus.failed:
           yield Left<Failure, Success>(GetRestoredDeletedMessageFailure(null));
           break;
         case EmailRecoveryStatus.inProgress:
-          yield Right<Failure, Success>(GetRestoredDeletedMessageInProgress(emailRecovery));
+          yield Right<Failure, Success>(GetRestoredDeletedMessageInProgress(emailRecovery, accountId));
           break;
         case EmailRecoveryStatus.waiting:
-          yield Right<Failure, Success>(GetRestoredDeletedMessageWaiting(emailRecovery));
+          yield Right<Failure, Success>(GetRestoredDeletedMessageWaiting(emailRecovery, accountId));
           break;
         case EmailRecoveryStatus.canceled:
-          yield Right<Failure, Success>(GetRestoredDeletedMessageCanceled(emailRecovery));
+          yield Right<Failure, Success>(GetRestoredDeletedMessageCanceled(emailRecovery, accountId));
           break;
         default:
           yield Left<Failure, Success>(GetRestoredDeletedMessageFailure(null));

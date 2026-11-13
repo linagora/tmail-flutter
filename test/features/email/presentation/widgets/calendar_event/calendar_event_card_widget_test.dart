@@ -917,6 +917,7 @@ CalendarEventCardViewState _viewState({
 }) {
   return CalendarEventCardViewState(
     ownEmailAddress: 'reader@example.invalid',
+    ownerEmailAddresses: const {'reader@example.invalid'},
     hasScheduleConflict: hasScheduleConflict,
     attendanceStatus: attendanceStatus,
     replying: replying,

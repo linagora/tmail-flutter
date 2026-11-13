@@ -15,5 +15,10 @@ class GetLabelSettingStateSuccess extends UIState {
 }
 
 class GetLabelSettingStateFailure extends FeatureFailure {
-  GetLabelSettingStateFailure(dynamic exception) : super(exception: exception);
+  final AccountId accountId;
+
+  GetLabelSettingStateFailure(dynamic exception, this.accountId) : super(exception: exception);
+
+  @override
+  List<Object?> get props => [...super.props, accountId];
 }

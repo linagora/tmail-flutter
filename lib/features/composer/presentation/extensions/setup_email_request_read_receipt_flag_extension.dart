@@ -22,11 +22,17 @@ extension SetupEmailRequestReadReceiptFlagExtension on ComposerController {
         return;
       }
 
+      // My read-receipt preference never applies to mail sent from a delegated account.
+      if (!mailboxDashBoardController.shownAccountCapabilities.canApplyMyComposerSettings) {
+        return;
+      }
+
       getServerSetting();
     }
   }
 
   Future<void> getServerSetting() async {
+    // Server settings stay on mine (ADR-0114); never the shown delegated account.
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId == null) return;
 

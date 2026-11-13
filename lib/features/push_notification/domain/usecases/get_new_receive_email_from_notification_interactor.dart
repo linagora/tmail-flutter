@@ -4,8 +4,10 @@ import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:tmail_ui_user/features/delegation/domain/model/offline_email_body_policy.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
@@ -23,6 +25,13 @@ class GetNewReceiveEmailFromNotificationInteractor {
     required UserName userName,
     required jmap.State newState
   }) async* {
+    if (!OfflineEmailBodyPolicy.mayStore(
+      accountId: accountId,
+      personalAccountId: session.accountId,
+    )) {
+      log('GetNewReceiveEmailFromNotificationInteractor::execute: skip, offline bodies stay on mine');
+      return;
+    }
     try {
       yield Right<Failure, Success>(GetNewReceiveEmailFromNotificationLoading());
 

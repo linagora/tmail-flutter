@@ -84,6 +84,7 @@ import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../fixtures/account_fixtures.dart';
+import '../../fixtures/active_account_source_fixtures.dart';
 import '../../fixtures/session_fixtures.dart';
 import 'verify_before_time_in_search_email_filter_test.mocks.dart';
 
@@ -346,6 +347,7 @@ void main() {
     Get.put<GetAuthenticationInfoInteractor>(getAuthenticationInfoInteractor);
     Get.put<GetStoredOidcConfigurationInteractor>(getStoredOidcConfigurationInteractor);
     Get.put<GetTokenOIDCInteractor>(getTokenOIDCInteractor);
+    ActiveAccountSourceFixtures.put(SessionFixtures.aliceSession);
 
     mailboxDashboardController = MailboxDashBoardController(
       moveToMailboxInteractor,

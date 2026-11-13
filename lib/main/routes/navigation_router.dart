@@ -1,5 +1,6 @@
 
 import 'package:equatable/equatable.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -25,6 +26,7 @@ class NavigationRouter with EquatableMixin {
   final AccountMenuItem accountMenuItem;
   final List<EmailAddress>? cc;
   final List<EmailAddress>? bcc;
+  final AccountId? accountId;
 
   NavigationRouter({
     this.emailId,
@@ -39,6 +41,7 @@ class NavigationRouter with EquatableMixin {
     this.cc,
     this.bcc,
     this.labelId,
+    this.accountId,
   }) : assert(
           !(mailboxId != null && labelId != null),
           'NavigationRouter accepts either mailboxId or labelId, not both.',
@@ -60,5 +63,6 @@ class NavigationRouter with EquatableMixin {
     cc,
     bcc,
     labelId,
+    accountId,
   ];
 }

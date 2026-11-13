@@ -1,7 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/base/widget/default_switch_icon_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/drive_attachment_config.dart';
@@ -9,15 +8,13 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/p
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_option.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/model/preference_options/drive_attachment_preference_option.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/widgets/preferences_option_item.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/providers/experimental_preferences_revealed_provider.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 
 import '../../../../../fixtures/preference_option_fixtures.dart';
 
-/// [revealed] is pinned to false throughout, so these cover what a plain user
-/// sees without ever triggering the 7-tap reveal: the drive row is rendered,
-/// and it is already switched on.
+/// These cover what a plain user sees for Drive: the row is rendered, and it is
+/// already switched on when no preference was ever stored.
 void main() {
   late PreferenceOption option;
 
@@ -33,26 +30,21 @@ void main() {
     required PreferencesSetting localSettings,
   }) async {
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          experimentalPreferencesRevealedProvider.overrideWith((ref) async => false),
+      MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizationsDelegate(),
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
         ],
-        child: MaterialApp(
-          localizationsDelegates: const [
-            AppLocalizationsDelegate(),
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: LocalizationService.supportedLocales,
-          locale: LocalizationService.defaultLocale,
-          home: Scaffold(
-            body: PreferencesOptionItem(
-              imagePaths: ImagePaths(),
-              option: option,
-              preferencesContext: preferencesContext(localSettings: localSettings),
-              onTapPreferencesOptionAction: (_, __) {},
-            ),
+        supportedLocales: LocalizationService.supportedLocales,
+        locale: LocalizationService.defaultLocale,
+        home: Scaffold(
+          body: PreferencesOptionItem(
+            imagePaths: ImagePaths(),
+            option: option,
+            preferencesContext: preferencesContext(localSettings: localSettings),
+            onTapPreferencesOptionAction: (_, __) {},
           ),
         ),
       ),

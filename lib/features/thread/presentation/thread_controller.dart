@@ -17,7 +17,10 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
@@ -27,6 +30,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
@@ -106,7 +110,8 @@ part 'thread_search_execution_observer.dart';
 typedef StartRangeSelection = int;
 typedef EndRangeSelection = int;
 
-class ThreadController extends BaseController with EmailActionController {
+class ThreadController extends BaseController
+    with EmailActionController, ActiveAccountReader, ShownAccountStateConsumer {
 
   final networkConnectionController = Get.find<NetworkConnectionController>();
 
@@ -149,7 +154,7 @@ class ThreadController extends BaseController with EmailActionController {
   late final SearchLayoutCoordinator searchLayoutCoordinator =
       _createSearchLayoutCoordinator();
 
-  AccountId? get _accountId => mailboxDashBoardController.accountId.value;
+  AccountId? get _accountId => activeAccountId;
 
   Session? get _session => mailboxDashBoardController.sessionCurrent;
 
@@ -266,7 +271,7 @@ class ThreadController extends BaseController with EmailActionController {
       _syncLoadMoreStatus();
     } else if (failure is GetEmailByIdFailure) {
       openingEmail.value = false;
-      popAndPush(AppRoutes.unknownRoutePage);
+      _openMissingEmailFromLocationBar(failure);
     } else if (failure is GetAllEmailFailure || failure is CleanAndGetAllEmailFailure) {
       mailboxDashBoardController.updateRefreshAllEmailState(Left(RefreshAllEmailFailure()));
     }
@@ -408,6 +413,9 @@ class ThreadController extends BaseController with EmailActionController {
         mailboxDashBoardController.clearDashBoardAction();
       } else if (action is ClearMailListKeyboardShortcutFocusAction) {
         clearMailShortcutFocus();
+        mailboxDashBoardController.clearDashBoardAction();
+      } else if (action is DropPendingMailListShortcutsAction) {
+        dropPendingShortcutActions();
         mailboxDashBoardController.clearDashBoardAction();
       } else if (action is RestoreMailboxEmailListAfterSearchAction) {
         restoreMailboxEmailListAfterSearch(force: action.force);
@@ -674,6 +682,8 @@ class ThreadController extends BaseController with EmailActionController {
         .read(searchEmailPresentationProvider.notifier)
         .resetSearchMore();
     _syncLoadMoreStatus();
+    // An email still opening for the folder left, or the account left, would hide the list forever.
+    openingEmail.value = false;
   }
 
   @visibleForTesting
@@ -816,7 +826,7 @@ class ThreadController extends BaseController with EmailActionController {
     _folderLoadMore.resetList();
     _syncLoadMoreStatus();
     if (_session != null &&_accountId != null) {
-      consumeState(_getEmailsInMailboxInteractor.execute(
+      consumeShownAccountState(_getEmailsInMailboxInteractor.execute(
         _session!,
         _accountId!,
         limit: ThreadConstants.defaultLimit,
@@ -831,7 +841,7 @@ class ThreadController extends BaseController with EmailActionController {
         useCache: selectedMailbox?.isCacheable ?? false,
         forceEmailQuery: forceEmailQuery,
         collapseThreads: shouldCollapseThreads,
-      ));
+      ), reportAs: ShownAccountLoadKind.emailList);
     } else {
       consumeState(Stream.value(Left(GetAllEmailFailure(NotFoundSessionException()))));
     }
@@ -889,6 +899,8 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   Future<void> _handleWebSocketMessage(WebSocketMessage message) async {
+    // Cleared while another account is shown, until its first email list sets it.
+    if (mailboxDashBoardController.currentEmailState == null) return;
     try {
       if (searchController.isSearchEmailRunning && PlatformInfo.isWeb) {
         await _refreshChangeListEmailCache();
@@ -909,7 +921,7 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   Future<Either<Failure, Success>> _refreshChangeListEmailCache({bool collapseThreads = false}) async {
-    final refreshState = await _refreshChangesEmailsInMailboxInteractor.execute(
+    final refreshState = await awaitShownAccountState(_refreshChangesEmailsInMailboxInteractor.execute(
       _session!,
       _accountId!,
       mailboxDashBoardController.currentEmailState!,
@@ -926,7 +938,7 @@ class ThreadController extends BaseController with EmailActionController {
       ),
       emailFilter: getEmailFilterForLoadMailbox(),
       collapseThreads: collapseThreads,
-    ).last;
+    ));
 
     refreshState.fold(
       (failure) {},
@@ -976,7 +988,7 @@ class ThreadController extends BaseController with EmailActionController {
     try {
       await _refreshChangeListEmailCache();
 
-      final viewState = await _getEmailsInMailboxInteractor
+      final viewState = await awaitShownAccountState(_getEmailsInMailboxInteractor
           .execute(
             _session!,
             _accountId!,
@@ -994,8 +1006,7 @@ class ThreadController extends BaseController with EmailActionController {
             useCache: false,
             forceEmailQuery: shouldCollapseThreads,
             collapseThreads: shouldCollapseThreads,
-          )
-          .last;
+          ));
 
       dispatchState(viewState);
 
@@ -1054,7 +1065,7 @@ class ThreadController extends BaseController with EmailActionController {
       );
 
       _syncLoadMoreStatus();
-      consumeState(_loadMoreEmailsInMailboxInteractor.execute(
+      consumeShownAccountState(_loadMoreEmailsInMailboxInteractor.execute(
         GetEmailRequest(
           _session!,
           _accountId!,
@@ -1520,6 +1531,16 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
+  /// A delegated link may outlive its email, so it opens Inbox instead of the unknown page.
+  void _openMissingEmailFromLocationBar(GetEmailByIdFailure failure) {
+    if (failure.exception is NotFoundEmailException &&
+        shownAccountCapabilities.opensInboxForMissingLinkTarget) {
+      mailboxDashBoardController.dispatchMailboxUIAction(SystemBackToInboxAction());
+    } else {
+      popAndPush(AppRoutes.unknownRoutePage);
+    }
+  }
+
   void _getEmailByIdFromLocationBar(
     EmailId emailId,
     {
@@ -1527,7 +1548,7 @@ class ThreadController extends BaseController with EmailActionController {
     }
   ) {
     if (_session != null && _accountId != null) {
-      consumeState(_getEmailByIdInteractor.execute(
+      consumeShownAccountState(_getEmailByIdInteractor.execute(
         _session!,
         _accountId!,
         emailId,

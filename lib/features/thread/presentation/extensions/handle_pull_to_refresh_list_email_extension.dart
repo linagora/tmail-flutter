@@ -39,7 +39,7 @@ extension HandlePullToRefreshListEmailExtension on ThreadController {
   }
 
   Future<void> cleanAndGetAllEmailAction() async {
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = activeAccountId;
     final session = mailboxDashBoardController.sessionCurrent;
 
     if (accountId == null || session == null) {
@@ -47,7 +47,7 @@ extension HandlePullToRefreshListEmailExtension on ThreadController {
       return;
     }
 
-    consumeState(cleanAndGetEmailsInMailboxInteractor.execute(
+    consumeShownAccountState(cleanAndGetEmailsInMailboxInteractor.execute(
       session,
       accountId,
       limit: ThreadConstants.defaultLimit,

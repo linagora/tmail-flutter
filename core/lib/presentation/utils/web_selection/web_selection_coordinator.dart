@@ -45,8 +45,13 @@ class WebSelectionCoordinator {
     return region != null && _enclosingRegionOf(node.parent) != region;
   }
 
-  static SelectableRegionState? _enclosingRegionOf(FocusNode? node) =>
-      node?.context?.findAncestorStateOfType<SelectableRegionState>();
+  static SelectableRegionState? _enclosingRegionOf(FocusNode? node) {
+    final context = node?.context;
+    // Focus can notify after a switch tears down the old mailbox tree. The
+    // node may still be listed while its Element is already deactivated.
+    if (context == null || !context.mounted) return null;
+    return context.findAncestorStateOfType<SelectableRegionState>();
+  }
 
   /// Deferred one tick so `activeElement` already points at the iframe.
   void _handleTopWindowBlur() {

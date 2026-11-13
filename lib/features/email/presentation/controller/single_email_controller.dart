@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/download/domain/model/download_source_view.dart';
 import 'package:tmail_ui_user/features/download/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
@@ -108,7 +109,8 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
-class SingleEmailController extends BaseController with AppLoaderMixin {
+class SingleEmailController extends BaseController
+    with AppLoaderMixin, ActiveAccountReader, ShownAccountStateConsumer {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
 
@@ -170,11 +172,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   Id? get _displayingEventBlobId => blobCalendarEvent.value?.blobId;
   bool get isCalendarEventFree => blobCalendarEvent.value?.isFree ?? true;
 
-  AccountId? get accountId => mailboxDashBoardController.accountId.value;
+  AccountId? get accountId => activeAccountId;
 
   Session? get session => mailboxDashBoardController.sessionCurrent;
 
-  String get ownEmailAddress => mailboxDashBoardController.ownEmailAddress.value;
+  String get ownEmailAddress => ownerEmailAddress;
+
+  Set<String> get ownerEmailAddresses =>
+      mailboxDashBoardController.ownerEmailAddresses;
 
   GlobalObjectKey? get htmlViewKey => _threadDetailController?.expandedEmailHtmlViewKey;
 
@@ -423,7 +428,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     _injectCalendarEventBindings(session, accountId);
 
     _createNewEmailRuleFilterInteractor = getBinding<CreateNewEmailRuleFilterInteractor>();
-    _sendReceiptToSenderInteractor = getBinding<SendReceiptToSenderInteractor>();
+    // A binding registered for an earlier account stays, so MDN is checked on this account.
+    final isMdnSupported = session != null && CapabilityIdentifier.jmapMdn.isSupported(session, accountId);
+    _sendReceiptToSenderInteractor = isMdnSupported ? getBinding<SendReceiptToSenderInteractor>() : null;
     _parseCalendarEventInteractor = getBinding<ParseCalendarEventInteractor>();
     _acceptCalendarEventInteractor = getBinding<AcceptCalendarEventInteractor>();
     _maybeCalendarEventInteractor = getBinding<MaybeCalendarEventInteractor>();
@@ -499,7 +506,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         TransformConfiguration transformConfiguration =
           TransformConfiguration.forPreviewEmailOnPlatform();
 
-        consumeState(_getEmailContentInteractor.execute(
+        consumeShownAccountState(_getEmailContentInteractor.execute(
           session!,
           accountId!,
           emailId,
@@ -544,7 +551,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
       if (_canParseCalendarEvent(blobIds: success.attachments?.calendarEventBlobIds ?? {})) {
         _parseCalendarEventAction(
-          accountId: mailboxDashBoardController.accountId.value!,
+          accountId: activeAccountId!,
           blobIds: success.attachments?.calendarEventBlobIds ?? {},
         );
       } else {
@@ -584,7 +591,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
       if (_canParseCalendarEvent(blobIds: success.attachments?.calendarEventBlobIds ?? {})) {
         _parseCalendarEventAction(
-          accountId: mailboxDashBoardController.accountId.value!,
+          accountId: activeAccountId!,
           blobIds: success.attachments?.calendarEventBlobIds ?? {},
         );
       } else {
@@ -1006,6 +1013,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     );
   }
 
+  @visibleForTesting
+  bool get isSendReceiptToSenderAvailable => _sendReceiptToSenderInteractor != null;
+
   void _handleSendReceiptToSenderAction(BuildContext context) {
     if (accountId == null || session == null) {
       return;
@@ -1239,7 +1249,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     required Set<Id> blobIds,
   }) {
     log("SingleEmailController::_parseCalendarEventAction:blobIds: $blobIds");
-    consumeState(_parseCalendarEventInteractor!.execute(
+    consumeShownAccountState(_parseCalendarEventInteractor!.execute(
       accountId,
       blobIds,
       TransformConfiguration.forCalendarEvent()
@@ -1545,7 +1555,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     listEmailAddressAttendees.addAll(listEmailAddress);
 
     final listEmailAddressMailTo =
-        listEmailAddressAttendees.removeInvalidEmails(ownEmailAddress);
+        listEmailAddressAttendees
+            .removeInvalidEmailsAddresses(ownerEmailAddresses);
     log('SingleEmailController::handleMailToAttendees: listEmailAddressMailTo = $listEmailAddressMailTo');
     mailboxDashBoardController.openComposer(
       ComposerArguments.fromMailtoUri(

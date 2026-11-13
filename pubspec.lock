@@ -557,7 +557,7 @@ packages:
     source: hosted
     version: "4.1.1"
   fake_async:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: fake_async
       sha256: "5368f224a74523e8d2e7399ea1638b37aecfca824a3cc4dfdf77bf1fa905ac44"
@@ -1490,7 +1490,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: c11c22eb614ccad7762d9c36487c7af397f72e19
+      resolved-ref: "58235abe45fbdca32a1095823f26e06e9c626cec"
       url: "https://github.com/linagora/linagora-design-flutter.git"
     source: git
     version: "0.4.2"

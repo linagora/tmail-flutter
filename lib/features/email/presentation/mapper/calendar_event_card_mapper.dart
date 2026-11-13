@@ -281,7 +281,7 @@ class CalendarEventCardMapper {
       value?.trim().isNotEmpty == true ? value : null;
 
   List<EventActionType> get _eventActionTypes =>
-      event.getEventActionTypesIsDisplayed(viewState.ownEmailAddress);
+      event.getEventActionTypesIsDisplayedAddresses(viewState.shownAddresses);
 
   /// The invitation answers and the optional action beside them.
   LinagoraEventAttending? get attending {
@@ -335,7 +335,9 @@ class CalendarEventCardMapper {
   }
 
   LinagoraEventAction? get calendarAction {
-    if (event.isDisplayedWarningMessage(viewState.ownEmailAddress)) return null;
+    if (event.isDisplayedWarningMessageAddresses(viewState.shownAddresses)) {
+      return null;
+    }
 
     final eventUrl = options.calendarUrlTemplate.resolveCalendarEventUrl(
       event.eventId?.id,
@@ -352,7 +354,7 @@ class CalendarEventCardMapper {
   }
 
   LinagoraEventStatus? get status {
-    if (!event.isDisplayedWarningMessage(viewState.ownEmailAddress)) {
+    if (!event.isDisplayedWarningMessageAddresses(viewState.shownAddresses)) {
       return null;
     }
 

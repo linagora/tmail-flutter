@@ -17,4 +17,16 @@ class WebSettingsRobot extends MobileSettingsRobot {
       Key('${accountMenuItem.getAliasBrowser()}_account_menu_item_tile'),
     ).tap();
   }
+
+  @override
+  Future<void> leaveSettingsDetail() async {
+    // Web: the menu stays on screen, so leaving a detail means opening another one.
+    await openSettingsDetail(AccountMenuItem.languageAndRegion);
+  }
+
+  /// Web desktop (incl. Workplace) uses the sidebar Back, not the mobile close.
+  @override
+  Future<void> closeSettings() async {
+    await $(#back_to_dashboard_button).tap();
+  }
 }

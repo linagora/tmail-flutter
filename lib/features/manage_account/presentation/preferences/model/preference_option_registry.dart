@@ -18,4 +18,14 @@ class PreferenceOptionRegistry {
   /// The options visible for the given [context], preserving registration order.
   List<PreferenceOption> available(PreferencesContext context) =>
       _options.where((option) => option.isAvailable(context)).toList();
+
+  /// [available] options, with unrevealed experimental ones dropped so they
+  /// leave no blank gap in a [ListView.separated].
+  List<PreferenceOption> visible(
+    PreferencesContext context, {
+    required bool experimentalRevealed,
+  }) =>
+      available(context)
+          .where((option) => !option.isExperimental || experimentalRevealed)
+          .toList();
 }

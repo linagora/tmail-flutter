@@ -89,7 +89,7 @@ void main() {
   SearchEmailFilter committed() => appProviderContainer.read(searchFilterProvider);
 
   void toggle(QuickSearchFilter filter) =>
-      searchController.toggleQuickSearchFilter(filter, currentUserEmail: _me);
+      searchController.toggleQuickSearchFilter(filter, ownerEmailAddresses: {_me});
 
   group('updateFilterEmail', () {
     test('user intent writes the committed SSOT', () {
@@ -174,39 +174,39 @@ void main() {
       );
     });
 
-    test('fromMe selects the current user then clears from on deselect', () {
-      toggle(QuickSearchFilter.fromMe);
+    test('fromShown selects the current user then clears from on deselect', () {
+      toggle(QuickSearchFilter.fromShown);
       expect(committed().from, {_me});
 
-      toggle(QuickSearchFilter.fromMe);
+      toggle(QuickSearchFilter.fromShown);
       expect(committed().from, isEmpty);
     });
 
-    test('fromMe collapses from to only the current user, dropping others', () {
+    test('fromShown collapses from to only the current user, dropping others', () {
       searchController.updateFilterEmail(
         fromOption: const Some({'other@example.com', 'friend@example.com'}),
       );
 
-      toggle(QuickSearchFilter.fromMe);
+      toggle(QuickSearchFilter.fromShown);
       expect(committed().from, {_me});
     });
 
-    test('fromMe replaces the current user when it is already the sole sender',
+    test('fromShown replaces the current user when it is already the sole sender',
         () {
       searchController.updateFilterEmail(fromOption: const Some({_me}));
 
-      toggle(QuickSearchFilter.fromMe);
+      toggle(QuickSearchFilter.fromShown);
       expect(committed().from, isEmpty);
     });
 
-    test('fromMe is a no-op when the current user email is empty', () {
+    test('fromShown is a no-op when the shown addresses are empty', () {
       searchController.updateFilterEmail(
         fromOption: const Some({'other@example.com'}),
       );
 
       searchController.toggleQuickSearchFilter(
-        QuickSearchFilter.fromMe,
-        currentUserEmail: '',
+        QuickSearchFilter.fromShown,
+        ownerEmailAddresses: const {},
       );
 
       expect(committed().from, {'other@example.com'});

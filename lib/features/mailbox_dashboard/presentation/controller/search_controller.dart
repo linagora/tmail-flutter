@@ -185,7 +185,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
   /// the selection takes effect immediately — the fix for #4421.
   void toggleQuickSearchFilter(
     QuickSearchFilter filter, {
-    required String currentUserEmail,
+    required Set<String> ownerEmailAddresses,
   }) {
     final current = committedSearchFilter;
     switch (filter) {
@@ -211,15 +211,14 @@ class SearchController extends BaseController with DateRangePickerMixin {
           );
         }
         break;
-      case QuickSearchFilter.fromMe:
-        if (currentUserEmail.isEmpty) return;
-        // Selecting collapses `from` to just the current user; deselecting clears
-        // it. Any other sender means it isn't selected, so a tap selects it.
+      case QuickSearchFilter.fromShown:
+        if (ownerEmailAddresses.isEmpty) return;
+        // Selecting sets `from` to every "me" address; deselecting clears a from-me filter.
         updateFilterEmail(
           fromOption: Some(
-            current.isOnlySender(currentUserEmail)
+            current.isFromShownFilter(ownerEmailAddresses)
                 ? const <String>{}
-                : {currentUserEmail},
+                : ownerEmailAddresses,
           ),
         );
         break;

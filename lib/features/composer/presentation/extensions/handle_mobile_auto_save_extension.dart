@@ -49,7 +49,7 @@ extension HandleMobileAutoSaveExtension on ComposerController {
   }
 
   Future<void> _persistCleanCloseToCache() async {
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = mailboxDashBoardController.activeAccountId;
     final userName = mailboxDashBoardController.sessionCurrent?.username;
     if (accountId == null || userName == null) return;
     try {
@@ -141,7 +141,7 @@ extension HandleMobileAutoSaveExtension on ComposerController {
     final currentContent = await _fetchEditorContent();
     if (currentContent != null && currentContent.trim().isNotEmpty) return null;
 
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = mailboxDashBoardController.activeAccountId;
     final userName = mailboxDashBoardController.sessionCurrent?.username;
     if (accountId == null || userName == null) return null;
 
@@ -228,7 +228,7 @@ extension HandleMobileAutoSaveExtension on ComposerController {
 
   Future<void> clearComposerMobileSnapshot() {
     if (autoSaveComposerId == null) return Future.value();
-    final accountId = mailboxDashBoardController.accountId.value;
+    final accountId = mailboxDashBoardController.activeAccountId;
     final userName = mailboxDashBoardController.sessionCurrent?.username;
     if (accountId == null || userName == null) return Future.value();
     return _autoSaveNotifier()?.clearCache(accountId, userName) ?? Future.value();

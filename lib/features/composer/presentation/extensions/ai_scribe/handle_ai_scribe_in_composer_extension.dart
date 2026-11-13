@@ -19,8 +19,17 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     final isAIScribeConfigEnabled =
         mailboxDashBoardController.cachedAIScribeConfig.value.isEnabled;
 
-    return isAIScribeConfigEnabled && isAIScribeEndpointAvailable;
+    return isAIScribeConfigEnabled &&
+        isAIScribeEndpointAvailable &&
+        _isAIScribeEndpointAvailableOnShownAccount;
   }
+
+  /// Scribe runs on my own endpoint, so a delegated mailbox must pass the same Scribe rule to use it.
+  bool get _isAIScribeEndpointAvailableOnShownAccount =>
+      mailboxDashBoardController.isAIScribeEndpointAvailable(
+        session: mailboxDashBoardController.sessionCurrent,
+        accountId: mailboxDashBoardController.activeAccountId,
+      );
 
   bool get isScribeMobile {
     final context = Get.context;

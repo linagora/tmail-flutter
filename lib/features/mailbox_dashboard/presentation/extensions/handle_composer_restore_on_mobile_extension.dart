@@ -12,9 +12,11 @@ import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
 extension HandleComposerRestoreOnMobileExtension on MailboxDashBoardController {
   Future<void> checkAndRestoreComposerOnMobile() async {
+    // The shown account only. Mine restores as today; a delegated snapshot waits
+    // until that mailbox is shown, after the start switch (ADR-0114).
     if (!PlatformInfo.isAndroid) return;
 
-    final currentAccountId = accountId.value;
+    final currentAccountId = activeAccountId;
     final currentUserName = sessionCurrent?.username;
     if (currentAccountId == null || currentUserName == null) return;
 

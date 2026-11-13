@@ -10,4 +10,9 @@ abstract class AbstractSettingsRobot {
   const AbstractSettingsRobot(this.preferencesRobot, this.languageRobot);
 
   Future<void> openSettingsDetail(AccountMenuItem accountMenuItem);
+
+  Future<void> leaveSettingsDetail();
+
+  /// Leave Settings back to the mailbox dashboard.
+  Future<void> closeSettings();
 }

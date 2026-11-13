@@ -1,0 +1,81 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/shown_account_reload_notifier.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/providers/shown_account_load_tracker_provider.dart';
+
+/// Forwards to the delegation providers, the single source of truth, and keeps no state of its own.
+class RiverpodActiveAccountSource
+    implements ActiveAccountSource, ActiveAccountWriter, ShownAccountLoadReporter {
+  final ProviderContainer _container;
+
+  RiverpodActiveAccountSource(this._container) {
+    // Built first, so its listener bumps the attempt before a watchShown callback stamps a request.
+    _container.read(accountSwitchProvider);
+  }
+
+  @override
+  AccountId? get accountId => activeAccount?.accountId;
+
+  @override
+  ActiveAccount? get activeAccount => _container.read(activeAccountProvider);
+
+  @override
+  int get currentSwitchAttemptId => _container.read(accountSwitchProvider).currentAttemptId;
+
+  @override
+  bool get isSwitching => _container.read(accountSwitchProvider).isSwitching;
+
+  @override
+  void applySession(Session session) {
+    _container.read(activeAccountProvider.notifier).applySession(session);
+  }
+
+  /// Invalidates rather than sets the state: the dashboard clears in onInit, inside the route build, where Riverpod forbids notifying.
+  /// Also drops the loads a switch waited for, so none outlives the dashboard.
+  @override
+  void clear() {
+    _container.invalidate(activeAccountProvider);
+    _container.invalidate(shownAccountLoadTrackerProvider);
+  }
+
+  @override
+  CancelShownAccountWatch watchShown(OnShownAccount onShown) {
+    final subscription = _container.listen<AccountId?>(
+      activeAccountProvider.select((activeAccount) => activeAccount?.accountId),
+      (_, shownAccountId) {
+        if (shownAccountId != null) onShown(shownAccountId);
+      },
+      fireImmediately: true,
+    );
+    return subscription.close;
+  }
+
+  @override
+  CancelShownAccountWatch watchShownReload(OnShownAccount onReload) {
+    final subscription = _container.listen<int?>(
+      shownAccountReloadProvider,
+      (_, switchAttemptId) {
+        final shownAccountId = accountId;
+        if (switchAttemptId != null && shownAccountId != null) onReload(shownAccountId);
+      },
+    );
+    return subscription.close;
+  }
+
+  @override
+  void reportLoad(ShownAccountLoadKind kind, ShownAccountLoad load) {
+    final tracker = _container.read(shownAccountLoadTrackerProvider);
+    switch (kind) {
+      case ShownAccountLoadKind.folders:
+        tracker.reportFolders(load);
+      case ShownAccountLoadKind.emailList:
+        tracker.reportEmailList(load);
+    }
+  }
+}

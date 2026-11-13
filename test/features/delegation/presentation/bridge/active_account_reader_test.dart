@@ -1,0 +1,456 @@
+import 'dart:async';
+
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:dartz/dartz.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
+
+import '../../../../fixtures/active_account_source_fixtures.dart';
+import '../../../../fixtures/base_controller_fixtures.dart';
+import '../../../../fixtures/delegation_fixtures.dart';
+
+class _Reader extends BaseController with ActiveAccountReader, ShownAccountStateConsumer {
+  final results = <Either<Failure, Success>>[];
+  final errors = <Object>[];
+  final urgentErrors = <Object?>[];
+  int doneCount = 0;
+  Object? errorThrownByOnDone;
+
+  @override
+  void onData(Either<Failure, Success> newState) => results.add(newState);
+
+  @override
+  void handleErrorViewState(Object error, StackTrace stackTrace) => errors.add(error);
+
+  @override
+  void handleUrgentException({Failure? failure, Exception? exception}) => urgentErrors.add(exception);
+
+  @override
+  void onDone() {
+    doneCount++;
+    final error = errorThrownByOnDone;
+    if (error != null) throw error;
+  }
+
+  /// Runs [pending] the way a controller awaits a load: an error goes to [onError].
+  Future<Either<Failure, Success>?> awaitLoad(Future<Either<Failure, Success>> pending) async {
+    try {
+      return await pending;
+    } catch (error, stackTrace) {
+      onError(error, stackTrace);
+      return null;
+    }
+  }
+}
+
+class _Loaded extends UIState {}
+
+class _LoadFailed extends FeatureFailure {
+  _LoadFailed([dynamic exception]) : super(exception: exception);
+}
+
+ShownAccountLoad _consumeReported(
+  _Reader reader,
+  StreamController<Either<Failure, Success>> viewResults,
+  FakeActiveAccountSource source,
+) {
+  reader.consumeShownAccountState(viewResults.stream, reportAs: ShownAccountLoadKind.folders);
+  return source.reportedLoads.single.$2;
+}
+
+typedef _StaleArrival = ({
+  String arrival,
+  void Function(StreamController<Either<Failure, Success>> viewResults) arrive,
+  List<Object> urgentErrors,
+});
+
+const _badCredentials = BadCredentialsException();
+final _refreshTokenFailed = RefreshTokenFailedException();
+
+final _staleResult = (
+  arrival: 'a result',
+  arrive: (StreamController<Either<Failure, Success>> viewResults) => viewResults.add(Right(_Loaded())),
+  urgentErrors: <Object>[],
+);
+
+final List<_StaleArrival> _staleArrivals = [
+  (
+    arrival: 'an error',
+    arrive: (viewResults) => viewResults.addError(StateError('late failure')),
+    urgentErrors: [],
+  ),
+  (
+    arrival: 'a connection error',
+    arrive: (viewResults) => viewResults.addError(const ConnectionError()),
+    urgentErrors: [],
+  ),
+  (
+    arrival: 'a session failure',
+    arrive: (viewResults) => viewResults.add(Left(_LoadFailed(_badCredentials))),
+    urgentErrors: [_badCredentials],
+  ),
+  (
+    arrival: 'a session error',
+    arrive: (viewResults) => viewResults.addError(_refreshTokenFailed),
+    urgentErrors: [_refreshTokenFailed],
+  ),
+];
+
+/// Like an interactor: a first result, then the result of a request still running.
+Stream<Either<Failure, Success>> _loadAwaiting(Future<Success> request) async* {
+  yield Right(_Loaded());
+  yield Right(await request);
+}
+
+String _staleOutcome(List<Object> urgentErrors) => urgentErrors.isEmpty ? 'is dropped' : 'still ends the session';
+
+void main() {
+  setUp(BaseControllerFixtures.registerDependencies);
+  tearDown(Get.reset);
+
+  group('shown account:', () {
+    test('reads the shown account of the registered source', () {
+      ActiveAccountSourceFixtures.put(
+        DelegationFixtures.session(),
+        shownAccountId: DelegationFixtures.bobAccountId,
+      );
+
+      expect(_Reader().activeAccountId, DelegationFixtures.bobAccountId);
+    });
+
+    test('follows a switch made after the reader was created', () {
+      final reader = _Reader();
+      final container = ActiveAccountSourceFixtures.newContainer();
+      ActiveAccountSourceFixtures.put(DelegationFixtures.session(), container: container);
+      expect(reader.activeAccountId, DelegationFixtures.aliceAccountId);
+
+      container.read(activeAccountProvider.notifier).select(DelegationFixtures.carolAccountId);
+
+      expect(reader.activeAccountId, DelegationFixtures.carolAccountId);
+    });
+
+    test('reads the source registered at the time of the read', () {
+      final reader = _Reader();
+      ActiveAccountSourceFixtures.put(DelegationFixtures.session());
+
+      ActiveAccountSourceFixtures.putShowing(DelegationFixtures.bobAccountId);
+
+      expect(reader.activeAccountId, DelegationFixtures.bobAccountId);
+    });
+  });
+
+  group('shownAccountCapabilities', () {
+    test('do not open Settings or create a filter while a delegated account is shown', () {
+      ActiveAccountSourceFixtures.put(
+        DelegationFixtures.session(),
+        shownAccountId: DelegationFixtures.bobAccountId,
+      );
+
+      final capabilities = _Reader().shownAccountCapabilities;
+      expect(capabilities.canOpenSettings, isFalse);
+      expect(capabilities.canCreateFilter, isFalse);
+      expect(capabilities.canCreateDefaultFolders, isFalse);
+      expect(capabilities.canUseNotificationKeychain, isFalse);
+    });
+
+    test('open Settings and create a filter while my own account is shown', () {
+      ActiveAccountSourceFixtures.put(DelegationFixtures.session());
+
+      final capabilities = _Reader().shownAccountCapabilities;
+      expect(capabilities.canOpenSettings, isTrue);
+      expect(capabilities.canCreateFilter, isTrue);
+      expect(capabilities.canCreateDefaultFolders, isTrue);
+      expect(capabilities.canUseNotificationKeychain, isTrue);
+    });
+
+    test('open Settings and create a filter while no account is shown yet', () {
+      ActiveAccountSourceFixtures.putEmpty();
+
+      final capabilities = _Reader().shownAccountCapabilities;
+      expect(capabilities.canOpenSettings, isTrue);
+      expect(capabilities.canCreateFilter, isTrue);
+      expect(capabilities.canCreateDefaultFolders, isFalse);
+      expect(capabilities.canUseNotificationKeychain, isFalse);
+    });
+  });
+
+  group('consumeShownAccountState:', () {
+    late FakeActiveAccountSource source;
+    late StreamController<Either<Failure, Success>> viewResults;
+    late _Reader reader;
+
+    setUp(() {
+      source = ActiveAccountSourceFixtures.putShowing(DelegationFixtures.aliceAccountId);
+      viewResults = StreamController<Either<Failure, Success>>();
+      reader = _Reader();
+    });
+
+    test('forwards every result while its attempt is current and counts the load as loaded', () async {
+      final load = _consumeReported(reader, viewResults, source);
+      final first = Right<Failure, Success>(_Loaded());
+      final second = Right<Failure, Success>(_Loaded());
+
+      viewResults
+        ..add(first)
+        ..add(second);
+      await viewResults.close();
+
+      expect(await load.result, isA<ShownAccountLoaded>());
+      expect(reader.results, [first, second]);
+      expect(reader.doneCount, 1);
+    });
+
+    test('drops every result once another account is shown and counts the load as dropped', () async {
+      final load = _consumeReported(reader, viewResults, source);
+      source.show(DelegationFixtures.bobAccountId);
+
+      viewResults.add(Right(_Loaded()));
+
+      expect(await load.result, isA<ShownAccountLoadDropped>());
+      expect(reader.results, isEmpty);
+      expect(viewResults.hasListener, isFalse);
+    });
+
+    test('drops an error that arrives once another account is shown and counts the load as dropped', () async {
+      final load = _consumeReported(reader, viewResults, source);
+      source.show(DelegationFixtures.bobAccountId);
+
+      viewResults.addError(StateError('late failure'));
+
+      expect(await load.result, isA<ShownAccountLoadDropped>());
+      expect(reader.errors, isEmpty);
+    });
+
+    test('drops the end of a load that arrives once another account is shown', () async {
+      final load = _consumeReported(reader, viewResults, source);
+      source.show(DelegationFixtures.bobAccountId);
+
+      await viewResults.close();
+
+      expect(await load.result, isA<ShownAccountLoadDropped>());
+      expect(reader.doneCount, 0);
+    });
+
+    for (final (:arrival, :arrive, :urgentErrors) in _staleArrivals) {
+      test('$arrival that arrives once another account is shown ${_staleOutcome(urgentErrors)}', () async {
+        reader.consumeShownAccountState(viewResults.stream);
+        source.show(DelegationFixtures.bobAccountId);
+
+        arrive(viewResults);
+        await pumpEventQueue();
+
+        expect(reader.results, isEmpty);
+        expect(reader.errors, isEmpty);
+        expect(reader.urgentErrors, urgentErrors);
+      });
+    }
+
+    for (final (lateError, urgentErrors) in [
+      (StateError('late failure'), <Object>[]),
+      (_badCredentials, [_badCredentials]),
+    ]) {
+      test('a request that fails with $lateError once the reader closed ${_staleOutcome(urgentErrors)}', () async {
+        final request = Completer<Success>();
+        reader.consumeShownAccountState(_loadAwaiting(request.future));
+        await pumpEventQueue();
+
+        reader.onClose();
+        request.completeError(lateError);
+        await pumpEventQueue();
+
+        expect(reader.errors, isEmpty);
+        expect(reader.urgentErrors, urgentErrors);
+      });
+    }
+
+    test('a load whose last result is a failure counts as failed with that failure', () async {
+      final load = _consumeReported(reader, viewResults, source);
+      final failure = _LoadFailed();
+
+      viewResults
+        ..add(Right(_Loaded()))
+        ..add(Left(failure));
+      await viewResults.close();
+
+      final result = await load.result;
+      expect(result, isA<ShownAccountLoadFailed>());
+      expect((result as ShownAccountLoadFailed).error, failure);
+    });
+
+    test('a load that fails then loads counts as loaded', () async {
+      final load = _consumeReported(reader, viewResults, source);
+
+      viewResults
+        ..add(Left(_LoadFailed()))
+        ..add(Right(_Loaded()));
+      await viewResults.close();
+
+      expect(await load.result, isA<ShownAccountLoaded>());
+    });
+
+    test('a load whose stream throws counts as failed with that error', () async {
+      final load = _consumeReported(reader, viewResults, source);
+      final error = StateError('stream failed');
+
+      viewResults.addError(error);
+      await viewResults.close();
+
+      final result = await load.result;
+      expect((result as ShownAccountLoadFailed).error, error);
+      expect(reader.errors, [error]);
+    });
+
+    test('a load counts as failed when the controller fails while handling its end', () async {
+      final uncaught = <Object>[];
+      final error = StateError('onDone failed');
+      final load = runZonedGuarded(() {
+        reader.errorThrownByOnDone = error;
+        return _consumeReported(reader, viewResults, source);
+      }, (error, _) => uncaught.add(error))!;
+
+      await viewResults.close();
+
+      final result = await load.result;
+      expect((result as ShownAccountLoadFailed).error, error);
+      expect(result.stackTrace, isNotNull);
+      expect(uncaught, [error]);
+    });
+
+    test('a closed reader gets no more results and its load counts as dropped', () async {
+      final load = _consumeReported(reader, viewResults, source);
+
+      reader.onClose();
+      viewResults.add(Right(_Loaded()));
+
+      expect(await load.result, isA<ShownAccountLoadDropped>());
+      expect(reader.results, isEmpty);
+      expect(viewResults.hasListener, isFalse);
+    });
+
+    test('reports the load with the attempt it was requested in', () {
+      final requestedInAttempt = source.currentSwitchAttemptId;
+
+      reader.consumeShownAccountState(viewResults.stream, reportAs: ShownAccountLoadKind.emailList);
+
+      final (kind, load) = source.reportedLoads.single;
+      expect(kind, ShownAccountLoadKind.emailList);
+      expect(load.attemptId, requestedInAttempt);
+    });
+
+    test('does not report a load without a kind', () {
+      reader.consumeShownAccountState(viewResults.stream);
+
+      expect(source.reportedLoads, isEmpty);
+    });
+  });
+
+  group('awaitShownAccountState:', () {
+    late FakeActiveAccountSource source;
+    late StreamController<Either<Failure, Success>> viewResults;
+    late _Reader reader;
+
+    setUp(() {
+      source = ActiveAccountSourceFixtures.putShowing(DelegationFixtures.aliceAccountId);
+      viewResults = StreamController<Either<Failure, Success>>();
+      reader = _Reader();
+    });
+
+    test('returns the last result while its attempt is current', () async {
+      final pending = reader.awaitLoad(reader.awaitShownAccountState(viewResults.stream));
+      final last = Right<Failure, Success>(_Loaded());
+
+      viewResults
+        ..add(Right(_Loaded()))
+        ..add(last);
+      await viewResults.close();
+
+      expect(await pending, last);
+      expect(reader.errors, isEmpty);
+    });
+
+    test('throws an error to the caller while its attempt is current', () async {
+      final pending = reader.awaitLoad(reader.awaitShownAccountState(viewResults.stream));
+      final error = StateError('load failed');
+
+      viewResults.addError(error);
+      await viewResults.close();
+
+      expect(await pending, isNull);
+      expect(reader.errors, [error]);
+    });
+
+    for (final (:arrival, :arrive, :urgentErrors) in [..._staleArrivals, _staleResult]) {
+      test('$arrival that arrives once another account is shown stops the caller and ${_staleOutcome(urgentErrors)}',
+          () async {
+        final pending = reader.awaitLoad(reader.awaitShownAccountState(viewResults.stream));
+        source.show(DelegationFixtures.bobAccountId);
+
+        arrive(viewResults);
+        await viewResults.close();
+
+        expect(await pending, isNull);
+        expect(reader.errors, isEmpty);
+        expect(reader.urgentErrors, urgentErrors);
+      });
+    }
+  });
+
+  group('retryActionOf:', () {
+    late FakeActiveAccountSource source;
+    late StreamController<Either<Failure, Success>> retry;
+    late _Reader reader;
+
+    setUp(() {
+      source = ActiveAccountSourceFixtures.putShowing(DelegationFixtures.aliceAccountId);
+      retry = StreamController<Either<Failure, Success>>();
+      reader = _Reader();
+    });
+
+    test('a retry tapped while its attempt is current loads the shown account again', () async {
+      final retryAction = reader.retryActionOf(retry.stream);
+      final loaded = Right<Failure, Success>(_Loaded());
+
+      retryAction();
+      retry.add(loaded);
+      await pumpEventQueue();
+
+      expect(reader.results, [loaded]);
+    });
+
+    test('a retry tapped once another account is shown never runs', () {
+      final retryAction = reader.retryActionOf(retry.stream);
+      source.show(DelegationFixtures.bobAccountId);
+
+      retryAction();
+
+      expect(retry.hasListener, isFalse);
+    });
+
+    test('a retry built once another account is shown runs on a tap', () {
+      source.show(DelegationFixtures.bobAccountId);
+      final retryAction = reader.retryActionOf(retry.stream);
+
+      retryAction();
+
+      expect(retry.hasListener, isTrue);
+    });
+
+    test('a retry that resolves once another account is shown is dropped', () async {
+      final retryAction = reader.retryActionOf(retry.stream);
+      retryAction();
+
+      source.show(DelegationFixtures.bobAccountId);
+      retry.add(Right(_Loaded()));
+      await pumpEventQueue();
+
+      expect(reader.results, isEmpty);
+    });
+  });
+}

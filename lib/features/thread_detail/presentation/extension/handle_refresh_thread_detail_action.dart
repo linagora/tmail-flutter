@@ -36,7 +36,7 @@ extension HandleRefreshThreadDetailAction on ThreadDetailController {
           threadId: mailboxDashBoardController.selectedEmail.value?.threadId,
           emailsInThreadDetailInfo: action.emailChangeResponse.updated?.toEmailsInThreadDetailInfo(
             sentMailboxId: sentMailboxId,
-            ownEmailAddress: ownEmailAddress,
+            ownerEmailAddresses: ownerEmailAddresses,
           ) ?? [],
         ))));
       }
@@ -81,7 +81,7 @@ extension HandleRefreshThreadDetailAction on ThreadDetailController {
       updated: emailsUpdated,
       destroyed: emailIdsDestroyed.toList(),
       sentMailboxId: sentMailboxId,
-      ownEmailAddress: ownEmailAddress,
+      ownerEmailAddresses: ownerEmailAddresses,
     );
 
     if (afterRefreshedEmailIds.isEmpty) {
@@ -123,8 +123,8 @@ extension HandleRefreshThreadDetailAction on ThreadDetailController {
       return true;
     }
 
-    return ownEmailAddress.isNotEmpty &&
-        (!email.fromMe(ownEmailAddress) ||
-            !email.recipientsHasMe(ownEmailAddress));
+    return ownerEmailAddresses.isNotEmpty &&
+        (!email.fromShownAddresses(ownerEmailAddresses) ||
+            !email.recipientsIncludeShownAddresses(ownerEmailAddresses));
   }
 }

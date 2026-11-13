@@ -58,6 +58,10 @@ import 'package:tmail_ui_user/features/composer/presentation/manager/composer_ma
 import 'package:tmail_ui_user/features/composer/presentation/model/compose_action_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/domain_activation_pending_dialog.dart';
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
+import 'package:tmail_ui_user/features/delegation/domain/model/owner_email_addresses.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/cleanup_ended_delegations.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
@@ -89,6 +93,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_arguments.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/state/get_identity_cache_on_web_state.dart';
@@ -163,6 +168,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/sentry_config_linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/sentry_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_session_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/refresh_action_view_event.dart';
@@ -247,7 +253,9 @@ class MailboxDashBoardController extends ReloadableController
         AiScribeMixin,
         SearchLabelFilterModalMixin,
         AddLabelToEmailMixin,
-        HandleTeamMailboxMixin {
+        HandleTeamMailboxMixin,
+        ActiveAccountReader,
+        ShownAccountStateConsumer {
 
   SentryEcosystem? _sentryEcosystem;
 
@@ -361,6 +369,9 @@ class MailboxDashBoardController extends ReloadableController
   ProviderSubscription<bool>? advancedSearchViewSubscription;
   ProviderSubscription<bool>? searchInputFocusSubscription;
   DashboardSearchCoordinator? _dashboardSearchCoordinator;
+  CancelShownAccountWatch? _cancelShownAccountWatch;
+  CancelShownAccountWatch? _cancelShownAccountReloadWatch;
+  int? _identitiesLoadedForAttempt;
 
   final StreamController<Either<Failure, Success>> progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
@@ -371,6 +382,8 @@ class MailboxDashBoardController extends ReloadableController
 
   final _notificationManager = LocalNotificationManager.instance;
   final _fcmService = FcmService.instance;
+
+  ActiveAccountWriter get _activeAccountWriter => Get.find<ActiveAccountWriter>();
 
   bool get isFirstSessionLoad => _isFirstSessionLoad;
 
@@ -409,6 +422,11 @@ class MailboxDashBoardController extends ReloadableController
 
   @override
   void onInit() {
+    // A new dashboard starts without a shown account, so its readers load once its session is applied.
+    _activeAccountWriter.clear();
+    _cancelShownAccountWatch = activeAccountSource.watchShown(_onShownAccountChanged);
+    _cancelShownAccountReloadWatch =
+        activeAccountSource.watchShownReload(_onShownAccountReload);
     if (PlatformInfo.isMobile) {
       _sentryEcosystem = getBinding<SentryEcosystem>();
       _registerReceivingFileSharingStream();
@@ -432,6 +450,35 @@ class MailboxDashBoardController extends ReloadableController
       await ApplicationManager().initUserAgent();
     });
     super.onInit();
+  }
+
+  /// Account id changed: clear stale identities, reload identities, trim recent searches, restore web composer cache.
+  /// Labels reload on session setup and on a switch's loadAccount or catchUpAccount, not here.
+  void _onShownAccountChanged(AccountId shownAccountId) {
+    _identities = null;
+    _getAllIdentities(shownAccountId);
+    cleanupRecentSearch();
+    if (PlatformInfo.isWeb) {
+      _handleComposerCache();
+    }
+  }
+
+  /// Same account still shown after a switch attempt (watchShown never fires): refresh identities only.
+  /// Skips when watchShown already loaded this attempt (account-changing switch).
+  void _onShownAccountReload(AccountId shownAccountId) {
+    if (_identitiesLoadedForAttempt == activeAccountSource.currentSwitchAttemptId) {
+      return;
+    }
+    _getAllIdentities(shownAccountId);
+  }
+
+  void reloadLabelSettingForShownAccount() {
+    if (!isLabelCapabilitySupported) return;
+    final accountId = activeAccountId;
+    if (accountId == null) return;
+    final session = sessionCurrent;
+    if (session == null) return;
+    labelController.checkLabelSettingState(session, accountId);
   }
 
   void initSentryUser(SentryUser? user) => _sentryEcosystem?.initUser(user);
@@ -459,15 +506,18 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _handleComposerCache() async {
-    if (accountId.value == null || sessionCurrent == null) return;
+    // The shown account only. A delegated snapshot waits until that mailbox is shown.
+    if (activeAccountId == null || sessionCurrent == null) return;
 
-    consumeState(
+    consumeShownAccountState(
       _getAllComposerCacheInteractor.execute(
-        accountId.value!,
+        activeAccountId!,
         sessionCurrent!.username));
   }
 
+  /// Restoring opens Settings, so a delegated shown account keeps my saved form for later.
   void _handleIdentityCache() async {
+    if (!shownAccountCapabilities.canOpenSettings) return;
     if (accountId.value == null || sessionCurrent == null) return;
 
     consumeState(
@@ -543,7 +593,7 @@ class MailboxDashBoardController extends ReloadableController
     } else if (success is UnsubscribeEmailSuccess) {
       _handleUnsubscribeMailSuccess(success.emailId);
     } else if (success is RestoreDeletedMessageSuccess) {
-      _handleRestoreDeletedMessageSuccess(success.emailRecoveryAction.id!);
+      _handleRestoreDeletedMessageSuccess(success.emailRecoveryAction.id!, success.accountId);
     } else if (success is GetRestoredDeletedMessageSuccess) {
       _handleGetRestoredDeletedMessageSuccess(success);
     } else if (success is GetAllIdentitiesSuccess) {
@@ -841,8 +891,13 @@ class MailboxDashBoardController extends ReloadableController
   void _handleArguments() {
     final arguments = Get.arguments;
     log('MailboxDashBoardController::_handleArguments():Arguments = ${arguments.runtimeType}');
-    if (arguments is Session) {
-      _handleSessionFromArguments(arguments);
+    if (arguments is DashboardSessionArguments) {
+      _handleSessionFromArguments(
+        arguments.session,
+        fromCache: arguments.fromCache,
+      );
+    } else if (arguments is Session) {
+      _handleSessionFromArguments(arguments, fromCache: false);
     } else if (arguments is MailtoArguments) {
       _handleMailtoURL(arguments);
     } else if (PlatformInfo.isWeb) {
@@ -880,13 +935,13 @@ class MailboxDashBoardController extends ReloadableController
     }
   }
 
-  void _handleSessionFromArguments(Session session) {
+  void _handleSessionFromArguments(
+    Session session, {
+    required bool fromCache,
+  }) {
     log('MailboxDashBoardController::_handleSession:');
     _setUpComponentsFromSession(session);
-
-    if (PlatformInfo.isWeb) {
-      _handleComposerCache();
-    }
+    unawaited(_cleanupEndedDelegations(session, fromCache: fromCache));
 
     unawaited(checkAndRestoreComposerOnMobile());
 
@@ -897,12 +952,32 @@ class MailboxDashBoardController extends ReloadableController
     }
   }
 
+  Future<void> _cleanupEndedDelegations(
+    Session session, {
+    required bool fromCache,
+  }) async {
+    try {
+      final lost = await cleanupEndedDelegations(session, fromCache: fromCache);
+      if (lost <= 0) return;
+      final context = currentOverlayContext ?? currentContext;
+      if (context == null || !context.mounted) return;
+      appToast.showToastWarningMessage(
+        context,
+        AppLocalizations.of(context).endedDelegationLostItems(lost),
+      );
+    } catch (error) {
+      logWarning('MailboxDashBoardController::_cleanupEndedDelegations: $error');
+    }
+  }
+
   void _setUpComponentsFromSession(Session session) {
     final currentAccountId = session.accountId;
     _isFirstSessionLoad = true;
     sessionCurrent = session;
     accountId.value = currentAccountId;
     synchronizeOwnEmailAddress(session.getOwnEmailAddressOrEmpty());
+    // Readers load the shown account synchronously here, so the dashboard must already hold my account.
+    _activeAccountWriter.applySession(session);
 
     final sentryUser = SentryUser(
       id: currentAccountId.asString,
@@ -929,10 +1004,8 @@ class MailboxDashBoardController extends ReloadableController
 
     _getVacationResponse();
     spamReportController.getSpamReportStateAction();
-    _getAllIdentities();
     notifyThreadDetailSettingUpdated();
     getServerSetting();
-    cleanupRecentSearch();
     loadStoredEmailSortOrder();
 
     if (PlatformInfo.isMobile) {
@@ -940,17 +1013,20 @@ class MailboxDashBoardController extends ReloadableController
       _storeSessionAction(session);
     }
 
-    if (isLabelCapabilitySupported) {
-      labelController.checkLabelSettingState(session, currentAccountId);
+    if (isLabelCapabilitySupported && activeAccountId != null) {
+      labelController.checkLabelSettingState(session, activeAccountId!);
     } else {
-      injectWebSocket(session: session, accountId: currentAccountId);
+      injectWebSocket(session: session, personalAccountId: currentAccountId);
     }
   }
 
   void _handleMailtoURL(MailtoArguments arguments) {
     log('MailboxDashBoardController::_handleMailtoURL:');
     routerParameters.value = arguments.toMapRouter();
-    _handleSessionFromArguments(arguments.session);
+    _handleSessionFromArguments(
+      arguments.session,
+      fromCache: arguments.sessionFromCache,
+    );
   }
 
   void _getVacationResponse() {
@@ -1178,7 +1254,7 @@ class MailboxDashBoardController extends ReloadableController
     MoveToMailboxRequest newMoveRequest,
     Map<EmailId, bool> emailIdsWithReadStatus,
   ) {
-    final currentAccountId = accountId.value;
+    final currentAccountId = activeAccountId;
     final session = sessionCurrent;
     if (currentAccountId != null && session != null) {
       moveToMailbox(
@@ -1191,7 +1267,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _discardEmail(EmailId emailId, MailboxId? draftMailboxId) {
-    final currentAccountId = accountId.value;
+    final currentAccountId = activeAccountId;
     final session = sessionCurrent;
     if (currentAccountId != null && session != null) {
       consumeState(_removeEmailDraftsInteractor.execute(
@@ -1204,7 +1280,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void deleteEmailPermanently(PresentationEmail email) {
-    final currentAccountId = accountId.value;
+    final currentAccountId = activeAccountId;
     final session = sessionCurrent;
     if (currentAccountId != null && session != null && email.id != null) {
       consumeState(_deleteEmailPermanentlyInteractor.execute(
@@ -1218,7 +1294,7 @@ class MailboxDashBoardController extends ReloadableController
 
   /// Fire-and-forget; the interactor maps every error to a Failure.
   void deleteEmailPermanentlyInBackground(EmailId? emailId) {
-    final currentAccountId = accountId.value;
+    final currentAccountId = activeAccountId;
     final session = sessionCurrent;
     if (emailId == null || currentAccountId == null || session == null) return;
 
@@ -1247,10 +1323,10 @@ class MailboxDashBoardController extends ReloadableController
     MarkReadAction markReadAction,
     MailboxId? mailboxId,
   ) {
-    if (accountId.value != null && sessionCurrent != null) {
+    if (activeAccountId != null && sessionCurrent != null) {
       consumeState(_markAsEmailReadInteractor.execute(
         sessionCurrent!,
-        accountId.value!,
+        activeAccountId!,
         emailId,
         readActions,
         markReadAction,
@@ -1260,10 +1336,10 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void markAsStarEmail(PresentationEmail presentationEmail, MarkStarAction action) {
-    if (accountId.value != null && sessionCurrent != null) {
+    if (activeAccountId != null && sessionCurrent != null) {
       consumeState(_markAsStarEmailInteractor.execute(
         sessionCurrent!,
-        accountId.value!,
+        activeAccountId!,
         presentationEmail.id!,
         action));
     }
@@ -1280,10 +1356,10 @@ class MailboxDashBoardController extends ReloadableController
       })
       .toList();
 
-    if (accountId.value != null && sessionCurrent != null) {
+    if (activeAccountId != null && sessionCurrent != null) {
       consumeState(_markAsMultipleEmailReadInteractor.execute(
         sessionCurrent!,
-        accountId.value!,
+        activeAccountId!,
         listEmailNeedMarkAsRead.listEmailIds,
         readActions,
         listEmailNeedMarkAsRead.emailIdsByMailboxId,
@@ -1340,7 +1416,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void markAsStarSelectedMultipleEmail(List<PresentationEmail> listPresentationEmail, MarkStarAction markStarAction) {
-    if (accountId.value != null && sessionCurrent != null) {
+    if (activeAccountId != null && sessionCurrent != null) {
       final listEmailIds = listPresentationEmail
           .where((email) {
             if (markStarAction == MarkStarAction.unMarkStar) {
@@ -1354,7 +1430,7 @@ class MailboxDashBoardController extends ReloadableController
 
       consumeState(_markAsStarMultipleEmailInteractor.execute(
         sessionCurrent!,
-        accountId.value!,
+        activeAccountId!,
         listEmailIds,
         markStarAction));
     }
@@ -1385,9 +1461,9 @@ class MailboxDashBoardController extends ReloadableController
     List<PresentationEmail> listEmails, {
     VoidCallback? onCallbackAction,
   }) async {
-    if (accountId.value != null) {
+    if (activeAccountId != null) {
       final arguments = DestinationPickerArguments(
-        accountId.value!,
+        activeAccountId!,
         MailboxActions.moveEmail,
         sessionCurrent,
       );
@@ -1399,7 +1475,7 @@ class MailboxDashBoardController extends ReloadableController
       if (destinationMailbox != null &&
           destinationMailbox is PresentationMailbox &&
           sessionCurrent != null &&
-          accountId.value != null
+          activeAccountId != null
       ) {
         onCallbackAction?.call();
 
@@ -1485,7 +1561,7 @@ class MailboxDashBoardController extends ReloadableController
   void _handleDragSelectedMultipleEmailToFavoriteFolder(
     List<PresentationEmail> listPresentationEmail,
   ) async {
-    if (accountId.value != null && sessionCurrent != null) {
+    if (activeAccountId != null && sessionCurrent != null) {
       final listEmailIds = listPresentationEmail
         .where((email) => !email.hasStarred)
         .toList()
@@ -1494,7 +1570,7 @@ class MailboxDashBoardController extends ReloadableController
       consumeState(
         _markAsStarMultipleEmailInteractor.execute(
           sessionCurrent!,
-          accountId.value!,
+          activeAccountId!,
           listEmailIds,
           MarkStarAction.markStar,
         ),
@@ -1518,11 +1594,11 @@ class MailboxDashBoardController extends ReloadableController
     PresentationMailbox destinationMailbox,
     Map<EmailId, bool> emailIdsWithReadStatus,
   ) async {
-    if (accountId.value != null && sessionCurrent != null) {
+    if (activeAccountId != null && sessionCurrent != null) {
       if (destinationMailbox.isTrash) {
         moveToMailbox(
           sessionCurrent!,
-          accountId.value!,
+          activeAccountId!,
           MoveToMailboxRequest(
             mapListEmails,
             destinationMailbox.id,
@@ -1534,7 +1610,7 @@ class MailboxDashBoardController extends ReloadableController
       } else if (destinationMailbox.isSpam) {
         moveToMailbox(
           sessionCurrent!,
-          accountId.value!,
+          activeAccountId!,
           MoveToMailboxRequest(
             mapListEmails,
             destinationMailbox.id,
@@ -1546,7 +1622,7 @@ class MailboxDashBoardController extends ReloadableController
       } else {
         moveToMailbox(
           sessionCurrent!,
-          accountId.value!,
+          activeAccountId!,
           MoveToMailboxRequest(
             mapListEmails,
             destinationMailbox.id,
@@ -1656,17 +1732,17 @@ class MailboxDashBoardController extends ReloadableController
     MoveToMailboxRequest newMoveRequest,
     Map<EmailId, bool> emailIdsWithReadStatus,
   ) {
-    if (accountId.value != null && sessionCurrent != null) {
+    if (activeAccountId != null && sessionCurrent != null) {
       consumeState(_moveMultipleEmailToMailboxInteractor.execute(
         sessionCurrent!,
-        accountId.value!,
+        activeAccountId!,
         newMoveRequest,
         emailIdsWithReadStatus));
     }
   }
 
   void unSpamSelectedMultipleEmail(List<PresentationEmail> listEmail) {
-    if (accountId.value == null || sessionCurrent == null) {
+    if (activeAccountId == null || sessionCurrent == null) {
       consumeState(Stream.value(
         Left(MoveMultipleEmailToMailboxFailure(
           EmailActionType.unSpam,
@@ -1702,7 +1778,7 @@ class MailboxDashBoardController extends ReloadableController
 
     moveSelectedEmailMultipleToMailboxAction(
       sessionCurrent!,
-      accountId.value!,
+      activeAccountId!,
       MoveToMailboxRequest(
         {spamMailboxId!: listEmail.listEmailIds},
         inboxMailboxId,
@@ -1721,7 +1797,7 @@ class MailboxDashBoardController extends ReloadableController
     required MailboxId destinationMailboxId,
     required EmailActionType emailActionType,
   }) {
-    if (sessionCurrent == null || accountId.value == null) {
+    if (sessionCurrent == null || activeAccountId == null) {
       consumeState(Stream.value(
         Left(MoveMultipleEmailToMailboxFailure(
           emailActionType,
@@ -1758,7 +1834,7 @@ class MailboxDashBoardController extends ReloadableController
 
     moveSelectedEmailMultipleToMailboxAction(
       sessionCurrent!,
-      accountId.value!,
+      activeAccountId!,
       moveRequest,
       emailIdsWithReadStatus,
     );
@@ -1892,10 +1968,10 @@ class MailboxDashBoardController extends ReloadableController
   void _deleteMultipleEmailsPermanently(List<PresentationEmail> listEmails, {Function? onCancelSelectionEmail}) {
     onCancelSelectionEmail?.call();
 
-    if (accountId.value != null && sessionCurrent != null) {
+    if (activeAccountId != null && sessionCurrent != null) {
       consumeState(_deleteMultipleEmailsPermanentlyInteractor.execute(
         sessionCurrent!,
-        accountId.value!,
+        activeAccountId!,
         listEmails.listEmailIds,
         listEmails.firstOrNull?.mailboxContain?.mailboxId));
     }
@@ -1956,6 +2032,9 @@ class MailboxDashBoardController extends ReloadableController
 
     _getRouteParameters();
     _setUpComponentsFromSession(session);
+    unawaited(_cleanupEndedDelegations(session, fromCache: sessionLoadedFromCache));
+    // Same shown accountId does not notify watchShown — refresh identities and web composer cache.
+    _getAllIdentities();
     if (PlatformInfo.isWeb) {
       _handleComposerCache();
     }
@@ -1969,8 +2048,8 @@ class MailboxDashBoardController extends ReloadableController
 
   UnsignedInt? get maxSizeAttachmentsPerEmail {
     try {
-      if (sessionCurrent != null && accountId.value != null) {
-        final mailCapability = sessionCurrent!.getCapabilityProperties<MailCapability>(accountId.value!, CapabilityIdentifier.jmapMail);
+      if (sessionCurrent != null && activeAccountId != null) {
+        final mailCapability = sessionCurrent!.getCapabilityProperties<MailCapability>(activeAccountId!, CapabilityIdentifier.jmapMail);
         final maxSizeAttachmentsPerEmail = mailCapability?.maxSizeAttachmentsPerEmail;
         log('MailboxDashBoardController::maxSizeAttachmentsPerEmail(): $maxSizeAttachmentsPerEmail');
         return maxSizeAttachmentsPerEmail;
@@ -1988,7 +2067,7 @@ class MailboxDashBoardController extends ReloadableController
 
   void markAsReadMailboxAction(BuildContext context) {
     final session = sessionCurrent;
-    final currentAccountId = accountId.value;
+    final currentAccountId = activeAccountId;
     final mailboxId = selectedMailbox.value?.id;
     final countEmailsUnread = selectedMailbox.value?.unreadEmails?.value.value ?? 0;
     if (session != null && currentAccountId != null && mailboxId != null) {
@@ -2073,6 +2152,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void goToSettings() async {
+    if (!shownAccountCapabilities.canOpenSettings) return;
     closeMailboxMenuDrawer();
     BackButtonInterceptor.removeByName(AppRoutes.dashboard);
     final result = await push(
@@ -2080,7 +2160,6 @@ class MailboxDashBoardController extends ReloadableController
       arguments: ManageAccountArguments(
         sessionCurrent,
         previousUri: RouteUtils.baseUri,
-        quota: octetsQuota.value,
       ),
     );
 
@@ -2104,18 +2183,14 @@ class MailboxDashBoardController extends ReloadableController
     getServerSetting();
     spamReportController.getSpamReportStateAction();
     loadAIScribeConfig();
-    if (isLabelCapabilitySupported &&
-        accountId.value != null &&
-        sessionCurrent != null) {
-      labelController.checkLabelSettingState(sessionCurrent!, accountId.value!);
-    }
+    reloadLabelSettingForShownAccount();
   }
 
   Future<List<PresentationEmail>> quickSearchEmails(String query) async {
-    if (sessionCurrent != null && accountId.value != null) {
+    if (sessionCurrent != null && activeAccountId != null) {
       return searchController.quickSearchEmails(
         session: sessionCurrent!,
-        accountId: accountId.value!,
+        accountId: activeAccountId!,
         query: query,
         trashSpamMailboxIds: trashSpamMailboxIds,
       );
@@ -2155,6 +2230,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void goToVacationSetting() async {
+    if (!shownAccountCapabilities.canOpenSettings) return;
     BackButtonInterceptor.removeByName(AppRoutes.dashboard);
     final result = await push(
       AppRoutes.settings,
@@ -2162,7 +2238,6 @@ class MailboxDashBoardController extends ReloadableController
         sessionCurrent,
         menuSettingCurrent: AccountMenuItem.vacation,
         previousUri: RouteUtils.baseUri,
-        quota: octetsQuota.value,
       )
     );
 
@@ -2186,11 +2261,7 @@ class MailboxDashBoardController extends ReloadableController
     getServerSetting();
     spamReportController.getSpamReportStateAction();
     loadAIScribeConfig();
-    if (isLabelCapabilitySupported &&
-        accountId.value != null &&
-        sessionCurrent != null) {
-      labelController.checkLabelSettingState(sessionCurrent!, accountId.value!);
-    }
+    reloadLabelSettingForShownAccount();
   }
 
   void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {
@@ -2214,10 +2285,11 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   Future<void> selectFromSearchFilter({required AppLocalizations appLocalizations}) async {
-    if (accountId.value == null || sessionCurrent == null) return;
+    final shownAccountId = activeAccountId;
+    if (shownAccountId == null || sessionCurrent == null) return;
 
     final contactArgument = ContactArguments(
-      accountId: accountId.value!,
+      accountId: shownAccountId,
       session: sessionCurrent!,
       selectedContactList: searchController.committedSearchFilter.from,
       contactViewTitle: '${appLocalizations.findEmails} ${appLocalizations.from_email_address_prefix.toLowerCase()}'
@@ -2237,10 +2309,11 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   Future<void> selectToSearchFilter({required AppLocalizations appLocalizations}) async {
-    if (accountId.value == null || sessionCurrent == null) return;
+    final shownAccountId = activeAccountId;
+    if (shownAccountId == null || sessionCurrent == null) return;
 
     final contactArgument = ContactArguments(
-      accountId: accountId.value!,
+      accountId: shownAccountId,
       session: sessionCurrent!,
       selectedContactList: searchController.committedSearchFilter.to,
       contactViewTitle: '${appLocalizations.findEmails} ${appLocalizations.to_email_address_prefix.toLowerCase()}'
@@ -2260,12 +2333,12 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   Future<void> selectFolderSearchFilter() async {
-    if (accountId.value == null || sessionCurrent == null) return;
+    if (activeAccountId == null || sessionCurrent == null) return;
 
     final mailboxIdSelected = searchController.mailboxFiltered?.id;
 
     final destinationArgument = DestinationPickerArguments(
-      accountId.value!,
+      activeAccountId!,
       MailboxActions.select,
       sessionCurrent!,
       mailboxIdSelected: mailboxIdSelected);
@@ -2522,8 +2595,8 @@ class MailboxDashBoardController extends ReloadableController
   bool get enableSpamReport => spamReportController.enableSpamReport;
 
   void refreshSpamReportBanner() {
-    if (enableSpamReport && sessionCurrent != null && accountId.value != null) {
-      spamReportController.getSpamMailboxCached(accountId.value!, sessionCurrent!.username);
+    if (enableSpamReport && sessionCurrent != null && activeAccountId != null) {
+      spamReportController.getSpamMailboxCached(activeAccountId!, sessionCurrent!.username);
     }
   }
 
@@ -2784,7 +2857,7 @@ class MailboxDashBoardController extends ReloadableController
     onCancelSelectionEmail?.call();
 
     spamFolderId ??= spamMailboxId;
-    final accountId = this.accountId.value;
+    final accountId = activeAccountId;
 
     if (accountId == null || sessionCurrent == null) {
       consumeState(Stream.value(Left(EmptySpamFolderFailure(NotFoundSessionException()))));
@@ -2994,9 +3067,11 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   Future<List<EmailAddress>> getContactSuggestion(String query) async {
+    final shownAccountId = activeAccountId;
     _getAutoCompleteInteractor = getBinding<GetAutoCompleteInteractor>();
 
-    if (_getAutoCompleteInteractor == null || accountId.value == null) {
+    if (_getAutoCompleteInteractor == null ||
+        sessionCurrent?.supportsTMailContactAutocomplete(shownAccountId) != true) {
       return <EmailAddress>[];
     }
 
@@ -3005,7 +3080,7 @@ class MailboxDashBoardController extends ReloadableController
     }
 
     final listEmailAddress = await _getAutoCompleteInteractor!
-      .execute(AutoCompletePattern(word: query, accountId: accountId.value!, limit: 2))
+      .execute(AutoCompletePattern(word: query, accountId: shownAccountId, limit: 2))
       .then((value) => value.fold(
         (failure) => <EmailAddress>[],
         (success) => success is GetAutoCompleteSuccess ? success.listEmailAddress : <EmailAddress>[]
@@ -3024,11 +3099,11 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void unsubscribeMail(EmailId emailId) {
-    if (accountId.value != null && sessionCurrent != null) {
+    if (activeAccountId != null && sessionCurrent != null) {
       consumeState(
         _unsubscribeEmailInteractor.execute(
           sessionCurrent!,
-          accountId.value!,
+          activeAccountId!,
           emailId
         )
       );
@@ -3191,7 +3266,7 @@ class MailboxDashBoardController extends ReloadableController
         );
         moveToMailbox(
           sessionCurrent!,
-          accountId.value!,
+          activeAccountId!,
           moveToArchiveMailboxRequest,
           {email.id!: email.hasRead}
         );
@@ -3208,13 +3283,23 @@ class MailboxDashBoardController extends ReloadableController
     }
   }
 
-  void _handleRestoreDeletedMessageSuccess(EmailRecoveryActionId emailRecoveryActionId) async {
+  void _handleRestoreDeletedMessageSuccess(
+    EmailRecoveryActionId emailRecoveryActionId,
+    AccountId restoringAccountId,
+  ) async {
     log('MailboxDashBoardController::_handleRestoreDeletedMessageSuccess():emailRecoveryActionId: $emailRecoveryActionId');
-    _getRestoredDeletedMessage(emailRecoveryActionId);
+    _getRestoredDeletedMessage(emailRecoveryActionId, restoringAccountId);
   }
 
-  void _getRestoredDeletedMessage(EmailRecoveryActionId emailRecoveryActionId) {
-    consumeState(_getRestoredDeletedMessageInteractor.execute(sessionCurrent!, accountId.value!, emailRecoveryActionId));
+  /// Polls the account the restore started on, and stops once a logout cleared the shown account.
+  void _getRestoredDeletedMessage(
+    EmailRecoveryActionId emailRecoveryActionId,
+    AccountId restoringAccountId,
+  ) {
+    final session = sessionCurrent;
+    if (session == null || activeAccountId == null) return;
+
+    consumeState(_getRestoredDeletedMessageInteractor.execute(session, restoringAccountId, emailRecoveryActionId));
   }
 
   void _handleRestoreDeletedMessageFailed() {
@@ -3237,7 +3322,9 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _handleGetRestoredDeletedMessageSuccess(GetRestoredDeletedMessageSuccess success) async {
-    if (selectedMailbox.value != null && selectedMailbox.value!.isRecovered) {
+    // A restore polled on an account no longer shown must not refresh or open the shown one.
+    final isRestoringShownAccount = success.accountId == activeAccountId;
+    if (isRestoringShownAccount && selectedMailbox.value?.isRecovered == true) {
       dispatchEmailUIAction(RefreshChangeEmailAction(
         newState: jmap.State('restored-deleted-message-success-state-${DateTime.now().millisecondsSinceEpoch}'),
       ));
@@ -3245,12 +3332,16 @@ class MailboxDashBoardController extends ReloadableController
 
     if (success is GetRestoredDeletedMessageCompleted) {
       isRecoveringDeletedMessage.value = false;
-      if (success.recoveredMailbox != null) {
+      if (isRestoringShownAccount && success.recoveredMailbox != null) {
         appToast.showToastMessage(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).restoreDeletedMessageSuccess,
           actionName: AppLocalizations.of(currentContext!).open,
-          onActionClick: () => openMailboxAction(success.recoveredMailbox!.toPresentationMailbox()),
+          onActionClick: () {
+            // Open may be tapped once another account is shown, where this folder does not exist.
+            if (success.accountId != activeAccountId) return;
+            openMailboxAction(success.recoveredMailbox!.toPresentationMailbox());
+          },
           leadingSVGIcon: imagePaths.icRecoverDeletedMessages,
           leadingSVGIconColor: Colors.white,
           backgroundColor: AppColor.toastSuccessBackgroundColor,
@@ -3268,7 +3359,7 @@ class MailboxDashBoardController extends ReloadableController
       }
     } else if (success is GetRestoredDeletedMessageInProgress || success is GetRestoredDeletedMessageWaiting) {
       await Future.delayed(const Duration(seconds: 2));
-      _getRestoredDeletedMessage(success.emailRecoveryAction.id!);
+      _getRestoredDeletedMessage(success.emailRecoveryAction.id!, success.accountId);
     } else if (success is GetRestoredDeletedMessageCanceled) {
       isRecoveringDeletedMessage.value = false;
       appToast.showToastMessage(
@@ -3283,8 +3374,9 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void gotoEmailRecovery() async {
+    if (!shownAccountCapabilities.canRecoverDeletedMessages) return;
     closeMailboxMenuDrawer();
-    final currentAccountId = accountId.value;
+    final currentAccountId = activeAccountId;
     final currentSession = sessionCurrent;
     if (currentAccountId != null && currentSession != null) {
       final arguments = EmailRecoveryArguments(currentAccountId, currentSession);
@@ -3308,25 +3400,25 @@ class MailboxDashBoardController extends ReloadableController
     final generateId = Id(const Uuid().v4());
     final restoreDeletedMessageRequest = RestoredDeletedMessageRequest(generateId, emailRecoveryAction);
 
-    consumeState(_restoreDeletedMessageInteractor.execute(sessionCurrent!, accountId.value!, restoreDeletedMessageRequest));
+    consumeState(_restoreDeletedMessageInteractor.execute(sessionCurrent!, activeAccountId!, restoreDeletedMessageRequest));
     isRecoveringDeletedMessage.value = true;
   }
 
   Future<void> removeComposerCacheById(String composerId) async {
-    if (accountId.value == null || sessionCurrent == null) return;
+    if (activeAccountId == null || sessionCurrent == null) return;
 
     await _removeComposerCacheByIdInteractor.execute(
-      accountId.value!,
+      activeAccountId!,
       sessionCurrent!.username,
       composerId,
     );
   }
 
   Future<void> removeAllComposerCache() async {
-    if (accountId.value == null || sessionCurrent == null) return;
+    if (activeAccountId == null || sessionCurrent == null) return;
 
     await _removeAllComposerCacheInteractor.execute(
-      accountId.value!,
+      activeAccountId!,
       sessionCurrent!.username,
     );
   }
@@ -3337,33 +3429,80 @@ class MailboxDashBoardController extends ReloadableController
       PlatformInfo.isMobile;
   }
 
-  void _getAllIdentities() {
-    if (accountId.value != null && sessionCurrent != null) {
-      consumeState(_getAllIdentitiesInteractor.execute(
+  void _getAllIdentities([AccountId? shownAccountId]) {
+    final accountIdForIdentities = shownAccountId ?? activeAccountId;
+    if (accountIdForIdentities != null && sessionCurrent != null) {
+      _identitiesLoadedForAttempt = activeAccountSource.currentSwitchAttemptId;
+      consumeShownAccountState(_getAllIdentitiesInteractor.execute(
         sessionCurrent!,
-        accountId.value!
+        accountIdForIdentities,
       ));
     } else {
-      consumeState(Stream.value(Left(GetAllIdentitiesFailure(NotFoundAccountIdException()))));
+      consumeShownAccountState(
+        Stream.value(Left(GetAllIdentitiesFailure(NotFoundAccountIdException()))),
+      );
     }
   }
 
   void _handleGetAllIdentitiesSuccess(GetAllIdentitiesSuccess success) {
     log('MailboxDashBoardController::_handleGetAllIdentitiesSuccess: IDENTITIES_SIZE = ${_identities?.length}');
     final listIdentities = success.identities ?? [];
+    _identities = listIdentities.forComposerFromPicker(
+      keepServerDefaults: shownAccountCapabilities.offersServerDefaultIdentities,
+    );
 
-    final listIdentitiesMayDeleted = listIdentities.toListMayDeleted();
-    _identities = listIdentitiesMayDeleted;
-
-    updateOwnEmailAddressFromIdentities(listIdentities);
+    // Personal ownEmailAddress stays mine; shown-mailbox "me" reads ownerEmailAddresses.
+    if (activeAccountId == accountId.value) {
+      updateOwnEmailAddressFromIdentities(listIdentities);
+    }
   }
 
   void _handleGetAllIdentitiesFailure() {
     _identities = null;
-    updateOwnEmailAddressFromIdentities([]);
+    if (activeAccountId == accountId.value) {
+      updateOwnEmailAddressFromIdentities([]);
+    }
   }
 
   List<Identity> get listIdentities => _identities ?? [];
+
+  /// A username that is not an email has no session address.
+  @override
+  String get ownerEmailAddress {
+    final shown = super.ownerEmailAddress;
+    if (shown.isNotEmpty) return shown;
+    if (activeAccountId == null || activeAccountId == accountId.value) {
+      return ownEmailAddress.value;
+    }
+    return '';
+  }
+
+  /// "Me" match set of the shown mailbox (ADR-0114), including aliases once identities load.
+  Set<String> get ownerEmailAddresses {
+    final account = activeAccountSource.activeAccount;
+    if (account == null) {
+      final mine = ownEmailAddress.value;
+      return {if (mine.isNotEmpty) mine};
+    }
+    return ownerEmailAddressesOf(
+      account: account,
+      identities: listIdentities,
+      teamMailboxEmails: mapMailboxById.values
+          .where((mailbox) => mailbox.isTeamMailboxRoot)
+          .map((mailbox) => mailbox.emailTeamMailBoxes),
+    );
+  }
+
+  /// User address for subaddressing of the shown mailbox. Prefers [ownerEmailAddress], then an
+  /// alias from [ownerEmailAddresses] once identities load (personal username-only owner).
+  String get emailForSubaddress {
+    final owner = ownerEmailAddress;
+    if (owner.contains('@')) return owner;
+    for (final address in ownerEmailAddresses) {
+      if (address.contains('@')) return address;
+    }
+    return owner;
+  }
 
   bool validateNoEmailsInTrashAndSpamFolder() {
     return selectedMailbox.value != null
@@ -3462,6 +3601,10 @@ class MailboxDashBoardController extends ReloadableController
     _isFirstSessionLoad = false;
     twakeAppManager.setHasComposer(false);
     _sentryEcosystem = null;
+    _cancelShownAccountWatch?.call();
+    _cancelShownAccountWatch = null;
+    _cancelShownAccountReloadWatch?.call();
+    _cancelShownAccountReloadWatch = null;
     _disposeWorkerObxVariables();
     _dashboardSearchCoordinator?.dispose();
     _dashboardSearchCoordinator = null;
@@ -3473,7 +3616,7 @@ class MailboxDashBoardController extends ReloadableController
       getBinding<AddALabelToAnEmailInteractor>();
 
   @override
-  AccountId? get currentAccountId => accountId.value;
+  AccountId? get currentAccountId => activeAccountId;
 
   @override
   BaseController get currentController => this;

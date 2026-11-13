@@ -2,10 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:model/account/authentication_type.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_callback_action_define.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
 import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/download/domain/usecase/download_attachment_for_web_interactor.dart';
+import 'package:tmail_ui_user/features/download/domain/usecase/parse_email_by_blob_id_interactor.dart';
 import 'dart:io';
 
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
@@ -16,14 +20,9 @@ import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart' hide State;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
-import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart';
-import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -46,6 +45,7 @@ import 'package:tmail_ui_user/features/composer/domain/exceptions/forbidden_to_s
 import 'package:tmail_ui_user/features/composer/domain/exceptions/invalid_recipients_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
@@ -109,8 +109,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_e
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
@@ -147,15 +145,16 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/reopen_composer_cache_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_email_filter_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
-import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
-import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
+import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import 'mailbox_dashboard_controller_test.mocks.dart';
+
+import '../../../../fixtures/active_account_source_fixtures.dart';
+import 'mailbox_dashboard_controller_test_harness.dart';
 
 mockControllerCallback() => InternalFinalCallback<void>(callback: () {});
 const fallbackGenerators = {
@@ -213,6 +212,7 @@ const fallbackGenerators = {
   MockSpec<CreateDefaultMailboxInteractor>(),
   MockSpec<MoveFolderContentInteractor>(),
   MockSpec<TreeBuilder>(),
+  MockSpec<IOSSharingManager>(),
   MockSpec<VerifyNameInteractor>(),
   MockSpec<GetAllMailboxInteractor>(),
   MockSpec<RefreshAllMailboxInteractor>(),
@@ -230,6 +230,8 @@ const fallbackGenerators = {
   MockSpec<ImagePaths>(),
   MockSpec<ResponsiveUtils>(),
   MockSpec<Uuid>(),
+  MockSpec<DownloadAttachmentForWebInteractor>(),
+  MockSpec<ParseEmailByBlobIdInteractor>(),
   MockSpec<CachingManager>(),
   MockSpec<LanguageCacheManager>(),
   MockSpec<RemoveAllComposerCacheInteractor>(),
@@ -237,6 +239,7 @@ const fallbackGenerators = {
   MockSpec<ToastManager>(),
   MockSpec<TwakeAppManager>(),
   MockSpec<GetAllIdentitiesInteractor>(),
+  MockSpec<GetAutoCompleteInteractor>(),
   MockSpec<GetIdentityCacheOnWebInteractor>(),
   MockSpec<ComposerManager>(fallbackGenerators: fallbackGenerators),
   MockSpec<CleanAndGetEmailsInMailboxInteractor>(),
@@ -246,217 +249,7 @@ const fallbackGenerators = {
   MockSpec<GetTokenOIDCInteractor>(),
 ])
 void main() {
-  // mock mailbox dashboard controller direct dependencies
-  final moveToMailboxInteractor = MockMoveToMailboxInteractor();
-  final deleteEmailPermanentlyInteractor =
-      MockDeleteEmailPermanentlyInteractor();
-  final markAsMailboxReadInteractor = MockMarkAsMailboxReadInteractor();
-  final getAllComposerCacheInteractor = MockGetAllComposerCacheInteractor();
-  final getIdentityCacheOnWebInteractor = MockGetIdentityCacheOnWebInteractor();
-  final markAsEmailReadInteractor = MockMarkAsEmailReadInteractor();
-  final markAsStarEmailInteractor = MockMarkAsStarEmailInteractor();
-  final markAsMultipleEmailReadInteractor =
-      MockMarkAsMultipleEmailReadInteractor();
-  final markAsStarMultipleEmailInteractor =
-      MockMarkAsStarMultipleEmailInteractor();
-  final moveMultipleEmailToMailboxInteractor =
-      MockMoveMultipleEmailToMailboxInteractor();
-  final deleteMultipleEmailsPermanentlyInteractor =
-      MockDeleteMultipleEmailsPermanentlyInteractor();
-  final getEmailByIdInteractor = MockGetEmailByIdInteractor();
-  final cleanAndGetEmailsInMailboxInteractor = MockCleanAndGetEmailsInMailboxInteractor();
-  final sendEmailInteractor = MockSendEmailInteractor();
-  final storeSendingEmailInteractor = MockStoreSendingEmailInteractor();
-  final updateSendingEmailInteractor = MockUpdateSendingEmailInteractor();
-  final getAllSendingEmailInteractor = MockGetAllSendingEmailInteractor();
-  final storeSessionInteractor = MockStoreSessionInteractor();
-  final emptySpamFolderInteractor = MockEmptySpamFolderInteractor();
-  final deleteSendingEmailInteractor = MockDeleteSendingEmailInteractor();
-  final unsubscribeEmailInteractor = MockUnsubscribeEmailInteractor();
-  final restoreDeletedMessageInteractor =
-      MockRestoredDeletedMessageInteractor();
-  final getRestoredDeletedMessageInteractor =
-      MockGetRestoredDeletedMessageInterator();
-  late MailboxDashBoardController mailboxDashboardController;
-
-  // mock mailbox dashboard controller Get dependencies
-  final removeEmailDraftsInteractor = MockRemoveEmailDraftsInteractor();
-  final emailReceiveManager = MockEmailReceiveManager();
-  final downloadController = MockDownloadController();
-  final appGridDashboardController = MockAppGridDashboardController();
-  final spamReportController = MockSpamReportController();
-  final labelController = MockLabelController();
-  final networkConnectionController = MockNetworkConnectionController();
-
-  // mock search controller direct dependencies
-  final quickSearchEmailInteractor = MockQuickSearchEmailInteractor();
-  final saveRecentSearchInteractor = MockSaveRecentSearchInteractor();
-  final getAllRecentSearchLatestInteractor = MockGetAllRecentSearchLatestInteractor();
-  final storeEmailSortOrderInteractor = MockStoreEmailSortOrderInteractor();
-  final getStoredEmailSortOrderInteractor = MockGetStoredEmailSortOrderInteractor();
-  late SearchController searchController;
-
-  // mock base controller Get dependencies
-  final cachingManager = MockCachingManager();
-  final languageCacheManager = MockLanguageCacheManager();
-  final authorizationInterceptors = MockAuthorizationInterceptors();
-  final dynamicUrlInterceptors = MockDynamicUrlInterceptors();
-  final deleteCredentialInteractor = MockDeleteCredentialInteractor();
-  final logoutOidcInteractor = MockLogoutOidcInteractor();
-  final deleteAuthorityOidcInteractor = MockDeleteAuthorityOidcInteractor();
-  final appToast = MockAppToast();
-  final imagePaths = ImagePaths();
-  final responsiveUtils = MockResponsiveUtils();
-  final uuid = MockUuid();
-  final mockToastManager = MockToastManager();
-  final mockTwakeAppManager = MockTwakeAppManager();
-
-  // mock reloadable controller Get dependencies
-  final getSessionInteractor = MockGetSessionInteractor();
-  final getAuthenticatedAccountInteractor = MockGetAuthenticatedAccountInteractor();
-  final updateAccountCacheInteractor = MockUpdateAccountCacheInteractor();
-  final getOidcUserInfoInteractor = MockGetOidcUserInfoInteractor();
-
-  // mock mailbox controller direct dependencies
-  final createNewMailboxInteractor = MockCreateNewMailboxInteractor();
-  final deleteMultipleMailboxInteractor = MockDeleteMultipleMailboxInteractor();
-  final renameMailboxInteractor = MockRenameMailboxInteractor();
-  final moveMailboxInteractor = MockMoveMailboxInteractor();
-  final subscribeMailboxInteractor = MockSubscribeMailboxInteractor();
-  final subscribeMultipleMailboxInteractor = MockSubscribeMultipleMailboxInteractor();
-  final subaddressingInteractor = MockSubaddressingInteractor();
-  final createDefaultMailboxInteractor = MockCreateDefaultMailboxInteractor();
-  final moveFolderContentInteractor = MockMoveFolderContentInteractor();
-  final treeBuilder = MockTreeBuilder();
-  final verifyNameInteractor = MockVerifyNameInteractor();
-  final getAllMailboxInteractor = MockGetAllMailboxInteractor();
-  final refreshAllMailboxInteractor = MockRefreshAllMailboxInteractor();
-  final removeAllComposerCacheInteractor = MockRemoveAllComposerCacheInteractor();
-  final removeComposerCacheByIdInteractor = MockRemoveComposerCacheByIdInteractor();
-  final getAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
-  final clearMailboxInteractor = MockClearMailboxInteractor();
-  final getAuthenticationInfoInteractor = MockGetAuthenticationInfoInteractor();
-  final getStoredOidcConfigurationInteractor = MockGetStoredOidcConfigurationInteractor();
-  final getTokenOIDCInteractor = MockGetTokenOIDCInteractor();
-
-  final composerManager = MockComposerManager();
-  late MailboxController mailboxController;
-
-  // mock thread controller direct dependencies
-  late MockGetEmailsInMailboxInteractor getEmailsInMailboxInteractor;
-  final refreshChangesEmailsInMailboxInteractor =
-      MockRefreshChangesEmailsInMailboxInteractor();
-  final loadMoreEmailsInMailboxInteractor = MockLoadMoreEmailsInMailboxInteractor();
-  final searchEmailInteractor = MockSearchEmailInteractor();
-  final searchMoreEmailInteractor = MockSearchMoreEmailInteractor();
-  late ThreadController threadController;
-
-  late AdvancedFilterController advancedFilterController;
-
-  final context = MockBuildContext();
-  const queryString = 'test text';
-  final google = Uri.parse('https://www.google.com');
-  final testSession =
-      Session({}, {}, {}, UserName('data'), google, google, google, google, State('1'));
-  final testMailboxId = MailboxId(Id('1'));
-  final testAccountId = AccountId(Id('123'));
-
-  Future<void> pumpLocalizedApp(WidgetTester tester) async {
-    await tester.pumpWidget(
-      const GetMaterialApp(
-        locale: LocalizationService.defaultLocale,
-        supportedLocales: LocalizationService.supportedLocales,
-        localizationsDelegates: [
-          AppLocalizationsDelegate(),
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        home: SizedBox(),
-      ),
-    );
-    await tester.pump();
-  }
-
-  setUp(() {
-    Get.put<RemoveEmailDraftsInteractor>(removeEmailDraftsInteractor);
-    Get.put<EmailReceiveManager>(emailReceiveManager);
-    Get.put<DownloadController>(downloadController);
-    Get.put<AppGridDashboardController>(appGridDashboardController);
-    Get.put<SpamReportController>(spamReportController);
-    Get.put<LabelController>(labelController);
-    // MailboxController listens to the label list once it is ready
-    when(labelController.labels).thenReturn(RxList());
-    Get.put<NetworkConnectionController>(networkConnectionController);
-    Get.put<CachingManager>(cachingManager);
-    Get.put<LanguageCacheManager>(languageCacheManager);
-    Get.put<AuthorizationInterceptors>(authorizationInterceptors);
-    Get.put<AuthorizationInterceptors>(
-      authorizationInterceptors,
-      tag: BindingTag.isolateTag,
-    );
-    Get.put<DynamicUrlInterceptors>(dynamicUrlInterceptors);
-    Get.put<DeleteCredentialInteractor>(deleteCredentialInteractor);
-    Get.put<LogoutOidcInteractor>(logoutOidcInteractor);
-    Get.put<DeleteAuthorityOidcInteractor>(deleteAuthorityOidcInteractor);
-    Get.put<AppToast>(appToast);
-    Get.put<ImagePaths>(imagePaths);
-    Get.put<ResponsiveUtils>(responsiveUtils);
-    Get.put<Uuid>(uuid);
-    Get.put<ToastManager>(mockToastManager);
-    Get.put<TwakeAppManager>(mockTwakeAppManager);
-    Get.put<GetSessionInteractor>(getSessionInteractor);
-    Get.put<GetAuthenticatedAccountInteractor>(getAuthenticatedAccountInteractor);
-    Get.put<UpdateAccountCacheInteractor>(updateAccountCacheInteractor);
-    Get.put<GetOidcUserInfoInteractor>(getOidcUserInfoInteractor);
-    Get.put<GetAllIdentitiesInteractor>(getAllIdentitiesInteractor);
-    Get.put<ClearMailboxInteractor>(clearMailboxInteractor);
-    Get.put<RemoveAllComposerCacheInteractor>(removeAllComposerCacheInteractor);
-    Get.put<RemoveComposerCacheByIdInteractor>(removeComposerCacheByIdInteractor);
-    Get.put<ComposerManager>(composerManager);
-    Get.put<GetAuthenticationInfoInteractor>(getAuthenticationInfoInteractor);
-    Get.put<GetStoredOidcConfigurationInteractor>(getStoredOidcConfigurationInteractor);
-    Get.put<GetTokenOIDCInteractor>(getTokenOIDCInteractor);
-
-    searchController = SearchController(
-      quickSearchEmailInteractor,
-      saveRecentSearchInteractor,
-      getAllRecentSearchLatestInteractor);
-    Get.put(searchController);
-
-    Get.testMode = true;
-
-    mailboxDashboardController = MailboxDashBoardController(
-      moveToMailboxInteractor,
-      deleteEmailPermanentlyInteractor,
-      markAsMailboxReadInteractor,
-      getAllComposerCacheInteractor,
-      getIdentityCacheOnWebInteractor,
-      markAsEmailReadInteractor,
-      markAsStarEmailInteractor,
-      markAsMultipleEmailReadInteractor,
-      markAsStarMultipleEmailInteractor,
-      moveMultipleEmailToMailboxInteractor,
-      deleteMultipleEmailsPermanentlyInteractor,
-      getEmailByIdInteractor,
-      sendEmailInteractor,
-      storeSendingEmailInteractor,
-      updateSendingEmailInteractor,
-      getAllSendingEmailInteractor,
-      storeSessionInteractor,
-      emptySpamFolderInteractor,
-      deleteSendingEmailInteractor,
-      unsubscribeEmailInteractor,
-      restoreDeletedMessageInteractor,
-      getRestoredDeletedMessageInteractor,
-      removeAllComposerCacheInteractor,
-      removeComposerCacheByIdInteractor,
-      getAllIdentitiesInteractor,
-      clearMailboxInteractor,
-      storeEmailSortOrderInteractor,
-      getStoredEmailSortOrderInteractor,
-    );
-  });
+  setUpMailboxDashboardControllerTest();
 
   group('PaywallLauncher navigation', () {
     const urlLauncherChannel = MethodChannel('plugins.flutter.io/url_launcher');
@@ -555,12 +348,16 @@ void main() {
   });
 
   group('send email failure toast:', () {
+    setUp(() {
+      mailboxDashboardController.sessionCurrent = testSession;
+      (mailboxDashboardController.activeAccountSource as FakeActiveAccountSource)
+          .show(testAccountId);
+    });
+
     testWidgets('names the rejected addresses on an InvalidRecipientsException',
         (tester) async {
       await pumpLocalizedApp(tester);
       clearInteractions(appToast);
-      mailboxDashboardController.sessionCurrent = testSession;
-      mailboxDashboardController.accountId.value = testAccountId;
       when(deleteEmailPermanentlyInteractor.execute(any, any, any, any))
           .thenAnswer((_) => const Stream.empty());
 
@@ -594,8 +391,6 @@ void main() {
         'on a ForbiddenToSendException', (tester) async {
       await pumpLocalizedApp(tester);
       clearInteractions(appToast);
-      mailboxDashboardController.sessionCurrent = testSession;
-      mailboxDashboardController.accountId.value = testAccountId;
       when(deleteEmailPermanentlyInteractor.execute(any, any, any, any))
           .thenAnswer((_) => const Stream.empty());
 
@@ -630,8 +425,6 @@ void main() {
         'deletes nothing when the pre-send check refused before any email was created',
         (tester) async {
       await pumpLocalizedApp(tester);
-      mailboxDashboardController.sessionCurrent = testSession;
-      mailboxDashboardController.accountId.value = testAccountId;
 
       mailboxDashboardController.handleFailureViewState(
         SendEmailFailure(exception: ForbiddenToSendException()),
@@ -875,47 +668,8 @@ void main() {
       appProviderContainer
           .read(searchFilterProvider.notifier)
           .set(SearchEmailFilter.initial());
-      getEmailsInMailboxInteractor = MockGetEmailsInMailboxInteractor();
-
-      when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
-      when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
-      final isLabelSettingEnabled = RxBool(false);
-      when(labelController.isLabelSettingEnabled).thenReturn(isLabelSettingEnabled);
-
-      Get.put(mailboxDashboardController);
-      mailboxDashboardController.onReady();
-
-      mailboxController = MailboxController(
-        createNewMailboxInteractor,
-        deleteMultipleMailboxInteractor,
-        renameMailboxInteractor,
-        moveMailboxInteractor,
-        subscribeMailboxInteractor,
-        subscribeMultipleMailboxInteractor,
-        subaddressingInteractor,
-        createDefaultMailboxInteractor,
-        moveFolderContentInteractor,
-        treeBuilder,
-        verifyNameInteractor,
-        getAllMailboxInteractor,
-        refreshAllMailboxInteractor);
-      mailboxController.onReady();
-
-      Get.put<SearchEmailInteractor>(searchEmailInteractor);
-      Get.put<SearchMoreEmailInteractor>(searchMoreEmailInteractor);
-      threadController = ThreadController(
-        getEmailsInMailboxInteractor,
-        refreshChangesEmailsInMailboxInteractor,
-        loadMoreEmailsInMailboxInteractor,
-        getEmailByIdInteractor,
-        cleanAndGetEmailsInMailboxInteractor);
-      Get.put(threadController);
-
-      advancedFilterController = AdvancedFilterController();
-
-      mailboxDashboardController.sessionCurrent = testSession;
-      mailboxDashboardController.filterMessageOption.value = FilterMessageOption.all;
-      mailboxDashboardController.accountId.value = testAccountId;
+      startMailboxAndThreadControllers();
+      (mailboxDashboardController.activeAccountSource as FakeActiveAccountSource).show(testAccountId);
     });
 
     test('WHEN user search email by keyword, '
@@ -1156,9 +910,9 @@ void main() {
       () async {
       when(context.owner).thenReturn(BuildOwner(focusManager: FocusManager()));
       when(context.mounted).thenReturn(true);
-      // onInit registers the mailboxUIAction listener that handles the action
-      // (the harness only calls onReady).
-      mailboxController.onInit();
+      // onInit registers the mailboxUIAction listener that handles the action. The harness
+      // controller already ran onReady, which a second onInit would schedule again.
+      mailboxController = newMailboxController()..onInit();
       // One inbox instance backs both tree and selection, so switching back
       // fires no mailbox change: only the restore can reload, making this a
       // real guard for the fix.
@@ -1311,34 +1065,22 @@ void main() {
   });
 
   group('spamMailboxId:test', () {
-    test('should returns Junk mailbox ID if it exists', () {
-      // Arrange
-      final spamMailboxId = MailboxId(Id('spam-id'));
-      final junkMailboxId = MailboxId(Id('junk-id'));
-      final mapDefaultMailboxIdByRole = {
-        PresentationMailbox.roleSpam: spamMailboxId,
+    final junkMailboxId = MailboxId(Id('junk-id'));
+    final rolesWithJunk = {
+      'should returns Junk mailbox ID if it exists': {
+        PresentationMailbox.roleSpam: MailboxId(Id('spam-id')),
         PresentationMailbox.roleJunk: junkMailboxId,
-      };
-      mailboxDashboardController.setMapDefaultMailboxIdByRole(mapDefaultMailboxIdByRole);
-      // Act
-      final spamId = mailboxDashboardController.spamMailboxId;
-
-      // Assert
-      expect(spamId, equals(junkMailboxId));
-    });
-
-    test('should returns junk mailbox ID if spam ID does not exist', () {
-      // Arrange
-      final junkMailboxId = MailboxId(Id('junk-id'));
-      final mapDefaultMailboxIdByRole = {
+      },
+      'should returns junk mailbox ID if spam ID does not exist': {
         PresentationMailbox.roleJunk: junkMailboxId,
-      };
-      mailboxDashboardController.setMapDefaultMailboxIdByRole(mapDefaultMailboxIdByRole);
-      // Act
-      final spamId = mailboxDashboardController.spamMailboxId;
+      },
+    };
+    rolesWithJunk.forEach((description, mapDefaultMailboxIdByRole) {
+      test(description, () {
+        mailboxDashboardController.setMapDefaultMailboxIdByRole(mapDefaultMailboxIdByRole);
 
-      // Assert
-      expect(spamId, equals(junkMailboxId));
+        expect(mailboxDashboardController.spamMailboxId, equals(junkMailboxId));
+      });
     });
 
     test('should returns null if neither spam nor junk mailbox ID exists', () {
@@ -1354,50 +1096,7 @@ void main() {
   });
 
   group('getSubaddress:test', () {
-    setUp(() {
-      getEmailsInMailboxInteractor = MockGetEmailsInMailboxInteractor();
-
-      when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
-      when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
-      final isLabelSettingEnabled = RxBool(false);
-      when(labelController.isLabelSettingEnabled).thenReturn(isLabelSettingEnabled);
-
-      Get.put(mailboxDashboardController);
-      mailboxDashboardController.onReady();
-
-      mailboxController = MailboxController(
-          createNewMailboxInteractor,
-          deleteMultipleMailboxInteractor,
-          renameMailboxInteractor,
-          moveMailboxInteractor,
-          subscribeMailboxInteractor,
-          subscribeMultipleMailboxInteractor,
-          subaddressingInteractor,
-          createDefaultMailboxInteractor,
-          moveFolderContentInteractor,
-          treeBuilder,
-          verifyNameInteractor,
-          getAllMailboxInteractor,
-          refreshAllMailboxInteractor);
-      mailboxController.onReady();
-
-      Get.put<SearchEmailInteractor>(searchEmailInteractor);
-      Get.put<SearchMoreEmailInteractor>(searchMoreEmailInteractor);
-      threadController = ThreadController(
-          getEmailsInMailboxInteractor,
-          refreshChangesEmailsInMailboxInteractor,
-          loadMoreEmailsInMailboxInteractor,
-          getEmailByIdInteractor,
-          cleanAndGetEmailsInMailboxInteractor,
-      );
-      Get.put(threadController);
-
-      advancedFilterController = AdvancedFilterController();
-
-      mailboxDashboardController.sessionCurrent = testSession;
-      mailboxDashboardController.filterMessageOption.value = FilterMessageOption.all;
-      mailboxDashboardController.accountId.value = testAccountId;
-    });
+    setUp(startMailboxAndThreadControllers);
 
     test('should return subaddress with valid email and folder name', () {
       const String userEmail = 'user@example.com';
@@ -1472,10 +1171,8 @@ void main() {
         verifyNameInteractor,
         getAllMailboxInteractor,
         refreshAllMailboxInteractor);
-      // onInit registers the label list listener under test
-      mailboxController
-        ..onInit()
-        ..onReady();
+      // onInit registers the label list listener under test, and schedules onReady itself
+      mailboxController.onInit();
       mailboxController.defaultMailboxTree.value = MailboxTree(
         MailboxNode(
           MailboxNode.rootItem(),
@@ -1791,7 +1488,6 @@ void main() {
       },
     );
   });
-
   group('switch account from a sign-in link:', () {
     late _DashboardSwitchDeepLinksManager deepLinksManager;
 
@@ -1884,4 +1580,48 @@ class _DashboardSwitchDeepLinksManager extends DeepLinksManager {
     autoSignInCalls++;
     return signIn.future;
   }
+}
+
+/// Starts the dashboard with real MailboxController and ThreadController on my account.
+void startMailboxAndThreadControllers() {
+  getEmailsInMailboxInteractor = MockGetEmailsInMailboxInteractor();
+
+  when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
+  when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
+  when(labelController.isLabelSettingEnabled).thenReturn(RxBool(false));
+
+  Get.put(mailboxDashboardController);
+  mailboxDashboardController.onReady();
+
+  mailboxController = MailboxController(
+    createNewMailboxInteractor,
+    deleteMultipleMailboxInteractor,
+    renameMailboxInteractor,
+    moveMailboxInteractor,
+    subscribeMailboxInteractor,
+    subscribeMultipleMailboxInteractor,
+    subaddressingInteractor,
+    createDefaultMailboxInteractor,
+    moveFolderContentInteractor,
+    treeBuilder,
+    verifyNameInteractor,
+    getAllMailboxInteractor,
+    refreshAllMailboxInteractor);
+  mailboxController.onReady();
+
+  Get.put<SearchEmailInteractor>(searchEmailInteractor);
+  Get.put<SearchMoreEmailInteractor>(searchMoreEmailInteractor);
+  threadController = ThreadController(
+    getEmailsInMailboxInteractor,
+    refreshChangesEmailsInMailboxInteractor,
+    loadMoreEmailsInMailboxInteractor,
+    getEmailByIdInteractor,
+    cleanAndGetEmailsInMailboxInteractor);
+  Get.put(threadController);
+
+  advancedFilterController = AdvancedFilterController();
+
+  mailboxDashboardController.sessionCurrent = testSession;
+  mailboxDashboardController.filterMessageOption.value = FilterMessageOption.all;
+  mailboxDashboardController.accountId.value = testAccountId;
 }

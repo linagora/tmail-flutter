@@ -6,11 +6,15 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart' hide State;
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/extension/handle_keyboard_shortcut_actions_extension.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/model/mail_searched_list_shortcut_action_view_event.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -20,12 +24,16 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:labels/model/label.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:model/email/prefix_email_address.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/urgent_exception_handler.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
+import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
@@ -61,11 +69,15 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_inter
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
+import '../../../../fixtures/active_account_source_fixtures.dart';
+import '../../../../fixtures/delegation_fixtures.dart';
+import '../../../../fixtures/route_arguments_recorder.dart';
 import '../../../../fixtures/session_fixtures.dart';
 import '../../../mailbox_dashboard/presentation/controller/advanced_filter_controller_test.mocks.dart'
     as advanced_mocks;
@@ -297,6 +309,8 @@ void main() {
     final accountId = Rxn(AccountFixtures.aliceAccountId);
 
     when(mailboxDashBoardController.accountId).thenReturn(accountId);
+    when(mailboxDashBoardController.activeAccountId)
+        .thenAnswer((_) => Get.find<ActiveAccountSource>().accountId);
     when(
       mailboxDashBoardController.sessionCurrent,
     ).thenReturn(SessionFixtures.aliceSession);
@@ -348,6 +362,7 @@ void main() {
       thread_mocks.MockNetworkConnectionController(),
     );
     Get.put<MailboxDashBoardController>(mailboxDashBoardController);
+    ActiveAccountSourceFixtures.put(SessionFixtures.aliceSession);
     Get.put<SearchEmailInteractor>(searchEmailInteractor);
     Get.put<SearchMoreEmailInteractor>(searchMoreEmailInteractor);
 
@@ -849,7 +864,7 @@ void main() {
       isCleared: (filter) => filter.from.isEmpty,
     ),
     (
-      quickFilter: QuickSearchFilter.fromMe,
+      quickFilter: QuickSearchFilter.fromShown,
       initialFilter: SearchEmailFilter(from: const {'alice@example.com'}),
       isCleared: (filter) => filter.from.isEmpty,
     ),
@@ -973,6 +988,27 @@ void main() {
         verifyNever(mailboxDashBoardController.clearDashBoardAction());
       },
     );
+
+    test(
+      'DropPendingMailListShortcutsAction clears the dashboard action so a later equal drop is not skipped',
+      () async {
+        final rx = mailboxDashBoardController.dashBoardAction;
+        when(mailboxDashBoardController.clearDashBoardAction()).thenAnswer((_) {
+          // Match production clearDashBoardAction so GetX can deliver an equal
+          // Equatable DropPending again.
+          rx.value = DashBoardAction.idle;
+        });
+
+        rx.value = DropPendingMailListShortcutsAction();
+        await pumpEventQueue();
+
+        rx.value = DropPendingMailListShortcutsAction();
+        await pumpEventQueue();
+
+        verify(mailboxDashBoardController.clearDashBoardAction()).called(2);
+      },
+    );
+
   });
 
   group('search suggestion flow', () {
@@ -1033,6 +1069,48 @@ void main() {
           any,
         ),
       ).called(1);
+    });
+
+    test('saveRecentSearch stores the query under the delegated account while it is shown', () async {
+      ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+      when(
+        saveRecentSearchInteractor.execute(any, any, any),
+      ).thenAnswer((_) => Stream.value(Right(SaveRecentSearchSuccess())));
+
+      controller.saveRecentSearch('report');
+      await pumpEventQueue();
+
+      verify(
+        saveRecentSearchInteractor.execute(
+          DelegationFixtures.bobAccountId,
+          SessionFixtures.aliceSession.username,
+          any,
+        ),
+      ).called(1);
+      verifyNever(saveRecentSearchInteractor.execute(AccountFixtures.aliceAccountId, any, any));
+    });
+
+    test('getAllRecentSearchAction reads the recent list of the delegated account while it is shown', () async {
+      ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+
+      await controller.getAllRecentSearchAction(pattern: 'rep');
+
+      verify(
+        getAllRecentSearchLatestInteractor.execute(
+          DelegationFixtures.bobAccountId,
+          SessionFixtures.aliceSession.username,
+          limit: anyNamed('limit'),
+          pattern: 'rep',
+        ),
+      ).called(1);
+      verifyNever(
+        getAllRecentSearchLatestInteractor.execute(
+          AccountFixtures.aliceAccountId,
+          any,
+          limit: anyNamed('limit'),
+          pattern: anyNamed('pattern'),
+        ),
+      );
     });
 
     test(
@@ -1226,5 +1304,104 @@ void main() {
         ));
       },
     );
+  });
+
+  test('reads the shown account for its search session, not my own', () {
+    ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+
+    expect(controller.accountId, DelegationFixtures.bobAccountId);
+  });
+
+  testWidgets('picking the folder filter opens the folder picker on the shown account, not on my own',
+      (tester) async {
+    ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+    final ref = await pumpWidgetRef(tester);
+    final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.destinationPicker);
+
+    controller.selectMailboxForSearchFilter(ref, null);
+    await tester.pumpAndSettle();
+
+    expect((recorder.arguments as DestinationPickerArguments).accountId, DelegationFixtures.bobAccountId);
+  });
+
+  testWidgets('picking contacts for the filter reads the contacts of the shown account, not of my own',
+      (tester) async {
+    ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+    final ref = await pumpWidgetRef(tester);
+    final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.contact);
+
+    unawaited(controller.selectContactForSearchFilter(ref, recorder.context, PrefixEmailAddress.from));
+    await tester.pumpAndSettle();
+
+    expect((recorder.arguments as ContactArguments).accountId, DelegationFixtures.bobAccountId);
+  });
+
+  test('DropPendingMailListShortcutsAction drops a pending search shortcut and keeps later ones', () {
+    fakeAsync((async) {
+      PlatformInfo.isTestingForWeb = true;
+      addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+      controller.onKeyboardShortcutInit();
+
+      controller.shortcutActionEventController!.add(
+        MailSearchedListShortcutActionViewEvent(
+          EmailActionType.markAsRead,
+          [email('search-email-1')],
+        ),
+      );
+      mailboxDashBoardController.dashBoardAction.value =
+          DropPendingMailListShortcutsAction();
+      async.elapse(Duration.zero);
+      async.elapse(const Duration(milliseconds: 300));
+      verifyNever(
+        mailboxDashBoardController.markAsReadSelectedMultipleEmail(any, any),
+      );
+
+      controller.shortcutActionEventController!.add(
+        MailSearchedListShortcutActionViewEvent(
+          EmailActionType.markAsStarred,
+          [email('search-email-2')],
+        ),
+      );
+      async.elapse(const Duration(milliseconds: 300));
+      verify(
+        mailboxDashBoardController.markAsStarSelectedMultipleEmail(any, any),
+      ).called(1);
+    });
+  });
+
+  test('DropPendingMailListShortcutsAction drops a search shortcut mid-debounce and keeps later ones', () {
+    fakeAsync((async) {
+      PlatformInfo.isTestingForWeb = true;
+      addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+      controller.onKeyboardShortcutInit();
+
+      controller.shortcutActionEventController!.add(
+        MailSearchedListShortcutActionViewEvent(
+          EmailActionType.markAsRead,
+          [email('search-email-1')],
+        ),
+      );
+      async.elapse(const Duration(milliseconds: 150));
+      mailboxDashBoardController.dashBoardAction.value =
+          DropPendingMailListShortcutsAction();
+      async.elapse(Duration.zero);
+      async.elapse(const Duration(milliseconds: 300));
+      verifyNever(
+        mailboxDashBoardController.markAsReadSelectedMultipleEmail(any, any),
+      );
+
+      controller.shortcutActionEventController!.add(
+        MailSearchedListShortcutActionViewEvent(
+          EmailActionType.markAsStarred,
+          [email('search-email-2')],
+        ),
+      );
+      async.elapse(const Duration(milliseconds: 300));
+      verify(
+        mailboxDashBoardController.markAsStarSelectedMultipleEmail(any, any),
+      ).called(1);
+    });
   });
 }

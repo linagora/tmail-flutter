@@ -23,6 +23,7 @@ class JmapClient {
         tokenEndpointUrl: String?,
         oidcScopes: [String]?,
         isTWP: Bool?,
+        keychainAccountId: String? = nil,
         onComplete: @escaping (NewEmailFetchResult) -> Void
     ) {
         if (authenticationType == AuthenticationType.basic) {
@@ -46,9 +47,10 @@ class JmapClient {
             )
         }
 
+        // Token refresh must write under the personal keychain key, not a delegated accountId.
         authenticationInterceptor = AuthenticationInterceptor(
             authentication: authentication,
-            accountId: accountId,
+            accountId: keychainAccountId ?? accountId,
             tokenRefreshManager: tokenRefreshManager
         )
         
@@ -118,13 +120,6 @@ class JmapClient {
     }
     
     private func sortListEmails(currentListEmails: [Email]) -> [Email] {
-        let sortedListEmails = currentListEmails.sorted(by: { (email1, email2) -> Bool in
-            if let date1 = email1.receivedAt?.convertUTCDateToLocalDate(),
-               let date2 = email2.receivedAt?.convertUTCDateToLocalDate() {
-                return date1 < date2
-            }
-            return false
-        })
-        return sortedListEmails
+        emailsSortedByReceivedAt(currentListEmails)
     }
 }

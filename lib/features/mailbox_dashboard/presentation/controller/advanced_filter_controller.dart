@@ -9,7 +9,9 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/input_field_focus_manager.dart';
@@ -41,7 +43,7 @@ typedef _AddressTagConfig = ({
   GlobalKey<TagsEditorState> keyTagEditor,
 });
 
-class AdvancedFilterController extends BaseController {
+class AdvancedFilterController extends BaseController with ActiveAccountReader {
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
 
   final GlobalKey<TagsEditorState> keyFromEmailTagEditor = GlobalKey<TagsEditorState>();
@@ -120,7 +122,7 @@ class AdvancedFilterController extends BaseController {
     PresentationMailbox? mailboxSelected,
     required SearchFilterNotifier filterNotifier,
   }) async {
-    final accountId = _mailboxDashBoardController.accountId.value;
+    final accountId = activeAccountId;
     final session = _mailboxDashBoardController.sessionCurrent;
 
     if (session == null || accountId == null) return;
@@ -165,13 +167,16 @@ class AdvancedFilterController extends BaseController {
 
   Future<List<EmailAddress>> getAutoCompleteSuggestion(String word, {int? limit}) async {
     log('AdvancedFilterController::getAutoCompleteSuggestion():word = $word | limit = $limit');
-    _getAutoCompleteInteractor = getBinding<GetAutoCompleteInteractor>();
+    _getAutoCompleteInteractor = _mailboxDashBoardController.sessionCurrent
+            ?.supportsTMailContactAutocomplete(activeAccountId) == true
+        ? getBinding<GetAutoCompleteInteractor>()
+        : null;
 
     return await _getAutoCompleteInteractor
       ?.execute(AutoCompletePattern(
           word: word,
           limit: limit,
-          accountId: _mailboxDashBoardController.accountId.value,
+          accountId: activeAccountId,
       )).then((value) => value.fold(
         (failure) => <EmailAddress>[],
         (success) => success is GetAutoCompleteSuccess

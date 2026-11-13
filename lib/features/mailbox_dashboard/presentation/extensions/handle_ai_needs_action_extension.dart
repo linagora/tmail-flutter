@@ -3,8 +3,9 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
 extension HandleAiNeedsActionExtension on MailboxDashBoardController {
+  /// Needs Action reads the keywords of the shown mailbox, so it needs AI on that account.
   bool get isAiCapabilitySupported {
-    final currentAccountId = accountId.value;
+    final currentAccountId = activeAccountId;
     final currentSession = sessionCurrent;
 
     if (currentAccountId == null || currentSession == null) {

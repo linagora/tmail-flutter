@@ -8,6 +8,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tmail_ui_user/features/base/shortcut/app_shortcut_manager.dart';
 import 'package:tmail_ui_user/features/base/shortcut/mail/mail_view_action_shortcut_type.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/utils/shown_account_shortcut_block.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/key_shortcut_extension.dart';
@@ -17,6 +18,8 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_
 extension HandleMailShortcutActionsExtension on ThreadDetailController {
 
   void onKeyDownEventAction(KeyEvent event) {
+    if (shownAccountShortcutBlocked.value) return;
+
     final shortcutType = AppShortcutManager.getMailViewActionFromEvent(event);
     log('$runtimeType::onKeyDownEventAction:🔥Shortcut triggered: $shortcutType');
     if (shortcutType == null) return;
@@ -36,13 +39,17 @@ extension HandleMailShortcutActionsExtension on ThreadDetailController {
   void onKeyboardShortcutInit() {
     if (PlatformInfo.isWeb) {
       keyboardShortcutFocusNode = FocusNode();
-      shortcutActionEventController =
-          StreamController<MailViewShortcutActionViewEvent>();
-      shortcutActionEventSubscription = shortcutActionEventController
-          ?.stream
-          .debounceTime(const Duration(milliseconds: 300))
-          .listen(_onShortcutActionViewEvent);
+      _listenShortcutActionEvents();
     }
+  }
+
+  void _listenShortcutActionEvents() {
+    shortcutActionEventController =
+        StreamController<MailViewShortcutActionViewEvent>();
+    shortcutActionEventSubscription = shortcutActionEventController
+        ?.stream
+        .debounceTime(const Duration(milliseconds: 300))
+        .listen(_onShortcutActionViewEvent);
   }
 
   void _onShortcutActionViewEvent(MailViewShortcutActionViewEvent event) {
@@ -77,7 +84,7 @@ extension HandleMailShortcutActionsExtension on ThreadDetailController {
 
     final emailActionType = shortcutType.getEmailActionType(
       currentEmail: expandedEmail,
-      ownerEmailAddress: mailboxDashBoardController.ownEmailAddress.value,
+      ownerEmailAddresses: mailboxDashBoardController.ownerEmailAddresses,
     );
     log('$runtimeType::onKeyDownEventAction:🔥EmailActionType: $emailActionType');
     if (emailActionType == null) return;
@@ -93,7 +100,16 @@ extension HandleMailShortcutActionsExtension on ThreadDetailController {
     }
   }
 
+  /// A switch starts after a key may already sit in the debounce window.
+  void dropPendingShortcutActions() {
+    if (!PlatformInfo.isWeb) return;
+    shortcutActionEventSubscription?.cancel();
+    shortcutActionEventController?.close();
+    _listenShortcutActionEvents();
+  }
+
   void refocusMailShortcutFocus() {
+    if (shownAccountShortcutBlocked.value) return;
     if (keyboardShortcutFocusNode?.hasFocus == false) {
       keyboardShortcutFocusNode?.requestFocus();
     }

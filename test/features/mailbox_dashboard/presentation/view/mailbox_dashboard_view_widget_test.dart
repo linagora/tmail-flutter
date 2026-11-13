@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/default_close_button_widget.dart';
@@ -10,8 +12,11 @@ import 'package:flutter/material.dart' hide SearchController, State;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
+import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:jmap_dart_client/jmap/core/account/account.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
@@ -38,6 +43,22 @@ import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
+import 'package:tmail_ui_user/features/base/widget/hide_inside_cozy_widget.dart';
+import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_capabilities.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/providers/shown_account_capabilities_provider.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/widgets/compact_account_switcher.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/widgets/standalone_account_avatar_menu.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/widgets/viewing_owner_banner.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/app_dashboard/linagora_app.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/app_linagora_ecosystem.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/profile_setting/profile_setting_action_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/dashboard_navigation_bar.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/profile_setting/cozy_profile_setting_icon.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/profile_setting/profile_setting_icon.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
@@ -77,6 +98,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/subaddressing_int
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_app_bar.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view.dart'
     as mobile_mailbox_view;
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dart';
@@ -137,6 +159,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_em
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/mobile_app_bar_thread_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -150,6 +173,8 @@ import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
+import '../../../../fixtures/active_account_source_fixtures.dart';
+import '../../../../fixtures/delegation_fixtures.dart';
 import '../../../../fixtures/email_fixtures.dart';
 import '../../../../fixtures/mailbox_fixtures.dart';
 import '../../../../fixtures/recording_paywall_launcher.dart';
@@ -360,11 +385,20 @@ void main() {
     () => _TestEcosystemNotifier(() => initialTestEcosystem),
   );
 
-  Widget makeTestableWidget({required Widget child}) {
+  Widget makeTestableWidget({
+    required Widget child,
+    bool canOpenSettings = true,
+    FutureOr<bool> insideCozy = true,
+  }) {
     return ProviderScope(
       overrides: [
+        shownAccountCapabilitiesProvider.overrideWithValue(ShownAccountCapabilities.of(
+          canOpenSettings
+              ? null
+              : ActiveAccount.delegated(DelegationFixtures.session(), DelegationFixtures.bobAccountId),
+        )),
         paywallLauncherProvider.overrideWithValue(testPaywallLauncher),
-        insideCozyProvider.overrideWith((ref) => true),
+        insideCozyProvider.overrideWith((ref) => insideCozy),
         activeEcosystemProvider.overrideWith((ref, _) {
           final ecosystem = ref.watch(testEcosystemProvider);
           return ecosystem == null
@@ -526,6 +560,7 @@ void main() {
     }
 
     void createDashboardController() {
+      ActiveAccountSourceFixtures.putShowing(null);
       mailboxDashboardController = MailboxDashBoardController(
         moveToMailboxInteractor,
         deleteEmailPermanentlyInteractor,
@@ -607,6 +642,18 @@ void main() {
       mailboxDashboardController.sessionCurrent = SessionFixtures.aliceSession;
       mailboxDashboardController.filterMessageOption.value = FilterMessageOption.all;
       mailboxDashboardController.accountId.value = AccountFixtures.aliceAccountId;
+      Get.find<ActiveAccountWriter>().applySession(SessionFixtures.aliceSession);
+    });
+
+    testWidgets('MailboxController loads the folders of the shown account when it changes',
+        (tester) async {
+      await tester.pumpWidget(const SizedBox());
+      when(getAllMailboxInteractor.execute(any, any)).thenAnswer((_) => const Stream.empty());
+
+      (mailboxDashboardController.activeAccountSource as FakeActiveAccountSource).show(DelegationFixtures.bobAccountId);
+
+      expect(mailboxController.accountId, DelegationFixtures.bobAccountId);
+      verify(getAllMailboxInteractor.execute(any, DelegationFixtures.bobAccountId)).called(1);
     });
 
     testWidgets('mailbox selection is hidden while email search is active',
@@ -824,7 +871,269 @@ void main() {
       );
     });
 
+    group('Settings entries', () {
+      Future<void> pumpDesktopDashboard(
+        WidgetTester tester, {
+        required bool canOpenSettings,
+        FutureOr<bool> insideCozy = true,
+      }) async {
+        addTearDown(() => WidgetFixtures.resetResponsive(tester));
+        debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+        final dpi = tester.view.devicePixelRatio;
+        tester.view.physicalSize = Size(dpi * 1920 * 2, dpi * 1080 * 2);
+
+        when(mailboxDashboardController.spamReportController.spamReportState).thenReturn(Rx(SpamReportState.disabled));
+        when(mailboxDashboardController.spamReportController.presentationSpamMailbox).thenReturn(Rxn(null));
+        when(mailboxDashboardController.downloadController.listDownloadTaskState).thenReturn(RxList([]));
+        when(mailboxDashboardController.labelController.isLabelSettingEnabled).thenReturn(RxBool(false));
+        when(mailboxDashboardController.labelController.labels).thenReturn(RxList([]));
+        when(composerManager.composers).thenReturn(RxMap({}));
+        mailboxDashboardController.vacationResponse.value = VacationResponse(
+          isEnabled: true,
+          fromDate: UTCDate(DateTime.now().subtract(const Duration(days: 1))),
+        );
+
+        await tester.pumpWidget(makeTestableWidget(
+          child: MailboxDashBoardView(),
+          canOpenSettings: canOpenSettings,
+          insideCozy: insideCozy,
+        ));
+        await tester.pump();
+      }
+
+      Future<void> pumpMobileMailboxView(WidgetTester tester, {required bool canOpenSettings}) async {
+        mailboxDashboardController.sessionCurrent = SessionFixtures.aliceSession;
+        addTearDown(() => WidgetFixtures.resetResponsive(tester));
+        await WidgetFixtures.pumpResponsiveWidget(
+          tester,
+          makeTestableWidget(child: MailboxView(), canOpenSettings: canOpenSettings),
+          logicalSize: const Size(400, 800),
+          platform: TargetPlatform.android,
+        );
+      }
+
+      testWidgets('the mobile mailbox bar shows the avatar that opens Settings while Settings can open', (tester) async {
+        arrangeSidebarMenu();
+        await pumpMobileMailboxView(tester, canOpenSettings: true);
+
+        expect(find.byKey(const ValueKey(UiKeys.userAvatar)), findsOneWidget);
+        expect(
+          tester.widget<MailboxAppBar>(find.byType(MailboxAppBar)).openSettingsAction,
+          mailboxDashboardController.goToSettings,
+        );
+
+        WidgetFixtures.resetResponsive(tester);
+      });
+
+      testWidgets('the mobile mailbox bar hides the avatar while Settings cannot open', (tester) async {
+        arrangeSidebarMenu();
+        await pumpMobileMailboxView(tester, canOpenSettings: false);
+
+        expect(find.byType(MailboxAppBar), findsOneWidget);
+        expect(find.byKey(const ValueKey(UiKeys.userAvatar)), findsNothing);
+
+        WidgetFixtures.resetResponsive(tester);
+      });
+
+      testWidgets('the mobile mailbox bar shows the app grid once the apps load after it is built', (tester) async {
+        arrangeSidebarMenu();
+        final linagoraApps = RxList<AppLinagoraEcosystem>();
+        when(mailboxDashboardController.appGridDashboardController.listLinagoraApp).thenReturn(linagoraApps);
+        await pumpMobileMailboxView(tester, canOpenSettings: true);
+        expect(find.byKey(const ValueKey(UiKeys.toggleAppGridButton)), findsNothing);
+
+        linagoraApps.add(LinagoraApp(appUri: Uri.parse('https://app.example.com'), appName: 'App'));
+        await tester.pump();
+
+        expect(find.byKey(const ValueKey(UiKeys.toggleAppGridButton)), findsOneWidget);
+
+        WidgetFixtures.resetResponsive(tester);
+      });
+
+      for (final (canOpenSettings, actionTypes) in [
+        (true, [ProfileSettingActionType.manageAccount, ProfileSettingActionType.signOut]),
+        (false, [ProfileSettingActionType.signOut]),
+      ]) {
+        final offered = actionTypes.map((type) => type.name).join(' and ');
+        final settingsState = canOpenSettings ? 'can' : 'cannot';
+
+        testWidgets('the Cozy avatar menu offers $offered while Settings $settingsState open', (tester) async {
+          await tester.pumpWidget(makeTestableWidget(
+            child: Portal(child: CozyProfileSettingIcon()),
+            canOpenSettings: canOpenSettings,
+          ));
+          await tester.pump();
+
+          expect(tester.widget<ProfileSettingIcon>(find.byType(ProfileSettingIcon)).settingActionTypes, actionTypes);
+        });
+      }
+
+      for (final (workplaceState, insideCozy) in <(String, FutureOr<bool>)>[
+        ('inside Twake Workplace', true),
+        ('before the Twake Workplace check completes', Completer<bool>().future),
+      ]) {
+        testWidgets('the desktop dashboard hides the stand-alone account menu $workplaceState', (tester) async {
+          when(responsiveUtils.isDesktop(any)).thenReturn(true);
+          addTearDown(() => when(responsiveUtils.isDesktop(any)).thenReturn(false));
+
+          await pumpDesktopDashboard(tester, canOpenSettings: true, insideCozy: insideCozy);
+
+          expect(
+            find.byWidgetPredicate((widget) => widget is HideInsideCozyWidget && widget.child is DashboardNavigationBar),
+            findsOneWidget,
+          );
+          expect(find.byType(DashboardNavigationBar), findsNothing);
+          expect(find.byType(StandaloneAccountAvatarMenu), findsNothing);
+
+          WidgetFixtures.resetResponsive(tester);
+        });
+      }
+
+      testWidgets('the vacation banner of the email list links to the vacation settings while Settings can open', (tester) async {
+        await pumpDesktopDashboard(tester, canOpenSettings: true);
+
+        expect(find.byType(VacationNotificationMessageWidget), findsOneWidget);
+        expect(find.text('Vacation setting'), findsOneWidget);
+
+        WidgetFixtures.resetResponsive(tester);
+      });
+
+      testWidgets('the email list does not show my vacation banner while a delegated mailbox is shown',
+          (tester) async {
+        await pumpDesktopDashboard(tester, canOpenSettings: false);
+
+        expect(find.byType(VacationNotificationMessageWidget), findsNothing);
+
+        WidgetFixtures.resetResponsive(tester);
+      });
+
+      for (final (accountState, canOpenSettings, expected) in [
+        ('my own account is shown', true, findsOneWidget),
+        ('a delegated account is shown', false, findsNothing),
+      ]) {
+        testWidgets('Trash ${expected == findsNothing ? 'does not offer' : 'offers'} recover deleted messages while $accountState',
+            (tester) async {
+          mailboxDashboardController.selectedMailbox.value = PresentationMailbox(
+            MailboxId(Id('trash')),
+            role: PresentationMailbox.roleTrash,
+          );
+          mailboxDashboardController.dashboardRoute.value = DashboardRoutes.thread;
+          when(responsiveUtils.isDesktop(any)).thenReturn(true);
+          addTearDown(() => when(responsiveUtils.isDesktop(any)).thenReturn(false));
+          await pumpDesktopDashboard(tester, canOpenSettings: canOpenSettings);
+
+          expect(find.byKey(const Key(UiKeys.recoverDeletedMessagesButton)), expected);
+
+          WidgetFixtures.resetResponsive(tester);
+        });
+      }
+    });
+
     group('ThreadView', () {
+      Future<ProviderContainer> pumpNarrowDashboard(
+        WidgetTester tester, {
+        bool isTabletLarge = true,
+      }) async {
+        PlatformInfo.isTestingForWeb = true;
+        addTearDown(() => PlatformInfo.isTestingForWeb = false);
+        addTearDown(() => WidgetFixtures.resetResponsive(tester));
+        when(responsiveUtils.isTabletLarge(any)).thenReturn(isTabletLarge);
+        addTearDown(() => when(responsiveUtils.isTabletLarge(any)).thenReturn(false));
+        final dpi = tester.view.devicePixelRatio;
+        tester.view.physicalSize = Size(dpi * (isTabletLarge ? 1000 : 700), dpi * 800);
+
+        when(mailboxDashboardController.spamReportController.spamReportState).thenReturn(Rx(SpamReportState.disabled));
+        when(mailboxDashboardController.spamReportController.presentationSpamMailbox).thenReturn(Rxn(null));
+        when(mailboxDashboardController.downloadController.listDownloadTaskState).thenReturn(RxList([]));
+        when(mailboxDashboardController.labelController.isLabelSettingEnabled).thenReturn(RxBool(false));
+        when(mailboxDashboardController.labelController.labels).thenReturn(RxList([]));
+        when(composerManager.composers).thenReturn(RxMap({}));
+
+        await tester.pumpWidget(makeTestableWidget(child: MailboxDashBoardView(), insideCozy: false));
+        await tester.pump();
+        final container = ProviderScope.containerOf(tester.element(find.byType(ThreadView)));
+        container.read(activeAccountProvider.notifier).applySession(DelegationFixtures.session());
+        DelegationFixtures.turnDelegationOn(container);
+        await tester.pump();
+        return container;
+      }
+
+      Future<void> showDelegatedMailbox(WidgetTester tester, ProviderContainer container) async {
+        container.read(activeAccountProvider.notifier).select(DelegationFixtures.bobAccountId);
+        await tester.pump();
+      }
+
+      final appBarSwitcher = find.descendant(
+        of: find.byType(MobileAppBarThreadWidget),
+        matching: find.byKey(CompactAccountSwitcher.switcherKey),
+      );
+
+      testWidgets(
+        'WHEN web viewport is tabletLarge (1000px)\n'
+        'the dashboard SHOULD keep the drawer layout without the desktop navigation bar',
+      (tester) async {
+        await pumpNarrowDashboard(tester);
+
+        expect(find.byType(ThreadView), findsOneWidget);
+        expect(find.byType(MobileAppBarThreadWidget), findsOneWidget);
+        expect(
+          find.byWidgetPredicate((widget) => widget is HideInsideCozyWidget && widget.child is DashboardNavigationBar),
+          findsNothing,
+        );
+      });
+
+      testWidgets(
+        'WHEN web viewport is tabletLarge (1000px)\n'
+        'AND the own mailbox is shown\n'
+        'ThreadView SHOULD show the compact account switcher in the app bar',
+      (tester) async {
+        await pumpNarrowDashboard(tester);
+
+        expect(appBarSwitcher, findsOneWidget);
+        expect(find.byKey(ViewingOwnerBanner.bannerKey), findsNothing);
+      });
+
+      testWidgets(
+        'WHEN web viewport is tabletLarge (1000px)\n'
+        'AND a delegated mailbox is shown\n'
+        'ThreadView SHOULD keep the compact account switcher\n'
+        'AND SHOULD NOT show the Viewing banner',
+      (tester) async {
+        final container = await pumpNarrowDashboard(tester);
+
+        await showDelegatedMailbox(tester, container);
+
+        expect(appBarSwitcher, findsOneWidget);
+        expect(find.byKey(ViewingOwnerBanner.bannerKey), findsNothing);
+      });
+
+      testWidgets(
+        'WHEN web viewport is mobile (700px)\n'
+        'AND a delegated mailbox is shown\n'
+        'ThreadView SHOULD show the compact account switcher\n'
+        'AND SHOULD NOT show the Viewing banner',
+      (tester) async {
+        final container = await pumpNarrowDashboard(tester, isTabletLarge: false);
+
+        await showDelegatedMailbox(tester, container);
+
+        expect(appBarSwitcher, findsOneWidget);
+        expect(find.byKey(ViewingOwnerBanner.bannerKey), findsNothing);
+      });
+
+      testWidgets(
+        'WHEN web viewport is mobile (700px)\n'
+        'AND the user taps the compact account switcher\n'
+        'the account menu SHOULD open',
+      (tester) async {
+        await pumpNarrowDashboard(tester, isTabletLarge: false);
+
+        await tester.tap(find.byKey(LinagoraAccountSwitcher.chipKey));
+        await tester.pump();
+
+        expect(find.byKey(LinagoraAccountSwitcher.menuKey), findsOneWidget);
+      });
+
       testWidgets(
         'WHEN switch from old mailbox to new mailbox\n'
         'AND old mailbox and new mailbox both have emails\n'
@@ -1440,6 +1749,7 @@ void main() {
             // Arrange
             arrangeSidebarMenu();
             when(responsiveUtils.isWebDesktop(any)).thenReturn(isWebDesktop);
+            addTearDown(() => when(responsiveUtils.isWebDesktop(any)).thenReturn(false));
             mailboxDashboardController.sessionCurrent = createPremiumSession();
             mailboxDashboardController.accountId.value =
                 AccountFixtures.aliceAccountId;

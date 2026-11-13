@@ -24,7 +24,9 @@ extension HandleKeyboardShortcutActionsExtension on ComposerController {
 
   void onKeyboardShortcutDispose() {
     if (PlatformInfo.isWeb) {
-      keyboardShortcutFocusNode?.dispose();
+      final focusNode = keyboardShortcutFocusNode;
+      // The composer view unmounts on the next frame. Disposing now cuts its focus subtree off its scope.
+      WidgetsBinding.instance.addPostFrameCallback((_) => focusNode?.dispose());
     }
   }
 

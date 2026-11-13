@@ -9,20 +9,25 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:contact/contact/model/capability_contact.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:model/autocomplete/auto_complete_pattern.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
+import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
@@ -48,11 +53,16 @@ import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import 'advanced_filter_controller_test.mocks.dart';
+
+import '../../../../fixtures/active_account_source_fixtures.dart';
+import '../../../../fixtures/delegation_fixtures.dart';
+import '../../../../fixtures/route_arguments_recorder.dart';
 
 typedef _CommittedFlagReader = bool Function(SearchEmailFilter filter);
 typedef _CheckboxFinder = Finder Function();
@@ -191,6 +201,7 @@ void main() {
         .thenReturn(SearchEmailFilter.defaultSortOrder);
 
     Get.put<MailboxDashBoardController>(mockMailboxDashBoardController);
+    ActiveAccountSourceFixtures.putShowing(null);
     Get.put<GetAutoCompleteInteractor>(mockGetAutoCompleteInteractor);
     Get.put<StoreEmailSortOrderInteractor>(mockStoreEmailSortOrderInteractor);
 
@@ -720,6 +731,58 @@ void main() {
           appProviderContainer.read(searchFilterProvider).hasAttachment,
           isFalse);
       });
+    });
+  });
+
+  group('AdvancedFilterController::selectedMailBox', () {
+    testWidgets('opens the folder picker on the shown account, not on my own', (tester) async {
+      ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+      when(mockMailboxDashBoardController.sessionCurrent).thenReturn(DelegationFixtures.session());
+      final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.destinationPicker);
+
+      advancedFilterController.selectedMailBox(
+        recorder.context,
+        filterNotifier: appProviderContainer.read(searchFilterProvider.notifier),
+      );
+      await tester.pumpAndSettle();
+
+      expect((recorder.arguments as DestinationPickerArguments).accountId, DelegationFixtures.bobAccountId);
+    });
+  });
+
+  group('AdvancedFilterController::getAutoCompleteSuggestion', () {
+    void showBobWith(Set<CapabilityIdentifier> bobCapabilities) {
+      ActiveAccountSourceFixtures.showForThisTest(DelegationFixtures.bobAccountId);
+      when(mockMailboxDashBoardController.accountId).thenReturn(Rxn(DelegationFixtures.aliceAccountId));
+      when(mockMailboxDashBoardController.sessionCurrent)
+          .thenReturn(DelegationFixtures.sessionWithBobCapabilities(
+            bobCapabilities,
+            myExtraCapabilities: {tmailContactCapabilityIdentifier},
+          ));
+      addTearDown(() {
+        when(mockMailboxDashBoardController.accountId).thenReturn(Rxn<AccountId>());
+        when(mockMailboxDashBoardController.sessionCurrent).thenReturn(null);
+      });
+    }
+
+    test('SHOULD NOT query contacts while the shown account has no contact autocomplete, even though mine has', () async {
+      showBobWith({CapabilityIdentifier.jmapMail});
+
+      final suggestions = await advancedFilterController.getAutoCompleteSuggestion('car');
+
+      expect(suggestions, isEmpty);
+      verifyNever(mockGetAutoCompleteInteractor.execute(any));
+    });
+
+    test('suggests the contacts of the shown account, not of my own', () async {
+      showBobWith({CapabilityIdentifier.jmapMail, tmailContactCapabilityIdentifier});
+      when(mockGetAutoCompleteInteractor.execute(any))
+          .thenAnswer((_) async => Right(GetAutoCompleteSuccess([])));
+
+      await advancedFilterController.getAutoCompleteSuggestion('car');
+
+      final pattern = verify(mockGetAutoCompleteInteractor.execute(captureAny)).captured.single as AutoCompletePattern;
+      expect(pattern.accountId, DelegationFixtures.bobAccountId);
     });
   });
 }

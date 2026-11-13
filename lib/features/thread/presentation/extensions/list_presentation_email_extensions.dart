@@ -60,18 +60,20 @@ extension ListPresentationEmailExtensions on List<PresentationEmail> {
 
   List<EmailInThreadDetailInfo> toEmailsInThreadDetailInfo({
     required MailboxId? sentMailboxId,
-    required String? ownEmailAddress,
+    required Set<String>? ownerEmailAddresses,
   }) {
     return map(
       (email) => EmailInThreadDetailInfo(
         emailId: email.id!,
         keywords: email.keywords,
         mailboxIds: email.mailboxIds,
-        isValidToDisplay: sentMailboxId == null || ownEmailAddress == null
+        isValidToDisplay: sentMailboxId == null ||
+                ownerEmailAddresses == null ||
+                ownerEmailAddresses.isEmpty
             ? true
-            : email.toEmail().checkEmailValidForThreadDetail(
+            : email.toEmail().checkEmailValidForThreadDetailAddresses(
                   sentMailboxId,
-                  ownEmailAddress,
+                  ownerEmailAddresses,
                 ),
       ),
     ).toList();

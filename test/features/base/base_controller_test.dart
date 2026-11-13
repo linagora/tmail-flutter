@@ -16,6 +16,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart' hide State;
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -32,6 +33,11 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/base/sentry_session_cleanup.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/delegation/domain/model/ended_delegation_cleanup.dart';
+import 'package:tmail_ui_user/features/delegation/domain/repository/ended_delegation_store.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
@@ -54,6 +60,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/compo
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_interactor.dart';
 
 import '../../fixtures/account_fixtures.dart';
+import '../../fixtures/active_account_source_fixtures.dart';
+import '../../fixtures/delegation_fixtures.dart';
 import '../../fixtures/session_fixtures.dart';
 import 'base_controller_test.mocks.dart';
 
@@ -105,6 +113,44 @@ class FakeComposerCacheRepository extends Fake implements ComposerCacheRepositor
     events.add('removeAllComposerCache');
     removedFor = (accountId: accountId, userName: userName);
     if (error != null) throw error!;
+  }
+}
+
+class _SnapshotStore implements EndedDelegationStore {
+  _SnapshotStore(this.events);
+
+  final List<String> events;
+  AccountId? personalAccountId;
+  UserName? userName;
+
+  @override
+  Future<void> removeDelegatedComposerSnapshots({
+    required UserName userName,
+    required AccountId personalAccountId,
+  }) async {
+    events.add('snapshots');
+    this.userName = userName;
+    this.personalAccountId = personalAccountId;
+  }
+
+  @override
+  Future<Set<AccountId>> storedAccountIds({
+    required UserName userName,
+    required AccountId personalAccountId,
+  }) async => {};
+
+  @override
+  Future<StoredDelegatedAccount> describe(UserName userName, AccountId accountId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> delete({
+    required UserName userName,
+    required AccountId personalAccountId,
+    required AccountId accountId,
+  }) {
+    throw UnimplementedError();
   }
 }
 
@@ -435,6 +481,94 @@ void main() {
       verify(mockDeleteCredentialInteractor.execute()).called(1);
       verifyNever(mockDeleteAuthorityOidcInteractor.execute());
     });
+
+    testWidgets('ends delegation state in the widget provider scope before clearing session data', (tester) async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      BuildContext? providerContext;
+      final session = DelegationFixtures.session();
+      final activeAccountNotifier = container.read(activeAccountProvider.notifier);
+      activeAccountNotifier.applySession(session);
+      activeAccountNotifier.select(DelegationFixtures.bobAccountId);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            home: Builder(
+              builder: (context) {
+                providerContext = context;
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        ),
+      );
+      expect(providerContext, isNotNull);
+      expect(
+        ProviderScope.containerOf(providerContext!, listen: false),
+        same(container),
+      );
+      when(mockAuthorizationInterceptors.authenticationType)
+          .thenReturn(AuthenticationType.basic);
+
+      await mockBaseController.clearAllData(
+        context: providerContext,
+      );
+
+      expect(container.read(activeAccountProvider), isNull);
+      expect(
+        container.read(accountSwitchProvider).currentAttemptId,
+        1,
+      );
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+
+    testWidgets('continues clearing session data if no provider scope is available', (tester) async {
+      BuildContext? contextWithoutScope;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) {
+              contextWithoutScope = context;
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      );
+      expect(contextWithoutScope, isNotNull);
+      when(mockAuthorizationInterceptors.authenticationType)
+          .thenReturn(AuthenticationType.basic);
+
+      await mockBaseController.clearAllData(
+        context: contextWithoutScope,
+      );
+
+      verify(mockDeleteCredentialInteractor.execute()).called(1);
+      verify(mockCachingManager.clearAll()).called(1);
+    });
+
+    test('forgets the shown account, so the next user never starts on it', () async {
+      when(mockAuthorizationInterceptors.authenticationType).thenReturn(AuthenticationType.basic);
+      final source = ActiveAccountSourceFixtures.put(
+        DelegationFixtures.session(),
+        shownAccountId: DelegationFixtures.bobAccountId,
+      );
+      addTearDown(ActiveAccountSourceFixtures.unregister);
+
+      await mockBaseController.clearAllData();
+
+      expect(source.activeAccount, isNull);
+    });
+
+    test('still clears account data when no dashboard is open', () async {
+      when(mockAuthorizationInterceptors.authenticationType).thenReturn(AuthenticationType.basic);
+
+      await mockBaseController.clearAllData();
+
+      expect(Get.isRegistered<ActiveAccountWriter>(), isFalse);
+      verify(mockCachingManager.clearAll()).called(1);
+    });
   });
 
   group('BaseController::getMinInputLengthAutocomplete::test', () {
@@ -662,6 +796,34 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(mockBaseController.events, ['removeAllComposerCache', 'logout']);
+    });
+  });
+
+  group('BaseController::logoutToSignInNewAccount', () {
+    setUp(() {
+      mockBaseController.resetState();
+      when(mockAuthorizationInterceptors.authenticationType).thenReturn(AuthenticationType.basic);
+      when(mockTwakeAppManager.runClearDataOnce(any)).thenAnswer((_) async {
+        mockBaseController.events.add('clearAllData');
+      });
+    });
+
+    test('removes delegated composer snapshots before clearing data', () async {
+      final store = _SnapshotStore(mockBaseController.events);
+      Get.put<EndedDelegationStore>(store);
+      addTearDown(() => Get.delete<EndedDelegationStore>(force: true));
+      final session = DelegationFixtures.session();
+
+      await mockBaseController.logoutToSignInNewAccount(
+        session: session,
+        accountId: DelegationFixtures.aliceAccountId,
+        onSuccessCallback: () {},
+        onFailureCallback: ({Object? exception}) => fail('$exception'),
+      );
+
+      expect(mockBaseController.events, ['snapshots', 'clearAllData']);
+      expect(store.personalAccountId, DelegationFixtures.aliceAccountId);
+      expect(store.userName, session.username);
     });
   });
 
