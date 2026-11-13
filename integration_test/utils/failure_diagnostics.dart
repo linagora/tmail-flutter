@@ -3,6 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:patrol/patrol.dart';
 
+import 'primary_focus_logger.dart';
+
 // Keeps the dump under the logcat buffer limit; the top route prints last, so keep the tail.
 const _maxTreeLines = 1500;
 
@@ -39,6 +41,7 @@ void dumpFailureState(PatrolIntegrationTester $) {
         'focus=${FocusManager.instance.primaryFocus} keyboardInset=$keyboardInset';
     $.log(summary);
     debugPrintSynchronously(summary);
+    PrimaryFocusLogger.instance.dump();
     _printLines(FocusManager.instance.toStringDeep());
     _printLines(
       WidgetsBinding.instance.rootElement?.toStringDeep() ?? 'no root element',

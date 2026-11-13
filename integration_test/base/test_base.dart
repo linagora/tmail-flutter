@@ -12,6 +12,7 @@ import '../models/test_tags.dart';
 import '../utils/backend_reset_client.dart';
 import '../utils/failure_diagnostics.dart';
 import '../utils/mock_text_input.dart';
+import '../utils/primary_focus_logger.dart';
 import '../utils/test_backend.dart';
 import 'base_scenario.dart';
 import '../factories/robot_factory.dart';
@@ -87,6 +88,8 @@ class TestBase {
     // The preload reloads env.file, whose SERVER_URL the web login reads.
     if (TestBackend.leased != null) dotenv.env['SERVER_URL'] = TestBackend.current.url;
     await scenario.prepare();
+    PrimaryFocusLogger.instance.start();
+    addTearDown(PrimaryFocusLogger.instance.stop);
     runApp(const TMailApp());
 
     final originalOnError = FlutterError.onError!;
