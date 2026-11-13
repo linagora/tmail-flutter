@@ -33,4 +33,10 @@ class MobileSettingsRobot extends SettingRobot
 
   @override
   Future<void> leaveSettingsDetail() => backToSettingsFromFirstLevel();
+
+  @override
+  Future<void> closeSettingsFromDetail() async {
+    await leaveSettingsDetail();
+    await closeSettings();
+  }
 }
