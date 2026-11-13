@@ -53,8 +53,14 @@ class _FakeSession extends Fake implements SessionStorageManager {
 // Any call throws UnimplementedError, which stands in for a platform failure.
 class _UnavailableStorage extends Fake implements FlutterSecureStorage {}
 
-// Write returns normally but keeps nothing, like an fss 8 iOS OSStatus result.
-class _DroppingStorage extends Fake implements FlutterSecureStorage {
+// Drops the next [writesToDrop] writes (null = every write), then keeps values.
+// models fss 8 iOS OSStatus results that look like success.
+class _MapSecureStorage extends Fake implements FlutterSecureStorage {
+  final Map<String, String> values = {};
+  int? writesToDrop;
+
+  _MapSecureStorage({this.writesToDrop});
+
   @override
   Future<void> write({
     required String key,
@@ -65,7 +71,19 @@ class _DroppingStorage extends Fake implements FlutterSecureStorage {
     WebOptions? webOptions,
     MacOsOptions? mOptions,
     WindowsOptions? wOptions,
-  }) async {}
+  }) async {
+    final left = writesToDrop;
+    if (left == null) return;
+    if (left > 0) {
+      writesToDrop = left - 1;
+      return;
+    }
+    if (value == null) {
+      values.remove(key);
+    } else {
+      values[key] = value;
+    }
+  }
 
   @override
   Future<String?> read({
@@ -76,7 +94,20 @@ class _DroppingStorage extends Fake implements FlutterSecureStorage {
     WebOptions? webOptions,
     MacOsOptions? mOptions,
     WindowsOptions? wOptions,
-  }) async => null;
+  }) async => values[key];
+
+  @override
+  Future<void> delete({
+    required String key,
+    IOSOptions? iOptions,
+    AndroidOptions? aOptions,
+    LinuxOptions? lOptions,
+    WebOptions? webOptions,
+    MacOsOptions? mOptions,
+    WindowsOptions? wOptions,
+  }) async {
+    values.remove(key);
+  }
 }
 
 void main() {
@@ -231,7 +262,7 @@ void main() {
     });
 
     test('a dropped secure write keeps the Hive login', () async {
-      manager = AuthenticationInfoCacheManager(client, session, secureStorage: _DroppingStorage());
+      manager = AuthenticationInfoCacheManager(client, session, secureStorage: _MapSecureStorage());
       client.item = info;
 
       expect(await manager.getAuthenticationInfoStored(), info);
@@ -241,7 +272,7 @@ void main() {
     });
 
     test('a dropped secure write on a fresh login keeps it for this run', () async {
-      manager = AuthenticationInfoCacheManager(client, session, secureStorage: _DroppingStorage());
+      manager = AuthenticationInfoCacheManager(client, session, secureStorage: _MapSecureStorage());
 
       await manager.storeAuthenticationInfo(info);
 
@@ -249,9 +280,32 @@ void main() {
       expect(client.insertCalls, 0);
     });
 
-    test('clear drops a login kept for this run', () async {
-      manager = AuthenticationInfoCacheManager(client, session, secureStorage: _DroppingStorage());
+    test('a later successful store clears the in-memory login and purges Hive', () async {
+      final storage = _MapSecureStorage(writesToDrop: 1);
+      manager = AuthenticationInfoCacheManager(client, session, secureStorage: storage);
+      client.item = info;
       await manager.storeAuthenticationInfo(info);
+      expect(await manager.getAuthenticationInfoStored(), info);
+      expect(client.item, info);
+      expect(storage.values, isEmpty);
+
+      await manager.storeAuthenticationInfo(info);
+
+      expect(storage.values[key], isNotNull);
+      expect(client.item, isNull);
+
+      // Stale memory would still return the login after secure storage is wiped.
+      storage.values.clear();
+      expect(
+        manager.getAuthenticationInfoStored(),
+        throwsA(isA<NotFoundAuthenticationInfoCache>()),
+      );
+    });
+
+    test('clear drops a login kept for this run', () async {
+      manager = AuthenticationInfoCacheManager(client, session, secureStorage: _MapSecureStorage());
+      await manager.storeAuthenticationInfo(info);
+      expect(await manager.getAuthenticationInfoStored(), info);
 
       await manager.clear();
 
