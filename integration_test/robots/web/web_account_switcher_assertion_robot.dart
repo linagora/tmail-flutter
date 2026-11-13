@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 import '../../base/core_robot.dart';
 import '../../utils/wait_for_condition.dart';
@@ -88,6 +89,37 @@ class WebAccountSwitcherAssertionRobot extends CoreRobot
       reason: 'dashboard identities include $email',
     );
   }
+
+  @override
+  Future<void> expectUrlNamesShownAccount() async {
+    await waitForCondition(
+      () {
+        final active = _appContainer().read(activeAccountProvider);
+        return active != null &&
+            active.isDelegated &&
+            _urlAccount() == active.accountId.id.value;
+      },
+      reason: 'the location bar names the shown delegated account',
+    );
+  }
+
+  @override
+  Future<void> expectUrlNamesNoAccount() async {
+    await waitForCondition(
+      () => _urlAccount() == null,
+      reason: 'the location bar names no account',
+    );
+  }
+
+  @override
+  Future<void> expectUrlNamesOpenedFolder() async {
+    await waitForCondition(
+      () => Uri.base.queryParameters[RouteUtils.paramContext] != null,
+      reason: 'the location bar names the opened folder',
+    );
+  }
+
+  String? _urlAccount() => Uri.base.queryParameters[RouteUtils.paramAccount];
 
   @override
   Future<void> expectLoadingDialogVisible(String ownerAddress) async {

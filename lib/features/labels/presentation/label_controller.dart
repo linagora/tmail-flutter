@@ -66,6 +66,8 @@ class LabelController extends BaseController
   }
 
   void checkLabelSettingState(Session session, AccountId accountId) {
+    // Label routing must wait for the labels of the newly shown account, not read the previous ones.
+    if (_accountId != accountId) isLabelsLoaded.value = false;
     _session = session;
     _accountId = accountId;
     _labelsCapability = _session?.getLabelsCapability(accountId);
@@ -258,6 +260,7 @@ class LabelController extends BaseController
   @override
   void handleFailureViewState(Failure failure) {
     if (failure is GetAllLabelFailure) {
+      if (failure.accountId != _accountId) return;
       setLabelLoaded();
     } else if (failure is GetLabelSettingStateFailure) {
       if (failure.accountId != _accountId) return;

@@ -12,8 +12,11 @@ import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/material.dart' hide SearchController, State;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/method_level_exception.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -56,6 +59,7 @@ import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_acc
 import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
@@ -1045,6 +1049,62 @@ void main() {
           getLatestChanges: anyNamed('getLatestChanges'),
           useCache: anyNamed('useCache'),
         )).called(1);
+      });
+    });
+
+    group('email of a start URL missing from the shown account:', () {
+      test('opens Inbox of a shown delegated account', () {
+        ActiveAccountSourceFixtures.putForThisTest(
+          DelegationFixtures.session(),
+          shownAccountId: DelegationFixtures.bobAccountId,
+        );
+
+        threadController.handleFailureViewState(GetEmailByIdFailure(NotFoundEmailException()));
+
+        verify(mockMailboxDashBoardController.dispatchMailboxUIAction(
+          argThat(isA<SystemBackToInboxAction>()),
+        )).called(1);
+      });
+
+      Future<void> failToOpenEmailOf(
+        WidgetTester tester,
+        AccountId shownAccountId,
+        GetEmailByIdFailure failure,
+      ) async {
+        ActiveAccountSourceFixtures.putForThisTest(
+          DelegationFixtures.session(),
+          shownAccountId: shownAccountId,
+        );
+        await tester.pumpWidget(GetMaterialApp(
+          getPages: [GetPage(name: AppRoutes.unknownRoutePage, page: () => const SizedBox.shrink())],
+          home: const SizedBox.shrink(),
+        ));
+        addTearDown(() => Get.routing.current = '');
+
+        threadController.handleFailureViewState(failure);
+        await tester.pumpAndSettle();
+      }
+
+      testWidgets('opens the unknown page of a shown delegated account when fetching the email fails for another reason', (tester) async {
+        await failToOpenEmailOf(
+          tester,
+          DelegationFixtures.bobAccountId,
+          GetEmailByIdFailure(const NoNetworkError()),
+        );
+
+        expect(Get.currentRoute, AppRoutes.unknownRoutePage);
+        verifyNever(mockMailboxDashBoardController.dispatchMailboxUIAction(any));
+      });
+
+      testWidgets('opens the unknown page of mine', (tester) async {
+        await failToOpenEmailOf(
+          tester,
+          DelegationFixtures.aliceAccountId,
+          GetEmailByIdFailure(NotFoundEmailException()),
+        );
+
+        expect(Get.currentRoute, AppRoutes.unknownRoutePage);
+        verifyNever(mockMailboxDashBoardController.dispatchMailboxUIAction(any));
       });
     });
 

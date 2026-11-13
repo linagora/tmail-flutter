@@ -17,6 +17,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
@@ -29,6 +30,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
@@ -269,7 +271,7 @@ class ThreadController extends BaseController
       _syncLoadMoreStatus();
     } else if (failure is GetEmailByIdFailure) {
       openingEmail.value = false;
-      popAndPush(AppRoutes.unknownRoutePage);
+      _openMissingEmailFromLocationBar(failure);
     } else if (failure is GetAllEmailFailure || failure is CleanAndGetAllEmailFailure) {
       mailboxDashBoardController.updateRefreshAllEmailState(Left(RefreshAllEmailFailure()));
     }
@@ -1526,6 +1528,16 @@ class ThreadController extends BaseController
       return emailOnWeb;
     } else {
       return currentEmail;
+    }
+  }
+
+  /// A delegated link may outlive its email, so it opens Inbox instead of the unknown page.
+  void _openMissingEmailFromLocationBar(GetEmailByIdFailure failure) {
+    if (failure.exception is NotFoundEmailException &&
+        shownAccountCapabilities.opensInboxForMissingLinkTarget) {
+      mailboxDashBoardController.dispatchMailboxUIAction(SystemBackToInboxAction());
+    } else {
+      popAndPush(AppRoutes.unknownRoutePage);
     }
   }
 

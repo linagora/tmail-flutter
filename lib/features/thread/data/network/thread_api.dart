@@ -21,6 +21,7 @@ import 'package:jmap_dart_client/jmap/mail/email/get/get_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/query/query_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/query/query_email_response.dart';
 import 'package:model/extensions/list_id_extension.dart';
+import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
 import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet.dart';
@@ -297,6 +298,10 @@ class ThreadAPI with HandleSetErrorMixin, SessionMixin, MailAPIMixin {
       getEmailInvocation.methodCallId,
       GetEmailResponse.deserialize);
 
-    return resultList!.list.first;
+    if (resultList?.list.isNotEmpty == true) {
+      return resultList!.list.first;
+    } else {
+      throw NotFoundEmailException();
+    }
   }
 }
