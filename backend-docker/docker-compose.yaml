@@ -2,7 +2,7 @@ version: "3"
 
 services:
   tmail-backend:
-    image: linagora/tmail-backend:memory-1.0.22.2
+    image: linagora/tmail-backend:memory-1.0.23
     container_name: tmail-backend
     labels:
       - tmail.ci.node=${NODE_NAME:-}
