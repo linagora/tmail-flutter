@@ -169,6 +169,15 @@ void main() {
       expect(client.item, isNull);
     });
 
+    test('get ignores a malformed secure value and migrates Hive', () async {
+      await const FlutterSecureStorage().write(key: key, value: 'not json');
+      client.item = info;
+
+      expect(await manager.getAuthenticationInfoStored(), info);
+      expect(await readSecure(), info);
+      expect(client.item, isNull);
+    });
+
     test('get moves an earlier Hive login to secure storage', () async {
       client.item = info;
 
