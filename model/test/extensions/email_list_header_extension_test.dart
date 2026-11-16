@@ -38,7 +38,9 @@ void main() {
         rawEmail(),
         Properties({ListHeaderIdentifier.listUnsubscribe.value}),
       );
-      expect(merged[ListHeaderIdentifier.listUnsubscribe], isNotNull);
+      final value = merged[ListHeaderIdentifier.listUnsubscribe];
+      expect(value, isA<RawHeaderValue>());
+      expect((value as RawHeaderValue).value, contains('mailto:unsub@list.example.com'));
     });
 
     test('PresentationEmail.toEmail round trip keeps List-Unsubscribe', () {
@@ -52,16 +54,35 @@ void main() {
       expect(email.listPost, '');
     });
 
-    test('legacy asText List-Unsubscribe from old cache is still read', () {
+    test('legacy asText List-* from old cache is still read', () {
       final email = Email(
         id: EmailId(Id('e3')),
         individualHeaders: {
           IndividualHeaderIdentifier.listUnsubscribeHeader:
               const TextHeaderValue('<mailto:old@x.y>'),
+          IndividualHeaderIdentifier.listPostHeader:
+              const TextHeaderValue('<mailto:old-list@x.y>'),
         },
       );
-      expect(email.toPresentationEmail().listUnsubscribe, '<mailto:old@x.y>');
       expect(email.listUnsubscribe, '<mailto:old@x.y>');
+      expect(email.listPost, '<mailto:old-list@x.y>');
+      final presentation = email.toPresentationEmail();
+      expect(presentation.listUnsubscribe, '<mailto:old@x.y>');
+      expect(presentation.listPost, '<mailto:old-list@x.y>');
+    });
+
+    test('raw List-Unsubscribe is preferred over legacy asText', () {
+      final email = Email(
+        id: EmailId(Id('e5')),
+        individualHeaders: {
+          IndividualHeaderIdentifier.listUnsubscribeHeader:
+              const TextHeaderValue('<mailto:old@x.y>'),
+          ListHeaderIdentifier.listUnsubscribe:
+              const RawHeaderValue('<mailto:new@x.y>'),
+        },
+      );
+      expect(email.listUnsubscribe, '<mailto:new@x.y>');
+      expect(email.toPresentationEmail().listUnsubscribe, '<mailto:new@x.y>');
     });
   });
 }
