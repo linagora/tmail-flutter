@@ -1,12 +1,15 @@
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/text/rich_text_builder.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
 import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_button_arrow_down_field_with_tab_key_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as dashboard_search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_field_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
@@ -15,6 +18,8 @@ import 'package:core/presentation/views/search/search_bar_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 
 import '../../extensions/patrol_finder_extension.dart';
+import '../../utils/collapsed_thread_provisioner.dart';
+import '../../utils/frame_state_recorder.dart';
 import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
 import '../abstract/abstract_search_robot.dart';
@@ -210,6 +215,7 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
 
   @override
   Future<void> searchByLabel(String labelName) async {
+    FrameStateRecorder('SEARCH RESULTS', _searchState).start();
     await $(const ValueKey(UiKeys.advancedSearchLabelDropDown)).tap();
     await $(find.text(labelName)).tap();
     await $(const ValueKey(UiKeys.advancedSearchSearchButton)).tap();
@@ -237,13 +243,44 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
     final email = $(EmailTileBuilder).which<EmailTileBuilder>(
       (view) => view.presentationEmail.subject?.contains(subject) == true,
     );
-    await waitForCondition(
-      () async {
-        await $.pump();
-        return email.evaluate().isNotEmpty;
-      },
-      timeout: TestTimeouts.medium,
-    );
+    try {
+      await waitForCondition(
+        () async {
+          await $.pump();
+          return email.evaluate().isNotEmpty;
+        },
+        timeout: TestTimeouts.medium,
+        reason: 'an email with subject containing "$subject" is listed',
+      );
+    } catch (_) {
+      await _logServerLabelCount();
+      rethrow;
+    }
+  }
+
+  // Tiles, empty view and the committed label filter; shows when the list settled empty.
+  String _searchState() {
+    final tiles = $.tester.widgetList<EmailTileBuilder>(find.byType(EmailTileBuilder));
+    final subjects = tiles.take(5).map((tile) => tile.presentationEmail.subject).join('|');
+    final empty = find.byKey(const Key(UiKeys.emptyThreadView)).evaluate().isNotEmpty;
+    return 'tiles=${tiles.length} [$subjects] empty=$empty label=$_filteredLabelKeyword';
+  }
+
+  String? get _filteredLabelKeyword =>
+      Get.find<dashboard_search.SearchController>().labelFiltered?.keyword?.value;
+
+  // Server has any match now vs empty list: splits search index lag from a client filter bug.
+  Future<void> _logServerLabelCount() async {
+    try {
+      final keyword = _filteredLabelKeyword;
+      // Query limit is 1, so this is 0 or 1: whether any email has the keyword.
+      final anyMatch = keyword == null
+          ? 'n/a'
+          : await CollapsedThreadProvisioner().countEmailsWithKeyword(keyword);
+      debugPrintSynchronously('[SEARCH RESULTS] server hasKeyword=$keyword anyMatch=$anyMatch');
+    } catch (e) {
+      debugPrintSynchronously('[SEARCH RESULTS] server probe failed: $e');
+    }
   }
 
   Future<void> _waitForSearchResults() => waitForCondition(
