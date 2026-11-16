@@ -1,4 +1,5 @@
 import '../../base/test_base.dart';
+import '../../models/test_tags.dart';
 import '../../scenarios/email_detailed/reply_to_list_email_scenario.dart';
 
 void main() {
@@ -7,5 +8,6 @@ void main() {
       'SHOULD see the Subject contain the prefix `Re:`\n'
       'AND the To field should contain the email\'s `List-Post` address.',
     scenarioBuilder: ($, robots) => ReplyToListEmailScenario($, robots),
+    tags: [TestTags.android, TestTags.ios],
   );
 }
