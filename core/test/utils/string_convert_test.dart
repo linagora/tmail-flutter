@@ -822,6 +822,159 @@ void main() {
       final result = StringConvert.extractNamedAddresses(input);
       expect(result.first.address, equals('useruser'));
     });
+    test('extractNamedAddresses keeps a plain entry that happens to be valid base64', () {
+      final result = StringConvert.extractNamedAddresses('YWxpY2U=');
+      expect(result, equals([NamedAddress(name: '', address: 'YWxpY2U=')]));
+    });
+    test('extractEmailAddress keeps a plain entry that happens to be valid base64', () {
+      expect(StringConvert.extractEmailAddress('YWxpY2U='), equals(['YWxpY2U=']));
+    });
+    test('extractNamedAddresses keeps addresses with literal percent signs', () {
+      final result = StringConvert.extractNamedAddresses('100%sure@example.com');
+      expect(result, equals([NamedAddress(name: '', address: '100%sure@example.com')]));
+    });
+    test('extractEmailAddress keeps addresses with literal percent signs', () {
+      expect(
+        StringConvert.extractEmailAddress('100%sure@example.com'),
+        equals(['100%sure@example.com']),
+      );
+    });
+    test('keeps addresses when raw already has an at-sign and a valid percent escape', () {
+      expect(
+        StringConvert.extractNamedAddresses('100%20sure@example.com'),
+        equals([NamedAddress(name: '', address: '100%20sure@example.com')]),
+      );
+      expect(
+        StringConvert.extractEmailAddress('100%20sure@example.com'),
+        equals(['100%20sure@example.com']),
+      );
+    });
+    test('does not decode a list that mixes a raw at-sign with an encoded address', () {
+      // A raw at-sign means the input is not an encoded list, so it is left as is.
+      const input = 'a@b.com, c%40d.com';
+
+      expect(
+        StringConvert.extractNamedAddresses(input),
+        equals([
+          NamedAddress(name: '', address: 'a@b.com'),
+          NamedAddress(name: '', address: 'c%40d.com'),
+        ]),
+      );
+      expect(
+        StringConvert.extractEmailAddress(input),
+        equals(['a@b.com', 'c%40d.com']),
+      );
+    });
+    test('does not decode a partially encoded named address that has a raw at-sign', () {
+      const input = '%22Doe%2C%20John%22%20%3Cjohn@example.com%3E';
+
+      expect(
+        StringConvert.extractNamedAddresses(input),
+        equals([NamedAddress(name: '', address: input)]),
+      );
+      expect(
+        StringConvert.extractEmailAddress(input),
+        equals([input]),
+      );
+    });
+    test('still decodes a fully encoded named address without a raw at-sign', () {
+      const input = '%22Doe%2C%20John%22%20%3Cjohn%40example.com%3E';
+
+      expect(
+        StringConvert.extractNamedAddresses(input),
+        equals([NamedAddress(name: 'Doe, John', address: 'john@example.com')]),
+      );
+    });
+    test('keeps every address of a list when one has a literal percent sign', () {
+      const input = 'a@b.com, 100%sure@x.com';
+
+      expect(
+        StringConvert.extractNamedAddresses(input),
+        equals([
+          NamedAddress(name: '', address: 'a@b.com'),
+          NamedAddress(name: '', address: '100%sure@x.com'),
+        ]),
+      );
+      expect(
+        StringConvert.extractEmailAddress(input),
+        equals(['a@b.com', '100%sure@x.com']),
+      );
+    });
+    test('keeps an address ending with a dangling percent sign', () {
+      expect(
+        StringConvert.extractNamedAddresses('a@b.com%'),
+        equals([NamedAddress(name: '', address: 'a@b.com%')]),
+      );
+      expect(
+        StringConvert.extractEmailAddress('a@b.com%'),
+        equals(['a@b.com%']),
+      );
+    });
+    test('keeps invalid percent escapes when raw has no at-sign', () {
+      expect(
+        StringConvert.extractNamedAddresses('100%sure'),
+        equals([NamedAddress(name: '', address: '100%sure')]),
+      );
+      expect(
+        StringConvert.extractEmailAddress('100%sure'),
+        equals(['100%sure']),
+      );
+      expect(
+        StringConvert.extractNamedAddresses('hello%'),
+        equals([NamedAddress(name: '', address: 'hello%')]),
+      );
+      expect(
+        StringConvert.extractEmailAddress('hello%'),
+        equals(['hello%']),
+      );
+    });
+    test('keeps addresses when raw has an at-sign and a hex percent escape', () {
+      expect(
+        StringConvert.extractNamedAddresses('100%73ure@example.com'),
+        equals([NamedAddress(name: '', address: '100%73ure@example.com')]),
+      );
+      expect(
+        StringConvert.extractEmailAddress('100%73ure@example.com'),
+        equals(['100%73ure@example.com']),
+      );
+    });
+    test('keeps partially percent-encoded named addresses that already contain an at-sign', () {
+      const input = 'Alice%20Smith%20%3Calice@example.com%3E';
+      expect(
+        StringConvert.extractNamedAddresses(input),
+        equals([NamedAddress(name: '', address: input)]),
+      );
+      expect(
+        StringConvert.extractEmailAddress(input),
+        equals([input]),
+      );
+    });
+    test('still decodes a single base64 encoded address', () {
+      // 'YUBiLmNvbQ==' is base64 of 'a@b.com'
+      expect(
+        StringConvert.extractNamedAddresses('YUBiLmNvbQ=='),
+        equals([NamedAddress(name: '', address: 'a@b.com')]),
+      );
+      expect(
+        StringConvert.extractEmailAddress('YUBiLmNvbQ=='),
+        equals(['a@b.com']),
+      );
+    });
+    test('keeps base64 looking entries untouched inside a separated list', () {
+      const input = 'YWxpY2U=, a@b.com';
+
+      expect(
+        StringConvert.extractNamedAddresses(input),
+        equals([
+          NamedAddress(name: '', address: 'YWxpY2U='),
+          NamedAddress(name: '', address: 'a@b.com'),
+        ]),
+      );
+      expect(
+        StringConvert.extractEmailAddress(input),
+        equals(['YWxpY2U=', 'a@b.com']),
+      );
+    });
     test('Handles brackets with no name', () {
       const input = '<only-email@example.com>';
       final result = StringConvert.extractNamedAddresses(input);
