@@ -16,6 +16,8 @@ import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interact
 import '../../../../fixtures/delegation_fixtures.dart';
 import '../../../../fixtures/delegated_to_me_fakes.dart';
 
+typedef ChangeSignedInUser = void Function(ActiveAccountNotifier activeAccount);
+
 void main() {
   final bobDelegation = DelegatedAccount(id: Id('bob-delegation'), username: DelegationFixtures.bobAddress);
   final carolDelegation = DelegatedAccount(id: Id('carol-delegation'), username: DelegationFixtures.carolAddress);
@@ -147,36 +149,33 @@ void main() {
       expect(reloadedSessions, [withoutBoth]);
     });
 
-    test('should not apply a session re-read that completes after sign-out', () async {
+    /// Removes Bob, runs [changeSignedInUser] while the session re-read is pending, then lets the re-read finish.
+    Future<List<Session>> removeBobWhile(ChangeSignedInUser changeSignedInUser) async {
       await loadWith([bobDelegation]);
       getSessionInteractor.holdsReads = true;
       final reloadedSessions = <Session>[];
 
       final removal = notifier().remove(session, bobDelegation, onSessionReloaded: reloadedSessions.add);
       await pumpEventQueue();
-      container.read(activeAccountProvider.notifier).clear();
+      changeSignedInUser(container.read(activeAccountProvider.notifier));
       getSessionInteractor.pendingReads.single.complete(
         Right(GetSessionSuccess(DelegationFixtures.session(state: 'state-2', listsBob: false))),
       );
       await removal;
+      return reloadedSessions;
+    }
+
+    test('should not apply a session re-read that completes after sign-out', () async {
+      final reloadedSessions = await removeBobWhile((activeAccount) => activeAccount.clear());
 
       expect(container.read(activeAccountProvider), isNull);
       expect(reloadedSessions, isEmpty);
     });
 
     test('should not apply a session re-read that completes after another user signs in', () async {
-      await loadWith([bobDelegation]);
-      getSessionInteractor.holdsReads = true;
       final carolSession = DelegationFixtures.session(username: DelegationFixtures.carolAddress);
-      final reloadedSessions = <Session>[];
 
-      final removal = notifier().remove(session, bobDelegation, onSessionReloaded: reloadedSessions.add);
-      await pumpEventQueue();
-      container.read(activeAccountProvider.notifier).applySession(carolSession);
-      getSessionInteractor.pendingReads.single.complete(
-        Right(GetSessionSuccess(DelegationFixtures.session(state: 'state-2', listsBob: false))),
-      );
-      await removal;
+      final reloadedSessions = await removeBobWhile((activeAccount) => activeAccount.applySession(carolSession));
 
       expect(container.read(activeAccountProvider)?.session, carolSession);
       expect(reloadedSessions, isEmpty);
