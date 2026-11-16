@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/main/main_entry.dart';
 import '../models/test_tags.dart';
 import '../utils/backend_reset_client.dart';
 import '../utils/failure_diagnostics.dart';
+import '../utils/frame_state_recorder.dart';
 import '../utils/mock_text_input.dart';
 import '../utils/primary_focus_logger.dart';
 import '../utils/test_backend.dart';
@@ -90,6 +91,7 @@ class TestBase {
     await scenario.prepare();
     PrimaryFocusLogger.instance.start();
     addTearDown(PrimaryFocusLogger.instance.stop);
+    addTearDown(FrameStateRecorder.stopAll);
     runApp(const TMailApp());
 
     final originalOnError = FlutterError.onError!;

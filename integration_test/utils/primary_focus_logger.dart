@@ -71,3 +71,23 @@ String _chain(Element element) {
   }
   return names.join(' < ');
 }
+
+// Short focus owner for per-frame logs: id matches the history, key names the field.
+String describeFocusKey(FocusNode? node) {
+  if (node == null) return 'null';
+  try {
+    final context = node.context;
+    Key? key;
+    if (context is Element && context.mounted) {
+      context.visitAncestorElements((ancestor) {
+        final candidate = ancestor.widget.key;
+        if (candidate == null || candidate is GlobalKey) return true;
+        key = candidate;
+        return false;
+      });
+    }
+    return 'id=${identityHashCode(node)} key=$key';
+  } catch (e) {
+    return 'id=${identityHashCode(node)} key failed: $e';
+  }
+}

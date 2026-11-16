@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:patrol/patrol.dart';
 
+import 'frame_state_recorder.dart';
 import 'primary_focus_logger.dart';
 
 // Keeps the dump under the logcat buffer limit; the top route prints last, so keep the tail.
@@ -42,6 +43,7 @@ void dumpFailureState(PatrolIntegrationTester $) {
     $.log(summary);
     debugPrintSynchronously(summary);
     PrimaryFocusLogger.instance.dump();
+    FrameStateRecorder.dumpActive();
     _printLines(FocusManager.instance.toStringDeep());
     _printLines(
       WidgetsBinding.instance.rootElement?.toStringDeep() ?? 'no root element',
