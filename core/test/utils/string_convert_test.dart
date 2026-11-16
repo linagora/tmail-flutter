@@ -874,6 +874,45 @@ void main() {
         equals(['a@b.com%']),
       );
     });
+    test('keeps invalid percent escapes when raw has no at-sign', () {
+      expect(
+        StringConvert.extractNamedAddresses('100%sure'),
+        equals([NamedAddress(name: '', address: '100%sure')]),
+      );
+      expect(
+        StringConvert.extractEmailAddress('100%sure'),
+        equals(['100%sure']),
+      );
+      expect(
+        StringConvert.extractNamedAddresses('hello%'),
+        equals([NamedAddress(name: '', address: 'hello%')]),
+      );
+      expect(
+        StringConvert.extractEmailAddress('hello%'),
+        equals(['hello%']),
+      );
+    });
+    test('keeps addresses when raw has an at-sign and a hex percent escape', () {
+      expect(
+        StringConvert.extractNamedAddresses('100%73ure@example.com'),
+        equals([NamedAddress(name: '', address: '100%73ure@example.com')]),
+      );
+      expect(
+        StringConvert.extractEmailAddress('100%73ure@example.com'),
+        equals(['100%73ure@example.com']),
+      );
+    });
+    test('keeps partially percent-encoded named addresses that already contain an at-sign', () {
+      const input = 'Alice%20Smith%20%3Calice@example.com%3E';
+      expect(
+        StringConvert.extractNamedAddresses(input),
+        equals([NamedAddress(name: '', address: input)]),
+      );
+      expect(
+        StringConvert.extractEmailAddress(input),
+        equals([input]),
+      );
+    });
     test('still decodes a single base64 encoded address', () {
       // 'YUBiLmNvbQ==' is base64 of 'a@b.com'
       expect(
