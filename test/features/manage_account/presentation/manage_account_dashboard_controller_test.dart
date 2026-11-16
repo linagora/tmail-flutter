@@ -42,10 +42,10 @@ void main() {
 
   tearDown(Get.reset);
 
-  void openSettingsWith(Session session) {
+  ManageAccountDashBoardController openSettingsWith(Session session) {
     Get.routing.args = ManageAccountArguments(session);
     addTearDown(() => Get.routing.args = null);
-    ManageAccountDashBoardController().onReady();
+    return ManageAccountDashBoardController()..onReady();
   }
 
   test('Settings opened from a delegated mailbox loads the quota of my own account', () {
@@ -64,5 +64,14 @@ void main() {
     openSettingsWith(SessionFixtures.aliceSession);
 
     verifyNever(getQuotasInteractor.execute(any));
+  });
+
+  test('Settings keeps the session re-read after removing my access for the dashboard', () {
+    final controller = openSettingsWith(DelegationFixtures.session());
+    final reRead = DelegationFixtures.session(state: 'state-2', listsBob: false);
+
+    controller.applyReloadedSession(reRead);
+
+    expect(controller.sessionCurrent, reRead);
   });
 }

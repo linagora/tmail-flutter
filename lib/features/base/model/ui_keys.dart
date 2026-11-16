@@ -34,6 +34,9 @@ class UiKeys {
   // Email rules / rules filter creator
   static const String createRuleButton = 'createRuleButton';
   static const String emailRulesSettingMenuItem = 'setting_email_rules';
+  static const String delegationSettingMenuItem = 'setting_delegation';
+  static const String delegatedToMeList = 'delegated_to_me_list';
+  static const String delegatedToMeEmptyCard = 'delegated_to_me_empty_card';
   static const String editEmailRuleButton = 'editEmailRuleButton';
   static const String moreEmailRuleButton = 'moreEmailRuleButton';
   static const String addActionButton = 'addActionButton';

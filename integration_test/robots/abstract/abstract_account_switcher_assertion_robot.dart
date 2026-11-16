@@ -7,6 +7,9 @@ abstract class AbstractAccountSwitcherAssertionRobot {
 
   Future<void> expectSwitcherOnMine();
 
+  /// The switcher's session no longer lists [ownerAddress].
+  Future<void> expectNoLongerOffers(String ownerAddress);
+
   Future<void> expectSwitchSettled(String ownerAddress);
 
   Future<void> expectShownIdentitiesInclude(String email);

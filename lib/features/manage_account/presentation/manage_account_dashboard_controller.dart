@@ -36,12 +36,16 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/ha
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/handle_vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/validate_setting_capability_supported_extension.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/providers/delegation_enabled_provider.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/utils/delegation_settings_entry.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_session_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/validate_storage_menu_visible_extension.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
+import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forward_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/identity_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/bindings/mailbox_visibility_bindings.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_session_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
@@ -183,18 +187,27 @@ class ManageAccountDashBoardController extends ReloadableController
     log('ManageAccountDashBoardController::_getParametersRouter:parameters: $parameters');
     final navigationRouter = RouteUtils.parsingRouteParametersToNavigationRouter(parameters);
     log('ManageAccountDashBoardController::_getParametersRouter:navigationRouter: $navigationRouter');
-    if (navigationRouter.accountMenuItem == AccountMenuItem.none &&
+    final requestedMenuItem = shownSettingsMenuItemOrNone(
+      navigationRouter.accountMenuItem,
+      isDelegationEntryShown: isDelegationSettingDisplayed,
+    );
+    if (requestedMenuItem == AccountMenuItem.none &&
         currentContext != null &&
         responsiveUtils.isWebDesktop(currentContext!)
     ) {
       selectAccountMenuItem(AccountMenuItem.profiles);
     } else {
-      selectedMenu = navigationRouter.accountMenuItem;
+      selectedMenu = requestedMenuItem;
       if (selectedMenu != null && selectedMenu != AccountMenuItem.storage) {
         selectAccountMenuItem(selectedMenu!);
       }
     }
   }
+
+  bool get isDelegationSettingDisplayed => isDelegationEnabled(
+        sessionCurrent,
+        appProviderContainer.read(localSettingsProvider),
+      );
 
   void _initialPageLevel() {
     if (currentContext != null && responsiveUtils.isWebDesktop(currentContext!)) {
@@ -297,6 +310,9 @@ class ManageAccountDashBoardController extends ReloadableController
               ));
     }
   }
+
+  /// Keeps the session re-read after "Remove your access", so closing Settings hands it to the dashboard.
+  void applyReloadedSession(Session session) => sessionCurrent = session;
 
   bool get isLanguageSettingDisplayed {
     if (!isServerSettingsCapabilitySupported) return true;

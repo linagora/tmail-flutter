@@ -3,6 +3,9 @@ import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/profile_setting/profile_setting_action_type.dart';
 
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+
+import '../../utils/wait_for_condition.dart';
 import '../mailbox_navigation_robot.dart';
 import '../mobile/mobile_mailbox_menu_robot.dart';
 import 'web_hover_tap.dart';
@@ -37,6 +40,14 @@ class WebMailboxMenuRobot extends MobileMailboxMenuRobot {
   @override
   Future<void> openSetting() async {
     await $(const ValueKey(UiKeys.userAvatar)).tap();
-    await $(ValueKey(ProfileSettingActionType.manageAccount.name)).tap();
+    // With delegation on, the avatar opens the account switcher menu, whose footer has the Manage row.
+    final switcherManageRow = $(const ValueKey(UiKeys.accountSwitcherMenu))
+        .$(AppLocalizations().manage_account);
+    final profileManageItem = $(ValueKey(ProfileSettingActionType.manageAccount.name));
+    await waitForCondition(
+      () => switcherManageRow.exists || profileManageItem.exists,
+      reason: 'avatar menu shows Manage account',
+    );
+    await (switcherManageRow.exists ? switcherManageRow : profileManageItem).tap();
   }
 }

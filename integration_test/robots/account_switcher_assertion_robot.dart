@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
+import 'package:tmail_ui_user/features/delegation/domain/extensions/session_delegation_extension.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -22,6 +23,18 @@ abstract class AccountSwitcherAssertionRobot extends CoreRobot
   Future<void> expectMenuShowsDelegated(String ownerAddress) async {
     await $(AppLocalizations().delegatedToYou).waitUntilVisible();
     await $(ownerAddress).waitUntilVisible();
+  }
+
+  @override
+  Future<void> expectNoLongerOffers(String ownerAddress) async {
+    await waitForCondition(
+      () {
+        final session = appContainer().read(activeAccountProvider)?.session;
+        return session != null &&
+            session.delegatedAccounts.every((entry) => entry.value.name.value != ownerAddress);
+      },
+      reason: 'session no longer lists $ownerAddress',
+    );
   }
 
   @override

@@ -256,6 +256,7 @@ class ImagePaths {
   String get icCloudPlus => _getImagePath('ic_cloud_plus.svg');
   String get icNoRules => _getImagePath('ic_no_rules.svg');
   String get icStorage => _getImagePath('ic_storage.svg');
+  String get icDelegation => _getImagePath('ic_delegation.svg');
   String get icWarning => _getImagePath('ic_warning.svg');
   String get icKeyboard => _getImagePath('ic_keyboard.svg');
   String get icMessage => _getImagePath('ic_message.svg');

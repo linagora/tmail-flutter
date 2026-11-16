@@ -2,9 +2,11 @@ import 'package:tmail_ui_user/features/manage_account/presentation/menu/widgets/
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
+import '../abstract/abstract_delegation_settings_robot.dart';
 import '../abstract/abstract_language_robot.dart';
 import '../abstract/abstract_preferences_robot.dart';
 import '../abstract/abstract_settings_robot.dart';
+import '../delegation_settings_robot.dart';
 import '../setting_robot.dart';
 import 'mobile_language_robot.dart';
 import 'mobile_preferences_robot.dart';
@@ -18,6 +20,9 @@ class MobileSettingsRobot extends SettingRobot
 
   @override
   AbstractLanguageRobot get languageRobot => MobileLanguageRobot($);
+
+  @override
+  AbstractDelegationSettingsRobot get delegationRobot => DelegationSettingsRobot($);
 
   @override
   Future<void> openSettingsDetail(AccountMenuItem accountMenuItem) async {
