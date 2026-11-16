@@ -7,14 +7,18 @@ import 'package:model/extensions/email_address_extension.dart';
 import 'package:patrol/patrol.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
+import 'package:tmail_ui_user/features/base/widget/card_with_smart_interaction_overlay_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/recipient_composer_widget_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/recipient_tag_item_widget_style.dart';
+import 'package:tmail_ui_user/features/composer/presentation/view/edit_recipients_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_tag_item_widget.dart';
 
 import '../base/core_robot.dart';
 import '../extensions/patrol_finder_extension.dart';
+import '../utils/frame_state_recorder.dart';
+import '../utils/primary_focus_logger.dart';
 import 'abstract/abstract_composer_recipient_assertion_robot.dart';
 import 'abstract/abstract_composer_recipient_robot.dart';
 import 'composer_recipient_assertion_robot.dart';
@@ -84,8 +88,37 @@ class ComposerRecipientRobot extends CoreRobot
 
   @override
   Future<void> openFirstRecipientMenu(PrefixEmailAddress prefix) async {
-    await _chips(prefix).first.tap();
+    final chip = _chips(prefix).first;
+    final recorder = FrameStateRecorder('RECIPIENT MENU', () => _menuState(prefix))..start();
+    recorder.record(_chipHit(chip));
+    await chip.tap();
+    recorder.record('tapped');
     await $.pumpAndTrySettle();
+    recorder.record('settled');
+  }
+
+  // Chips, open menus, cards and focus owner; shows whether the menu opened then closed.
+  String _menuState(PrefixEmailAddress prefix) {
+    final chips = $.tester
+        .widgetList<RecipientTagItemWidget>(_chips(prefix))
+        .map((chip) => chip.currentEmailAddress.emailAddress)
+        .join(',');
+    final menus = find.byType(EditRecipientsView).evaluate().length;
+    final cards = find.byType(CardWithSmartInteractionOverlayView).evaluate().length;
+    return 'chips=[$chips] menus=$menus cards=$cards '
+        'focus=${describeFocusKey(FocusManager.instance.primaryFocus)}';
+  }
+
+  // Whether a tap at the chip center reaches the chip, else what covers it.
+  String _chipHit(PatrolFinder chip) {
+    try {
+      final result = $.tester.hitTestOnBinding($.tester.getCenter(chip));
+      final chipBox = $.tester.renderObject(chip);
+      final hitsChip = result.path.any((entry) => identical(entry.target, chipBox));
+      return 'hitsChip=$hitsChip top=${result.path.first.target.runtimeType}';
+    } catch (e) {
+      return 'hit test failed: $e';
+    }
   }
 
   PatrolFinder _editor(PrefixEmailAddress prefix) =>
