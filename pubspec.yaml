@@ -326,6 +326,8 @@ dev_dependencies:
 
   vm_service: 15.0.0
 
+  path_provider_platform_interface: 2.1.1
+
   plugin_platform_interface: 2.1.8
 
   sentry_dart_plugin: ^3.2.1
