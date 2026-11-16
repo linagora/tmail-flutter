@@ -162,6 +162,11 @@ extension EmailExtension on Email {
         } else {
           merged.remove(id);
         }
+        if (id == ListHeaderIdentifier.listUnsubscribe) {
+          merged.remove(IndividualHeaderIdentifier.listUnsubscribeHeader);
+        } else if (id == ListHeaderIdentifier.listPost) {
+          merged.remove(IndividualHeaderIdentifier.listPostHeader);
+        }
       }
     }
     return merged;

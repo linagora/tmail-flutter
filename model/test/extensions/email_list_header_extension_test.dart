@@ -43,6 +43,71 @@ void main() {
       expect((value as RawHeaderValue).value, contains('mailto:unsub@list.example.com'));
     });
 
+    test('clearing raw List-Unsubscribe also drops legacy asText', () {
+      final base = Email(
+        id: EmailId(Id('e6')),
+        individualHeaders: {
+          IndividualHeaderIdentifier.listUnsubscribeHeader:
+              const TextHeaderValue('<mailto:old@x.y>'),
+        },
+      );
+      final merged = base.mergeTrackedIndividualHeaders(
+        Email(id: EmailId(Id('e6'))),
+        Properties({ListHeaderIdentifier.listUnsubscribe.value}),
+      );
+      final email = Email(id: EmailId(Id('e6')), individualHeaders: merged);
+      expect(email.listUnsubscribe, '');
+      expect(merged.containsKey(IndividualHeaderIdentifier.listUnsubscribeHeader), isFalse);
+    });
+
+    test('clearing raw List-Post also drops legacy asText', () {
+      final base = Email(
+        id: EmailId(Id('e7')),
+        individualHeaders: {
+          IndividualHeaderIdentifier.listPostHeader:
+              const TextHeaderValue('<mailto:old-list@x.y>'),
+        },
+      );
+      final merged = base.mergeTrackedIndividualHeaders(
+        Email(id: EmailId(Id('e7'))),
+        Properties({ListHeaderIdentifier.listPost.value}),
+      );
+      final email = Email(id: EmailId(Id('e7')), individualHeaders: merged);
+      expect(email.listPost, '');
+      expect(merged.containsKey(IndividualHeaderIdentifier.listPostHeader), isFalse);
+    });
+
+    test('updating raw List-Unsubscribe drops legacy asText', () {
+      final base = Email(
+        id: EmailId(Id('e8')),
+        individualHeaders: {
+          IndividualHeaderIdentifier.listUnsubscribeHeader:
+              const TextHeaderValue('<mailto:old@x.y>'),
+        },
+      );
+      final merged = base.mergeTrackedIndividualHeaders(
+        rawEmail(),
+        Properties({ListHeaderIdentifier.listUnsubscribe.value}),
+      );
+      expect(merged.containsKey(IndividualHeaderIdentifier.listUnsubscribeHeader), isFalse);
+      expect(merged[ListHeaderIdentifier.listUnsubscribe], isA<RawHeaderValue>());
+    });
+
+    test('legacy asText is kept when raw List-* is not updated', () {
+      final base = Email(
+        id: EmailId(Id('e9')),
+        individualHeaders: {
+          IndividualHeaderIdentifier.listUnsubscribeHeader:
+              const TextHeaderValue('<mailto:old@x.y>'),
+        },
+      );
+      final merged = base.mergeTrackedIndividualHeaders(
+        Email(id: EmailId(Id('e9'))),
+        Properties({'subject'}),
+      );
+      expect(merged.containsKey(IndividualHeaderIdentifier.listUnsubscribeHeader), isTrue);
+    });
+
     test('PresentationEmail.toEmail round trip keeps List-Unsubscribe', () {
       final email = rawEmail().toPresentationEmail().toEmail();
       expect(email.listUnsubscribe, contains('mailto:unsub@list.example.com'));
