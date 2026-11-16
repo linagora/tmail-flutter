@@ -849,6 +849,42 @@ void main() {
         equals(['100%20sure@example.com']),
       );
     });
+    test('does not decode a list that mixes a raw at-sign with an encoded address', () {
+      // A raw at-sign means the input is not an encoded list, so it is left as is.
+      const input = 'a@b.com, c%40d.com';
+
+      expect(
+        StringConvert.extractNamedAddresses(input),
+        equals([
+          NamedAddress(name: '', address: 'a@b.com'),
+          NamedAddress(name: '', address: 'c%40d.com'),
+        ]),
+      );
+      expect(
+        StringConvert.extractEmailAddress(input),
+        equals(['a@b.com', 'c%40d.com']),
+      );
+    });
+    test('does not decode a partially encoded named address that has a raw at-sign', () {
+      const input = '%22Doe%2C%20John%22%20%3Cjohn@example.com%3E';
+
+      expect(
+        StringConvert.extractNamedAddresses(input),
+        equals([NamedAddress(name: '', address: input)]),
+      );
+      expect(
+        StringConvert.extractEmailAddress(input),
+        equals([input]),
+      );
+    });
+    test('still decodes a fully encoded named address without a raw at-sign', () {
+      const input = '%22Doe%2C%20John%22%20%3Cjohn%40example.com%3E';
+
+      expect(
+        StringConvert.extractNamedAddresses(input),
+        equals([NamedAddress(name: 'Doe, John', address: 'john@example.com')]),
+      );
+    });
     test('keeps every address of a list when one has a literal percent sign', () {
       const input = 'a@b.com, 100%sure@x.com';
 
