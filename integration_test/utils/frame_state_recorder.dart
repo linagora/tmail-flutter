@@ -42,7 +42,7 @@ class FrameStateRecorder {
     try {
       return _last = _snapshot();
     } catch (e) {
-      return 'snapshot failed: $e';
+      return _last = 'snapshot failed: $e';
     }
   }
 

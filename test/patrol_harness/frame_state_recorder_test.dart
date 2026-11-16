@@ -59,6 +59,17 @@ void main() {
     expect(lines.any((l) => l.contains('snapshot failed')), isTrue);
   });
 
+  harnessTest('a repeatedly failing snapshot is logged once', (tester) async {
+    FrameStateRecorder('T', () => throw StateError('boom')).start();
+    await frame(tester);
+    await frame(tester);
+    await frame(tester);
+
+    FrameStateRecorder.dumpActive();
+
+    expect(lines.where((l) => l.contains('snapshot failed')), hasLength(1));
+  });
+
   harnessTest('restarting the same tag replaces the old recorder', (tester) async {
     FrameStateRecorder('T', () => 'old').start();
     FrameStateRecorder('T', () => 'new').start();
