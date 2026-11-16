@@ -12,6 +12,7 @@ import '../models/test_tags.dart';
 import '../utils/backend_reset_client.dart';
 import '../utils/failure_diagnostics.dart';
 import '../utils/frame_state_recorder.dart';
+import '../utils/jmap_query_recorder.dart';
 import '../utils/mock_text_input.dart';
 import '../utils/primary_focus_logger.dart';
 import '../utils/test_backend.dart';
@@ -65,6 +66,7 @@ class TestBase {
           $.tester.testTextInput.register();
           addTearDown($.tester.testTextInput.unregister);
         }
+        resetFailureDump();
         try {
           final scenario = scenarioBuilder($, createRobotFactory($));
           await setupTest($, scenario, envOverrides: envOverrides);
@@ -92,17 +94,14 @@ class TestBase {
     PrimaryFocusLogger.instance.start();
     addTearDown(PrimaryFocusLogger.instance.stop);
     addTearDown(FrameStateRecorder.stopAll);
+    addTearDown(JmapQueryRecorder.instance.detach);
     runApp(const TMailApp());
 
     final originalOnError = FlutterError.onError!;
-    var stateDumped = false;
     FlutterError.onError = (FlutterErrorDetails details) {
       logFlutterErrorDetails(details);
-      // One dump per test: the first error carries the UI state that caused the rest.
-      if (!stateDumped) {
-        stateDumped = true;
-        dumpFailureState($);
-      }
+      // dumpFailureState prints once per test: the first error carries the UI state that caused the rest.
+      dumpFailureState($);
       originalOnError(details);
     };
   }

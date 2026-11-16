@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:patrol/patrol.dart';
 
 import 'frame_state_recorder.dart';
+import 'jmap_query_recorder.dart';
 import 'primary_focus_logger.dart';
 
 // Keeps the dump under the logcat buffer limit; the top route prints last, so keep the tail.
@@ -33,17 +34,25 @@ void logFlutterErrorDetails(FlutterErrorDetails details) {
   }
 }
 
+var _dumped = false;
+
+// A test dumps once: the error hook and the test's catch block both call it.
+void resetFailureDump() => _dumped = false;
+
 // debugPrint, not dart:developer log: the latter is not written to Android logcat.
 void dumpFailureState(PatrolIntegrationTester $) {
+  if (_dumped) return;
+  _dumped = true;
   try {
     final views = WidgetsBinding.instance.platformDispatcher.views;
     final keyboardInset = views.isEmpty ? 'n/a' : '${views.first.viewInsets.bottom}';
-    final summary = '[FAILURE STATE] route=${Get.currentRoute} '
-        'focus=${FocusManager.instance.primaryFocus} keyboardInset=$keyboardInset';
-    $.log(summary);
-    debugPrintSynchronously(summary);
+    debugPrintSynchronously(
+      '[FAILURE STATE] route=${Get.currentRoute} '
+      'focus=${describeFocusKey(FocusManager.instance.primaryFocus)} keyboardInset=$keyboardInset',
+    );
     PrimaryFocusLogger.instance.dump();
     FrameStateRecorder.dumpActive();
+    JmapQueryRecorder.instance.dump();
     _printLines(FocusManager.instance.toStringDeep());
     _printLines(
       WidgetsBinding.instance.rootElement?.toStringDeep() ?? 'no root element',
