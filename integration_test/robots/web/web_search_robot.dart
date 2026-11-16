@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_we
 import '../../extensions/patrol_finder_extension.dart';
 import '../../utils/collapsed_thread_provisioner.dart';
 import '../../utils/frame_state_recorder.dart';
+import '../../utils/jmap_query_recorder.dart';
 import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
 import '../abstract/abstract_search_robot.dart';
@@ -148,6 +149,7 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
 
   @override
   Future<void> openLabelListModal() async {
+    JmapQueryRecorder.instance.attach();
     // Web desktop uses #labels_search_filter_button (no mobile_ prefix).
     await $(#labels_search_filter_button).tap();
   }
@@ -215,10 +217,12 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
 
   @override
   Future<void> searchByLabel(String labelName) async {
+    JmapQueryRecorder.instance.attach();
     FrameStateRecorder('SEARCH RESULTS', _searchState).start();
     await $(const ValueKey(UiKeys.advancedSearchLabelDropDown)).tap();
     await $(find.text(labelName)).tap();
     await $(const ValueKey(UiKeys.advancedSearchSearchButton)).tap();
+    await _logServerLabelCount('at search');
   }
 
   @override
@@ -253,14 +257,19 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
         reason: 'an email with subject containing "$subject" is listed',
       );
     } catch (_) {
-      await _logServerLabelCount();
+      await _logServerLabelCount('at failure');
       rethrow;
     }
   }
 
   // Tiles, empty view and the committed label filter; shows when the list settled empty.
   String _searchState() {
-    final tiles = $.tester.widgetList<EmailTileBuilder>(find.byType(EmailTileBuilder));
+    // evaluate(), not tester.widgetList: the latter throws "Guarded function conflict" mid-pump.
+    final tiles = find
+        .byType(EmailTileBuilder)
+        .evaluate()
+        .map((e) => e.widget as EmailTileBuilder)
+        .toList();
     final subjects = tiles.take(5).map((tile) => tile.presentationEmail.subject).join('|');
     final empty = find.byKey(const Key(UiKeys.emptyThreadView)).evaluate().isNotEmpty;
     return 'tiles=${tiles.length} [$subjects] empty=$empty label=$_filteredLabelKeyword';
@@ -270,14 +279,14 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
       Get.find<dashboard_search.SearchController>().labelFiltered?.keyword?.value;
 
   // Server has any match now vs empty list: splits search index lag from a client filter bug.
-  Future<void> _logServerLabelCount() async {
+  Future<void> _logServerLabelCount(String when) async {
     try {
       final keyword = _filteredLabelKeyword;
       // Query limit is 1, so this is 0 or 1: whether any email has the keyword.
       final anyMatch = keyword == null
           ? 'n/a'
           : await CollapsedThreadProvisioner().countEmailsWithKeyword(keyword);
-      debugPrintSynchronously('[SEARCH RESULTS] server hasKeyword=$keyword anyMatch=$anyMatch');
+      debugPrintSynchronously('[SEARCH RESULTS] server $when hasKeyword=$keyword anyMatch=$anyMatch');
     } catch (e) {
       debugPrintSynchronously('[SEARCH RESULTS] server probe failed: $e');
     }
@@ -303,6 +312,7 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
         return $(EmailTileBuilder).evaluate().length >= count;
       },
       timeout: TestTimeouts.medium,
+      reason: 'at least $count emails are listed',
     );
     expect($(EmailTileBuilder).evaluate().length, greaterThanOrEqualTo(count));
   }

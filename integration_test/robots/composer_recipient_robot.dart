@@ -99,9 +99,10 @@ class ComposerRecipientRobot extends CoreRobot
 
   // Chips, open menus, cards and focus owner; shows whether the menu opened then closed.
   String _menuState(PrefixEmailAddress prefix) {
-    final chips = $.tester
-        .widgetList<RecipientTagItemWidget>(_chips(prefix))
-        .map((chip) => chip.currentEmailAddress.emailAddress)
+    // evaluate(), not tester.widgetList: the latter throws "Guarded function conflict" mid-pump.
+    final chips = _chips(prefix)
+        .evaluate()
+        .map((e) => (e.widget as RecipientTagItemWidget).currentEmailAddress.emailAddress)
         .join(',');
     final menus = find.byType(EditRecipientsView).evaluate().length;
     final cards = find.byType(CardWithSmartInteractionOverlayView).evaluate().length;
