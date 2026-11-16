@@ -469,6 +469,58 @@ void main() {
         expect(out, contains('<a href=" https://example.com/page.html " target="_blank" rel="noreferrer">padded</a>'));
       });
 
+      test('SHOULD drop href that is relative before percent-decoding or empty WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
+        const input = '<a href="https%3A//[::1]">encoded-https</a>'
+            '<a href="javascript%3axn--80ak6aa92e.com">encoded-javascript</a>'
+            '<a href="https%3a//example.com/x">encoded-host</a>'
+            '<a href="">empty</a>'
+            '<a href="  ">blank</a>';
+        final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
+        expect(out, allOf(
+          contains('<a target="_blank" rel="noreferrer">encoded-https</a>'),
+          contains('<a target="_blank" rel="noreferrer">encoded-javascript</a>'),
+          contains('<a target="_blank" rel="noreferrer">encoded-host</a>'),
+          contains('<a target="_blank" rel="noreferrer">empty</a>'),
+          contains('<a target="_blank" rel="noreferrer">blank</a>'),
+        ));
+      });
+
+      test('SHOULD drop http(s) href without a host WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
+        const input = '<a href="https://">no-host</a>'
+            '<a href="https://\\@[::1]">backslash-userinfo</a>'
+            '<a href="https:%2f/[::1]">encoded-slash</a>';
+        final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
+        expect(out, allOf(
+          contains('<a target="_blank" rel="noreferrer">no-host</a>'),
+          contains('<a target="_blank" rel="noreferrer">backslash-userinfo</a>'),
+          contains('<a target="_blank" rel="noreferrer">encoded-slash</a>'),
+        ));
+      });
+
+      test('SHOULD drop href with a scheme the app may not open WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
+        const input = '<a href="javascript:alert(1)">js</a>'
+            '<a href="twakemail.mobile://openApp">deep-link</a>';
+        final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
+        expect(out, allOf(
+          contains('<a target="_blank" rel="noreferrer">js</a>'),
+          contains('<a target="_blank" rel="noreferrer">deep-link</a>'),
+        ));
+      });
+
+      test('SHOULD keep tel, http host without TLD, encoded backslash and badly percent-encoded absolute hrefs WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
+        const input = '<a href="tel:+33123456789">tel</a>'
+            '<a href="http://localhost:8080/x">local</a>'
+            '<a href="https://example.com/?path=folder%5Cfile.txt">encoded-backslash</a>'
+            '<a href="https://example.com/%ZZ">bad-escape-abs</a>';
+        final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
+        expect(out, allOf(
+          contains('<a href="tel:+33123456789" target="_blank" rel="noreferrer">tel</a>'),
+          contains('<a href="http://localhost:8080/x" target="_blank" rel="noreferrer">local</a>'),
+          contains('<a href="https://example.com/?path=folder\\file.txt" target="_blank" rel="noreferrer">encoded-backslash</a>'),
+          contains('<a href="https://example.com/%ZZ" target="_blank" rel="noreferrer">bad-escape-abs</a>'),
+        ));
+      });
+
       test('SHOULD drop unparsable and badly percent-encoded href WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
         const input = '<a href="http://[::1">unparsable</a>'
             '<a href="%E0%A4%A">bad-escape</a>';

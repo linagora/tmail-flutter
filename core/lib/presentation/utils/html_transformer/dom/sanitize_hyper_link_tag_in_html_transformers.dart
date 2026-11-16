@@ -2,6 +2,7 @@ import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/sanitize_url.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/external_link_policy.dart';
 import 'package:html/dom.dart';
 
 class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
@@ -49,8 +50,14 @@ class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
       // SanitizeUrl returns its input when decoding fails, so that is a
       // rejection too.
       element.attributes.remove('href');
-    } else if (urlSanitized.isNotEmpty) {
-      element.attributes['href'] = urlSanitized;
+      return;
+    }
+
+    final keptUrl = urlSanitized.isNotEmpty ? urlSanitized : url;
+    if (ExternalLinkPolicy.canKeepInContent(keptUrl.trim())) {
+      element.attributes['href'] = keptUrl;
+    } else {
+      element.attributes.remove('href');
     }
   }
 
@@ -65,10 +72,9 @@ class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
 
   bool _isRelativeUrl(String url) {
     final trimmedUrl = url.trim();
-    if (trimmedUrl.isEmpty || trimmedUrl.startsWith('#')) {
-      return false;
-    }
-    final uri = Uri.tryParse(_tryDecode(trimmedUrl) ?? trimmedUrl);
+    if (trimmedUrl.startsWith('#')) return false;
+    // The browser reads the raw value: `https%3A//x` and an empty href are relative to the app page.
+    final uri = Uri.tryParse(trimmedUrl);
     return uri == null || !uri.hasScheme;
   }
 
