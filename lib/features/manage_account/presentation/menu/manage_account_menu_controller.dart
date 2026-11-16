@@ -126,6 +126,7 @@ class ManageAccountMenuController extends GetxController with ContactSupportMixi
   void _openDelegationRequestedWhileHidden() {
     if (dashBoardController.takeDelegationRequestedWhileHidden() &&
         dashBoardController.isDelegationSettingDisplayed) {
+      dashBoardController.selectedMenu = AccountMenuItem.delegation;
       selectAccountMenuItem(AccountMenuItem.delegation);
     }
   }

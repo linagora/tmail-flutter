@@ -1,6 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/quotas/data_types.dart';
+import 'package:jmap_dart_client/jmap/quotas/quota.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
@@ -99,6 +103,23 @@ void main() {
       openDelegationLinkWhileHidden(controller);
 
       DelegationFixtures.turnDelegationOn(appProviderContainer);
+
+      expect(controller.accountMenuItemSelected.value, AccountMenuItem.delegation);
+    });
+
+    test('keeps Delegation open when the quota loads after it opened', () {
+      final controller = openSettingsWith(DelegationFixtures.session());
+      openDelegationLinkWhileHidden(controller);
+      DelegationFixtures.turnDelegationOn(appProviderContainer);
+
+      controller.octetsQuota.value = Quota(
+        Id('storage'),
+        ResourceType.octets,
+        Scope.account,
+        'Storage',
+        used: UnsignedInt(1),
+        hardLimit: UnsignedInt(100),
+      );
 
       expect(controller.accountMenuItemSelected.value, AccountMenuItem.delegation);
     });
