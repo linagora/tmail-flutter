@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -198,6 +200,107 @@ void main() {
         );
 
         expect(attachment.generateFileName(), 'unknown-attachment');
+      });
+
+      group('when the name is over 255 UTF-8 bytes:', () {
+        int byteLength(String value) => utf8.encode(value).length;
+
+        test('should shorten the base name and keep the extension', () {
+          final attachment = Attachment(name: 'invoice${'x' * 250}.pdf');
+
+          final result = attachment.generateFileName();
+
+          expect(result, 'invoice${'x' * 244}.pdf');
+          expect(byteLength(result), 255);
+        });
+
+        test('should cut a non-Latin name on a code point boundary', () {
+          final attachment = Attachment(name: '${'日' * 100}.pdf');
+
+          final result = attachment.generateFileName();
+
+          expect(result, '${'日' * 83}.pdf');
+          expect(byteLength(result), 253);
+        });
+
+        test('should never split a surrogate pair', () {
+          final attachment = Attachment(name: '${'😀' * 70}.pdf');
+
+          final result = attachment.generateFileName();
+
+          expect(result, '${'😀' * 62}.pdf');
+          expect(byteLength(result), 252);
+        });
+
+        test('should count two bytes for a Cyrillic character', () {
+          final attachment = Attachment(name: '${'д' * 200}.pdf');
+
+          final result = attachment.generateFileName();
+
+          expect(result, '${'д' * 125}.pdf');
+          expect(byteLength(result), 254);
+        });
+
+        test('should count three bytes for a lone surrogate', () {
+          final attachment = Attachment(name: '${'\uD83D' * 100}.pdf');
+
+          final result = attachment.generateFileName();
+
+          expect(result, '${'\uD83D' * 83}.pdf');
+          expect(byteLength(result), 253);
+        });
+
+        test('should return default name when the shortened name has no meaningful content', () {
+          final attachment = Attachment(name: '${'_' * 300}a');
+
+          expect(attachment.generateFileName(), 'unknown-attachment');
+        });
+
+        test('should cut the whole name when it has no extension', () {
+          final attachment = Attachment(name: 'invoice${'x' * 250}');
+
+          expect(attachment.generateFileName(), 'invoice${'x' * 248}');
+        });
+
+        test('should cut the whole name when the extension alone is too long', () {
+          final attachment = Attachment(name: 'a.${'x' * 300}');
+
+          expect(attachment.generateFileName(), 'a.${'x' * 253}');
+        });
+
+        test('should cut a name made only of dots', () {
+          final attachment = Attachment(name: '.' * 400);
+
+          expect(attachment.generateFileName(), '.' * 255);
+        });
+
+        test('should shorten the blobId and subtype fallback', () {
+          final attachment = Attachment(
+            blobId: Id('b' * 254),
+            type: MediaType.parse('application/pdf'),
+          );
+
+          expect(attachment.generateFileName(), '${'b' * 251}.pdf');
+        });
+
+        test('should not change a name of exactly 255 bytes', () {
+          final name = '${'x' * 251}.pdf';
+
+          expect(Attachment(name: name).generateFileName(), name);
+        });
+
+        test('should return the same name on a second pass', () {
+          for (final name in [
+            'invoice${'x' * 250}.pdf',
+            '${'日' * 100}.pdf',
+            '${'x' * 254} tail',
+            '.' * 400,
+          ]) {
+            final once = Attachment(name: name).generateFileName();
+
+            expect(Attachment(name: once).generateFileName(), once);
+          }
+        });
       });
     });
   });
