@@ -76,7 +76,12 @@ class Attachment with EquatableMixin {
     return downloadUri;
   }
 
-  String generateFileName() {
+  String generateFileName() => _withMeaningfulContent(_sanitizedFileName());
+
+  // Most filesystems reject a file name over 255 bytes, so only names written to disk are shortened.
+  String generateFileSystemName() => _withMeaningfulContent(_limitToMaxFileNameBytes(_sanitizedFileName()));
+
+  String _sanitizedFileName() {
     final rawName = (name?.trim().isNotEmpty == true)
         ? name!.trim()
         : (blobId != null
@@ -85,15 +90,16 @@ class Attachment with EquatableMixin {
                 : blobId!.value)
             : _defaultName);
 
-    final sanitized = rawName.sanitizedBidiForDisplay
+    return rawName.sanitizedBidiForDisplay
         .replaceAll(RegExp(r'[\\/:*?"<>|]'), '_')
         .trim();
-    final fileName = _limitToMaxFileNameBytes(sanitized);
-    // Fall back if sanitized name has no meaningful content (e.g. '???' → '___')
-    return fileName.contains(RegExp(r'[^_\s]')) ? fileName : _defaultName;
   }
 
-  // Most filesystems reject a file name over 255 bytes, so shorten the base name and keep the extension.
+  // Fall back if sanitized name has no meaningful content (e.g. '???' → '___')
+  static String _withMeaningfulContent(String fileName) =>
+      fileName.contains(RegExp(r'[^_\s]')) ? fileName : _defaultName;
+
+  // Shortens the base name and keeps the extension.
   static String _limitToMaxFileNameBytes(String fileName) {
     if (utf8.encode(fileName).length <= _maxFileNameBytes) return fileName;
 
@@ -105,7 +111,12 @@ class Attachment with EquatableMixin {
     }
 
     final baseName = fileName.substring(0, fileName.length - extension.length);
-    return '${_takeUtf8Bytes(baseName, _maxFileNameBytes - extensionBytes)}$extension';
+    final shortenedBaseName = _takeUtf8Bytes(baseName, _maxFileNameBytes - extensionBytes);
+    // An empty base name would turn the file into a hidden dotfile.
+    if (shortenedBaseName.isEmpty) {
+      return _takeUtf8Bytes(fileName, _maxFileNameBytes).trimRight();
+    }
+    return '$shortenedBaseName$extension';
   }
 
   static String _takeUtf8Bytes(String value, int maxBytes) {

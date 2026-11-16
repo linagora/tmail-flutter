@@ -202,13 +202,13 @@ void main() {
         expect(attachment.generateFileName(), 'unknown-attachment');
       });
 
-      group('when the name is over 255 UTF-8 bytes:', () {
+      group('generateFileSystemName when the name is over 255 UTF-8 bytes:', () {
         int byteLength(String value) => utf8.encode(value).length;
 
         test('should shorten the base name and keep the extension', () {
           final attachment = Attachment(name: 'invoice${'x' * 250}.pdf');
 
-          final result = attachment.generateFileName();
+          final result = attachment.generateFileSystemName();
 
           expect(result, 'invoice${'x' * 244}.pdf');
           expect(byteLength(result), 255);
@@ -217,7 +217,7 @@ void main() {
         test('should cut a non-Latin name on a code point boundary', () {
           final attachment = Attachment(name: '${'日' * 100}.pdf');
 
-          final result = attachment.generateFileName();
+          final result = attachment.generateFileSystemName();
 
           expect(result, '${'日' * 83}.pdf');
           expect(byteLength(result), 253);
@@ -226,7 +226,7 @@ void main() {
         test('should never split a surrogate pair', () {
           final attachment = Attachment(name: '${'😀' * 70}.pdf');
 
-          final result = attachment.generateFileName();
+          final result = attachment.generateFileSystemName();
 
           expect(result, '${'😀' * 62}.pdf');
           expect(byteLength(result), 252);
@@ -235,7 +235,7 @@ void main() {
         test('should count two bytes for a Cyrillic character', () {
           final attachment = Attachment(name: '${'д' * 200}.pdf');
 
-          final result = attachment.generateFileName();
+          final result = attachment.generateFileSystemName();
 
           expect(result, '${'д' * 125}.pdf');
           expect(byteLength(result), 254);
@@ -244,7 +244,7 @@ void main() {
         test('should count three bytes for a lone surrogate', () {
           final attachment = Attachment(name: '${'\uD83D' * 100}.pdf');
 
-          final result = attachment.generateFileName();
+          final result = attachment.generateFileSystemName();
 
           expect(result, '${'\uD83D' * 83}.pdf');
           expect(byteLength(result), 253);
@@ -253,25 +253,37 @@ void main() {
         test('should return default name when the shortened name has no meaningful content', () {
           final attachment = Attachment(name: '${'_' * 300}a');
 
-          expect(attachment.generateFileName(), 'unknown-attachment');
+          expect(attachment.generateFileSystemName(), 'unknown-attachment');
         });
 
         test('should cut the whole name when it has no extension', () {
           final attachment = Attachment(name: 'invoice${'x' * 250}');
 
-          expect(attachment.generateFileName(), 'invoice${'x' * 248}');
+          expect(attachment.generateFileSystemName(), 'invoice${'x' * 248}');
         });
 
         test('should cut the whole name when the extension alone is too long', () {
           final attachment = Attachment(name: 'a.${'x' * 300}');
 
-          expect(attachment.generateFileName(), 'a.${'x' * 253}');
+          expect(attachment.generateFileSystemName(), 'a.${'x' * 253}');
+        });
+
+        test('should cut the whole name when the first character of the base name does not fit', () {
+          final attachment = Attachment(name: '😀.${'x' * 253}');
+
+          expect(attachment.generateFileSystemName(), '😀.${'x' * 250}');
+        });
+
+        test('should keep the full name in generateFileName', () {
+          final name = 'invoice${'x' * 250}.pdf';
+
+          expect(Attachment(name: name).generateFileName(), name);
         });
 
         test('should cut a name made only of dots', () {
           final attachment = Attachment(name: '.' * 400);
 
-          expect(attachment.generateFileName(), '.' * 255);
+          expect(attachment.generateFileSystemName(), '.' * 255);
         });
 
         test('should shorten the blobId and subtype fallback', () {
@@ -280,13 +292,13 @@ void main() {
             type: MediaType.parse('application/pdf'),
           );
 
-          expect(attachment.generateFileName(), '${'b' * 251}.pdf');
+          expect(attachment.generateFileSystemName(), '${'b' * 251}.pdf');
         });
 
         test('should not change a name of exactly 255 bytes', () {
           final name = '${'x' * 251}.pdf';
 
-          expect(Attachment(name: name).generateFileName(), name);
+          expect(Attachment(name: name).generateFileSystemName(), name);
         });
 
         test('should return the same name on a second pass', () {
@@ -296,9 +308,9 @@ void main() {
             '${'x' * 254} tail',
             '.' * 400,
           ]) {
-            final once = Attachment(name: name).generateFileName();
+            final once = Attachment(name: name).generateFileSystemName();
 
-            expect(Attachment(name: once).generateFileName(), once);
+            expect(Attachment(name: once).generateFileSystemName(), once);
           }
         });
       });

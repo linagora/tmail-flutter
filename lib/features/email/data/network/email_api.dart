@@ -355,7 +355,7 @@ class EmailAPI
       attachment.getDownloadUrl(baseDownloadUrl, accountId),
       // A directory per export, so two attachments with the same generated file name never overwrite each other.
       getTemporaryDirectory().then((directory) => directory.createTemp('attachment_')),
-      attachment.generateFileName(),
+      attachment.generateFileSystemName(),
       authentication,
       cancelToken: cancelToken);
   }

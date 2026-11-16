@@ -1542,7 +1542,7 @@ void main() {
         final sharedPrefix = 'x' * 251;
         final firstAttachment = Attachment(blobId: Id('blob-a'), name: '$sharedPrefix-A.pdf');
         final secondAttachment = Attachment(blobId: Id('blob-b'), name: '$sharedPrefix-B.pdf');
-        expect(firstAttachment.generateFileName(), secondAttachment.generateFileName());
+        expect(firstAttachment.generateFileSystemName(), secondAttachment.generateFileSystemName());
         const firstContent = [1, 1, 1];
         const secondContent = [2, 2];
         when(downloadClient.downloadFile(any, any, any)).thenAnswer((invocation) async {
