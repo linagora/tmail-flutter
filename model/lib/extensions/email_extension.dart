@@ -16,6 +16,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_header_value.dart';
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/extensions/email_list_header_extension.dart';
 import 'package:model/model.dart';
 
 extension EmailExtension on Email {
@@ -35,7 +36,7 @@ extension EmailExtension on Email {
   bool get withAttachments => hasAttachment == true;
 
   String get listUnsubscribe => headers.listUnsubscribe
-    ?? listUnsubscribeHeader?.value
+    ?? listUnsubscribeHeaderValue?.value
     ?? '';
 
   bool get hasRequestReadReceipt => headers.readReceiptHasBeenRequested ||
@@ -46,7 +47,7 @@ extension EmailExtension on Email {
   String get sMimeStatusHeaderParsed => sMimeStatusHeader?.value?.trim() ?? '';
 
   String get listPost => headers.listPost?.trim()
-    ?? listPostHeader?.value?.trim()
+    ?? listPostHeaderValue?.value?.trim()
     ?? '';
 
   IdentityId? get identityIdFromHeader {
@@ -129,8 +130,8 @@ extension EmailExtension on Email {
       xPriorityHeader: xPriorityHeader,
       importanceHeader: importanceHeader,
       priorityHeader: priorityHeader,
-      listPostHeader: listPostHeader,
-      listUnsubscribeHeader: listUnsubscribeHeader,
+      listPostHeader: listPostHeaderValue,
+      listUnsubscribeHeader: listUnsubscribeHeaderValue,
       messageId: messageId,
       references: references,
     )
@@ -149,6 +150,8 @@ extension EmailExtension on Email {
       IndividualHeaderIdentifier.priorityHeader,
       IndividualHeaderIdentifier.listPostHeader,
       IndividualHeaderIdentifier.listUnsubscribeHeader,
+      ListHeaderIdentifier.listPost,
+      ListHeaderIdentifier.listUnsubscribe,
     ];
 
     final merged = Map<IndividualHeaderIdentifier, EmailHeaderValue>.from(individualHeaders);

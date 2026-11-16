@@ -7,10 +7,8 @@ import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_property.dart';
 import 'package:model/email/presentation_email.dart';
@@ -38,6 +36,7 @@ import 'package:tmail_ui_user/features/network_connection/presentation/network_c
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
+import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
@@ -98,11 +97,7 @@ class ThreadDetailController extends BaseController
   final emailsInThreadDetailInfo = RxList<EmailInThreadDetailInfo>();
 
   late final EmailActionReactor emailActionReactor;
-  final additionalProperties = Properties({
-    IndividualHeaderIdentifier.listPostHeader.value,
-    EmailProperty.references,
-    EmailProperty.messageId,
-  });
+  final additionalProperties = ThreadConstants.propertiesThreadDetailAdditional;
   final cachedEmailLoaded = <EmailId, EmailLoaded>{};
   late final _threadGetDebouncer = Debouncer<({ThreadId? threadId, bool isSentMailbox})?>(
     const Duration(milliseconds: 500),
