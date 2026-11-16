@@ -12,6 +12,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/delegated_account_providers.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
@@ -49,6 +50,7 @@ void main() {
       delegatedAccountRepositoryProvider.overrideWithValue(repository),
       appToastProvider.overrideWithValue(appToast.toast),
     ]);
+    container.read(activeAccountProvider.notifier).applySession(DelegationFixtures.session());
   });
 
   tearDown(() {

@@ -8,8 +8,14 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_a
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_user_info_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/quotas/domain/use_case/get_quotas_interactor.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
+import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.dart';
+import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import '../../../fixtures/active_account_source_fixtures.dart';
 import '../../../fixtures/base_controller_fixtures.dart';
 import '../../../fixtures/delegation_fixtures.dart';
@@ -73,5 +79,38 @@ void main() {
     controller.applyReloadedSession(reRead);
 
     expect(controller.sessionCurrent, reRead);
+  });
+
+  group('a delegation link read before the local settings load', () {
+    ManageAccountMenuController openDelegationLinkWhileHidden(ManageAccountDashBoardController controller) {
+      Get.parameters = {RouteUtils.paramType: AccountMenuItem.delegation.getAliasBrowser()};
+      addTearDown(() {
+        Get.parameters = {};
+        appProviderContainer.read(localSettingsProvider.notifier).update(PreferencesSetting.initial());
+      });
+      Get.put(controller);
+      final menuController = Get.put(ManageAccountMenuController());
+      controller.handleReloaded(DelegationFixtures.session());
+      return menuController;
+    }
+
+    test('opens Delegation once the settings turn it on', () {
+      final controller = openSettingsWith(DelegationFixtures.session());
+      openDelegationLinkWhileHidden(controller);
+
+      DelegationFixtures.turnDelegationOn(appProviderContainer);
+
+      expect(controller.accountMenuItemSelected.value, AccountMenuItem.delegation);
+    });
+
+    test('does not open Delegation when it is turned on later, after the settings loaded', () {
+      final controller = openSettingsWith(DelegationFixtures.session());
+      openDelegationLinkWhileHidden(controller);
+      appProviderContainer.read(localSettingsProvider.notifier).update(PreferencesSetting([]));
+
+      DelegationFixtures.turnDelegationOn(appProviderContainer);
+
+      expect(controller.accountMenuItemSelected.value, isNot(AccountMenuItem.delegation));
+    });
   });
 }

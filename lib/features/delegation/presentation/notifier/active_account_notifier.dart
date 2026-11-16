@@ -27,6 +27,13 @@ class ActiveAccountNotifier extends _$ActiveAccountNotifier {
         : ActiveAccount.personal(session);
   }
 
+  /// Applies a re-read session only while its user is still signed in, so a late re-read never revives a signed-out user.
+  bool applyReloadedSession(Session session) {
+    if (state?.session.username != session.username) return false;
+    applySession(session);
+    return true;
+  }
+
   bool canSelect(AccountId accountId) {
     final session = state?.session;
     if (session == null) return false;

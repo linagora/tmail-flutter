@@ -52,7 +52,10 @@ class ManageAccountMenuController extends GetxController with ContactSupportMixi
     _registerObxStreamListener();
     _localSettingsSubscription = appProviderContainer.listen(
       localSettingsProvider,
-      (_, __) => _syncDelegationMenuItem(),
+      (_, __) {
+        _syncDelegationMenuItem();
+        _openDelegationRequestedWhileHidden();
+      },
     );
     super.onInit();
   }
@@ -117,6 +120,13 @@ class ManageAccountMenuController extends GetxController with ContactSupportMixi
         dashBoardController.accountMenuItemSelected.value == AccountMenuItem.delegation) {
       final isWebDesktop = currentContext != null && responsiveUtils.isWebDesktop(currentContext!);
       selectAccountMenuItem(isWebDesktop ? items.first : AccountMenuItem.none);
+    }
+  }
+
+  void _openDelegationRequestedWhileHidden() {
+    if (dashBoardController.takeDelegationRequestedWhileHidden() &&
+        dashBoardController.isDelegationSettingDisplayed) {
+      selectAccountMenuItem(AccountMenuItem.delegation);
     }
   }
 

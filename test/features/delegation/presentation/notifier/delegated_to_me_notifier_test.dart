@@ -127,6 +127,61 @@ void main() {
       expect(reloadedSessions, isEmpty);
     });
 
+    test('should not let an older session re-read overwrite a newer one', () async {
+      await loadWith([bobDelegation, carolDelegation]);
+      getSessionInteractor.holdsReads = true;
+      final withoutBob = DelegationFixtures.session(state: 'state-2', listsBob: false);
+      final withoutBoth = DelegationFixtures.session(state: 'state-3', listsBob: false, listsCarol: false);
+      final reloadedSessions = <Session>[];
+
+      final bobRemoval = notifier().remove(session, bobDelegation, onSessionReloaded: reloadedSessions.add);
+      final carolRemoval = notifier().remove(session, carolDelegation, onSessionReloaded: reloadedSessions.add);
+      await pumpEventQueue();
+      getSessionInteractor.pendingReads[1].complete(Right(GetSessionSuccess(withoutBoth)));
+      await carolRemoval;
+      getSessionInteractor.pendingReads[0].complete(Right(GetSessionSuccess(withoutBob)));
+      await bobRemoval;
+
+      expect(getSessionInteractor.pendingReads.length, 2);
+      expect(container.read(activeAccountProvider)?.session, withoutBoth);
+      expect(reloadedSessions, [withoutBoth]);
+    });
+
+    test('should not apply a session re-read that completes after sign-out', () async {
+      await loadWith([bobDelegation]);
+      getSessionInteractor.holdsReads = true;
+      final reloadedSessions = <Session>[];
+
+      final removal = notifier().remove(session, bobDelegation, onSessionReloaded: reloadedSessions.add);
+      await pumpEventQueue();
+      container.read(activeAccountProvider.notifier).clear();
+      getSessionInteractor.pendingReads.single.complete(
+        Right(GetSessionSuccess(DelegationFixtures.session(state: 'state-2', listsBob: false))),
+      );
+      await removal;
+
+      expect(container.read(activeAccountProvider), isNull);
+      expect(reloadedSessions, isEmpty);
+    });
+
+    test('should not apply a session re-read that completes after another user signs in', () async {
+      await loadWith([bobDelegation]);
+      getSessionInteractor.holdsReads = true;
+      final carolSession = DelegationFixtures.session(username: DelegationFixtures.carolAddress);
+      final reloadedSessions = <Session>[];
+
+      final removal = notifier().remove(session, bobDelegation, onSessionReloaded: reloadedSessions.add);
+      await pumpEventQueue();
+      container.read(activeAccountProvider.notifier).applySession(carolSession);
+      getSessionInteractor.pendingReads.single.complete(
+        Right(GetSessionSuccess(DelegationFixtures.session(state: 'state-2', listsBob: false))),
+      );
+      await removal;
+
+      expect(container.read(activeAccountProvider)?.session, carolSession);
+      expect(reloadedSessions, isEmpty);
+    });
+
     test('should send one removal when the same mailbox is removed again while the first runs', () async {
       await loadWith([bobDelegation]);
       getSessionInteractor.result = Right(GetSessionSuccess(DelegationFixtures.session(listsBob: false)));

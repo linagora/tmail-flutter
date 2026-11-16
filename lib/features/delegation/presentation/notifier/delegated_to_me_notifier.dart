@@ -20,6 +20,7 @@ class DelegatedToMeNotifier extends _$DelegatedToMeNotifier with InteractorConsu
   GetSessionInteractor get _getSessionInteractor => Get.find<GetSessionInteractor>();
 
   int _latestLoadId = 0;
+  int _latestReloadId = 0;
   final _pendingRemovalIds = <Id>{};
 
   @override
@@ -84,13 +85,16 @@ class DelegatedToMeNotifier extends _$DelegatedToMeNotifier with InteractorConsu
   }
 
   Future<void> _reloadSession(ActiveAccountNotifier activeAccount, OnSessionReloaded? onSessionReloaded) {
+    final reloadId = ++_latestReloadId;
     return consumeInteractor(InteractorConsumeRequest(
       run: () => _getSessionInteractor.execute().last,
-      isStale: () => false,
+      // Only the latest re-read applies: it started after every removal that completed before it.
+      isStale: () => reloadId != _latestReloadId,
       onSuccess: (success) {
         // A cached session still lists the removed mailbox.
-        if (success is GetSessionSuccess && !success.fromCache) {
-          activeAccount.applySession(success.session);
+        if (success is GetSessionSuccess &&
+            !success.fromCache &&
+            activeAccount.applyReloadedSession(success.session)) {
           onSessionReloaded?.call(success.session);
         }
       },

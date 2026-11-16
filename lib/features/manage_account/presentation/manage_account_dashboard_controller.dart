@@ -79,6 +79,7 @@ class ManageAccountDashBoardController extends ReloadableController
 
   Uri? previousUri;
   AccountMenuItem? selectedMenu;
+  bool _delegationRequestedWhileHidden = false;
   int minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
 
   @override
@@ -191,6 +192,8 @@ class ManageAccountDashBoardController extends ReloadableController
       navigationRouter.accountMenuItem,
       isDelegationEntryShown: isDelegationSettingDisplayed,
     );
+    _delegationRequestedWhileHidden = navigationRouter.accountMenuItem == AccountMenuItem.delegation &&
+        requestedMenuItem == AccountMenuItem.none;
     if (requestedMenuItem == AccountMenuItem.none &&
         currentContext != null &&
         responsiveUtils.isWebDesktop(currentContext!)
@@ -208,6 +211,13 @@ class ManageAccountDashBoardController extends ReloadableController
         sessionCurrent,
         appProviderContainer.read(localSettingsProvider),
       );
+
+  /// A page load can read a `type=delegation` link before the local settings load, so the menu opens it once they do.
+  bool takeDelegationRequestedWhileHidden() {
+    final requested = _delegationRequestedWhileHidden;
+    _delegationRequestedWhileHidden = false;
+    return requested;
+  }
 
   void _initialPageLevel() {
     if (currentContext != null && responsiveUtils.isWebDesktop(currentContext!)) {
@@ -311,7 +321,7 @@ class ManageAccountDashBoardController extends ReloadableController
     }
   }
 
-  /// Keeps the session re-read after "Remove your access", so closing Settings hands it to the dashboard.
+  /// Keeps the session re-read after "Remove your access" for the dashboard that closing Settings rebuilds. A popped dashboard already reads the switcher from activeAccountProvider.
   void applyReloadedSession(Session session) => sessionCurrent = session;
 
   bool get isLanguageSettingDisplayed {

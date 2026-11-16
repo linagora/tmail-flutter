@@ -41,10 +41,20 @@ class FakeGetSessionInteractor implements GetSessionInteractor {
   Either<Failure, Success>? result;
   int calls = 0;
 
+  /// Holds every read in [pendingReads] until the test completes it, when true.
+  bool holdsReads = false;
+  final List<Completer<Either<Failure, Success>>> pendingReads = [];
+
   @override
   Stream<Either<Failure, Success>> execute({StateChange? stateChange}) async* {
     calls++;
-    yield result!;
+    if (!holdsReads) {
+      yield result!;
+      return;
+    }
+    final read = Completer<Either<Failure, Success>>();
+    pendingReads.add(read);
+    yield await read.future;
   }
 
   @override
