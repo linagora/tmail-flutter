@@ -591,5 +591,16 @@ void main() {
             reason: 'AutolinkTextNodeTransformer must come before SanitizeHyperLinkTagInHtmlTransformer');
       });
     });
+
+    group('Large text node', () {
+      test('SHOULD linkify a 100 KB run of email local-part characters in bounded time', () async {
+        final watch = Stopwatch()..start();
+
+        final result = await transform('<p>${'a' * 100000}</p><p>x@y.zz</p>');
+
+        expect(watch.elapsed, lessThan(const Duration(seconds: 5)));
+        expect(result, contains('href="mailto:x@y.zz"'));
+      });
+    });
   });
 }
