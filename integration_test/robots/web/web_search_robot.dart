@@ -1,7 +1,7 @@
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/text/rich_text_builder.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:patrol/patrol.dart';
@@ -14,14 +14,16 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_field_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
+import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
+import 'package:tmail_ui_user/features/search/email/domain/notifier/search_email_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:core/presentation/views/search/search_bar_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 import '../../extensions/patrol_finder_extension.dart';
-import '../../utils/collapsed_thread_provisioner.dart';
 import '../../utils/frame_state_recorder.dart';
 import '../../utils/jmap_query_recorder.dart';
 import '../../utils/test_timeouts.dart';
@@ -221,7 +223,13 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
   @override
   Future<void> searchByLabel(String labelName) async {
     JmapQueryRecorder.instance.attach();
-    FrameStateRecorder('SEARCH RESULTS', _searchState).start();
+    final recorder = FrameStateRecorder('SEARCH RESULTS', _searchState)..start();
+    // Every executor change, even within one frame: names the intent that emptied the list.
+    final subscription = appProviderContainer.listen<AsyncValue<SearchEmailResult>>(
+      searchEmailProvider,
+      (_, next) => recorder.record('executor ${_describeExecutor(next)}'),
+    );
+    addTearDown(subscription.close);
     await $(const ValueKey(UiKeys.advancedSearchLabelDropDown)).tap();
     await $(find.text(labelName)).tap();
     await $(const ValueKey(UiKeys.advancedSearchSearchButton)).tap();
@@ -249,19 +257,14 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
     final email = $(EmailTileBuilder).which<EmailTileBuilder>(
       (view) => view.presentationEmail.subject?.contains(subject) == true,
     );
-    try {
-      await waitForCondition(
-        () async {
-          await $.pump();
-          return email.evaluate().isNotEmpty;
-        },
-        timeout: TestTimeouts.medium,
-        reason: 'an email with subject containing "$subject" is listed',
-      );
-    } catch (_) {
-      await _logServerLabelCount('at failure');
-      rethrow;
-    }
+    await waitForCondition(
+      () async {
+        await $.pump();
+        return email.evaluate().isNotEmpty;
+      },
+      timeout: TestTimeouts.medium,
+      reason: 'an email with subject containing "$subject" is listed',
+    );
   }
 
   // Tiles, empty view and the committed label filter; shows when the list settled empty.
@@ -291,18 +294,13 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
     return 'thread=$state emails=$emails searchRunning=$running';
   }
 
-  // Server has any match now vs empty list: splits search index lag from a client filter bug.
-  Future<void> _logServerLabelCount(String when) async {
-    try {
-      final keyword = _filteredLabelKeyword;
-      // Query limit is 1, so this is 0 or 1: whether any email has the keyword.
-      final anyMatch = keyword == null
-          ? 'n/a'
-          : await CollapsedThreadProvisioner().countEmailsWithKeyword(keyword);
-      debugPrintSynchronously('[SEARCH RESULTS] server $when hasKeyword=$keyword anyMatch=$anyMatch');
-    } catch (e) {
-      debugPrintSynchronously('[SEARCH RESULTS] server probe failed: $e');
-    }
+  // loading = new search; data loadMore=inProgress = load more; data idle with old rows = refresh.
+  String _describeExecutor(AsyncValue<SearchEmailResult> value) {
+    if (value.isLoading) return 'loading';
+    if (value.hasError) return 'error ${value.error.runtimeType}';
+    final result = value.value;
+    return 'data emails=${result?.emails.length} canLoadMore=${result?.canLoadMore} '
+        'loadMore=${result?.loadMore.name}';
   }
 
   Future<void> _waitForSearchResults() => waitForCondition(
