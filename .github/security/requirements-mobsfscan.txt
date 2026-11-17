@@ -320,9 +320,9 @@ mobsfscan==1.0.1 \
     --hash=sha256:4d755d4b7910fdbb119f1844433a1fbe1d8c2d64e02eee4b648331c51f260bd3 \
     --hash=sha256:f390df288e488126fbbdcf24b1635baea5e81b7fca02e0fe72358702c655ee88
     # via -r mobsfscan.in
-opentelemetry-api==1.45.2 \
-    --hash=sha256:2cbd737377e710ee740d261c94e93fa0f08e6d037c18f17513cc0a2d94479a34 \
-    --hash=sha256:d7b0008e21e5fd61cbe7a7f34ca3b6905a78ab677d9bc395e299359c75cda6b4
+opentelemetry-api==1.37.0 \
+    --hash=sha256:540735b120355bd5112738ea53621f8d5edb35ebcd6fe21ada3ab1c61d1cd9a7 \
+    --hash=sha256:accf2024d3e89faec14302213bc39550ec0f4095d1cf5ca688e1bfb1c8612f47
     # via
     #   opentelemetry-exporter-otlp-proto-http
     #   opentelemetry-instrumentation
