@@ -1566,6 +1566,30 @@ void main() {
         expect(File(exports[0].filePath).parent.parent.path, temporaryRoot.path);
         expect(File(exports[1].filePath).parent.parent.path, temporaryRoot.path);
       });
+
+      test(
+        'SHOULD reuse the same file\n'
+        'WHEN the same attachment is exported twice',
+      () async {
+        final attachment = Attachment(blobId: Id('blob-a'), name: 'report.pdf');
+        when(downloadClient.downloadFile(any, any, any))
+          .thenAnswer((_) async => ResponseBody.fromBytes([1, 2, 3], 200));
+
+        Future<String> exportOnce() async => (await exportEmailApi.exportAttachment(
+          attachment,
+          AccountFixtures.aliceAccountId,
+          'https://example.com/download/{accountId}/{blobId}',
+          AccountRequest(),
+          CancelToken(),
+        )).filePath;
+
+        final firstPath = await exportOnce();
+        final secondPath = await exportOnce();
+
+        expect(secondPath, firstPath);
+        expect(File(secondPath).readAsBytesSync(), [1, 2, 3]);
+        expect(temporaryRoot.listSync(), hasLength(1));
+      });
     });
   });
 }

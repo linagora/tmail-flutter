@@ -353,8 +353,8 @@ class EmailAPI
 
     return _downloadManager.downloadFile(
       attachment.getDownloadUrl(baseDownloadUrl, accountId),
-      // A directory per export, so two attachments with the same generated file name never overwrite each other.
-      getTemporaryDirectory().then((directory) => directory.createTemp('attachment_')),
+      // A directory per blob: same-named attachments never overwrite each other, and re-exporting a blob reuses its file.
+      getTemporaryDirectory().then((directory) => Directory('${directory.path}/attachment_${attachment.blobId?.value}')),
       attachment.generateFileSystemName(),
       authentication,
       cancelToken: cancelToken);
