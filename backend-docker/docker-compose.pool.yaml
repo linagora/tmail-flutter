@@ -1,7 +1,7 @@
 # One lease slot of scripts/backend-reset-server.py; keep the image and mounts in sync with docker-compose.yaml.
 services:
   tmail-backend:
-    image: linagora/tmail-backend:memory-1.0.23
+    image: &backend-image linagora/tmail-backend:memory-1.0.23
     labels:
       - tmail.ci.pool=1
       - tmail.ci.node=${NODE_NAME:-}
@@ -25,7 +25,7 @@ services:
 
   # Owns the slot's network for the whole run; a veth removed per recycle made Chrome abort fetches (ERR_NETWORK_CHANGED).
   network-holder:
-    image: linagora/tmail-backend:memory-1.0.23
+    image: *backend-image
     entrypoint: ["sleep", "infinity"]
     # sleep ignores SIGTERM as PID 1; skip the 10 s stop timeout on down.
     stop_signal: SIGKILL
