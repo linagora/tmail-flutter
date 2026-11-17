@@ -33,7 +33,6 @@ class JmapQueryRecorder extends Interceptor {
     _dio = null;
     _entries.clear();
     _querySeqs.clear();
-    _seq = 0;
   }
 
   @override

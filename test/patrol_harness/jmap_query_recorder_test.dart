@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart' hide Response;
 
 import '../../integration_test/utils/jmap_query_recorder.dart';
 
@@ -114,8 +116,35 @@ void _recordsFailedQueryRequests() {
   expect(lines.last, contains('#2 failed cancel status=null'));
 }
 
+void _ignoresLateResponseAcrossReattach() {
+  Get.put(Dio());
+  addTearDown(() => Get.delete<Dio>());
+  final recorder = JmapQueryRecorder.instance..attach();
+  final optionsA = RequestOptions(data: _request('Email/query', {'filter': {'a': 1}}));
+  recorder.onRequest(optionsA, RequestInterceptorHandler());
+  recorder.detach();
+  recorder.attach();
+  final optionsB = RequestOptions(data: _request('Email/query', {'filter': {'b': 1}}));
+  recorder.onRequest(optionsB, RequestInterceptorHandler());
+  recorder.onResponse(
+    Response(requestOptions: optionsA, data: _response('Email/query', {'ids': ['a1', 'a2', 'a3']})),
+    ResponseInterceptorHandler(),
+  );
+  recorder.onResponse(
+    Response(requestOptions: optionsB, data: _response('Email/query', {'ids': ['b1']})),
+    ResponseInterceptorHandler(),
+  );
+
+  final lines = _dump();
+
+  expect(lines, hasLength(2));
+  expect(lines[0], contains('#2 request filter={"b":1}'));
+  expect(lines[1], contains('#2 response ids=1'));
+}
+
 void main() {
   setUp(JmapQueryRecorder.instance.detach);
+  test('ignores a late response across reattach', _ignoresLateResponseAcrossReattach);
 
   test('records the filter and the result count of Email/query', _recordsFilterAndResultCount);
   test('ignores methods other than Email/query', _ignoresOtherMethods);
