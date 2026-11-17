@@ -6237,5 +6237,123 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "sendingNotAllowedFromThisMailbox": "Вы не можете отправлять письма из этого почтового ящика.",
+  "@sendingNotAllowedFromThisMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "endedDelegationLostItems": "Доступ завершён. Неотправленные письма и черновики ({count}) удалены.",
+  "@endedDelegationLostItems": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "delegation": "Делегирование",
+  "@delegation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delegationSettingExplanation": "Открывайте почтовые ящики, которыми с вами поделились другие пользователи",
+  "@delegationSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delegationToggleDescription": "Включить делегирование",
+  "@delegationToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openingOwnerMailbox": "Открывается почтовый ящик {name}…",
+  "@openingOwnerMailbox": {
+    "type": "text",
+    "placeholders_order": [
+      "name"
+    ],
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "openingYourMailbox": "Открывается ваш почтовый ящик…",
+  "@openingYourMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "viewingOwnerMailbox": "Просмотр: {name}",
+  "@viewingOwnerMailbox": {
+    "type": "text",
+    "placeholders_order": [
+      "name"
+    ],
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "yourMailbox": "Ваш почтовый ящик",
+  "@yourMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delegatedToYou": "Делегировано вам",
+  "@delegatedToYou": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "accountSwitcherMenu": "Переключение аккаунтов",
+  "@accountSwitcherMenu": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "couldNotOpenOwnerMailbox": "Не удалось открыть почтовый ящик {name}",
+  "@couldNotOpenOwnerMailbox": {
+    "type": "text",
+    "placeholders_order": [
+      "name"
+    ],
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "couldNotReturnToYourMailbox": "Не удалось вернуться в ваш почтовый ящик",
+  "@couldNotReturnToYourMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "closeComposerBeforeSwitchingAccounts": "Закройте редактор писем перед переключением аккаунтов",
+  "@closeComposerBeforeSwitchingAccounts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delegatedMailbox": "Делегированный почтовый ящик",
+  "@delegatedMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "backToYourMailbox": "Вернуться в ваш почтовый ящик",
+  "@backToYourMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delegatedMailboxUnavailable": "Этот делегированный почтовый ящик недоступен, поэтому показан ваш почтовый ящик",
+  "@delegatedMailboxUnavailable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

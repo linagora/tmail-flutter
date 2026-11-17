@@ -89,6 +89,30 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "languageMongolian": "Монгол",
+  "@languageMongolian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageGerman": "Герман",
+  "@languageGerman": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageSpanish": "Испани",
+  "@languageSpanish": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageItalian": "Итали",
+  "@languageItalian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "customPromptAction": "Бичихэд туслаач",
   "@customPromptAction": {
     "type": "text",

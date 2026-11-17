@@ -90,6 +90,30 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "languageMongolian": "Монгольский",
+  "@languageMongolian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageGerman": "Немецкий",
+  "@languageGerman": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageSpanish": "Испанский",
+  "@languageSpanish": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageItalian": "Итальянский",
+  "@languageItalian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "customPromptAction": "Помоги мне написать",
   "@customPromptAction": {
     "type": "text",

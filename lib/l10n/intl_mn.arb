@@ -5865,6 +5865,124 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "sendingNotAllowedFromThisMailbox": "Та энэ шуудангийн хайрцгаас имэйл илгээх боломжгүй.",
+  "@sendingNotAllowedFromThisMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "endedDelegationLostItems": "Хандалт дууслаа. Илгээгээгүй эсвэл ноорог {count} захидал устгагдлаа.",
+  "@endedDelegationLostItems": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "delegation": "Итгэмжлэл",
+  "@delegation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delegationSettingExplanation": "Бусад хэрэглэгчийн танд итгэмжилсэн шуудангийн хайрцгуудыг нээх",
+  "@delegationSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delegationToggleDescription": "Итгэмжлэлийг идэвхжүүлэх",
+  "@delegationToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openingOwnerMailbox": "{name}-ийн шуудангийн хайрцгийг нээж байна…",
+  "@openingOwnerMailbox": {
+    "type": "text",
+    "placeholders_order": [
+      "name"
+    ],
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "openingYourMailbox": "Таны шуудангийн хайрцгийг нээж байна…",
+  "@openingYourMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "viewingOwnerMailbox": "{name}-г үзэж байна",
+  "@viewingOwnerMailbox": {
+    "type": "text",
+    "placeholders_order": [
+      "name"
+    ],
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "yourMailbox": "Таны шуудангийн хайрцаг",
+  "@yourMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delegatedToYou": "Танд итгэмжилсэн",
+  "@delegatedToYou": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "accountSwitcherMenu": "Бүртгэл сэлгэгч",
+  "@accountSwitcherMenu": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "couldNotOpenOwnerMailbox": "{name}-ийн шуудангийн хайрцгийг нээж чадсангүй",
+  "@couldNotOpenOwnerMailbox": {
+    "type": "text",
+    "placeholders_order": [
+      "name"
+    ],
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "couldNotReturnToYourMailbox": "Таны шуудангийн хайрцаг руу буцаж чадсангүй",
+  "@couldNotReturnToYourMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "closeComposerBeforeSwitchingAccounts": "Бүртгэл сэлгэхээс өмнө бичих цонхыг хаана уу",
+  "@closeComposerBeforeSwitchingAccounts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delegatedMailbox": "Итгэмжлэгдсэн шуудангийн хайрцаг",
+  "@delegatedMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "backToYourMailbox": "Таны шуудангийн хайрцаг руу буцах",
+  "@backToYourMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delegatedMailboxUnavailable": "Энэ итгэмжлэгдсэн шуудангийн хайрцаг боломжгүй тул таны шуудангийн хайрцгийг харуулж байна",
+  "@delegatedMailboxUnavailable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "ssoRedirectFailedMessage": "Нэг удаагийн нэвтрэлтийн (SSO) чиглүүлэлтийг гүйцээж чадсангүй. Дахин оролдоно уу.",
   "@ssoRedirectFailedMessage": {
     "type": "text",

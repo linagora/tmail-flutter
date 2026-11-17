@@ -90,6 +90,30 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "languageMongolian": "Tiếng Mông Cổ",
+  "@languageMongolian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageGerman": "Tiếng Đức",
+  "@languageGerman": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageSpanish": "Tiếng Tây Ban Nha",
+  "@languageSpanish": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageItalian": "Tiếng Ý",
+  "@languageItalian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "customPromptAction": "Tuỳ chỉnh nội dung",
   "@customPromptAction": {
     "type": "text",
