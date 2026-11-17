@@ -142,9 +142,24 @@ void _ignoresLateResponseAcrossReattach() {
   expect(lines[1], contains('#2 response ids=1'));
 }
 
+void _ignoresResponseOfRequestSentBeforeAttach() {
+  Get.put(Dio());
+  addTearDown(() => Get.delete<Dio>());
+  final recorder = JmapQueryRecorder.instance..attach();
+  // Never passed through onRequest, so it carries no seq.
+  final options = RequestOptions(data: _request('Email/query', {'filter': {'a': 1}}));
+  recorder.onResponse(
+    Response(requestOptions: options, data: _response('Email/query', {'ids': ['a1']})),
+    ResponseInterceptorHandler(),
+  );
+
+  expect(_dump(), isEmpty);
+}
+
 void main() {
   setUp(JmapQueryRecorder.instance.detach);
   test('ignores a late response across reattach', _ignoresLateResponseAcrossReattach);
+  test('ignores a response to a request sent before attach', _ignoresResponseOfRequestSentBeforeAttach);
 
   test('records the filter and the result count of Email/query', _recordsFilterAndResultCount);
   test('ignores methods other than Email/query', _ignoresOtherMethods);

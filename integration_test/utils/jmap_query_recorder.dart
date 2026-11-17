@@ -48,9 +48,9 @@ class JmapQueryRecorder extends Interceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    if (_dio != null) {
-      recordResponse(response.data, seq: response.requestOptions.extra[_seqKey] as int?);
-    }
+    final seq = response.requestOptions.extra[_seqKey] as int?;
+    // No seq: sent before attach, so its request was never recorded.
+    if (_dio != null && seq != null) recordResponse(response.data, seq: seq);
     handler.next(response);
   }
 
