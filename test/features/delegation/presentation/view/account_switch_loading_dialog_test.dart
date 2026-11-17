@@ -128,6 +128,8 @@ void main() {
         role: SemanticsRole.dialog,
         scopesRoute: true,
         namesRoute: true,
+        isFocusable: true,
+        hasFocusAction: true,
         label: AppLocalizations().openingOwnerMailbox(owner),
       ),
     );

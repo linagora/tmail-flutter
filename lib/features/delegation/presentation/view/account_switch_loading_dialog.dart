@@ -111,6 +111,7 @@ class _AccountSwitchLoadingDialogState extends State<AccountSwitchLoadingDialog>
             onPopInvokedWithResult: (didPop, _) {
               if (!didPop) widget.onCancel();
             },
+            // Not a container: it merges with the autofocused Focus node, so focus lands on the named dialog.
             child: Semantics(
               role: SemanticsRole.dialog,
               scopesRoute: true,
