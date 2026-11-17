@@ -386,7 +386,7 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
     popBack();
   }
 
-  String getRestorationHorizonAsString() => arguments!.session.getRestorationHorizonAsString();
+  int getRestorationHorizonInDays() => arguments!.session.getRestorationHorizonInDays();
 
   DateTime getRestorationHorizonAsDateTime() => arguments!.session.getRestorationHorizonAsDateTime();
 
