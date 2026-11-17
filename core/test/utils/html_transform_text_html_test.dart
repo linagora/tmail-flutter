@@ -469,6 +469,18 @@ void main() {
         expect(out, contains('<a href=" https://example.com/page.html " target="_blank" rel="noreferrer">padded</a>'));
       });
 
+      test('SHOULD drop href with a leading non-ASCII space WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
+        const input = '<a href="&nbsp;https://example.com">nbsp</a>'
+            '<a href="&#xFEFF;https://example.com">bom</a>'
+            '<a href="&#160;https://example.com/%ZZ">nbsp-bad-escape</a>';
+        final out = await transformWith(input, [SanitizeHyperLinkTagInHtmlTransformer()]);
+        expect(out, allOf(
+          contains('<a target="_blank" rel="noreferrer">nbsp</a>'),
+          contains('<a target="_blank" rel="noreferrer">bom</a>'),
+          contains('<a target="_blank" rel="noreferrer">nbsp-bad-escape</a>'),
+        ));
+      });
+
       test('SHOULD drop href that is relative before percent-decoding or empty WHEN only SanitizeHyperLinkTagInHtmlTransformer is used', () async {
         const input = '<a href="https%3A//[::1]">encoded-https</a>'
             '<a href="javascript%3axn--80ak6aa92e.com">encoded-javascript</a>'
