@@ -103,6 +103,12 @@ def _run(cmd: List[str], check: bool = False, env: Optional[dict] = None,
         return subprocess.CompletedProcess(cmd, proc.returncode, out, err)
 
 
+def _at() -> str:
+    """Monotonic for durations, UTC wall clock to join with browser and ip-monitor logs."""
+    now = time.time()
+    return f"{time.monotonic():.3f} ({time.strftime('%H:%M:%S', time.gmtime(now))}.{int(now % 1 * 1000):03d}Z)"
+
+
 def _webadmin(port: int, method: str, path: str, data: Optional[str] = None) -> dict:
     """Call the James WebAdmin API via HTTP on localhost:port."""
     cmd = ["curl", "-s", "-X", method, f"http://localhost:{port}{path}"]
@@ -209,7 +215,7 @@ def recycle_slot(n: int) -> None:
     with _recycle_slots:
         if _stopping.is_set():
             return
-        print(f"[reset-server] recycle start {n} at {time.monotonic():.3f}", flush=True)
+        print(f"[reset-server] recycle start {n} at {_at()}", flush=True)
         started = time.monotonic()
         _save_logs(n)
         up = _compose(n, "up", "-d", "--force-recreate", "--no-deps", "--quiet-pull", "tmail-backend")
@@ -226,7 +232,7 @@ def recycle_slot(n: int) -> None:
             time.sleep(0.3)
         booted = time.monotonic()
         provision(POOL_WEBADMIN_BASE_PORT + n)
-        print(f"[reset-server] recycle end {n} at {time.monotonic():.3f} "
+        print(f"[reset-server] recycle end {n} at {_at()} "
               f"boot={booted - started:.1f}s prov={time.monotonic() - booted:.1f}s", flush=True)
 
 
@@ -285,7 +291,7 @@ class Pool:
             self._expire()
             for n, t in self._token.items():
                 if t == token:
-                    print(f"[reset-server] release slot {n} at {time.monotonic():.3f}", flush=True)
+                    print(f"[reset-server] release slot {n} at {_at()}", flush=True)
                     self._begin_reset(n)
                     return True
         return False
@@ -295,7 +301,7 @@ class Pool:
         self._state[n] = "leased"
         self._token[n] = token
         self._leased_at[n] = time.time()
-        print(f"[reset-server] lease slot {n} at {time.monotonic():.3f}", flush=True)
+        print(f"[reset-server] lease slot {n} at {_at()}", flush=True)
         return {"token": token, "url": self._urls[n]}
 
     def _expire(self) -> None:
@@ -379,7 +385,7 @@ class ResetHandler(http.server.BaseHTTPRequestHandler):
         self._reply(204)
 
     def _handle_lease(self):
-        print(f"[reset-server] lease request at {time.monotonic():.3f}", flush=True)
+        print(f"[reset-server] lease request at {_at()}", flush=True)
         leased = self.pool.lease(LEASE_TIMEOUT)
         if leased is None:
             self._reply(503, b"no free backend")
