@@ -237,9 +237,9 @@ class RecycleNetworkHolderTest(unittest.TestCase):
 
         def compose(n, *args):
             calls.append(args)
-            if args[0] == "up" and "tmail-backend" in args:
-                return type("R", (), {"returncode": 0, "stdout": "JAMES server started", "stderr": ""})()
-            return type("R", (), {"returncode": 0, "stdout": "JAMES server started", "stderr": ""})()
+            # Only the backend prints the boot line; recycle must not read it from the holder.
+            stdout = "JAMES server started" if "network-holder" not in args else ""
+            return type("R", (), {"returncode": 0, "stdout": stdout, "stderr": ""})()
 
         server._compose, server._save_logs = compose, lambda n: None
         server.provision = lambda port: None
@@ -377,7 +377,7 @@ class ComposeParityTest(unittest.TestCase):
     def test_pool_compose_uses_the_backend_image_of_the_main_compose(self):
         def image(name):
             with open(os.path.join(ROOT, "backend-docker", name)) as f:
-                return re.search(r"^\s*image:\s*(\S+)", f.read(), re.M).group(1)
+                return re.search(r"^\s*image:\s*(?:&\S+\s+)?(\S+)", f.read(), re.M).group(1)
 
         self.assertEqual(image("docker-compose.pool.yaml"), image("docker-compose.yaml"))
 
