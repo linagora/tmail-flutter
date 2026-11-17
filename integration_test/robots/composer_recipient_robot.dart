@@ -9,6 +9,7 @@ import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/card_with_smart_interaction_overlay_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/recipient_composer_widget_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/recipient_tag_item_widget_style.dart';
@@ -107,13 +108,18 @@ class ComposerRecipientRobot extends CoreRobot
         .join(',');
     final menus = find.byType(EditRecipientsView).evaluate().length;
     final cards = find.byType(CardWithSmartInteractionOverlayView).evaluate().length;
-    final controller = getBinding<ComposerController>();
+    final manager = getBinding<ComposerManager>();
+    // Web tags each composer controller with its composerId; mobile registers it untagged.
+    final lastComposerId = manager?.composers.keys.lastOrNull;
+    final controller = lastComposerId == null
+        ? getBinding<ComposerController>()
+        : getBinding<ComposerController>(tag: lastComposerId);
     final composer = controller == null
         ? 'composer=none'
         : 'field=${_focusedField(controller)} to=${controller.listToEmailAddress.length} '
             'collapsed=${controller.recipientsCollapsedState.value.name} '
             'bodyNotReady=${controller.isEmailBodyNotReady}';
-    return 'chips=[$chips] menus=$menus cards=$cards $composer '
+    return 'composers=${manager?.composers.length} chips=[$chips] menus=$menus cards=$cards $composer '
         'focus=${describeFocusKey(FocusManager.instance.primaryFocus)}';
   }
 
