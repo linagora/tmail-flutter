@@ -107,7 +107,6 @@ echo "Pre-installing Patrol web_runner deps in $WEB_RUNNER_DIR..."
 timing "web_runner dependencies install started"
 # Same commands as patrol_cli 4.3.1 _ensureNodeDependencies, so its own run is a no-op
 (cd "$WEB_RUNNER_DIR" && npm install && npx playwright install) || { echo "web_runner deps install failed"; exit 1; }
-node scripts/ci-web-runner-diagnostics.js "$WEB_RUNNER_DIR"
 timing "web_runner dependencies installed"
 
 BACKEND_STATUS=0
