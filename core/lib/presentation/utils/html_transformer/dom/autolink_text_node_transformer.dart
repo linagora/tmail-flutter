@@ -3,6 +3,7 @@ import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:html/dom.dart';
+import 'package:core/presentation/utils/html_transformer/linear_time_linkifiers.dart';
 import 'package:linkify/linkify.dart';
 
 /// Linkifies bare URLs and email addresses found in DOM text nodes.
@@ -21,8 +22,8 @@ class AutolinkTextNodeTransformer extends DomTransformer {
     removeWww: true,
   );
   static final _linkifiers = <Linkifier>[
-    const EmailLinkifier(),
-    const UrlLinkifier(),
+    const LinearTimeEmailLinkifier(),
+    const LinearTimeUrlLinkifier(),
   ];
   static const _skipTags = {'a', 'script', 'style', 'textarea'};
 

@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:core/utils/app_logger.dart';
+import 'package:core/presentation/utils/html_transformer/linear_time_linkifiers.dart';
 import 'package:linkify/linkify.dart';
 
 class SanitizeAutolinkFilter {
@@ -17,8 +18,8 @@ class SanitizeAutolinkFilter {
     removeWww: true,
   );
   static final _linkifier = <Linkifier>[
-    const EmailLinkifier(),
-    const UrlLinkifier(),
+    const LinearTimeEmailLinkifier(),
+    const LinearTimeUrlLinkifier(),
   ];
 
   SanitizeAutolinkFilter(this.htmlEscape);

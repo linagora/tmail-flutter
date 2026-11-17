@@ -287,5 +287,23 @@ void main() {
         );
       });
     });
+
+    group('Large body', () {
+      test('SHOULD render a 100 KB run of email local-part characters in bounded time', () {
+        final watch = Stopwatch()..start();
+
+        final result = transform('a' * 100000);
+
+        expect(watch.elapsed, lessThan(const Duration(seconds: 5)));
+        expect(result, equals('a' * 100000));
+      });
+
+      test('SHOULD still link every address and URL of a 100 KB body made of many links', () {
+        final result = transform('x@y.zz<www.a.bc>' * 6250);
+
+        expect('href="mailto:x@y.zz"'.allMatches(result), hasLength(6250));
+        expect('href="https://www.a.bc"'.allMatches(result), hasLength(6250));
+      });
+    });
   });
 }
