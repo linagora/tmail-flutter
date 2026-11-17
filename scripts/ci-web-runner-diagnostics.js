@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Usage: node scripts/ci-web-runner-diagnostics.js <patrol web_runner dir>
-// Adds page-setup logs to Patrol's Playwright spec: a splash-only hang shows the failed URL and the step it stopped at.
+// Logs failed requests and page errors during Patrol page setup: a splash-only hang names the failed URL.
 // Never fails the job: a changed spec only prints a warning.
 const fs = require("fs");
 const path = require("path");
@@ -22,14 +22,10 @@ const PATCHED = `    ${MARKER}
       if (!setupDone) ciLog(\`page error \${error.stack ?? error.message}\`)
     })
     page.on("crash", () => ciLog("page crashed"))
-    ciLog("goto start")
     await page.goto("/", { waitUntil: "load" })
-    ciLog("goto loaded")
     await exposePatrolPlatformHandler(page)
-    ciLog("initialise start")
     await initialise(page)
     setupDone = true
-    ciLog("initialise done")
 `;
 
 try {
