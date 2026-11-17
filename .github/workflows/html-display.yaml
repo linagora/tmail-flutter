@@ -13,6 +13,10 @@ permissions:
 env:
   FLUTTER_VERSION: 3.47.9
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   # Chrome suite tagged `display`: every HTML email fixture rendered through
   # the production transform and viewer document, at every email pane width.

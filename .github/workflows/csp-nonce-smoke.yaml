@@ -12,6 +12,10 @@ name: CSP nonce smoke
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   # Patrol web runs on the dev server, which sends no CSP: this is the only CI check of the nginx nonce wiring.
   csp-nonce-smoke:

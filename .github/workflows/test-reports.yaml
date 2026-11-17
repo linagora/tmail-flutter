@@ -18,6 +18,8 @@ jobs:
       actions: read
       checks: write
     name: Upload test reports
+    # superseded runs are cancelled by concurrency; nothing to report
+    if: github.event.workflow_run.conclusion != 'cancelled'
     runs-on: ubuntu-latest
     steps:
       - uses: dorny/test-reporter@d1b5dff021aa968b288b02285a8bf47471c5928a # v3.2.0

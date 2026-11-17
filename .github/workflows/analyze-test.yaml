@@ -11,6 +11,10 @@ name: Analyze and test
 env:
   FLUTTER_VERSION: 3.47.9
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   discover-tests:
     runs-on: ubuntu-latest
