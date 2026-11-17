@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// `FlutterSmartDialog` builds its own [Overlay] whose toast/dialog entries are
 /// siblings of the navigator [FocusScope], so they sit in the View focus sort
 /// unless an outer [FocusScope] wraps that whole overlay.
+// TODO: delete with the lib/main.dart FocusScope once flutter/flutter#194056 is in our Flutter version.
 void main() {
   testWidgets(
     'outer FocusScope keeps SmartDialog-style overlay focus out of the View sort',

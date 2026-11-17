@@ -90,6 +90,7 @@ class _TMailAppState extends State<TMailApp> {
         getPages: AppPages.pages,
         builder: (context, child) => FocusScope(
           // Keeps overlay focus nodes out of the View's focus sort while they are disposed; flutter/flutter#194056.
+          // TODO: remove with test/main/focus_*_test.dart once flutter/flutter#194056 is in our Flutter version; only web Patrol runs (didChangeViewFocus null check) catch its removal.
           child: _smartDialogBuilder(context, child),
         ),
       ),

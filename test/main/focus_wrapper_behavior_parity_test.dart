@@ -5,8 +5,7 @@
 // The scenarios cover what the e2e suite does not: Tab traversal, the browser
 // handing focus back to the View, SmartDialog autofocus and unfocus() from
 // contexts outside any route.
-// Differential test: run the same scenarios with and without the FocusScope
-// wrapper of lib/main.dart and compare focus behaviour step by step.
+// TODO: delete with the lib/main.dart FocusScope once flutter/flutter#194056 is in our Flutter version.
 import 'dart:async';
 import 'dart:ui' show ViewFocusDirection, ViewFocusEvent, ViewFocusState;
 
