@@ -1,3 +1,17 @@
+## [0.42.1] - 2026-11-17
+### Added
+- #5025 Scribe: add Mongolian, German, Spanish, Italian to the translate menu
+
+### Fixed
+- #5099 Prevent StringConvert from corrupting plain entries matching
+- #5038 Sign out Twake Workplace account in the sign-in browser on iOS
+
+### Changed
+- #4827 Move composer toolbar actions into More menu on narrow screens
+- Drop unsafe-inline from the web CSP with a per-request script nonce
+- Upgrade Flutter to 3.47.9 and super_tag_editor to 1.1.1
+- Translate vi, ru, fr, mn
+
 ## [0.41.3] - 2026-11-11
 ### Added
 - Add automated memory leak check for web and Android
