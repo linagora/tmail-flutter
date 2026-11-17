@@ -237,7 +237,7 @@ class RecycleAfterStopTest(unittest.TestCase):
 
         def compose(n, *args):
             calls.append(args[0])
-            if args[0] == "up":
+            if args[0] == "up" and "tmail-backend" in args:
                 server._stopping.set()  # stop_all ran while `up` was in flight
             return type("R", (), {"returncode": 0, "stdout": "", "stderr": ""})()
 
@@ -248,7 +248,7 @@ class RecycleAfterStopTest(unittest.TestCase):
         finally:
             server._compose, server._save_logs, server.provision = saved
             server._stopping.clear()
-        self.assertEqual(calls, ["up", "down"])
+        self.assertEqual(calls, ["up", "up", "down"])
 
 
 class RunTimeoutTest(unittest.TestCase):

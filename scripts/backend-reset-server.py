@@ -7,7 +7,8 @@ configured URL. Every test leases a backend, runs against it, and releases it:
   POST /lease    -> {token,url}; waits for a free backend
   POST /release  -> {token}; answers 202, the container is replaced in the background
 
-Each slot is one container of backend-docker/docker-compose.pool.yaml, provisioned
+Each slot is a tmail-backend container of backend-docker/docker-compose.pool.yaml, inside a
+network-holder container that lives for the whole run, provisioned
 like provisioning/integration_test/provisioning.sh, so a leased backend always holds
 the pristine bob/alice data. The James memory server has no full reset (deleteData
 keeps team mailbox contents, change history and quota counters), so release recreates
@@ -104,7 +105,7 @@ def _run(cmd: List[str], check: bool = False, env: Optional[dict] = None,
 
 
 def _at() -> str:
-    """Monotonic for durations, UTC wall clock to join with browser and ip-monitor logs."""
+    """Monotonic for durations, UTC wall clock to join with browser logs."""
     now = time.time()
     return f"{time.monotonic():.3f} ({time.strftime('%H:%M:%S', time.gmtime(now))}.{int(now % 1 * 1000):03d}Z)"
 
@@ -218,6 +219,10 @@ def recycle_slot(n: int) -> None:
         print(f"[reset-server] recycle start {n} at {_at()}", flush=True)
         started = time.monotonic()
         _save_logs(n)
+        # --no-recreate: the holder keeps its netns, so the host sees no interface change.
+        holder = _compose(n, "up", "-d", "--no-recreate", "--quiet-pull", "network-holder")
+        if holder.returncode != 0:
+            raise RuntimeError(f"slot {n} network up failed: {holder.stderr[-500:]}")
         up = _compose(n, "up", "-d", "--force-recreate", "--no-deps", "--quiet-pull", "tmail-backend")
         if up.returncode != 0:
             raise RuntimeError(f"slot {n} up failed: {up.stderr[-500:]}")

@@ -32,16 +32,12 @@ timing "agent backend available"
 } 2>&1 | tee "$CI_LOGS/agent.txt"
 vmstat -t 5 > "$CI_LOGS/vmstat.log" 2>&1 &
 VMSTAT_PID=$!
-# UTC-timestamped link/address/route changes; joins net::ERR_NETWORK_CHANGED to its cause.
-TZ=UTC ip -ts monitor link address route > "$CI_LOGS/ip-monitor.log" 2>&1 &
-IP_MONITOR_PID=$!
 
 cleanup() {
     echo "Cleaning up test environment..."
     kill "${BACKEND_SETUP_PID:-}" 2>/dev/null || true
     wait "${BACKEND_SETUP_PID:-}" 2>/dev/null || true
     kill "$VMSTAT_PID" 2>/dev/null || true
-    kill "${IP_MONITOR_PID:-}" 2>/dev/null || true
     kill "${RESET_SERVER_PID:-}" 2>/dev/null || true
     kill "${WATCHDOG_PID:-}" 2>/dev/null || true
     # Reap them so their ports are free before the agent lock is released.
