@@ -35,8 +35,8 @@ extension EmailExtension on Email {
 
   bool get withAttachments => hasAttachment == true;
 
-  String get listUnsubscribe => headers.listUnsubscribe
-    ?? listUnsubscribeHeaderValue?.value
+  String get listUnsubscribe => headers.listUnsubscribe?.trim()
+    ?? listUnsubscribeHeaderValue?.value?.trim()
     ?? '';
 
   bool get hasRequestReadReceipt => headers.readReceiptHasBeenRequested ||

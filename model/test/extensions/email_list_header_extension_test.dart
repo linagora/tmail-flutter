@@ -127,6 +127,13 @@ void main() {
       expect(presentation.listPost, '<mailto:old-list@x.y>');
     });
 
+    test('raw List-Unsubscribe is trimmed and whitespace-only is not a header', () {
+      expect(rawEmail().listUnsubscribe.startsWith('<mailto:'), isTrue);
+      final blank = Email.fromJson({'id': 'e6', 'header:List-Unsubscribe': ' \r\n '});
+      expect(blank.listUnsubscribe, '');
+      expect(blank.hasListUnsubscribe, isFalse);
+    });
+
     test('raw List-Unsubscribe is preferred over legacy asText', () {
       final email = Email(
         id: EmailId(Id('e5')),
