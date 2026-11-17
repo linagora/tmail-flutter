@@ -326,8 +326,6 @@ class ComposerController extends BaseController
 
   late Worker uploadInlineImageWorker;
   late bool _isEmailBodyLoaded;
-  // Set once a composer field loses focus; the editor-load autofocus must not move the user afterwards.
-  bool _fieldBlurredSinceLaunch = false;
 
   void registerReloadCacheAction(ComposerReloadCacheAction action) =>
       _reloadCacheAction = action;
@@ -658,8 +656,6 @@ class ComposerController extends BaseController
       }
       autoCreateEmailTag();
       triggerHideRecipientsFieldsWhenUnfocus();
-    } else {
-      _fieldBlurredSinceLaunch = true;
     }
   }
 
@@ -687,7 +683,7 @@ class ComposerController extends BaseController
   Future<void> onLoadCompletedMobileEditorAction(HtmlEditorApi editorApi, WebUri? url) async {
     _isEmailBodyLoaded = true;
     await setupSelectedIdentity();
-    autoFocusFieldOnEditorLoad();
+    _autoFocusFieldWhenLauncher();
     if (PlatformInfo.isAndroid) unawaited(restoreIfEditorBlank());
   }
 
@@ -700,7 +696,6 @@ class ComposerController extends BaseController
 
   Future<void> setupComposer() async {
     _isEmailBodyLoaded = false;
-    _fieldBlurredSinceLaunch = false;
     final arguments = PlatformInfo.isWeb ? composerArgs : Get.arguments;
 
     if (arguments is! ComposerArguments) return;
@@ -1856,7 +1851,6 @@ class ComposerController extends BaseController
         richTextMobileTabletController?.richTextController.hideRichTextView();
       }
     } else {
-      _fieldBlurredSinceLaunch = true;
       switch(prefixEmailAddress) {
         case PrefixEmailAddress.to:
           final inputToEmail = toEmailAddressController.text;
@@ -2141,14 +2135,6 @@ class ComposerController extends BaseController
         : AppLocalizations.of(context).requestReadReceiptHasBeenDisabled);
   }
 
-  // Race: editor load can finish after the user left a field (e.g. opened a recipient chip menu);
-  // focusing Subject/editor then collapses the recipients and disposes that menu.
-  @visibleForTesting
-  void autoFocusFieldOnEditorLoad() {
-    if (_fieldBlurredSinceLaunch) return;
-    _autoFocusFieldWhenLauncher();
-  }
-
   Future<void> _autoFocusFieldWhenLauncher() async {
     if (await _hasInputFieldFocused()) {
       log('ComposerController::_autoFocusFieldWhenLauncher: INPUT_FIELD_FOCUS = true');
@@ -2201,7 +2187,7 @@ class ComposerController extends BaseController
   Future<void> onInitialContentLoadCompleteWeb(String? initContent) async {
     await restoreCollapsibleSignatureButton(initContent);
     await setupSelectedIdentity();
-    autoFocusFieldOnEditorLoad();
+    _autoFocusFieldWhenLauncher();
   }
 
   void handleOnFocusHtmlEditorWeb() {
