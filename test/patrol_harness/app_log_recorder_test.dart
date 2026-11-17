@@ -20,16 +20,18 @@ List<String> _dump() {
   return lines;
 }
 
-void _recordsOnlyComposerFocusLines() {
+void _recordsOnlyListedLines() {
   log('${_autoFocus}webEditorLoaded to=1');
   log('ComposerController::_subjectEmailInputFocusListener: focused');
+  log('ThreadController::handleLoadMoreEmailsRequest:');
   log('ThreadController::something else');
 
   final lines = _dump();
 
-  expect(lines, hasLength(2));
+  expect(lines, hasLength(3));
   expect(lines[0], allOf(contains('[APP LOG] 0 at='), contains('focus='), contains('webEditorLoaded')));
   expect(lines[1], contains('_subjectEmailInputFocusListener: focused'));
+  expect(lines[2], contains('handleLoadMoreEmailsRequest'));
 }
 
 void _ignoresRecordsAfterStop() {
@@ -66,7 +68,7 @@ void main() {
     AppLoggerRegistry.instance.resetForTesting();
   });
 
-  test('records only the composer focus lines', _recordsOnlyComposerFocusLines);
+  test('records only the listed composer and thread lines', _recordsOnlyListedLines);
   test('ignores records after stop', _ignoresRecordsAfterStop);
   test('keeps only the last 40 entries', _keepsOnlyTheLast40Entries);
   test('start clears earlier entries', _startClearsEarlierEntries);
