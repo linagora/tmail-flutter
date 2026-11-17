@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 
+import 'utc_clock.dart';
+
 const _maxEntries = 40;
 
 // Records a state snapshot after each frame, keeping only changes; printed by the failure dump.
@@ -13,7 +15,6 @@ class FrameStateRecorder {
   final String tag;
   final String Function() _snapshot;
   final _entries = <String>[];
-  final _clock = Stopwatch();
   String? _last;
   bool _running = false;
 
@@ -21,7 +22,6 @@ class FrameStateRecorder {
     _active.remove(tag)?._running = false;
     _active[tag] = this;
     _running = true;
-    _clock.start();
     record('start');
     _scheduleNext();
   }
@@ -47,7 +47,7 @@ class FrameStateRecorder {
   }
 
   void _add(String text) {
-    _entries.add('t=${_clock.elapsedMilliseconds}ms $text');
+    _entries.add('at=${utcClock()} $text');
     if (_entries.length > _maxEntries) _entries.removeAt(0);
   }
 

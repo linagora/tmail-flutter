@@ -78,6 +78,42 @@ void _keepsOnlyTheLast20Entries() {
   expect(lines.last, contains('total=29'));
 }
 
+void _tagsResponseWithItsRequestSeq() {
+  JmapQueryRecorder.instance.recordRequest(_request('Email/query', {
+    'filter': {'hasKeyword': 'label-1'},
+  }), seq: 7);
+  JmapQueryRecorder.instance.recordResponse({
+    'methodResponses': [
+      ['Email/query', {'ids': ['a']}, 'c0'],
+      ['Email/get', {'list': [{}], 'notFound': []}, 'c1'],
+    ],
+  }, seq: 7);
+
+  final lines = _dump();
+
+  expect(lines, hasLength(3));
+  expect(lines[0], contains('#7 request'));
+  expect(lines[1], contains('#7 response ids=1'));
+  expect(lines[2], contains('#7 get list=1 notFound=0'));
+}
+
+void _skipsResponsesOfUnrecordedRequests() {
+  JmapQueryRecorder.instance.recordResponse(_response('Email/query', {'ids': []}), seq: 3);
+
+  expect(_dump(), isEmpty);
+}
+
+void _recordsFailedQueryRequests() {
+  JmapQueryRecorder.instance.recordRequest(_request('Email/query', {'filter': {}}), seq: 2);
+  JmapQueryRecorder.instance.recordError(2, 'cancel status=null');
+  JmapQueryRecorder.instance.recordError(9, 'x');
+
+  final lines = _dump();
+
+  expect(lines, hasLength(2));
+  expect(lines.last, contains('#2 failed cancel status=null'));
+}
+
 void main() {
   setUp(JmapQueryRecorder.instance.detach);
 
@@ -85,4 +121,7 @@ void main() {
   test('ignores methods other than Email/query', _ignoresOtherMethods);
   test('survives unserializable and malformed bodies', _survivesUnserializableAndMalformedBodies);
   test('keeps only the last 20 entries', _keepsOnlyTheLast20Entries);
+  test('tags a response with its request seq', _tagsResponseWithItsRequestSeq);
+  test('skips responses of unrecorded requests', _skipsResponsesOfUnrecordedRequests);
+  test('records failed query requests', _recordsFailedQueryRequests);
 }

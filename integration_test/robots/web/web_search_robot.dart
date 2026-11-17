@@ -9,13 +9,16 @@ import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_button_arrow_down_field_with_tab_key_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as dashboard_search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_field_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:core/presentation/views/search/search_bar_view.dart';
+import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 import '../../extensions/patrol_finder_extension.dart';
 import '../../utils/collapsed_thread_provisioner.dart';
@@ -271,11 +274,22 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
         .toList();
     final subjects = tiles.take(5).map((tile) => tile.presentationEmail.subject).join('|');
     final empty = find.byKey(const Key(UiKeys.emptyThreadView)).evaluate().isNotEmpty;
-    return 'tiles=${tiles.length} [$subjects] empty=$empty label=$_filteredLabelKeyword';
+    return 'tiles=${tiles.length} [$subjects] empty=$empty label=$_filteredLabelKeyword $_appSearchState';
   }
 
   String? get _filteredLabelKeyword =>
       Get.find<dashboard_search.SearchController>().labelFiltered?.keyword?.value;
+
+  // Which controller state produced the list: a stale mailbox load vs an empty search result.
+  String get _appSearchState {
+    final state = getBinding<ThreadController>()
+        ?.viewState
+        .value
+        .fold((failure) => failure.runtimeType, (success) => success.runtimeType);
+    final emails = getBinding<MailboxDashBoardController>()?.emailsInCurrentMailbox.length;
+    final running = Get.find<dashboard_search.SearchController>().isSearchEmailRunning;
+    return 'thread=$state emails=$emails searchRunning=$running';
+  }
 
   // Server has any match now vs empty list: splits search index lag from a client filter bug.
   Future<void> _logServerLabelCount(String when) async {
