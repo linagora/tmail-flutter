@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
@@ -10,8 +11,7 @@ import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 bool _spanTreeHasBoldTarget(InlineSpan root, String target) {
   if (root is! TextSpan) return false;
   final weight = root.style?.fontWeight;
-  final isBold =
-      weight == FontWeight.w700 || weight == FontWeight.bold;
+  final isBold = weight == FontWeight.w700 || weight == FontWeight.bold;
   if (root.text == target && isBold) return true;
   final children = root.children;
   if (children == null) return false;
@@ -78,8 +78,9 @@ void main() {
     expect((spans.single as TextSpan).style, base);
   });
 
-  testWidgets('renders Text.rich with a bold span for the target account',
-      (tester) async {
+  testWidgets('renders Text.rich with a bold span for the target account', (
+    tester,
+  ) async {
     await pumpDialog(tester);
 
     expect(
@@ -104,11 +105,72 @@ void main() {
     expect(_spanTreeHasBoldTarget(text.textSpan!, owner), isTrue);
   });
 
-  testWidgets('uses return-to-mine copy without bolding an owner address',
-      (tester) async {
+  testWidgets('uses return-to-mine copy without bolding an owner address', (
+    tester,
+  ) async {
     await pumpDialog(tester, returningToMine: true);
 
     expect(find.text(AppLocalizations().openingYourMailbox), findsOneWidget);
     expect(find.textContaining(owner), findsNothing);
+  });
+
+  testWidgets('exposes the card as a dialog named by the status message', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    await pumpDialog(tester);
+
+    expect(
+      tester.getSemantics(
+        find.byKey(const ValueKey(UiKeys.accountSwitchLoadingDialog)),
+      ),
+      isSemantics(
+        role: SemanticsRole.dialog,
+        scopesRoute: true,
+        namesRoute: true,
+        label: AppLocalizations().openingOwnerMailbox(owner),
+      ),
+    );
+    semantics.dispose();
+  });
+
+  testWidgets('hides the decorative avatar initial from screen readers', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    await pumpDialog(tester);
+
+    expect(find.bySemanticsLabel(RegExp(r'(^|\n)A(\n|$)')), findsNothing);
+    semantics.dispose();
+  });
+
+  testWidgets('names the dialog with the return-to-mine message', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    await pumpDialog(tester, returningToMine: true);
+
+    expect(
+      tester.getSemantics(
+        find.byKey(const ValueKey(UiKeys.accountSwitchLoadingDialog)),
+      ),
+      isSemantics(
+        role: SemanticsRole.dialog,
+        label: AppLocalizations().openingYourMailbox,
+      ),
+    );
+    semantics.dispose();
+  });
+
+  testWidgets('announces the status message only once', (tester) async {
+    final semantics = tester.ensureSemantics();
+    await pumpDialog(tester);
+
+    expect(
+      find.bySemanticsLabel(AppLocalizations().openingOwnerMailbox(owner)),
+      findsOneWidget,
+    );
+    expect(find.bySemanticsLabel(AppLocalizations().cancel), findsOneWidget);
+    semantics.dispose();
   });
 }
