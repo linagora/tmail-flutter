@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/data/network/download/download_client.dart';
 import 'package:core/data/network/download/download_manager.dart';
+import 'package:core/domain/exceptions/download_file_exception.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
@@ -1535,6 +1538,14 @@ void main() {
         exportEmailApi = EmailAPI(httpClient, DownloadManager(downloadClient), dioClient, uuid);
       });
 
+      Future<String> exportOnce(Attachment attachment) async => (await exportEmailApi.exportAttachment(
+        attachment,
+        AccountFixtures.aliceAccountId,
+        'https://example.com/download/{accountId}/{blobId}',
+        AccountRequest(),
+        CancelToken(),
+      )).filePath;
+
       test(
         'SHOULD keep the content of each export\n'
         'WHEN two attachments that generate the same file name are exported at the same time',
@@ -1550,21 +1561,12 @@ void main() {
           return ResponseBody.fromBytes(downloadUrl.contains('blob-a') ? firstContent : secondContent, 200);
         });
 
-        final exports = await Future.wait([
-          for (final attachment in [firstAttachment, secondAttachment])
-            exportEmailApi.exportAttachment(
-              attachment,
-              AccountFixtures.aliceAccountId,
-              'https://example.com/download/{accountId}/{blobId}',
-              AccountRequest(),
-              CancelToken(),
-            ),
-        ]);
+        final exports = await Future.wait([firstAttachment, secondAttachment].map(exportOnce));
 
-        expect(File(exports[0].filePath).readAsBytesSync(), firstContent);
-        expect(File(exports[1].filePath).readAsBytesSync(), secondContent);
-        expect(File(exports[0].filePath).parent.parent.path, temporaryRoot.path);
-        expect(File(exports[1].filePath).parent.parent.path, temporaryRoot.path);
+        expect(File(exports[0]).readAsBytesSync(), firstContent);
+        expect(File(exports[1]).readAsBytesSync(), secondContent);
+        expect(File(exports[0]).parent.path, '${temporaryRoot.path}/attachment/blob-a');
+        expect(File(exports[1]).parent.path, '${temporaryRoot.path}/attachment/blob-b');
       });
 
       test(
@@ -1575,20 +1577,48 @@ void main() {
         when(downloadClient.downloadFile(any, any, any))
           .thenAnswer((_) async => ResponseBody.fromBytes([1, 2, 3], 200));
 
-        Future<String> exportOnce() async => (await exportEmailApi.exportAttachment(
-          attachment,
-          AccountFixtures.aliceAccountId,
-          'https://example.com/download/{accountId}/{blobId}',
-          AccountRequest(),
-          CancelToken(),
-        )).filePath;
-
-        final firstPath = await exportOnce();
-        final secondPath = await exportOnce();
+        final firstPath = await exportOnce(attachment);
+        final secondPath = await exportOnce(attachment);
 
         expect(secondPath, firstPath);
         expect(File(secondPath).readAsBytesSync(), [1, 2, 3]);
-        expect(temporaryRoot.listSync(), hasLength(1));
+        expect(File(secondPath).parent.listSync().map((entity) => entity.path), [secondPath]);
+      });
+
+      test(
+        'SHOULD keep the completed file\n'
+        'WHEN a later export of the same attachment fails mid-download',
+      () async {
+        final attachment = Attachment(blobId: Id('blob-a'), name: 'report.pdf');
+        when(downloadClient.downloadFile(any, any, any))
+          .thenAnswer((_) async => ResponseBody.fromBytes([1, 2, 3], 200));
+        final completedPath = await exportOnce(attachment);
+        when(downloadClient.downloadFile(any, any, any)).thenAnswer((_) async => ResponseBody(
+          Stream<Uint8List>.multi((controller) {
+            controller.add(Uint8List.fromList([9]));
+            controller.addError(Exception('connection reset'));
+            controller.close();
+          }),
+          200,
+        ));
+
+        await expectLater(exportOnce(attachment), throwsA(isA<CommonDownloadFileException>()));
+
+        expect(File(completedPath).readAsBytesSync(), [1, 2, 3]);
+        expect(File(completedPath).parent.listSync().map((entity) => entity.path), [completedPath]);
+      });
+
+      test(
+        'SHOULD export the attachment\n'
+        'WHEN its blobId is the longest Id accepted',
+      () async {
+        final attachment = Attachment(blobId: Id('b' * 254), name: 'report.pdf');
+        when(downloadClient.downloadFile(any, any, any))
+          .thenAnswer((_) async => ResponseBody.fromBytes([1, 2, 3], 200));
+
+        final exportedPath = await exportOnce(attachment);
+
+        expect(File(exportedPath).readAsBytesSync(), [1, 2, 3]);
       });
     });
   });

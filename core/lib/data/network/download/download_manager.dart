@@ -35,10 +35,13 @@ class DownloadManager {
         final response = (values[0] as ResponseBody);
         final mediaType = _extractMediaTypeFromResponse(response);
         final fileStream = response.stream;
-        final tempFilePath = '${(values[1] as Directory).absolute.path}/$filename';
+        final directory = (values[1] as Directory).absolute;
+        final tempFilePath = '${directory.path}/$filename';
 
-        final file = File(tempFilePath);
-        file.createSync(recursive: true);
+        // Download into a sibling staging directory and rename on success, so a failed or cancelled download never touches a completed file.
+        directory.createSync(recursive: true);
+        final stagingDirectory = directory.createTempSync('.download_');
+        final file = File('${stagingDirectory.path}/$filename');
         var randomAccessFile = file.openSync(mode: FileMode.write);
         late StreamSubscription subscription;
 
@@ -54,23 +57,31 @@ class DownloadManager {
                 }
               }).catchError((error) async {
                 await subscription.cancel();
+                await stagingDirectory.delete(recursive: true);
                 streamController.sink.addError(CommonDownloadFileException(error.toString()));
                 await streamController.close();
               });
         }, onDone: () async {
           await randomAccessFile.close();
           if (cancelToken != null && cancelToken.isCancelled) {
+            await stagingDirectory.delete(recursive: true);
             streamController.sink.addError(CancelDownloadFileException(cancelToken.cancelError?.message));
           } else {
-            streamController.sink.add(DownloadedResponse(tempFilePath, mediaType: mediaType));
+            try {
+              await file.rename(tempFilePath);
+              streamController.sink.add(DownloadedResponse(tempFilePath, mediaType: mediaType));
+            } catch (error) {
+              streamController.sink.addError(CommonDownloadFileException(error.toString()));
+            }
+            await stagingDirectory.delete(recursive: true);
           }
           await streamController.close();
         }, onError: (error) async {
           await randomAccessFile.close();
-          await file.delete();
+          await stagingDirectory.delete(recursive: true);
           streamController.sink.addError(CommonDownloadFileException(error.toString()));
           await streamController.close();
-        });
+        }, cancelOnError: true);
       });
     } catch(exception) {
       if (cancelToken != null && cancelToken.isCancelled) {

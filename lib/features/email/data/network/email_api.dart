@@ -354,7 +354,8 @@ class EmailAPI
     return _downloadManager.downloadFile(
       attachment.getDownloadUrl(baseDownloadUrl, accountId),
       // A directory per blob: same-named attachments never overwrite each other, and re-exporting a blob reuses its file.
-      getTemporaryDirectory().then((directory) => Directory('${directory.path}/attachment_${attachment.blobId?.value}')),
+      // The blobId is its own path component, because a JMAP Id alone can be up to 255 bytes long.
+      getTemporaryDirectory().then((directory) => Directory('${directory.path}/attachment/${attachment.blobId?.value}')),
       attachment.generateFileSystemName(),
       authentication,
       cancelToken: cancelToken);
