@@ -222,7 +222,6 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
     await $(const ValueKey(UiKeys.advancedSearchLabelDropDown)).tap();
     await $(find.text(labelName)).tap();
     await $(const ValueKey(UiKeys.advancedSearchSearchButton)).tap();
-    await _logServerLabelCount('at search');
   }
 
   @override
