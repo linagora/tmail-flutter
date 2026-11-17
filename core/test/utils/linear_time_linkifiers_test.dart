@@ -103,14 +103,14 @@ void main() {
       expect(elements.whereType<UrlElement>(), hasLength(50000));
     });
 
-    test('SHOULD linkify 20000 back-to-back addresses without overflowing the stack', () {
+    test('SHOULD linkify a 20000-address run into 10000 chained emails without overflowing the stack', () {
       final elements = linkify(
         'x@y.z' * 20000,
         options: autolinkOptions,
         linkifiers: linearTimeLinkifiers,
       );
 
-      expect(elements.whereType<EmailElement>().length, greaterThan(1000));
+      expect(elements.whereType<EmailElement>(), hasLength(10000));
     });
   });
 }
