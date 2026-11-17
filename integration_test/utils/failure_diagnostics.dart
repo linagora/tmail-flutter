@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:patrol/patrol.dart';
 
+import 'app_log_recorder.dart';
 import 'frame_state_recorder.dart';
 import 'jmap_query_recorder.dart';
 import 'primary_focus_logger.dart';
@@ -52,6 +53,7 @@ void dumpFailureState(PatrolIntegrationTester $) {
     );
     PrimaryFocusLogger.instance.dump();
     FrameStateRecorder.dumpActive();
+    AppLogRecorder.instance.dump();
     JmapQueryRecorder.instance.dump();
     _printLines(FocusManager.instance.toStringDeep());
     _printLines(

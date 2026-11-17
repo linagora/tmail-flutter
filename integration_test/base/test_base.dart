@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/main.dart';
 import 'package:tmail_ui_user/main/main_entry.dart';
 
 import '../models/test_tags.dart';
+import '../utils/app_log_recorder.dart';
 import '../utils/backend_reset_client.dart';
 import '../utils/failure_diagnostics.dart';
 import '../utils/frame_state_recorder.dart';
@@ -92,6 +93,8 @@ class TestBase {
     if (TestBackend.leased != null) dotenv.env['SERVER_URL'] = TestBackend.current.url;
     await scenario.prepare();
     PrimaryFocusLogger.instance.start();
+    AppLogRecorder.instance.start();
+    addTearDown(AppLogRecorder.instance.stop);
     addTearDown(PrimaryFocusLogger.instance.stop);
     addTearDown(FrameStateRecorder.stopAll);
     addTearDown(JmapQueryRecorder.instance.detach);
