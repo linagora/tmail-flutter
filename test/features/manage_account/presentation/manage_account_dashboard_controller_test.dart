@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_a
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_user_info_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/delegation_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
@@ -98,6 +99,17 @@ void main() {
       return menuController;
     }
 
+    void loadStorageQuota(ManageAccountDashBoardController controller) {
+      controller.octetsQuota.value = Quota(
+        Id('storage'),
+        ResourceType.octets,
+        Scope.account,
+        'Storage',
+        used: UnsignedInt(1),
+        hardLimit: UnsignedInt(100),
+      );
+    }
+
     test('opens Delegation once the settings turn it on', () {
       final controller = openSettingsWith(DelegationFixtures.session());
       openDelegationLinkWhileHidden(controller);
@@ -112,16 +124,22 @@ void main() {
       openDelegationLinkWhileHidden(controller);
       DelegationFixtures.turnDelegationOn(appProviderContainer);
 
-      controller.octetsQuota.value = Quota(
-        Id('storage'),
-        ResourceType.octets,
-        Scope.account,
-        'Storage',
-        used: UnsignedInt(1),
-        hardLimit: UnsignedInt(100),
-      );
+      loadStorageQuota(controller);
 
       expect(controller.accountMenuItemSelected.value, AccountMenuItem.delegation);
+    });
+
+    test('does not reopen Delegation when the quota loads after Delegation was turned off', () {
+      final controller = openSettingsWith(DelegationFixtures.session());
+      openDelegationLinkWhileHidden(controller);
+      DelegationFixtures.turnDelegationOn(appProviderContainer);
+      appProviderContainer
+          .read(localSettingsProvider.notifier)
+          .update(PreferencesSetting([DelegationConfig(isEnabled: false)]));
+
+      loadStorageQuota(controller);
+
+      expect(controller.accountMenuItemSelected.value, AccountMenuItem.none);
     });
 
     test('does not open Delegation when it is turned on later, after the settings loaded', () {

@@ -121,6 +121,10 @@ class ManageAccountMenuController extends GetxController with ContactSupportMixi
       final isWebDesktop = currentContext != null && responsiveUtils.isWebDesktop(currentContext!);
       selectAccountMenuItem(isWebDesktop ? items.first : AccountMenuItem.none);
     }
+
+    if (!isDisplayed && dashBoardController.selectedMenu == AccountMenuItem.delegation) {
+      dashBoardController.selectedMenu = null;
+    }
   }
 
   void _openDelegationRequestedWhileHidden() {
