@@ -44,36 +44,45 @@ class AutolinkTextNodeTransformer extends DomTransformer {
   }
 
   void _linkifyNode(Node node) {
+    final rebuiltChildren = <Node>[];
+    var hasLinkifiedText = false;
     for (final child in node.nodes.toList()) {
-      if (child is Text) {
-        _linkifyTextNode(child);
-      } else if (child is Element &&
+      final replacements = child is Text ? _linkifyTextNode(child) : null;
+      if (replacements != null) {
+        rebuiltChildren.addAll(replacements);
+        hasLinkifiedText = true;
+        continue;
+      }
+      if (child is Element &&
           !_skipTags.contains(child.localName?.toLowerCase())) {
         _linkifyNode(child);
       }
+      rebuiltChildren.add(child);
+    }
+    // Rebuild the child list once: splicing per text node rescans the siblings, quadratic on many links.
+    if (hasLinkifiedText) {
+      node.nodes
+        ..clear()
+        ..addAll(rebuiltChildren);
     }
   }
 
-  void _linkifyTextNode(Text textNode) {
+  List<Node>? _linkifyTextNode(Text textNode) {
     final text = textNode.text;
-    if (text.isEmpty) return;
+    if (text.isEmpty) return null;
 
     final elements = linkify(text, options: _linkifyOption, linkifiers: _linkifiers);
-    if (elements.every((e) => e is TextElement)) return;
+    if (elements.every((e) => e is TextElement)) return null;
 
-    final parent = textNode.parentNode;
-    if (parent == null) return;
-
-    for (final el in elements) {
-      if (el is TextElement) {
-        parent.insertBefore(Text(el.text), textNode);
-      } else if (el is UrlElement) {
-        parent.insertBefore(_buildUrlAnchor(el.url, el.text), textNode);
-      } else if (el is EmailElement) {
-        parent.insertBefore(_buildEmailAnchor(el.url, el.text), textNode);
-      }
-    }
-    textNode.remove();
+    return [
+      for (final el in elements)
+        if (el is TextElement)
+          Text(el.text)
+        else if (el is UrlElement)
+          _buildUrlAnchor(el.url, el.text)
+        else if (el is EmailElement)
+          _buildEmailAnchor(el.url, el.text),
+    ];
   }
 
   Element _buildUrlAnchor(String href, String text) => Element.tag('a')
