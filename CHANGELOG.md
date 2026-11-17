@@ -1,5 +1,7 @@
 ## [0.42.1] - 2026-11-17
 ### Added
+- #5022 Delegation: account switcher on web and mobile to view and act on delegated mailboxes
+- #5022 Delegation preference toggle in Settings
 - #5025 Scribe: add Mongolian, German, Spanish, Italian to the translate menu
 
 ### Fixed
@@ -7,6 +9,8 @@
 - #5038 Sign out Twake Workplace account in the sign-in browser on iOS
 
 ### Changed
+- #5022 Composer, search, labels and capabilities follow the shown account; share/mailto intents switch back to own account
+- #5022 Delegated mail is not kept in offline storage
 - #4827 Move composer toolbar actions into More menu on narrow screens
 - Drop unsafe-inline from the web CSP with a per-request script nonce
 - Upgrade Flutter to 3.47.9 and super_tag_editor to 1.1.1
