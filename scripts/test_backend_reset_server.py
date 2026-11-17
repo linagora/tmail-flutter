@@ -230,6 +230,34 @@ class WatchReadyTest(unittest.TestCase):
         exit_.assert_called_once_with(1)
 
 
+class RecycleNetworkHolderTest(unittest.TestCase):
+    def test_recycle_keeps_the_network_holder_and_recreates_only_the_backend(self):
+        calls = []
+        saved = (server._compose, server._save_logs, server.provision)
+
+        def compose(n, *args):
+            calls.append(args)
+            if args[0] == "up" and "tmail-backend" in args:
+                return type("R", (), {"returncode": 0, "stdout": "JAMES server started", "stderr": ""})()
+            return type("R", (), {"returncode": 0, "stdout": "JAMES server started", "stderr": ""})()
+
+        server._compose, server._save_logs = compose, lambda n: None
+        server.provision = lambda port: None
+        try:
+            server.recycle_slot(0)
+        finally:
+            server._compose, server._save_logs, server.provision = saved
+            server._stopping.clear()
+
+        self.assertEqual(calls[0][:1], ("up",))
+        self.assertIn("--no-recreate", calls[0])
+        self.assertIn("network-holder", calls[0])
+        self.assertIn("--force-recreate", calls[1])
+        self.assertIn("--no-deps", calls[1])
+        self.assertIn("tmail-backend", calls[1])
+        self.assertNotIn("network-holder", calls[1])
+
+
 class RecycleAfterStopTest(unittest.TestCase):
     def test_recycle_finishing_after_stop_removes_its_own_container(self):
         calls = []
