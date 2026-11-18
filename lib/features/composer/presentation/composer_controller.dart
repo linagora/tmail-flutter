@@ -1791,6 +1791,8 @@ class ComposerController extends BaseController
   }
 
   void deleteEmailAddressType(PrefixEmailAddress prefixEmailAddress) {
+    // The removed row's FocusScope is disposed without reporting a blur.
+    _focusedRecipientScopes.remove(prefixEmailAddress);
     updateListEmailAddress(prefixEmailAddress, <EmailAddress>[]);
     switch(prefixEmailAddress) {
       case PrefixEmailAddress.to:
@@ -1847,10 +1849,8 @@ class ComposerController extends BaseController
   }
 
   void onEmailAddressFocusChange(PrefixEmailAddress prefixEmailAddress, bool isFocus) {
-    isFocus
-        ? _focusedRecipientScopes.add(prefixEmailAddress)
-        : _focusedRecipientScopes.remove(prefixEmailAddress);
     if (isFocus) {
+      _focusedRecipientScopes.add(prefixEmailAddress);
       _closeSuggestionBox();
       if (PlatformInfo.isMobile
           && currentContext != null
@@ -1858,6 +1858,7 @@ class ComposerController extends BaseController
         richTextMobileTabletController?.richTextController.hideRichTextView();
       }
     } else {
+      _focusedRecipientScopes.remove(prefixEmailAddress);
       switch(prefixEmailAddress) {
         case PrefixEmailAddress.to:
           final inputToEmail = toEmailAddressController.text;
