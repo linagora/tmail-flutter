@@ -3,126 +3,25 @@ import 'dart:convert';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tmail_ui_user/features/caching/clients/authentication_info_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/exceptions/local_storage_exception.dart';
-import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/model/authentication_info_cache.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 
-class _FakeClient extends Fake implements AuthenticationInfoCacheClient {
-  AuthenticationInfoCache? item;
-  int insertCalls = 0;
-  int clearCalls = 0;
-  int clearFailures = 0;
-
-  @override
-  Future<void> insertItem(String key, AuthenticationInfoCache newObject, {bool isolated = true}) async {
-    insertCalls++;
-    item = newObject;
-  }
-
-  @override
-  Future<AuthenticationInfoCache?> getItem(String key, {bool isolated = true}) async => item;
-
-  @override
-  Future<void> clearAllData({bool isolated = true}) async {
-    clearCalls++;
-    if (clearFailures > 0) {
-      clearFailures--;
-      throw Exception('clear failed');
-    }
-    item = null;
-  }
-}
-
-class _FakeSession extends Fake implements SessionStorageManager {
-  final Map<String, String> values = {};
-
-  @override
-  void save(String key, String value) => values[key] = value;
-
-  @override
-  String get(String key) =>
-      values[key] ?? (throw const NotFoundDataWithThisKeyException());
-
-  @override
-  void remove(String key) => values.remove(key);
-}
-
-// Any call throws UnimplementedError, which stands in for a platform failure.
-class _UnavailableStorage extends Fake implements FlutterSecureStorage {}
-
-// Drops the next [writesToDrop] writes (null = every write), then keeps values.
-// models fss 8 iOS OSStatus results that look like success.
-class _MapSecureStorage extends Fake implements FlutterSecureStorage {
-  final Map<String, String> values = {};
-  int? writesToDrop;
-
-  _MapSecureStorage({this.writesToDrop});
-
-  @override
-  Future<void> write({
-    required String key,
-    required String? value,
-    IOSOptions? iOptions,
-    AndroidOptions? aOptions,
-    LinuxOptions? lOptions,
-    WebOptions? webOptions,
-    MacOsOptions? mOptions,
-    WindowsOptions? wOptions,
-  }) async {
-    final left = writesToDrop;
-    if (left == null) return;
-    if (left > 0) {
-      writesToDrop = left - 1;
-      return;
-    }
-    if (value == null) {
-      values.remove(key);
-    } else {
-      values[key] = value;
-    }
-  }
-
-  @override
-  Future<String?> read({
-    required String key,
-    IOSOptions? iOptions,
-    AndroidOptions? aOptions,
-    LinuxOptions? lOptions,
-    WebOptions? webOptions,
-    MacOsOptions? mOptions,
-    WindowsOptions? wOptions,
-  }) async => values[key];
-
-  @override
-  Future<void> delete({
-    required String key,
-    IOSOptions? iOptions,
-    AndroidOptions? aOptions,
-    LinuxOptions? lOptions,
-    WebOptions? webOptions,
-    MacOsOptions? mOptions,
-    WindowsOptions? wOptions,
-  }) async {
-    values.remove(key);
-  }
-}
+import 'authentication_info_cache_test_doubles.dart';
 
 void main() {
-  late _FakeClient client;
-  late _FakeSession session;
+  late FakeHiveLoginBox client;
+  late FakeSessionStorage session;
   late AuthenticationInfoCacheManager manager;
 
   final info = AuthenticationInfoCache('alice@example.com', 'alice');
   const key = AuthenticationInfoCache.keyCacheValue;
 
   setUp(() {
-    client = _FakeClient();
-    session = _FakeSession();
+    client = FakeHiveLoginBox();
+    session = FakeSessionStorage();
     FlutterSecureStorage.setMockInitialValues({});
-    manager = AuthenticationInfoCacheManager(client, session, secureStorage: const FlutterSecureStorage());
+    manager = AuthenticationInfoCacheManager(client.mock, session, secureStorage: const FlutterSecureStorage());
   });
 
   tearDown(() => PlatformInfo.isTestingForWeb = false);
@@ -252,7 +151,7 @@ void main() {
     });
 
     test('unavailable secure storage keeps the Hive login', () async {
-      manager = AuthenticationInfoCacheManager(client, session, secureStorage: _UnavailableStorage());
+      manager = AuthenticationInfoCacheManager(client.mock, session, secureStorage: FakeSecureStorage()..isUnavailable = true);
       client.item = info;
 
       expect(await manager.getAuthenticationInfoStored(), info);
@@ -262,7 +161,7 @@ void main() {
     });
 
     test('a dropped secure write keeps the Hive login', () async {
-      manager = AuthenticationInfoCacheManager(client, session, secureStorage: _MapSecureStorage());
+      manager = AuthenticationInfoCacheManager(client.mock, session, secureStorage: FakeSecureStorage()..dropAllWrites = true);
       client.item = info;
 
       expect(await manager.getAuthenticationInfoStored(), info);
@@ -272,7 +171,7 @@ void main() {
     });
 
     test('a dropped secure write on a fresh login keeps it for this run', () async {
-      manager = AuthenticationInfoCacheManager(client, session, secureStorage: _MapSecureStorage());
+      manager = AuthenticationInfoCacheManager(client.mock, session, secureStorage: FakeSecureStorage()..dropAllWrites = true);
 
       await manager.storeAuthenticationInfo(info);
 
@@ -282,9 +181,10 @@ void main() {
 
     test('a dropped overwrite clears the earlier secure login', () async {
       final bob = AuthenticationInfoCache('bob@example.com', 'bob');
-      final storage = _MapSecureStorage()
+      final storage = FakeSecureStorage()
+        ..dropAllWrites = true
         ..values[key] = jsonEncode({'username': info.username, 'password': info.password});
-      manager = AuthenticationInfoCacheManager(client, session, secureStorage: storage);
+      manager = AuthenticationInfoCacheManager(client.mock, session, secureStorage: storage);
 
       await manager.storeAuthenticationInfo(bob);
 
@@ -292,7 +192,7 @@ void main() {
       expect(storage.values.containsKey(key), isFalse);
 
       // Cold start: no stale login survives.
-      manager = AuthenticationInfoCacheManager(client, session, secureStorage: storage);
+      manager = AuthenticationInfoCacheManager(client.mock, session, secureStorage: storage);
       expect(
         manager.getAuthenticationInfoStored(),
         throwsA(isA<NotFoundAuthenticationInfoCache>()),
@@ -300,8 +200,8 @@ void main() {
     });
 
     test('a later successful store clears the in-memory login and purges Hive', () async {
-      final storage = _MapSecureStorage(writesToDrop: 1);
-      manager = AuthenticationInfoCacheManager(client, session, secureStorage: storage);
+      final storage = FakeSecureStorage()..writesToDrop = 1;
+      manager = AuthenticationInfoCacheManager(client.mock, session, secureStorage: storage);
       client.item = info;
       await manager.storeAuthenticationInfo(info);
       expect(await manager.getAuthenticationInfoStored(), info);
@@ -322,7 +222,7 @@ void main() {
     });
 
     test('clear drops a login kept for this run', () async {
-      manager = AuthenticationInfoCacheManager(client, session, secureStorage: _MapSecureStorage());
+      manager = AuthenticationInfoCacheManager(client.mock, session, secureStorage: FakeSecureStorage()..dropAllWrites = true);
       await manager.storeAuthenticationInfo(info);
       expect(await manager.getAuthenticationInfoStored(), info);
 
