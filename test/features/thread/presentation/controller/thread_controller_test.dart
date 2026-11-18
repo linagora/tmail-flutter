@@ -1849,6 +1849,14 @@ void main() {
       final inboxMailbox = PresentationMailbox(MailboxId(Id('inbox')));
       final favoriteFolder = PresentationMailbox.favoriteFolder;
 
+      // Earlier groups leave search results that onInit replays into the list.
+      setUp(() {
+        appProviderContainer.invalidate(searchExecutorServiceProvider);
+        appProviderContainer.invalidate(searchEmailProvider);
+        appProviderContainer.invalidate(searchEmailPresentationProvider);
+        appProviderContainer.invalidate(searchViewStateProvider);
+      });
+
       List<PresentationEmail> makeEmails(int count, MailboxId mailboxId) =>
           List.generate(
             count,
