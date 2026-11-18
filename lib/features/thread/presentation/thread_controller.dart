@@ -1041,7 +1041,11 @@ class ThreadController extends BaseController
   void _releaseLoadMoreAfterRefresh() {
     final resume = _folderLoadMore.releaseAfterRefresh();
     _syncLoadMoreStatus();
-    if (resume) _loadMoreEmails();
+    // A search that started during the refresh owns the list.
+    if (resume &&
+        !(searchController.isSearchEmailRunning && PlatformInfo.isWeb)) {
+      _loadMoreEmails();
+    }
   }
 
   void _loadMoreEmails() {
