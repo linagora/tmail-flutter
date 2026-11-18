@@ -16,6 +16,7 @@ workspace:
   - server_settings
   - scribe
   - labels
+  - delegation
   - cozy
   - workplace
 
@@ -73,6 +74,9 @@ dependencies:
 
   labels:
     path: labels
+
+  delegation:
+    path: delegation
 
   workplace:
     path: workplace

@@ -1,3 +1,4 @@
+import 'package:delegation/utils/delegation_constants.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/account/account.dart';
@@ -7,7 +8,6 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
-import 'package:tmail_ui_user/features/delegation/domain/extensions/session_delegation_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/delegation_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.dart';
@@ -37,7 +37,7 @@ class DelegationFixtures {
     return Session(
       {
         personalOnlyCapability: DefaultCapability(<String, dynamic>{}),
-        delegationCapability: DefaultCapability(<String, dynamic>{}),
+        DelegationConstants.delegationCapability: DefaultCapability(<String, dynamic>{}),
       },
       _accounts(listsBob: listsBob, listsCarol: listsCarol),
       {},
