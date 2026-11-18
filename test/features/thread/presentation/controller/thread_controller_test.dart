@@ -2147,12 +2147,13 @@ void main() {
         expect(refresh.hasListener, isTrue);
 
         controller.canLoadMore = true;
+        clearInteractions(mockLoadMoreEmailsInMailboxInteractor);
         controller.handleLoadMoreEmailsRequest();
+        verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
 
         searchRunning = true;
         controller.loadingMoreStatus.value = LoadingMoreStatus.running;
         controller.canLoadMore = true;
-        clearInteractions(mockLoadMoreEmailsInMailboxInteractor);
 
         refresh.add(Right(RefreshChangesAllEmailSuccess(
           emailList: inboxEmails,
