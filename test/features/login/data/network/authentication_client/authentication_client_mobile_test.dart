@@ -1,5 +1,9 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:model/oidc/oidc_configuration.dart';
+import 'package:model/oidc/response/oidc_discovery_response.dart';
 import 'package:model/oidc/token_id.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_mobile.dart';
@@ -23,6 +27,16 @@ class _RespondingAppAuth extends FlutterAppAuth {
 
   @override
   Future<TokenResponse> token(TokenRequest request) async => response;
+}
+
+class _EndSessionAppAuth extends FlutterAppAuth {
+  int endSessionCalls = 0;
+
+  @override
+  Future<EndSessionResponse> endSession(EndSessionRequest request) async {
+    endSessionCalls++;
+    return EndSessionResponse('state');
+  }
 }
 
 final _currentToken = TokenOIDC(
@@ -95,6 +109,138 @@ void main() {
 
       expect(refreshed.tokenId, TokenId('a-new-id-token'));
       expect(refreshed.refreshToken, _currentToken.refreshToken);
+    });
+  });
+
+  // The sign-out must open the browser the sign-in opened, or it cannot see the
+  // SSO cookie it has to close (#5038). On Android the two plugins pick their
+  // browser independently, so Twake Workplace signs out through FlutterWebAuth2.
+  group('AuthenticationClientMobile::logoutOidc', () {
+    const channel = MethodChannel('flutter_web_auth_2');
+    late _EndSessionAppAuth appAuth;
+    late AuthenticationClientMobile client;
+    final openedUrls = <String>[];
+    Future<Object?> Function(MethodCall call)? webAuthHandler;
+
+    final discovery = OIDCDiscoveryResponse(
+      'https://sso.example.com/oauth2/authorize',
+      'https://sso.example.com/oauth2/token',
+      'https://sso.example.com/oauth2/logout',
+      null,
+    );
+
+    OIDCConfiguration config({required bool isTWP}) => OIDCConfiguration(
+          authority: 'https://sso.example.com',
+          clientId: 'teammail-mobile',
+          scopes: const ['openid'],
+          isTWP: isTWP,
+        );
+
+    Future<bool> logout({
+      required bool isTWP,
+      OIDCDiscoveryResponse? discoveryResponse,
+    }) => client.logoutOidc(
+          TokenId('an-id-token'),
+          config(isTWP: isTWP),
+          discoveryResponse ?? discovery,
+        );
+
+    setUp(() {
+      TestWidgetsFlutterBinding.ensureInitialized();
+      appAuth = _EndSessionAppAuth();
+      client = AuthenticationClientMobile(appAuth);
+      openedUrls.clear();
+      webAuthHandler = (call) async {
+        openedUrls.add((call.arguments as Map)['url'] as String);
+        return 'twakemail.mobile://redirect';
+      };
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) => webAuthHandler!(call));
+    });
+
+    tearDown(() {
+      debugDefaultTargetPlatformOverride = null;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, null);
+    });
+
+    test('Android, Twake Workplace: signs out in the sign-in browser', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+
+      final result = await logout(isTWP: true);
+
+      expect(result, isTrue);
+      expect(appAuth.endSessionCalls, 0);
+      expect(openedUrls, hasLength(1));
+      final opened = Uri.parse(openedUrls.single);
+      expect(opened.origin, 'https://sso.example.com');
+      expect(opened.path, '/oauth2/logout');
+      expect(opened.queryParameters['id_token_hint'], 'an-id-token');
+      expect(
+        opened.queryParameters['post_logout_redirect_uri'],
+        'twakemail.mobile://redirect',
+      );
+    });
+
+    test('Android, Twake Workplace: a closed browser is a cancelled sign-out',
+        () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      webAuthHandler = (_) async =>
+          throw PlatformException(code: 'CANCELED', message: 'User canceled');
+
+      await expectLater(
+        logout(isTWP: true),
+        throwsA(isA<PlatformException>()
+            .having((e) => e.code, 'code', 'end_session_failed')),
+      );
+    });
+
+    test('Android, Twake Workplace: any other failure is not hidden', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      webAuthHandler = (_) async =>
+          throw PlatformException(code: 'FAILED', message: 'boom');
+
+      await expectLater(
+        logout(isTWP: true),
+        throwsA(isA<PlatformException>()
+            .having((e) => e.code, 'code', 'FAILED')),
+      );
+    });
+
+    test('Android, Twake Workplace without end-session endpoint: AppAuth',
+        () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+
+      await logout(
+        isTWP: true,
+        discoveryResponse: OIDCDiscoveryResponse(
+          'https://sso.example.com/oauth2/authorize',
+          'https://sso.example.com/oauth2/token',
+          null,
+          null,
+        ),
+      );
+
+      expect(appAuth.endSessionCalls, 1);
+      expect(openedUrls, isEmpty);
+    });
+
+    test('Android, organisation server: AppAuth, unchanged', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+
+      await logout(isTWP: false);
+
+      expect(appAuth.endSessionCalls, 1);
+      expect(openedUrls, isEmpty);
+    });
+
+    test('iOS, Twake Workplace: AppAuth, unchanged (#5039)', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+
+      await logout(isTWP: true);
+
+      expect(appAuth.endSessionCalls, 1);
+      expect(openedUrls, isEmpty);
     });
   });
 }

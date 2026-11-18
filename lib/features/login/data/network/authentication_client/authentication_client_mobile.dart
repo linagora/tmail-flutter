@@ -1,5 +1,7 @@
 
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
@@ -55,6 +57,15 @@ class AuthenticationClientMobile with AuthenticationClientInteractionMixin
     OIDCConfiguration config,
     OIDCDiscoveryResponse discoveryResponse,
   ) async {
+    final endSessionEndpoint = discoveryResponse.endSessionEndpoint;
+    // Same browser picker as the sign-in, or the SSO cookie may live elsewhere (#5038).
+    if (PlatformInfo.isAndroid && config.isTWP && endSessionEndpoint != null) {
+      return _logoutTwakeWorkplaceInSignInBrowser(
+        tokenId,
+        config,
+        endSessionEndpoint,
+      );
+    }
     final endSessionRequest = getEndSessionRequest(
       tokenId,
       config,
@@ -63,6 +74,34 @@ class AuthenticationClientMobile with AuthenticationClientInteractionMixin
     final endSession = await _appAuth.endSession(endSessionRequest);
     log('$runtimeType::logoutOidc(): ${endSession.state}');
     return endSession.state?.isNotEmpty == true;
+  }
+
+  Future<bool> _logoutTwakeWorkplaceInSignInBrowser(
+    TokenId tokenId,
+    OIDCConfiguration config,
+    String endSessionEndpoint,
+  ) async {
+    try {
+      await FlutterWebAuth2.authenticate(
+        url: getTwakeWorkplaceEndSessionUrl(tokenId, config, endSessionEndpoint),
+        callbackUrlScheme: OIDCConstant.twakeWorkplaceUrlScheme,
+        options: const FlutterWebAuth2Options(
+          intentFlags: ephemeralIntentFlags,
+        ),
+      );
+      log('$runtimeType::_logoutTwakeWorkplaceInSignInBrowser(): callback received');
+      return true;
+    } on PlatformException catch (e) {
+      if (e.code != 'CANCELED') rethrow;
+      // The portal never redirects after the logout (#5037): the user closes the tab.
+      Error.throwWithStackTrace(
+        PlatformException(
+          code: OIDCConstant.endSessionFailedCode,
+          message: e.message,
+        ),
+        StackTrace.current,
+      );
+    }
   }
 
   @override
