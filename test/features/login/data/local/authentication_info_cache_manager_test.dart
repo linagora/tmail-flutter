@@ -140,14 +140,14 @@ void main() {
       expect(client.item, isNull);
     });
 
-    test('get reads from session storage first and purges the Hive box', () async {
+    test('get reads from session storage first without another Hive purge', () async {
       await manager.storeAuthenticationInfo(info);
       client.clearCalls = 0;
 
       final result = await manager.getAuthenticationInfoStored();
 
       expect(result, info);
-      expect(client.clearCalls, 1);
+      expect(client.clearCalls, 0);
     });
 
     test('get retries the Hive purge after a failed store purge', () async {
