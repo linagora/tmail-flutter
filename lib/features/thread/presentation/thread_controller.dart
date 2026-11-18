@@ -965,6 +965,10 @@ class ThreadController extends BaseController
         collapseThreads: collapseThreads,
       );
 
+      // A search that started during the refresh owns the list; the cache is
+      // already synced, as in the web search branch of _handleWebSocketMessage.
+      if (searchController.isSearchEmailRunning && PlatformInfo.isWeb) return;
+
       final refreshState = refreshViewState
           .foldSuccessWithResult<RefreshChangesAllEmailSuccess>();
 
