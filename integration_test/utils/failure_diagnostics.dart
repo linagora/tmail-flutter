@@ -3,10 +3,6 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:patrol/patrol.dart';
 
-import 'app_log_recorder.dart';
-import 'frame_state_recorder.dart';
-import 'primary_focus_logger.dart';
-
 // Keeps the dump under the logcat buffer limit; the top route prints last, so keep the tail.
 const _maxTreeLines = 1500;
 
@@ -46,13 +42,10 @@ void dumpFailureState(PatrolIntegrationTester $) {
   try {
     final views = WidgetsBinding.instance.platformDispatcher.views;
     final keyboardInset = views.isEmpty ? 'n/a' : '${views.first.viewInsets.bottom}';
-    debugPrintSynchronously(
-      '[FAILURE STATE] route=${Get.currentRoute} '
-      'focus=${describeFocusKey(FocusManager.instance.primaryFocus)} keyboardInset=$keyboardInset',
-    );
-    PrimaryFocusLogger.instance.dump();
-    FrameStateRecorder.dumpActive();
-    AppLogRecorder.instance.dump();
+    final summary = '[FAILURE STATE] route=${Get.currentRoute} '
+        'focus=${FocusManager.instance.primaryFocus} keyboardInset=$keyboardInset';
+    $.log(summary);
+    debugPrintSynchronously(summary);
     _printLines(FocusManager.instance.toStringDeep());
     _printLines(
       WidgetsBinding.instance.rootElement?.toStringDeep() ?? 'no root element',

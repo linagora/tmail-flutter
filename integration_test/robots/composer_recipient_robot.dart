@@ -7,21 +7,14 @@ import 'package:model/extensions/email_address_extension.dart';
 import 'package:patrol/patrol.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
-import 'package:tmail_ui_user/features/base/widget/card_with_smart_interaction_overlay_view.dart';
-import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
-import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/recipient_composer_widget_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/recipient_tag_item_widget_style.dart';
-import 'package:tmail_ui_user/features/composer/presentation/view/edit_recipients_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_tag_item_widget.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 import '../base/core_robot.dart';
 import '../extensions/patrol_finder_extension.dart';
-import '../utils/frame_state_recorder.dart';
-import '../utils/primary_focus_logger.dart';
 import 'abstract/abstract_composer_recipient_assertion_robot.dart';
 import 'abstract/abstract_composer_recipient_robot.dart';
 import 'composer_recipient_assertion_robot.dart';
@@ -84,62 +77,14 @@ class ComposerRecipientRobot extends CoreRobot
     await _field(prefix).$(TextField).tap();
   }
 
+  /// The expand chevron also reveals From on a narrow composer.
   @override
-  Future<void> openFromField() async {
-    await $(Key('prefix_${PrefixEmailAddress.to.name}_recipient_from_button')).tap();
-  }
+  Future<void> openFromField() => openCcField();
 
   @override
   Future<void> openFirstRecipientMenu(PrefixEmailAddress prefix) async {
-    final chip = _chips(prefix).first;
-    final recorder = FrameStateRecorder('RECIPIENT MENU', () => _menuState(prefix))..start();
-    await chip.tap();
-    recorder.record('tapped');
+    await _chips(prefix).first.tap();
     await $.pumpAndTrySettle();
-    recorder.record('settled');
-  }
-
-  // Chips, menus, cards, focused field, To list and editor load; shows what closed the menu.
-  String _menuState(PrefixEmailAddress prefix) {
-    // evaluate(), not tester.widgetList: the latter throws "Guarded function conflict" mid-pump.
-    final chips = _chips(prefix)
-        .evaluate()
-        .map((e) => (e.widget as RecipientTagItemWidget).currentEmailAddress.emailAddress)
-        .join(',');
-    final menus = find.byType(EditRecipientsView).evaluate().length;
-    final cards = find.byType(CardWithSmartInteractionOverlayView).evaluate().length;
-    final manager = getBinding<ComposerManager>();
-    // Web tags each composer controller with its composerId; mobile registers it untagged.
-    final lastComposerId = manager?.composers.keys.lastOrNull;
-    final controller = lastComposerId == null
-        ? getBinding<ComposerController>()
-        : getBinding<ComposerController>(tag: lastComposerId);
-    final composer = controller == null
-        ? 'composer=none'
-        : 'field=${_focusedField(controller)} to=${controller.listToEmailAddress.length} '
-            'collapsed=${controller.recipientsCollapsedState.value.name} '
-            'bodyNotReady=${controller.isEmailBodyNotReady}';
-    return 'composers=${manager?.composers.length} chips=[$chips] menus=$menus cards=$cards $composer '
-        'focus=${describeFocusKey(FocusManager.instance.primaryFocus)}';
-  }
-
-  // The focus chain is cut before any widget that names the field, so match the controller's nodes.
-  String _focusedField(ComposerController controller) {
-    final focus = FocusManager.instance.primaryFocus;
-    if (focus == null) return 'none';
-    final fields = <String, FocusNode?>{
-      'to': controller.toAddressFocusNode,
-      'toKeyboard': controller.toAddressFocusNodeKeyboard,
-      'cc': controller.ccAddressFocusNode,
-      'bcc': controller.bccAddressFocusNode,
-      'replyTo': controller.replyToAddressFocusNode,
-      'subject': controller.subjectEmailInputFocusNode,
-      'keyboardShortcut': controller.keyboardShortcutFocusNode,
-    };
-    for (final entry in fields.entries) {
-      if (identical(entry.value, focus)) return entry.key;
-    }
-    return 'other';
   }
 
   PatrolFinder _editor(PrefixEmailAddress prefix) =>

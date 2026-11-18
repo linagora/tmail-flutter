@@ -9,12 +9,9 @@ import 'package:tmail_ui_user/main.dart';
 import 'package:tmail_ui_user/main/main_entry.dart';
 
 import '../models/test_tags.dart';
-import '../utils/app_log_recorder.dart';
 import '../utils/backend_reset_client.dart';
 import '../utils/failure_diagnostics.dart';
-import '../utils/frame_state_recorder.dart';
 import '../utils/mock_text_input.dart';
-import '../utils/primary_focus_logger.dart';
 import '../utils/test_backend.dart';
 import 'base_scenario.dart';
 import '../factories/robot_factory.dart';
@@ -91,11 +88,6 @@ class TestBase {
     // The preload reloads env.file, whose SERVER_URL the web login reads.
     if (TestBackend.leased != null) dotenv.env['SERVER_URL'] = TestBackend.current.url;
     await scenario.prepare();
-    PrimaryFocusLogger.instance.start();
-    AppLogRecorder.instance.start();
-    addTearDown(AppLogRecorder.instance.stop);
-    addTearDown(PrimaryFocusLogger.instance.stop);
-    addTearDown(FrameStateRecorder.stopAll);
     runApp(const TMailApp());
 
     final originalOnError = FlutterError.onError!;
