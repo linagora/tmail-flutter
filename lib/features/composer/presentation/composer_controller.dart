@@ -651,7 +651,6 @@ class ComposerController extends BaseController
 
   void _subjectEmailInputFocusListener() {
     if (subjectEmailInputFocusNode?.hasFocus == true) {
-      log('ComposerController::_subjectEmailInputFocusListener: focused');
       if (PlatformInfo.isMobile
           && currentContext != null
           && !responsiveUtils.isScreenWithShortestSide(currentContext!)) {
@@ -686,7 +685,7 @@ class ComposerController extends BaseController
   Future<void> onLoadCompletedMobileEditorAction(HtmlEditorApi editorApi, WebUri? url) async {
     _isEmailBodyLoaded = true;
     await setupSelectedIdentity();
-    _autoFocusFieldWhenLauncher('mobileEditorLoaded');
+    _autoFocusFieldWhenLauncher();
     if (PlatformInfo.isAndroid) unawaited(restoreIfEditorBlank());
   }
 
@@ -1325,7 +1324,7 @@ class ComposerController extends BaseController
             mailboxDashBoardController.currentPremiumCtaContext,
           );
         } else {
-          _autoFocusFieldWhenLauncher('sendFailureConfirm');
+          _autoFocusFieldWhenLauncher();
         }
       },
       onCancelAction: () {
@@ -1333,7 +1332,7 @@ class ComposerController extends BaseController
 
         if (needIncreaseMySpace) {
           popBack();
-          _autoFocusFieldWhenLauncher('sendFailureCancel');
+          _autoFocusFieldWhenLauncher();
         } else {
           _closeComposerAction(closeOverlays: true);
         }
@@ -1629,7 +1628,7 @@ class ComposerController extends BaseController
 
             if (needIncreaseMySpace) {
               popBack();
-              _autoFocusFieldWhenLauncher('saveDraftCancel');
+              _autoFocusFieldWhenLauncher();
             } else {
               _closeComposerAction(closeOverlays: true);
             }
@@ -1765,7 +1764,7 @@ class ComposerController extends BaseController
 
     await Future.delayed(
       const Duration(milliseconds: 300),
-      () => _autoFocusFieldWhenLauncher('displayModeChanged'));
+      _autoFocusFieldWhenLauncher);
   }
 
   void addEmailAddressType(PrefixEmailAddress prefixEmailAddress) {
@@ -2143,13 +2142,11 @@ class ComposerController extends BaseController
         : AppLocalizations.of(context).requestReadReceiptHasBeenDisabled);
   }
 
-  Future<void> _autoFocusFieldWhenLauncher(String trigger) async {
+  Future<void> _autoFocusFieldWhenLauncher() async {
     if (await hasInputFieldFocused()) {
-      log('ComposerController::_autoFocusFieldWhenLauncher: trigger=$trigger INPUT_FIELD_FOCUS = true');
+      log('ComposerController::_autoFocusFieldWhenLauncher: INPUT_FIELD_FOCUS = true');
       return;
     }
-    log('ComposerController::_autoFocusFieldWhenLauncher: trigger=$trigger '
-        'to=${listToEmailAddress.length} subjectEmpty=${subjectEmailInputController.text.isEmpty}');
 
     if (FocusManager.instance.primaryFocus?.hasFocus == true) {
       FocusManager.instance.primaryFocus?.unfocus();
@@ -2200,7 +2197,7 @@ class ComposerController extends BaseController
   Future<void> onInitialContentLoadCompleteWeb(String? initContent) async {
     await restoreCollapsibleSignatureButton(initContent);
     await setupSelectedIdentity();
-    _autoFocusFieldWhenLauncher('webEditorLoaded');
+    _autoFocusFieldWhenLauncher();
   }
 
   void handleOnFocusHtmlEditorWeb() {
@@ -2406,14 +2403,14 @@ class ComposerController extends BaseController
       onCloseButtonAction: () {
         _closeComposerButtonState = ButtonState.enabled;
         popBack();
-        _autoFocusFieldWhenLauncher('closeDialogClosed');
+        _autoFocusFieldWhenLauncher();
       },
       onPopInvoked: (didPop, _) {
         log('ComposerController::_showConfirmDialogSaveMessage: didPop = $didPop');
         if (!didPop) {
           _closeComposerButtonState = ButtonState.enabled;
           popBack();
-          _autoFocusFieldWhenLauncher('closeDialogPopBlocked');
+          _autoFocusFieldWhenLauncher();
         }
       },
     );
@@ -2697,7 +2694,7 @@ class ComposerController extends BaseController
             mailboxDashBoardController.currentPremiumCtaContext,
           );
         } else {
-          _autoFocusFieldWhenLauncher('draftFailureConfirm');
+          _autoFocusFieldWhenLauncher();
         }
       },
       onCancelAction: () {
@@ -2708,7 +2705,7 @@ class ComposerController extends BaseController
 
           if (needIncreaseMySpace || !shouldOfferCloseComposer) {
             popBack();
-            _autoFocusFieldWhenLauncher('draftFailureCancel');
+            _autoFocusFieldWhenLauncher();
           } else {
             _closeComposerAction(closeOverlays: true);
           }
