@@ -13,7 +13,6 @@ import '../utils/app_log_recorder.dart';
 import '../utils/backend_reset_client.dart';
 import '../utils/failure_diagnostics.dart';
 import '../utils/frame_state_recorder.dart';
-import '../utils/jmap_query_recorder.dart';
 import '../utils/mock_text_input.dart';
 import '../utils/primary_focus_logger.dart';
 import '../utils/test_backend.dart';
@@ -97,7 +96,6 @@ class TestBase {
     addTearDown(AppLogRecorder.instance.stop);
     addTearDown(PrimaryFocusLogger.instance.stop);
     addTearDown(FrameStateRecorder.stopAll);
-    addTearDown(JmapQueryRecorder.instance.detach);
     runApp(const TMailApp());
 
     final originalOnError = FlutterError.onError!;

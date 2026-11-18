@@ -5,7 +5,6 @@ import 'package:patrol/patrol.dart';
 
 import 'app_log_recorder.dart';
 import 'frame_state_recorder.dart';
-import 'jmap_query_recorder.dart';
 import 'primary_focus_logger.dart';
 
 // Keeps the dump under the logcat buffer limit; the top route prints last, so keep the tail.
@@ -54,7 +53,6 @@ void dumpFailureState(PatrolIntegrationTester $) {
     PrimaryFocusLogger.instance.dump();
     FrameStateRecorder.dumpActive();
     AppLogRecorder.instance.dump();
-    JmapQueryRecorder.instance.dump();
     _printLines(FocusManager.instance.toStringDeep());
     _printLines(
       WidgetsBinding.instance.rootElement?.toStringDeep() ?? 'no root element',

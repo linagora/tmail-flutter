@@ -1,31 +1,20 @@
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/text/rich_text_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get/get.dart';
 import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_button_arrow_down_field_with_tab_key_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as dashboard_search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_field_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
-import 'package:tmail_ui_user/features/search/email/domain/model/search_email_result.dart';
-import 'package:tmail_ui_user/features/search/email/domain/notifier/search_email_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:core/presentation/views/search/search_bar_view.dart';
-import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
-import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 import '../../extensions/patrol_finder_extension.dart';
-import '../../utils/frame_state_recorder.dart';
-import '../../utils/jmap_query_recorder.dart';
 import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_condition.dart';
 import '../abstract/abstract_search_robot.dart';
@@ -154,7 +143,6 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
 
   @override
   Future<void> openLabelListModal() async {
-    JmapQueryRecorder.instance.attach();
     // Web desktop uses #labels_search_filter_button (no mobile_ prefix).
     await $(#labels_search_filter_button).tap();
   }
@@ -222,14 +210,6 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
 
   @override
   Future<void> searchByLabel(String labelName) async {
-    JmapQueryRecorder.instance.attach();
-    final recorder = FrameStateRecorder('SEARCH RESULTS', _searchState)..start();
-    // Every executor change, even within one frame: names the intent that emptied the list.
-    final subscription = appProviderContainer.listen<AsyncValue<SearchEmailResult>>(
-      searchEmailProvider,
-      (_, next) => recorder.record('executor ${_describeExecutor(next)}'),
-    );
-    addTearDown(subscription.close);
     await $(const ValueKey(UiKeys.advancedSearchLabelDropDown)).tap();
     await $(find.text(labelName)).tap();
     await $(const ValueKey(UiKeys.advancedSearchSearchButton)).tap();
@@ -265,42 +245,6 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
       timeout: TestTimeouts.medium,
       reason: 'an email with subject containing "$subject" is listed',
     );
-  }
-
-  // Tiles, empty view and the committed label filter; shows when the list settled empty.
-  String _searchState() {
-    // evaluate(), not tester.widgetList: the latter throws "Guarded function conflict" mid-pump.
-    final tiles = find
-        .byType(EmailTileBuilder)
-        .evaluate()
-        .map((e) => e.widget as EmailTileBuilder)
-        .toList();
-    final subjects = tiles.take(5).map((tile) => tile.presentationEmail.subject).join('|');
-    final empty = find.byKey(const Key(UiKeys.emptyThreadView)).evaluate().isNotEmpty;
-    return 'tiles=${tiles.length} [$subjects] empty=$empty label=$_filteredLabelKeyword $_appSearchState';
-  }
-
-  String? get _filteredLabelKeyword =>
-      Get.find<dashboard_search.SearchController>().labelFiltered?.keyword?.value;
-
-  // Which controller state produced the list: a stale mailbox load vs an empty search result.
-  String get _appSearchState {
-    final state = getBinding<ThreadController>()
-        ?.viewState
-        .value
-        .fold((failure) => failure.runtimeType, (success) => success.runtimeType);
-    final emails = getBinding<MailboxDashBoardController>()?.emailsInCurrentMailbox.length;
-    final running = Get.find<dashboard_search.SearchController>().isSearchEmailRunning;
-    return 'thread=$state emails=$emails searchRunning=$running';
-  }
-
-  // loading = new search; data loadMore=inProgress = load more; data idle with old rows = refresh.
-  String _describeExecutor(AsyncValue<SearchEmailResult> value) {
-    if (value.isLoading) return 'loading';
-    if (value.hasError) return 'error ${value.error.runtimeType}';
-    final result = value.value;
-    return 'data emails=${result?.emails.length} canLoadMore=${result?.canLoadMore} '
-        'loadMore=${result?.loadMore.name}';
   }
 
   Future<void> _waitForSearchResults() => waitForCondition(

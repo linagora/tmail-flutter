@@ -8,17 +8,10 @@ import 'primary_focus_logger.dart';
 import 'utc_clock.dart';
 
 const _maxEntries = 40;
-// Composer focus decisions and thread reload/load-more triggers; other app logs would push them out before the failure dump.
+// Composer focus decisions; other app logs would push them out before the failure dump.
 const _prefixes = [
   'ComposerController::_autoFocusFieldWhenLauncher',
   'ComposerController::_subjectEmailInputFocusListener',
-  'ThreadController::_registerObxStreamListener:SelectedMailbox',
-  'ThreadController::resetToOriginalValue',
-  'ThreadController::_getAllEmailAction',
-  'ThreadController::_handleOnDoneGetAllEmailSuccess',
-  'ThreadController::_refreshChangesAllEmailSuccess: COUNT',
-  'ThreadController::_performAutomaticallyLoadMoreEmails',
-  'ThreadController::handleLoadMoreEmailsRequest',
 ];
 
 // Buffers app log lines a profile build never prints; printed by the failure dump.
