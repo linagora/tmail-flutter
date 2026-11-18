@@ -326,6 +326,8 @@ class ComposerController extends BaseController
 
   late Worker uploadInlineImageWorker;
   late bool _isEmailBodyLoaded;
+  // Recipient FocusScopes keep focus when a chip menu takes it from their text field.
+  final Set<PrefixEmailAddress> _focusedRecipientScopes = {};
 
   void registerReloadCacheAction(ComposerReloadCacheAction action) =>
       _reloadCacheAction = action;
@@ -697,6 +699,7 @@ class ComposerController extends BaseController
 
   Future<void> setupComposer() async {
     _isEmailBodyLoaded = false;
+    _focusedRecipientScopes.clear();
     final arguments = PlatformInfo.isWeb ? composerArgs : Get.arguments;
 
     if (arguments is! ComposerArguments) return;
@@ -1844,6 +1847,9 @@ class ComposerController extends BaseController
   }
 
   void onEmailAddressFocusChange(PrefixEmailAddress prefixEmailAddress, bool isFocus) {
+    isFocus
+        ? _focusedRecipientScopes.add(prefixEmailAddress)
+        : _focusedRecipientScopes.remove(prefixEmailAddress);
     if (isFocus) {
       _closeSuggestionBox();
       if (PlatformInfo.isMobile
@@ -2137,7 +2143,7 @@ class ComposerController extends BaseController
   }
 
   Future<void> _autoFocusFieldWhenLauncher(String trigger) async {
-    if (await _hasInputFieldFocused()) {
+    if (await hasInputFieldFocused()) {
       log('ComposerController::_autoFocusFieldWhenLauncher: trigger=$trigger INPUT_FIELD_FOCUS = true');
       return;
     }
@@ -2159,16 +2165,19 @@ class ComposerController extends BaseController
     }
   }
 
-  Future<bool> _hasInputFieldFocused() async {
+  @visibleForTesting
+  Future<bool> hasInputFieldFocused() async {
     if (PlatformInfo.isWeb) {
-      return toAddressFocusNode?.hasFocus == true ||
+      return _focusedRecipientScopes.isNotEmpty ||
+        toAddressFocusNode?.hasFocus == true ||
         ccAddressFocusNode?.hasFocus == true ||
         bccAddressFocusNode?.hasFocus == true ||
         replyToAddressFocusNode?.hasFocus == true ||
         subjectEmailInputFocusNode?.hasFocus == true;
     } else if (PlatformInfo.isMobile) {
       final isEditorFocused = (await richTextMobileTabletController?.isEditorFocused) ?? false;
-      return toAddressFocusNode?.hasFocus == true ||
+      return _focusedRecipientScopes.isNotEmpty ||
+        toAddressFocusNode?.hasFocus == true ||
         ccAddressFocusNode?.hasFocus == true ||
         bccAddressFocusNode?.hasFocus == true ||
         replyToAddressFocusNode?.hasFocus == true ||

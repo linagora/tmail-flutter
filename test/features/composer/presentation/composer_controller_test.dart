@@ -44,6 +44,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
@@ -3651,6 +3652,31 @@ void main() {
         composerController?.emailContentsViewState.value = contentLoaded;
 
         expect(composerController?.isEmailBodyNotReady, isFalse);
+      });
+    });
+
+    // A chip menu moves focus from the recipient text field to its FocusScope.
+    group('hasInputFieldFocused on web:', () {
+      setUp(() => PlatformInfo.isTestingForWeb = true);
+      tearDown(() => PlatformInfo.isTestingForWeb = false);
+
+      test(
+        'Should be true\n'
+        'When a recipient FocusScope keeps focus without its text field',
+      () async {
+        composerController!.onEmailAddressFocusChange(PrefixEmailAddress.to, true);
+
+        expect(await composerController!.hasInputFieldFocused(), isTrue);
+      });
+
+      test(
+        'Should be false\n'
+        'When the recipient FocusScope lost focus',
+      () async {
+        composerController!.onEmailAddressFocusChange(PrefixEmailAddress.to, true);
+        composerController!.onEmailAddressFocusChange(PrefixEmailAddress.to, false);
+
+        expect(await composerController!.hasInputFieldFocused(), isFalse);
       });
     });
 
