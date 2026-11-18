@@ -2165,6 +2165,12 @@ void main() {
 
         verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
         expect(controller.loadingMoreStatus.value, LoadingMoreStatus.running);
+
+        searchRunning = false;
+        controller.loadingMoreStatus.value = LoadingMoreStatus.idle;
+        controller.canLoadMore = true;
+        controller.handleLoadMoreEmailsRequest();
+        verify(mockLoadMoreEmailsInMailboxInteractor.execute(any)).called(1);
       });
 
       testWidgets(
