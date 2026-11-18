@@ -121,11 +121,12 @@ class ThreadAPI with HandleSetErrorMixin, SessionMixin, MailAPIMixin {
       .build()
       .execute();
 
-    final responseOfGetEmailMethod = result.parse<GetEmailResponse>(
-        getEmailInvocation.methodCallId, GetEmailResponse.deserialize);
+    // Email/get fails too when Email/query does, so the query error is the one to report.
     final responseOfQueryEmailMethod = result.parse<QueryEmailResponse>(
       queryEmailInvocation.methodCallId,
       QueryEmailResponse.deserialize);
+    final responseOfGetEmailMethod = result.parse<GetEmailResponse>(
+        getEmailInvocation.methodCallId, GetEmailResponse.deserialize);
 
     final sortedEmailList = sortEmails(
       getEmailResponse: responseOfGetEmailMethod,

@@ -3,7 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/error/error_type.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -395,6 +397,39 @@ void main() {
               state: state
             ),
           ),
+        );
+      });
+
+      test(
+        'should throw the Email/query error '
+        'when SearchSnippet/get and Email/get fail only because they reference the failed Email/query',
+      () async {
+        List<Object> errorInvocation(ErrorType type, String methodCallId) =>
+            ["error", {"type": type.value}, methodCallId];
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(200, {
+            "sessionState": sessionState.value,
+            "methodResponses": [
+              errorInvocation(ErrorMethodResponse.accountNotFound, "c0"),
+              errorInvocation(ErrorMethodResponse.invalidResultReference, "c1"),
+              errorInvocation(ErrorMethodResponse.invalidResultReference, "c2"),
+            ],
+          }),
+          data: generateRequest(filter: filter),
+        );
+
+        await expectLater(
+          threadApi.searchEmails(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            filter: filter,
+          ),
+          throwsA(isA<ErrorMethodResponseException>().having(
+            (exception) => exception.errorResponse,
+            'errorResponse',
+            isA<AccountNotFoundMethodResponse>(),
+          )),
         );
       });
     });
