@@ -30,8 +30,15 @@ void logFlutterErrorDetails(FlutterErrorDetails details) {
   }
 }
 
+var _dumped = false;
+
+// A test dumps once: the error hook and the test's catch block both call it.
+void resetFailureDump() => _dumped = false;
+
 // debugPrint, not dart:developer log: the latter is not written to Android logcat.
 void dumpFailureState(PatrolIntegrationTester $) {
+  if (_dumped) return;
+  _dumped = true;
   try {
     final views = WidgetsBinding.instance.platformDispatcher.views;
     final keyboardInset = views.isEmpty ? 'n/a' : '${views.first.viewInsets.bottom}';

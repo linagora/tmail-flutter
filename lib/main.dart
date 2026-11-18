@@ -38,6 +38,8 @@ class _TMailAppState extends State<TMailApp> {
   // per build would drop the suspended-route state and skip the restore.
   final _selectionHandlesRouteObserver = SelectionHandlesRouteObserver();
 
+  final TransitionBuilder _smartDialogBuilder = FlutterSmartDialog.init();
+
   @override
   void initState() {
     super.initState();
@@ -86,7 +88,11 @@ class _TMailAppState extends State<TMailApp> {
         defaultTransition: Transition.noTransition,
         initialRoute: AppRoutes.home,
         getPages: AppPages.pages,
-        builder: FlutterSmartDialog.init(),
+        builder: (context, child) => FocusScope(
+          // Keeps overlay focus nodes out of the View's focus sort while they are disposed; flutter/flutter#194056.
+          // TODO: remove with test/main/focus_*_test.dart once flutter/flutter#194056 is in our Flutter version; only web Patrol runs (didChangeViewFocus null check) catch its removal.
+          child: _smartDialogBuilder(context, child),
+        ),
       ),
     );
   }

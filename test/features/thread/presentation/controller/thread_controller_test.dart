@@ -1849,6 +1849,14 @@ void main() {
       final inboxMailbox = PresentationMailbox(MailboxId(Id('inbox')));
       final favoriteFolder = PresentationMailbox.favoriteFolder;
 
+      // Earlier groups leave search results that onInit replays into the list.
+      setUp(() {
+        appProviderContainer.invalidate(searchExecutorServiceProvider);
+        appProviderContainer.invalidate(searchEmailProvider);
+        appProviderContainer.invalidate(searchEmailPresentationProvider);
+        appProviderContainer.invalidate(searchViewStateProvider);
+      });
+
       List<PresentationEmail> makeEmails(int count, MailboxId mailboxId) =>
           List.generate(
             count,
@@ -2011,6 +2019,159 @@ void main() {
           )).called(1);
         });
       }
+
+      testWidgets(
+        'WHEN a web inbox refresh is in flight\n'
+        'AND a search starts before it answers\n'
+        'THEN the refresh MUST NOT write inbox rows into the list',
+      (tester) async {
+        PlatformInfo.isTestingForWeb = true;
+        final controller = _ThreadControllerWithCollapseThreads(
+          mockGetEmailsInMailboxInteractor,
+          mockRefreshChangesEmailsInMailboxInteractor,
+          mockLoadMoreEmailsInMailboxInteractor,
+          mockGetEmailByIdInteractor,
+          mockCleanAndGetEmailsInMailboxInteractor,
+          collapseThreads: false,
+        );
+        addTearDown(() {
+          controller.onClose();
+          PlatformInfo.isTestingForWeb = false;
+        });
+        await tester.pumpWidget(GetMaterialApp(
+          home: SizedBox(
+            height: 600,
+            child: ListView(controller: controller.listEmailController),
+          ),
+        ));
+
+        final inboxEmails = makeEmails(3, inboxMailbox.id);
+        final emailAction = Rxn<EmailUIAction>();
+        stubDashboardForEmailStateChange(inboxMailbox, inboxEmails, emailAction);
+        stubInteractorsForEmailStateChange(inboxEmails, inboxMailbox.id);
+
+        var searchRunning = false;
+        when(mockSearchController.isSearchEmailRunning)
+            .thenAnswer((_) => searchRunning);
+
+        final refresh = StreamController<Either<Failure, Success>>();
+        when(mockRefreshChangesEmailsInMailboxInteractor.execute(
+          any,
+          any,
+          any,
+          sort: anyNamed('sort'),
+          limit: anyNamed('limit'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          emailFilter: anyNamed('emailFilter'),
+          collapseThreads: anyNamed('collapseThreads'),
+        )).thenAnswer((_) => refresh.stream);
+
+        controller.onInit();
+        emailAction.value = RefreshChangeEmailAction(
+          newState: jmap.State('new-state'),
+        );
+        await tester.pump();
+        expect(refresh.hasListener, isTrue);
+
+        searchRunning = true;
+        clearInteractions(mockMailboxDashBoardController);
+
+        refresh.add(Right(RefreshChangesAllEmailSuccess(
+          emailList: inboxEmails,
+          currentMailboxId: inboxMailbox.id,
+          currentEmailState: jmap.State('new-state'),
+        )));
+        await refresh.close();
+        await tester.pumpAndSettle();
+
+        verifyNever(mockMailboxDashBoardController.updateEmailList(any));
+        verifyNever(mockMailboxDashBoardController.setCurrentEmailState(any));
+      });
+
+      testWidgets(
+        'WHEN a folder load-more was deferred during a web inbox refresh\n'
+        'AND a search starts before the refresh answers\n'
+        'THEN releasing the hold MUST NOT load the next folder page\n'
+        'AND MUST keep the search load-more status',
+      (tester) async {
+        PlatformInfo.isTestingForWeb = true;
+        final controller = _ThreadControllerWithCollapseThreads(
+          mockGetEmailsInMailboxInteractor,
+          mockRefreshChangesEmailsInMailboxInteractor,
+          mockLoadMoreEmailsInMailboxInteractor,
+          mockGetEmailByIdInteractor,
+          mockCleanAndGetEmailsInMailboxInteractor,
+          collapseThreads: true,
+        );
+        addTearDown(() {
+          controller.onClose();
+          PlatformInfo.isTestingForWeb = false;
+        });
+        await tester.pumpWidget(GetMaterialApp(
+          home: SizedBox(
+            height: 600,
+            child: ListView(controller: controller.listEmailController),
+          ),
+        ));
+
+        final inboxEmails = makeEmails(3, inboxMailbox.id);
+        final emailAction = Rxn<EmailUIAction>();
+        stubDashboardForEmailStateChange(inboxMailbox, inboxEmails, emailAction);
+        stubInteractorsForEmailStateChange(inboxEmails, inboxMailbox.id);
+        when(mockLoadMoreEmailsInMailboxInteractor.execute(any))
+            .thenAnswer((_) => const Stream.empty());
+
+        var searchRunning = false;
+        when(mockSearchController.isSearchEmailRunning)
+            .thenAnswer((_) => searchRunning);
+
+        final refresh = StreamController<Either<Failure, Success>>();
+        when(mockRefreshChangesEmailsInMailboxInteractor.execute(
+          any,
+          any,
+          any,
+          sort: anyNamed('sort'),
+          limit: anyNamed('limit'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          emailFilter: anyNamed('emailFilter'),
+          collapseThreads: anyNamed('collapseThreads'),
+        )).thenAnswer((_) => refresh.stream);
+
+        controller.onInit();
+        emailAction.value = RefreshChangeEmailAction(
+          newState: jmap.State('new-state'),
+        );
+        await tester.pump();
+        expect(refresh.hasListener, isTrue);
+
+        controller.canLoadMore = true;
+        clearInteractions(mockLoadMoreEmailsInMailboxInteractor);
+        controller.handleLoadMoreEmailsRequest();
+        verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
+
+        searchRunning = true;
+        controller.loadingMoreStatus.value = LoadingMoreStatus.running;
+        controller.canLoadMore = true;
+
+        refresh.add(Right(RefreshChangesAllEmailSuccess(
+          emailList: inboxEmails,
+          currentMailboxId: inboxMailbox.id,
+          currentEmailState: jmap.State('new-state'),
+        )));
+        await refresh.close();
+        await tester.pumpAndSettle();
+
+        verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
+        expect(controller.loadingMoreStatus.value, LoadingMoreStatus.running);
+
+        searchRunning = false;
+        controller.loadingMoreStatus.value = LoadingMoreStatus.idle;
+        controller.canLoadMore = true;
+        controller.handleLoadMoreEmailsRequest();
+        verify(mockLoadMoreEmailsInMailboxInteractor.execute(any)).called(1);
+      });
 
       testWidgets(
         'GIVEN collapseThreads is enabled and a virtual folder returns a partial page '

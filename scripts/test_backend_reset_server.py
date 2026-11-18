@@ -230,6 +230,34 @@ class WatchReadyTest(unittest.TestCase):
         exit_.assert_called_once_with(1)
 
 
+class RecycleNetworkHolderTest(unittest.TestCase):
+    def test_recycle_keeps_the_network_holder_and_recreates_only_the_backend(self):
+        calls = []
+        saved = (server._compose, server._save_logs, server.provision)
+
+        def compose(n, *args):
+            calls.append(args)
+            # Only the backend prints the boot line; recycle must not read it from the holder.
+            stdout = "JAMES server started" if "network-holder" not in args else ""
+            return type("R", (), {"returncode": 0, "stdout": stdout, "stderr": ""})()
+
+        server._compose, server._save_logs = compose, lambda n: None
+        server.provision = lambda port: None
+        try:
+            server.recycle_slot(0)
+        finally:
+            server._compose, server._save_logs, server.provision = saved
+            server._stopping.clear()
+
+        self.assertEqual(calls[0][:1], ("up",))
+        self.assertIn("--no-recreate", calls[0])
+        self.assertIn("network-holder", calls[0])
+        self.assertIn("--force-recreate", calls[1])
+        self.assertIn("--no-deps", calls[1])
+        self.assertIn("tmail-backend", calls[1])
+        self.assertNotIn("network-holder", calls[1])
+
+
 class RecycleAfterStopTest(unittest.TestCase):
     def test_recycle_finishing_after_stop_removes_its_own_container(self):
         calls = []
@@ -237,7 +265,7 @@ class RecycleAfterStopTest(unittest.TestCase):
 
         def compose(n, *args):
             calls.append(args[0])
-            if args[0] == "up":
+            if args[0] == "up" and "tmail-backend" in args:
                 server._stopping.set()  # stop_all ran while `up` was in flight
             return type("R", (), {"returncode": 0, "stdout": "", "stderr": ""})()
 
@@ -248,7 +276,7 @@ class RecycleAfterStopTest(unittest.TestCase):
         finally:
             server._compose, server._save_logs, server.provision = saved
             server._stopping.clear()
-        self.assertEqual(calls, ["up", "down"])
+        self.assertEqual(calls, ["up", "up", "down"])
 
 
 class RunTimeoutTest(unittest.TestCase):
@@ -349,7 +377,7 @@ class ComposeParityTest(unittest.TestCase):
     def test_pool_compose_uses_the_backend_image_of_the_main_compose(self):
         def image(name):
             with open(os.path.join(ROOT, "backend-docker", name)) as f:
-                return re.search(r"^\s*image:\s*(\S+)", f.read(), re.M).group(1)
+                return re.search(r"^\s*image:\s*(?:&\S+\s+)?(\S+)", f.read(), re.M).group(1)
 
         self.assertEqual(image("docker-compose.pool.yaml"), image("docker-compose.yaml"))
 

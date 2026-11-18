@@ -965,6 +965,10 @@ class ThreadController extends BaseController
         collapseThreads: collapseThreads,
       );
 
+      // The cache is already synced, as in the web search branch of
+      // _handleWebSocketMessage.
+      if (_webSearchOwnsList) return;
+
       final refreshState = refreshViewState
           .foldSuccessWithResult<RefreshChangesAllEmailSuccess>();
 
@@ -1025,6 +1029,10 @@ class ThreadController extends BaseController
     }
   }
 
+  // A search that started during the refresh owns the list and its status.
+  bool get _webSearchOwnsList =>
+      searchController.isSearchEmailRunning && PlatformInfo.isWeb;
+
   void _syncLoadMoreStatus() {
     loadingMoreStatus.value = _folderLoadMore.status;
   }
@@ -1036,6 +1044,7 @@ class ThreadController extends BaseController
 
   void _releaseLoadMoreAfterRefresh() {
     final resume = _folderLoadMore.releaseAfterRefresh();
+    if (_webSearchOwnsList) return;
     _syncLoadMoreStatus();
     if (resume) _loadMoreEmails();
   }

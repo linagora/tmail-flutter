@@ -326,6 +326,11 @@ class ComposerController extends BaseController
 
   late Worker uploadInlineImageWorker;
   late bool _isEmailBodyLoaded;
+  // Recipient FocusScopes keep focus when a chip menu takes it from their text field.
+  final Set<PrefixEmailAddress> _focusedRecipientScopes = {};
+
+  // An unmounted focused recipient FocusScope never reports its blur.
+  void clearFocusedRecipientScopes() => _focusedRecipientScopes.clear();
 
   void registerReloadCacheAction(ComposerReloadCacheAction action) =>
       _reloadCacheAction = action;
@@ -696,6 +701,7 @@ class ComposerController extends BaseController
 
   Future<void> setupComposer() async {
     _isEmailBodyLoaded = false;
+    _focusedRecipientScopes.clear();
     final arguments = PlatformInfo.isWeb ? composerArgs : Get.arguments;
 
     if (arguments is! ComposerArguments) return;
@@ -1756,7 +1762,7 @@ class ComposerController extends BaseController
         richTextWebController!.editorController.setText(textCurrent);
       }
     }
-    screenDisplayMode.value = displayMode;
+    setScreenDisplayMode(displayMode);
     updateDisplayModeForComposerQueue(displayMode);
 
     await Future.delayed(
@@ -1787,6 +1793,8 @@ class ComposerController extends BaseController
   }
 
   void deleteEmailAddressType(PrefixEmailAddress prefixEmailAddress) {
+    // The removed row's FocusScope is disposed without reporting a blur.
+    _focusedRecipientScopes.remove(prefixEmailAddress);
     updateListEmailAddress(prefixEmailAddress, <EmailAddress>[]);
     switch(prefixEmailAddress) {
       case PrefixEmailAddress.to:
@@ -1844,6 +1852,7 @@ class ComposerController extends BaseController
 
   void onEmailAddressFocusChange(PrefixEmailAddress prefixEmailAddress, bool isFocus) {
     if (isFocus) {
+      _focusedRecipientScopes.add(prefixEmailAddress);
       _closeSuggestionBox();
       if (PlatformInfo.isMobile
           && currentContext != null
@@ -1851,6 +1860,7 @@ class ComposerController extends BaseController
         richTextMobileTabletController?.richTextController.hideRichTextView();
       }
     } else {
+      _focusedRecipientScopes.remove(prefixEmailAddress);
       switch(prefixEmailAddress) {
         case PrefixEmailAddress.to:
           final inputToEmail = toEmailAddressController.text;
@@ -2136,7 +2146,7 @@ class ComposerController extends BaseController
   }
 
   Future<void> _autoFocusFieldWhenLauncher() async {
-    if (await _hasInputFieldFocused()) {
+    if (await hasInputFieldFocused()) {
       log('ComposerController::_autoFocusFieldWhenLauncher: INPUT_FIELD_FOCUS = true');
       return;
     }
@@ -2156,16 +2166,19 @@ class ComposerController extends BaseController
     }
   }
 
-  Future<bool> _hasInputFieldFocused() async {
+  @visibleForTesting
+  Future<bool> hasInputFieldFocused() async {
     if (PlatformInfo.isWeb) {
-      return toAddressFocusNode?.hasFocus == true ||
+      return _focusedRecipientScopes.isNotEmpty ||
+        toAddressFocusNode?.hasFocus == true ||
         ccAddressFocusNode?.hasFocus == true ||
         bccAddressFocusNode?.hasFocus == true ||
         replyToAddressFocusNode?.hasFocus == true ||
         subjectEmailInputFocusNode?.hasFocus == true;
     } else if (PlatformInfo.isMobile) {
       final isEditorFocused = (await richTextMobileTabletController?.isEditorFocused) ?? false;
-      return toAddressFocusNode?.hasFocus == true ||
+      return _focusedRecipientScopes.isNotEmpty ||
+        toAddressFocusNode?.hasFocus == true ||
         ccAddressFocusNode?.hasFocus == true ||
         bccAddressFocusNode?.hasFocus == true ||
         replyToAddressFocusNode?.hasFocus == true ||

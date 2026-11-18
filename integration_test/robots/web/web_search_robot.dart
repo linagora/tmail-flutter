@@ -243,6 +243,7 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
         return email.evaluate().isNotEmpty;
       },
       timeout: TestTimeouts.medium,
+      reason: 'an email with subject containing "$subject" is listed',
     );
   }
 
@@ -266,6 +267,7 @@ class WebSearchRobot extends SearchRobot implements AbstractSearchRobot {
         return $(EmailTileBuilder).evaluate().length >= count;
       },
       timeout: TestTimeouts.medium,
+      reason: 'at least $count emails are listed',
     );
     expect($(EmailTileBuilder).evaluate().length, greaterThanOrEqualTo(count));
   }

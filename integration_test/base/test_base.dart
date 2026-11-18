@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/main/main_entry.dart';
 import '../models/test_tags.dart';
 import '../utils/backend_reset_client.dart';
 import '../utils/failure_diagnostics.dart';
+import '../utils/mock_text_input.dart';
 import '../utils/test_backend.dart';
 import 'base_scenario.dart';
 import '../factories/robot_factory.dart';
@@ -58,11 +59,11 @@ class TestBase {
       ),
       framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive,
       ($) async {
-        // Profile builds drop text sent to client -1, so the mock input must own the connection.
-        if (!kDebugMode) {
+        if (registerMockTextInput) {
           $.tester.testTextInput.register();
           addTearDown($.tester.testTextInput.unregister);
         }
+        resetFailureDump();
         try {
           final scenario = scenarioBuilder($, createRobotFactory($));
           await setupTest($, scenario, envOverrides: envOverrides);
@@ -90,14 +91,10 @@ class TestBase {
     runApp(const TMailApp());
 
     final originalOnError = FlutterError.onError!;
-    var stateDumped = false;
     FlutterError.onError = (FlutterErrorDetails details) {
       logFlutterErrorDetails(details);
-      // One dump per test: the first error carries the UI state that caused the rest.
-      if (!stateDumped) {
-        stateDumped = true;
-        dumpFailureState($);
-      }
+      // dumpFailureState prints once per test: the first error carries the UI state that caused the rest.
+      dumpFailureState($);
       originalOnError(details);
     };
   }

@@ -44,6 +44,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
@@ -72,6 +73,8 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_s
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_recipients_collapsed_extensions.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/update_screen_display_mode_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/sanitize_signature_in_email_content_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
@@ -3651,6 +3654,103 @@ void main() {
         composerController?.emailContentsViewState.value = contentLoaded;
 
         expect(composerController?.isEmailBodyNotReady, isFalse);
+      });
+    });
+
+    // A chip menu moves focus from the recipient text field to its FocusScope.
+    group('hasInputFieldFocused on web:', () {
+      setUp(() => PlatformInfo.isTestingForWeb = true);
+      tearDown(() => PlatformInfo.isTestingForWeb = false);
+
+      test(
+        'Should be true\n'
+        'When a recipient FocusScope keeps focus without its text field',
+      () async {
+        composerController!.onEmailAddressFocusChange(PrefixEmailAddress.to, true);
+
+        expect(await composerController!.hasInputFieldFocused(), isTrue);
+      });
+
+      test(
+        'Should be false\n'
+        'When the recipient FocusScope lost focus',
+      () async {
+        composerController!.onEmailAddressFocusChange(PrefixEmailAddress.to, true);
+        composerController!.onEmailAddressFocusChange(PrefixEmailAddress.to, false);
+
+        expect(await composerController!.hasInputFieldFocused(), isFalse);
+      });
+
+      test(
+        'Should be false\n'
+        'When a focused recipient row is deleted',
+      () async {
+        composerController!.onEmailAddressFocusChange(PrefixEmailAddress.cc, true);
+        expect(await composerController!.hasInputFieldFocused(), isTrue);
+
+        composerController!.deleteEmailAddressType(PrefixEmailAddress.cc);
+
+        expect(await composerController!.hasInputFieldFocused(), isFalse);
+      });
+
+      test(
+        'Should be false\n'
+        'When the composer minimizes while a recipient FocusScope has focus',
+      () async {
+        composerController!.onEmailAddressFocusChange(PrefixEmailAddress.to, true);
+        expect(await composerController!.hasInputFieldFocused(), isTrue);
+
+        composerController!.setScreenDisplayMode(ScreenDisplayMode.minimize);
+
+        expect(await composerController!.hasInputFieldFocused(), isFalse);
+      });
+
+      test(
+        'Should be false\n'
+        'When recipient rows collapse while a recipient FocusScope has focus',
+      () async {
+        composerController!.onEmailAddressFocusChange(PrefixEmailAddress.cc, true);
+        expect(await composerController!.hasInputFieldFocused(), isTrue);
+
+        composerController!.hideAllRecipientsFields();
+
+        expect(await composerController!.hasInputFieldFocused(), isFalse);
+      });
+
+      test(
+        'Should be false\n'
+        'When the minimize button is pressed while a recipient FocusScope has focus',
+      () async {
+        composerController!.onEmailAddressFocusChange(PrefixEmailAddress.to, true);
+        expect(await composerController!.hasInputFieldFocused(), isTrue);
+
+        composerController!.displayScreenTypeComposerAction(ScreenDisplayMode.minimize);
+
+        expect(await composerController!.hasInputFieldFocused(), isFalse);
+      });
+
+      test(
+        'Should be false\n'
+        'When recipient rows collapse to To while a recipient FocusScope has focus',
+      () async {
+        composerController!.onEmailAddressFocusChange(PrefixEmailAddress.cc, true);
+        expect(await composerController!.hasInputFieldFocused(), isTrue);
+
+        composerController!.hideAllRecipientsFieldsExceptTo();
+
+        expect(await composerController!.hasInputFieldFocused(), isFalse);
+      });
+
+      test(
+        'Should be false\n'
+        'When mobile recipient inputs are enabled while a recipient FocusScope has focus',
+      () async {
+        composerController!.onEmailAddressFocusChange(PrefixEmailAddress.cc, true);
+        expect(await composerController!.hasInputFieldFocused(), isTrue);
+
+        composerController!.handleEnableRecipientsInputOnMobileAction(true);
+
+        expect(await composerController!.hasInputFieldFocused(), isFalse);
       });
     });
 
