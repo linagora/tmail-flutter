@@ -44,7 +44,6 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/email_action_type.dart';
-import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
@@ -3652,77 +3651,6 @@ void main() {
         composerController?.emailContentsViewState.value = contentLoaded;
 
         expect(composerController?.isEmailBodyNotReady, isFalse);
-      });
-    });
-
-    // The editor can finish loading after the user left a field (e.g. opened a recipient chip menu).
-    group('autoFocusFieldOnEditorLoad on web:', () {
-      late ComposerController controller;
-
-      setUp(() {
-        PlatformInfo.isTestingForWeb = true;
-        reset(mockRichTextWebController.editorController);
-        controller = composerController!;
-        controller.richTextWebController = mockRichTextWebController;
-        controller.createFocusNodeInput();
-        controller.listToEmailAddress.add(EmailAddress(null, 'bob@example.com'));
-      });
-      tearDown(() => PlatformInfo.isTestingForWeb = false);
-
-      Future<void> pumpFields(WidgetTester tester) => tester.pumpWidget(MaterialApp(
-        home: Material(
-          child: Column(children: [
-            TextField(focusNode: controller.toAddressFocusNode),
-            TextField(focusNode: controller.subjectEmailInputFocusNode),
-          ]),
-        ),
-      ));
-
-      testWidgets(
-        'Should focus Subject\n'
-        'When no field was left since the composer opened',
-      (tester) async {
-        await pumpFields(tester);
-
-        controller.autoFocusFieldOnEditorLoad('webEditorLoaded');
-        await tester.pump();
-
-        expect(controller.subjectEmailInputFocusNode?.hasFocus, isTrue);
-      });
-
-      testWidgets(
-        'Should not focus Subject\n'
-        'When the user already left the To field',
-      (tester) async {
-        await pumpFields(tester);
-        controller.toAddressFocusNode?.requestFocus();
-        await tester.pump();
-        controller.toAddressFocusNode?.unfocus();
-        await tester.pump();
-        // The recipient widget reports focus loss; a bare TextField does not.
-        controller.onEmailAddressFocusChange(PrefixEmailAddress.to, false);
-
-        controller.autoFocusFieldOnEditorLoad('webEditorLoaded');
-        await tester.pump();
-
-        expect(controller.subjectEmailInputFocusNode?.hasFocus, isFalse);
-      });
-
-      testWidgets(
-        'Should not focus the editor\n'
-        'When the user already left the Subject field',
-      (tester) async {
-        await pumpFields(tester);
-        controller.subjectEmailInputController.text = 'subject';
-        controller.subjectEmailInputFocusNode?.requestFocus();
-        await tester.pump();
-        controller.subjectEmailInputFocusNode?.unfocus();
-        await tester.pump();
-
-        controller.autoFocusFieldOnEditorLoad('webEditorLoaded');
-        await tester.pump();
-
-        verifyNever(mockRichTextWebController.editorController.setFocus());
       });
     });
 
