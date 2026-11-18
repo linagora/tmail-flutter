@@ -262,6 +262,9 @@ class WebSocketController extends PushBaseController {
     _enableWebSocketPush();
   }
 
+  /// The server scopes the push of an open socket to the accounts listed when it was enabled.
+  void reenablePush() => _enableWebSocketPush();
+
   void _enableWebSocketPush() {
     final dataTypes = _isLabelAvailable
         ? _labelTypePushSupported

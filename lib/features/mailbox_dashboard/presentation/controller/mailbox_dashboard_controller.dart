@@ -945,7 +945,7 @@ class MailboxDashBoardController extends ReloadableController
   }) {
     log('MailboxDashBoardController::_handleSession:');
     _setUpComponentsFromSession(session);
-    unawaited(_cleanupEndedDelegations(session, fromCache: fromCache));
+    unawaited(cleanupEndedDelegationsAndWarn(session, fromCache: fromCache));
 
     unawaited(checkAndRestoreComposerOnMobile());
 
@@ -961,24 +961,6 @@ class MailboxDashBoardController extends ReloadableController
     }
     _handleClickNotificationOnAndroidInTerminated();
     return true;
-  }
-
-  Future<void> _cleanupEndedDelegations(
-    Session session, {
-    required bool fromCache,
-  }) async {
-    try {
-      final lost = await cleanupEndedDelegations(session, fromCache: fromCache);
-      if (lost <= 0) return;
-      final context = currentOverlayContext ?? currentContext;
-      if (context == null || !context.mounted) return;
-      appToast.showToastWarningMessage(
-        context,
-        AppLocalizations.of(context).endedDelegationLostItems(lost),
-      );
-    } catch (error) {
-      logWarning('MailboxDashBoardController::_cleanupEndedDelegations: $error');
-    }
   }
 
   void _setUpComponentsFromSession(Session session) {
@@ -2043,7 +2025,7 @@ class MailboxDashBoardController extends ReloadableController
 
     _getRouteParameters();
     _setUpComponentsFromSession(session);
-    unawaited(_cleanupEndedDelegations(session, fromCache: sessionLoadedFromCache));
+    unawaited(cleanupEndedDelegationsAndWarn(session, fromCache: sessionLoadedFromCache));
     // Same shown accountId does not notify watchShown — refresh identities and web composer cache.
     _getAllIdentities();
     if (PlatformInfo.isWeb) {

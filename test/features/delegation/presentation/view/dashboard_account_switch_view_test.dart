@@ -33,6 +33,14 @@ class _FakeDashboard implements AccountSwitchDashboard {
   int resetCount = 0;
   int labelReloadCount = 0;
   int autocompleteSetUpCount = 0;
+  int openComposerCount = 0;
+
+  @override
+  Future<int> closeComposers() async {
+    final closedCount = openComposerCount;
+    openComposerCount = 0;
+    return closedCount;
+  }
 
   @override
   void resetForNewAccount() => resetCount++;
@@ -73,6 +81,13 @@ void main() {
       dashboard.hasOpenComposer = true;
 
       expect(view.hasOpenComposer, isTrue);
+    });
+
+    test('closeComposers closes the composers of the dashboard and returns how many were open', () async {
+      dashboard.openComposerCount = 2;
+
+      expect(await view.closeComposers(), 2);
+      expect(dashboard.openComposerCount, 0);
     });
 
     test('blockInput blocks taps on the shown mailbox', () {

@@ -96,6 +96,18 @@ void main() {
           ),
         );
       });
+
+      test('emits Failure with the network exception and never reads the cache when fallbackToCache is false', () async {
+        await expectLater(
+          interactor.execute(fallbackToCache: false),
+          emitsInOrder([
+            Right<Failure, Success>(GetSessionLoading()),
+            Left<Failure, Success>(GetSessionFailure(networkException)),
+            emitsDone,
+          ]),
+        );
+        verifyNever(sessionRepository.getStoredSession());
+      });
     });
   });
 }

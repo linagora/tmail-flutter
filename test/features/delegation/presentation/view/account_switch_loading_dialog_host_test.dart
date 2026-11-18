@@ -24,6 +24,9 @@ class _SlowSwitchView implements AccountSwitchView {
   @override
   bool hasOpenComposer = false;
 
+  @override
+  Future<int> closeComposers() async => 0;
+
   final loadings = <Completer<void>>[];
 
   @override

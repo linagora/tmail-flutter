@@ -3,6 +3,9 @@ import 'package:tmail_ui_user/features/delegation/domain/model/active_account.da
 abstract interface class AccountSwitchView {
   bool get hasOpenComposer;
 
+  /// Closes every composer without saving, drops its saved snapshot and returns how many were open.
+  Future<int> closeComposers();
+
   /// Also closes every open dialog, sheet and menu, so an entry point never pops its own route after it.
   void blockInput();
 

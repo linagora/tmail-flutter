@@ -5874,6 +5874,16 @@
       "count": {}
     }
   },
+  "delegatedMailboxAccessEnded": "You no longer have access to the mailbox of {owner}.",
+  "@delegatedMailboxAccessEnded": {
+    "type": "text",
+    "placeholders_order": [
+      "owner"
+    ],
+    "placeholders": {
+      "owner": {}
+    }
+  },
   "delegation": "Delegation",
   "@delegation": {
     "type": "text",
