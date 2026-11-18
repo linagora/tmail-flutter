@@ -110,13 +110,28 @@ class AuthenticationInfoCacheManager extends CacheManagerInteraction {
 
   Future<void> _removeOutsideHive() async {
     try {
-      if (PlatformInfo.isWeb) {
-        _sessionStorageManager.remove(_key);
-      } else {
-        await _secureStorage.delete(key: _key);
-      }
+      await _putOutsideHive(null);
     } catch (e) {
       logWarning('$runtimeType::_removeOutsideHive: $e');
+      try {
+        // An empty value decodes to no login, so a failed delete cannot resurrect it.
+        await _putOutsideHive('');
+      } catch (e) {
+        logWarning('$runtimeType::_removeOutsideHive: blank_failed=true | $e');
+      }
+    }
+  }
+
+  // A null value removes the entry.
+  Future<void> _putOutsideHive(String? value) async {
+    if (PlatformInfo.isWeb) {
+      value == null
+          ? _sessionStorageManager.remove(_key)
+          : _sessionStorageManager.save(_key, value);
+    } else {
+      value == null
+          ? await _secureStorage.delete(key: _key)
+          : await _secureStorage.write(key: _key, value: value);
     }
   }
 

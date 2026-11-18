@@ -51,5 +51,17 @@ void main() {
 
       expect(client.clearCalls, lessThanOrEqualTo(1));
     });
+
+    test('a throwing delete on logout still leaves no login for the next cold start', () async {
+      await newManager().storeAuthenticationInfo(alice);
+      storage.throwOnDelete = true;
+
+      await newManager().clear();
+
+      expect(
+        newManager().getAuthenticationInfoStored(),
+        throwsA(isA<NotFoundAuthenticationInfoCache>()),
+      );
+    });
   });
 }
