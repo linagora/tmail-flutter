@@ -25,4 +25,6 @@ abstract class AbstractAccountSwitcherAssertionRobot {
   Future<void> expectLoadingDialogGone();
 
   Future<void> expectCouldNotOpenToast(String ownerAddress);
+
+  Future<void> expectAccessEndedToast(String ownerAddress);
 }
