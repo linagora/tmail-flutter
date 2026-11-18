@@ -3678,6 +3678,16 @@ void main() {
 
         expect(await composerController!.hasInputFieldFocused(), isFalse);
       });
+
+      test(
+        'Should be false\n'
+        'When a focused recipient row is deleted',
+      () async {
+        composerController!.onEmailAddressFocusChange(PrefixEmailAddress.cc, true);
+        composerController!.deleteEmailAddressType(PrefixEmailAddress.cc);
+
+        expect(await composerController!.hasInputFieldFocused(), isFalse);
+      });
     });
 
     group('isEditedEmailContentLoadFailed test:', () {
