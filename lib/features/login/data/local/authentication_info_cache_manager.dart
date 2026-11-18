@@ -29,6 +29,9 @@ class AuthenticationInfoCacheManager extends CacheManagerInteraction {
   // Login whose secure write failed; keeps this run signed in until the next cold start.
   AuthenticationInfoCache? _unsavedLogin;
 
+  // Set once the Hive box is emptied this run; later reads skip the purge.
+  bool _legacyHivePurged = false;
+
   AuthenticationInfoCacheManager(
     this._authenticationInfoCacheClient,
     this._sessionStorageManager, {
@@ -130,8 +133,10 @@ class AuthenticationInfoCacheManager extends CacheManagerInteraction {
   }
 
   Future<void> _purgeLegacyHive() async {
+    if (_legacyHivePurged) return;
     try {
       await _authenticationInfoCacheClient.clearAllData();
+      _legacyHivePurged = true;
     } catch (e) {
       logWarning('$runtimeType::_purgeLegacyHive: $e');
     }
