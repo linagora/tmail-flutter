@@ -3698,6 +3698,8 @@ void main() {
         'When the composer minimizes while a recipient FocusScope has focus',
       () async {
         composerController!.onEmailAddressFocusChange(PrefixEmailAddress.to, true);
+        expect(await composerController!.hasInputFieldFocused(), isTrue);
+
         composerController!.setScreenDisplayMode(ScreenDisplayMode.minimize);
 
         expect(await composerController!.hasInputFieldFocused(), isFalse);
@@ -3708,6 +3710,8 @@ void main() {
         'When recipient rows collapse while a recipient FocusScope has focus',
       () async {
         composerController!.onEmailAddressFocusChange(PrefixEmailAddress.cc, true);
+        expect(await composerController!.hasInputFieldFocused(), isTrue);
+
         composerController!.hideAllRecipientsFields();
 
         expect(await composerController!.hasInputFieldFocused(), isFalse);
