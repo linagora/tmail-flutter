@@ -1,17 +1,27 @@
+import 'dart:io';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
+import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
+import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
+import 'package:tmail_ui_user/features/composer/presentation/providers/composer_auto_save_notifier.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/getx_account_switch_dashboard.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/composer_cache_data_providers.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
+import '../../../../fixtures/delegation_fixtures.dart';
 import 'getx_account_switch_dashboard_test.mocks.dart';
 
 mockControllerCallback() => InternalFinalCallback<void>(callback: () {});
@@ -100,6 +110,37 @@ void main() {
   });
 
   group('closeComposers:', () {
+    final accountId = DelegationFixtures.aliceAccountId;
+    final session = DelegationFixtures.session();
+    final composerCacheRepository = appProviderContainer.read(composerCacheRepositoryProvider);
+    late Directory hiveDirectory;
+
+    setUpAll(() async {
+      hiveDirectory = Directory.systemTemp.createTempSync('getx_account_switch_dashboard_test');
+      await HiveCacheConfig.instance.setUp(cachePath: hiveDirectory.path);
+    });
+
+    tearDownAll(() async {
+      await IsolatedHive.close();
+      hiveDirectory.deleteSync(recursive: true);
+    });
+
+    setUp(() {
+      when(dashboard.activeAccountId).thenReturn(accountId);
+      when(dashboard.sessionCurrent).thenReturn(session);
+    });
+
+    tearDown(() => IsolatedHive.deleteBoxFromDisk(CachingConstants.composerHiveCacheBoxName));
+
+    Future<void> saveSnapshot() => composerCacheRepository.saveComposerCache(
+          accountId,
+          session.username,
+          ComposerCache(composerId: 'composer-1'),
+        );
+
+    Future<List<ComposerCache>> savedSnapshots() =>
+        composerCacheRepository.getComposerCache(accountId, session.username);
+
     RxMap<String, ComposerView> webComposers(List<String> ids) =>
         {for (final id in ids) id: ComposerView(key: Key(id), composerId: id)}.obs;
 
@@ -128,20 +169,31 @@ void main() {
 
     test('drops the saved snapshot of the open mobile composer of the shown account', () async {
       when(composerManager.composers).thenReturn(webComposers([]));
-      final composerController = openMobileComposer();
+      openMobileComposer();
+      await saveSnapshot();
 
       await accountSwitchDashboard.closeComposers();
 
-      verify(composerController.autoSaveComposerId).called(1);
-      verify(dashboard.activeAccountId).called(1);
+      expect(await savedSnapshots(), isEmpty);
+    });
+
+    test('flags the open mobile composer as closed, so a snapshot save still running never writes it back', () async {
+      when(composerManager.composers).thenReturn(webComposers([]));
+      openMobileComposer();
+      addTearDown(() => appProviderContainer.invalidate(composerAutoSaveProvider('composer-1')));
+
+      await accountSwitchDashboard.closeComposers();
+
+      expect(appProviderContainer.read(composerAutoSaveProvider('composer-1').notifier).isCleanClose, isTrue);
     });
 
     test('SHOULD NOT touch a snapshot when only web composers are open', () async {
       when(composerManager.composers).thenReturn(webComposers(['composer-1']));
+      await saveSnapshot();
 
       await accountSwitchDashboard.closeComposers();
 
-      verifyNever(dashboard.activeAccountId);
+      expect((await savedSnapshots()).map((snapshot) => snapshot.composerId), ['composer-1']);
     });
 
     test('returns 0 when no composer is open', () async {
