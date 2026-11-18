@@ -1,8 +1,10 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -22,6 +24,7 @@ const fallbackGenerators = {
   MockSpec<MailboxDashBoardController>(fallbackGenerators: fallbackGenerators),
   MockSpec<SearchController>(fallbackGenerators: fallbackGenerators),
   MockSpec<ComposerManager>(fallbackGenerators: fallbackGenerators),
+  MockSpec<ComposerController>(fallbackGenerators: fallbackGenerators),
 ])
 void main() {
   late MockMailboxDashBoardController dashboard;
@@ -94,5 +97,57 @@ void main() {
         expect(accountSwitchDashboard.hasOpenComposer, isOpen);
       });
     }
+  });
+
+  group('closeComposers:', () {
+    RxMap<String, ComposerView> webComposers(List<String> ids) =>
+        {for (final id in ids) id: ComposerView(key: Key(id), composerId: id)}.obs;
+
+    test('closes every web composer and returns how many were open', () async {
+      when(composerManager.composers).thenReturn(webComposers(['composer-1', 'composer-2']));
+
+      expect(await accountSwitchDashboard.closeComposers(), 2);
+      verify(composerManager.removeAllComposers()).called(1);
+    });
+
+    MockComposerController openMobileComposer() {
+      final composerController = MockComposerController();
+      when(composerController.autoSaveComposerId).thenReturn('composer-1');
+      when(composerController.mailboxDashBoardController).thenReturn(dashboard);
+      Get.put<ComposerController>(composerController);
+      addTearDown(() => Get.delete<ComposerController>(force: true));
+      return composerController;
+    }
+
+    test('counts the open mobile composer route too', () async {
+      when(composerManager.composers).thenReturn(webComposers([]));
+      openMobileComposer();
+
+      expect(await accountSwitchDashboard.closeComposers(), 1);
+    });
+
+    test('drops the saved snapshot of the open mobile composer of the shown account', () async {
+      when(composerManager.composers).thenReturn(webComposers([]));
+      final composerController = openMobileComposer();
+
+      await accountSwitchDashboard.closeComposers();
+
+      verify(composerController.autoSaveComposerId).called(1);
+      verify(dashboard.activeAccountId).called(1);
+    });
+
+    test('SHOULD NOT touch a snapshot when only web composers are open', () async {
+      when(composerManager.composers).thenReturn(webComposers(['composer-1']));
+
+      await accountSwitchDashboard.closeComposers();
+
+      verifyNever(dashboard.activeAccountId);
+    });
+
+    test('returns 0 when no composer is open', () async {
+      when(composerManager.composers).thenReturn(webComposers([]));
+
+      expect(await accountSwitchDashboard.closeComposers(), 0);
+    });
   });
 }

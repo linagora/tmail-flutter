@@ -40,14 +40,19 @@ class FakeDelegatedAccountRepository implements DelegatedAccountRepository {
 class FakeGetSessionInteractor implements GetSessionInteractor {
   Either<Failure, Success>? result;
   int calls = 0;
+  final List<bool> fallbackToCacheArgs = [];
 
   /// Holds every read in [pendingReads] until the test completes it, when true.
   bool holdsReads = false;
   final List<Completer<Either<Failure, Success>>> pendingReads = [];
 
   @override
-  Stream<Either<Failure, Success>> execute({StateChange? stateChange}) async* {
+  Stream<Either<Failure, Success>> execute({
+    StateChange? stateChange,
+    bool fallbackToCache = true,
+  }) async* {
     calls++;
+    fallbackToCacheArgs.add(fallbackToCache);
     if (!holdsReads) {
       yield result!;
       return;

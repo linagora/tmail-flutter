@@ -129,7 +129,7 @@ void main() {
       expect(reloadedSessions, isEmpty);
     });
 
-    test('should not let an older session re-read overwrite a newer one', () async {
+    test('should re-read again after a re-read in flight, so a later removal is never listed', () async {
       await loadWith([bobDelegation, carolDelegation]);
       getSessionInteractor.holdsReads = true;
       final withoutBob = DelegationFixtures.session(state: 'state-2', listsBob: false);
@@ -139,14 +139,16 @@ void main() {
       final bobRemoval = notifier().remove(session, bobDelegation, onSessionReloaded: reloadedSessions.add);
       final carolRemoval = notifier().remove(session, carolDelegation, onSessionReloaded: reloadedSessions.add);
       await pumpEventQueue();
-      getSessionInteractor.pendingReads[1].complete(Right(GetSessionSuccess(withoutBoth)));
-      await carolRemoval;
+      expect(getSessionInteractor.pendingReads.length, 1);
       getSessionInteractor.pendingReads[0].complete(Right(GetSessionSuccess(withoutBob)));
       await bobRemoval;
+      await pumpEventQueue();
+      getSessionInteractor.pendingReads[1].complete(Right(GetSessionSuccess(withoutBoth)));
+      await carolRemoval;
 
       expect(getSessionInteractor.pendingReads.length, 2);
       expect(container.read(activeAccountProvider)?.session, withoutBoth);
-      expect(reloadedSessions, [withoutBoth]);
+      expect(reloadedSessions, [withoutBob, withoutBoth]);
     });
 
     /// Removes Bob, runs [changeSignedInUser] while the session re-read is pending, then lets the re-read finish.

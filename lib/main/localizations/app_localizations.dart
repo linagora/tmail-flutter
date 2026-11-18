@@ -6232,6 +6232,14 @@ class AppLocalizations {
     );
   }
 
+  String delegatedMailboxAccessEnded(String owner) {
+    return Intl.message(
+      'You no longer have access to the mailbox of $owner.',
+      name: 'delegatedMailboxAccessEnded',
+      args: [owner],
+    );
+  }
+
   String get delegation {
     return Intl.message(
       'Delegation',
