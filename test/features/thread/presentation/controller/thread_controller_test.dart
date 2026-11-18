@@ -2092,7 +2092,8 @@ void main() {
       testWidgets(
         'WHEN a folder load-more was deferred during a web inbox refresh\n'
         'AND a search starts before the refresh answers\n'
-        'THEN releasing the hold MUST NOT load the next folder page',
+        'THEN releasing the hold MUST NOT load the next folder page\n'
+        'AND MUST keep the search load-more status',
       (tester) async {
         PlatformInfo.isTestingForWeb = true;
         final controller = _ThreadControllerWithCollapseThreads(
@@ -2149,6 +2150,7 @@ void main() {
         controller.handleLoadMoreEmailsRequest();
 
         searchRunning = true;
+        controller.loadingMoreStatus.value = LoadingMoreStatus.running;
         controller.canLoadMore = true;
         clearInteractions(mockLoadMoreEmailsInMailboxInteractor);
 
@@ -2161,6 +2163,7 @@ void main() {
         await tester.pumpAndSettle();
 
         verifyNever(mockLoadMoreEmailsInMailboxInteractor.execute(any));
+        expect(controller.loadingMoreStatus.value, LoadingMoreStatus.running);
       });
 
       testWidgets(
