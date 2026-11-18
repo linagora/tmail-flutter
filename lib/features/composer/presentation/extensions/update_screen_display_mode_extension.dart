@@ -30,8 +30,10 @@ extension UpdateScreenDisplayModeExtension on ComposerController {
     }
   }
 
-  void setScreenDisplayMode(ScreenDisplayMode newDisplayMode) =>
-      screenDisplayMode.value = newDisplayMode;
+  void setScreenDisplayMode(ScreenDisplayMode newDisplayMode) {
+    if (newDisplayMode.isNotContentVisible()) clearFocusedRecipientScopes();
+    screenDisplayMode.value = newDisplayMode;
+  }
 
   void updateDisplayModeForComposerQueue(ScreenDisplayMode newDisplayMode) {
     if (composerId == null || currentContext == null) return;

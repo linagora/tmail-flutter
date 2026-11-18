@@ -329,6 +329,9 @@ class ComposerController extends BaseController
   // Recipient FocusScopes keep focus when a chip menu takes it from their text field.
   final Set<PrefixEmailAddress> _focusedRecipientScopes = {};
 
+  // An unmounted focused recipient FocusScope never reports its blur.
+  void clearFocusedRecipientScopes() => _focusedRecipientScopes.clear();
+
   void registerReloadCacheAction(ComposerReloadCacheAction action) =>
       _reloadCacheAction = action;
 
@@ -1759,7 +1762,7 @@ class ComposerController extends BaseController
         richTextWebController!.editorController.setText(textCurrent);
       }
     }
-    screenDisplayMode.value = displayMode;
+    setScreenDisplayMode(displayMode);
     updateDisplayModeForComposerQueue(displayMode);
 
     await Future.delayed(

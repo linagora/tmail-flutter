@@ -73,6 +73,8 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_s
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_recipients_collapsed_extensions.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/update_screen_display_mode_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/sanitize_signature_in_email_content_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
@@ -3684,7 +3686,29 @@ void main() {
         'When a focused recipient row is deleted',
       () async {
         composerController!.onEmailAddressFocusChange(PrefixEmailAddress.cc, true);
+        expect(await composerController!.hasInputFieldFocused(), isTrue);
+
         composerController!.deleteEmailAddressType(PrefixEmailAddress.cc);
+
+        expect(await composerController!.hasInputFieldFocused(), isFalse);
+      });
+
+      test(
+        'Should be false\n'
+        'When the composer minimizes while a recipient FocusScope has focus',
+      () async {
+        composerController!.onEmailAddressFocusChange(PrefixEmailAddress.to, true);
+        composerController!.setScreenDisplayMode(ScreenDisplayMode.minimize);
+
+        expect(await composerController!.hasInputFieldFocused(), isFalse);
+      });
+
+      test(
+        'Should be false\n'
+        'When recipient rows collapse while a recipient FocusScope has focus',
+      () async {
+        composerController!.onEmailAddressFocusChange(PrefixEmailAddress.cc, true);
+        composerController!.hideAllRecipientsFields();
 
         expect(await composerController!.hasInputFieldFocused(), isFalse);
       });
