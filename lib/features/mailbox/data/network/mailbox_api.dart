@@ -28,6 +28,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_response.dart
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/query/query_mailbox_method.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/query/query_mailbox_response.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_response.dart';
 import 'package:model/error_type_handler/set_method_error_handler_mixin.dart';
@@ -585,6 +586,11 @@ class MailboxAPI with HandleSetErrorMixin, SessionMixin, MailAPIMixin {
       .build()
       .execute();
     
+    // Mailbox/get fails too when Mailbox/query does, so the query error is the one to report.
+    result.parse<QueryMailboxResponse>(
+      mailboxQueryMethodInvocation.methodCallId,
+      QueryMailboxResponse.deserialize,
+    );
     final mailboxResponse = result.parse<GetMailboxResponse>(
       getMailboxInvocation.methodCallId,
       GetMailboxResponse.deserialize
