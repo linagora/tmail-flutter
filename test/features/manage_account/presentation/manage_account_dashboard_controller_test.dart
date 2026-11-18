@@ -151,5 +151,15 @@ void main() {
 
       expect(controller.accountMenuItemSelected.value, isNot(AccountMenuItem.delegation));
     });
+
+    test('does not leave the page the user picked when Delegation is turned on later', () {
+      final controller = openSettingsWith(DelegationFixtures.session());
+      openDelegationLinkWhileHidden(controller);
+      controller.selectSettings(AccountMenuItem.preferences);
+
+      DelegationFixtures.turnDelegationOn(appProviderContainer);
+
+      expect(controller.accountMenuItemSelected.value, AccountMenuItem.preferences);
+    });
   });
 }

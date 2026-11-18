@@ -440,6 +440,7 @@ class ManageAccountDashBoardController extends ReloadableController
 
   void selectSettings(AccountMenuItem accountMenuItem) {
     log('ManageAccountDashBoardController::selectSettings(): $accountMenuItem');
+    _delegationRequestedWhileHidden = false;
     selectAccountMenuItem(accountMenuItem);
     settingsPageLevel.value = SettingsPageLevel.level1;
   }
