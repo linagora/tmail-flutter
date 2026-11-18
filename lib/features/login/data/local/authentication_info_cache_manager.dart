@@ -85,12 +85,12 @@ class AuthenticationInfoCacheManager extends CacheManagerInteraction {
         return true;
       }
       logError('$runtimeType::_writeOutsideHive: secure_write_verify_failed=true');
-      // A dropped overwrite must not leave the previous login for the next cold start.
-      await _removeOutsideHive();
     } catch (e, st) {
       // Login still works this run; the Hive copy is kept so the move retries on next read.
       logError('$runtimeType::_writeOutsideHive: secure_write_failed=true', exception: e, stackTrace: st);
     }
+    // A failed overwrite must not leave the previous login for the next cold start.
+    await _removeOutsideHive();
     return false;
   }
 
