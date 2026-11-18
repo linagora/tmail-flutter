@@ -2,11 +2,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/response/oidc_discovery_response.dart';
 import 'package:model/oidc/token_id.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_mobile.dart';
+import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 
 /// [FlutterAppAuth.token] is a plain overridable instance method, so a
@@ -120,6 +122,7 @@ void main() {
     late _EndSessionAppAuth appAuth;
     late AuthenticationClientMobile client;
     final openedUrls = <String>[];
+    final webAuthCalls = <MethodCall>[];
     Future<Object?> Function(MethodCall call)? webAuthHandler;
 
     final discovery = OIDCDiscoveryResponse(
@@ -150,7 +153,9 @@ void main() {
       appAuth = _EndSessionAppAuth();
       client = AuthenticationClientMobile(appAuth);
       openedUrls.clear();
+      webAuthCalls.clear();
       webAuthHandler = (call) async {
+        webAuthCalls.add(call);
         openedUrls.add((call.arguments as Map)['url'] as String);
         return 'twakemail.mobile://redirect';
       };
@@ -171,6 +176,13 @@ void main() {
 
       expect(result, isTrue);
       expect(appAuth.endSessionCalls, 0);
+      expect(webAuthCalls, hasLength(1));
+      final args = webAuthCalls.single.arguments as Map;
+      expect(args['callbackUrlScheme'], OIDCConstant.twakeWorkplaceUrlScheme);
+      expect(
+        (args['options'] as Map)['intentFlags'],
+        ephemeralIntentFlags,
+      );
       expect(openedUrls, hasLength(1));
       final opened = Uri.parse(openedUrls.single);
       expect(opened.origin, 'https://sso.example.com');
