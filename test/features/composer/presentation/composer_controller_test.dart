@@ -3716,6 +3716,42 @@ void main() {
 
         expect(await composerController!.hasInputFieldFocused(), isFalse);
       });
+
+      test(
+        'Should be false\n'
+        'When the minimize button is pressed while a recipient FocusScope has focus',
+      () async {
+        composerController!.onEmailAddressFocusChange(PrefixEmailAddress.to, true);
+        expect(await composerController!.hasInputFieldFocused(), isTrue);
+
+        composerController!.displayScreenTypeComposerAction(ScreenDisplayMode.minimize);
+
+        expect(await composerController!.hasInputFieldFocused(), isFalse);
+      });
+
+      test(
+        'Should be false\n'
+        'When recipient rows collapse to To while a recipient FocusScope has focus',
+      () async {
+        composerController!.onEmailAddressFocusChange(PrefixEmailAddress.cc, true);
+        expect(await composerController!.hasInputFieldFocused(), isTrue);
+
+        composerController!.hideAllRecipientsFieldsExceptTo();
+
+        expect(await composerController!.hasInputFieldFocused(), isFalse);
+      });
+
+      test(
+        'Should be false\n'
+        'When mobile recipient inputs are enabled while a recipient FocusScope has focus',
+      () async {
+        composerController!.onEmailAddressFocusChange(PrefixEmailAddress.cc, true);
+        expect(await composerController!.hasInputFieldFocused(), isTrue);
+
+        composerController!.handleEnableRecipientsInputOnMobileAction(true);
+
+        expect(await composerController!.hasInputFieldFocused(), isFalse);
+      });
     });
 
     group('isEditedEmailContentLoadFailed test:', () {
