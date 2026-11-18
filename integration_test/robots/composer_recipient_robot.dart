@@ -77,9 +77,10 @@ class ComposerRecipientRobot extends CoreRobot
     await _field(prefix).$(TextField).tap();
   }
 
-  /// The expand chevron also reveals From on a narrow composer.
   @override
-  Future<void> openFromField() => openCcField();
+  Future<void> openFromField() async {
+    await $(Key('prefix_${PrefixEmailAddress.to.name}_recipient_from_button')).tap();
+  }
 
   @override
   Future<void> openFirstRecipientMenu(PrefixEmailAddress prefix) async {
