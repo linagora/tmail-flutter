@@ -2064,6 +2064,7 @@ void main() {
           newState: jmap.State('new-state'),
         );
         await tester.pump();
+        expect(refresh.hasListener, isTrue);
 
         searchRunning = true;
         clearInteractions(mockMailboxDashBoardController);
@@ -2077,6 +2078,7 @@ void main() {
         await tester.pumpAndSettle();
 
         verifyNever(mockMailboxDashBoardController.updateEmailList(any));
+        verifyNever(mockMailboxDashBoardController.setCurrentEmailState(any));
       });
 
       testWidgets(
