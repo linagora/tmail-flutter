@@ -24,7 +24,7 @@ class GetXAccountSwitchDashboard implements AccountSwitchDashboard {
     final openCount = composerManager.composers.length + (hasMobileComposer ? 1 : 0);
     composerManager.removeAllComposers();
     // The snapshot saved on inactive would be counted again as a lost draft of the ended delegation.
-    if (hasMobileComposer) await Get.find<ComposerController>().clearComposerMobileSnapshot();
+    if (hasMobileComposer) await Get.find<ComposerController>().discardComposerMobileSnapshot();
     return openCount;
   }
 

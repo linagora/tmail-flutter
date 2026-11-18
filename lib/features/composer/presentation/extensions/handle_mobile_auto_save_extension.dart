@@ -5,19 +5,25 @@ import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/widgets.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/composer/presentation/providers/composer_auto_save_notifier.dart';
 import 'package:tmail_ui_user/features/composer/presentation/providers/composer_cache_interactor_providers.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/save_composer_cache_state.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
+
+typedef MobileSnapshotRestore = ({HtmlEditorApi api, String html, AccountId accountId, UserName userName});
 
 extension HandleMobileAutoSaveExtension on ComposerController {
   static const _periodicSnapshotInterval = Duration(seconds: 30);
   static const _getContentTimeout = Duration(seconds: 2);
   // Filters transient inactive events (overlays, incoming calls) that resolve quickly.
   static const _inactiveGuardDelay = Duration(milliseconds: 300);
+  static const _backgroundStates = {AppLifecycleState.inactive, AppLifecycleState.hidden, AppLifecycleState.paused};
 
   void initMobileAutoSave() {
     if (autoSaveComposerId == null) return;
@@ -94,9 +100,7 @@ extension HandleMobileAutoSaveExtension on ComposerController {
     switch (state) {
       case AppLifecycleState.inactive:
         inactiveGuardTimer?.cancel();
-        inactiveGuardTimer = Timer(_inactiveGuardDelay, () {
-          unawaited(_saveSnapshotToCache());
-        });
+        inactiveGuardTimer = Timer(_inactiveGuardDelay, _startSnapshotSave);
         break;
       case AppLifecycleState.resumed:
         inactiveGuardTimer?.cancel();
@@ -108,10 +112,13 @@ extension HandleMobileAutoSaveExtension on ComposerController {
     }
   }
 
+  void _startSnapshotSave() => unawaited(_saveSnapshotToCache());
+
   Future<void> restoreIfEditorBlank() async {
     if (_autoSaveNotifier()?.isCleanClose == true) return;
     if (isRestoringFromCache) return;
     isRestoringFromCache = true;
+    var restoreFailed = false;
     try {
       final payload = await _resolveRestorePayload();
       if (payload == null) return;
@@ -119,25 +126,34 @@ extension HandleMobileAutoSaveExtension on ComposerController {
       // during the async resolution above.
       if (isClosed || _autoSaveNotifier()?.isCleanClose == true) return;
       await _applyRestoredPayload(payload);
-      unawaited(clearComposerMobileSnapshot());
+      // The shown account may change during setText, so the snapshot read is the one cleared.
+      await _clearSnapshotOf(payload.accountId, payload.userName);
     } catch (e) {
+      // The snapshot stays in the cache, and a save now would overwrite it with the blank editor.
+      restoreFailed = true;
       logError(
         'HandleMobileAutoSaveExtension::restoreIfEditorBlank: error=${e.runtimeType}',
       );
     } finally {
       isRestoringFromCache = false;
+      if (!restoreFailed) _saveSkippedWhileRestoring();
     }
   }
 
-  Future<void> _applyRestoredPayload(
-    ({HtmlEditorApi api, String html}) payload,
-  ) async {
+  // A save asked for while restoring was skipped, so a composer sent to the background keeps a snapshot.
+  // A pending inactive guard still saves on its own, and still filters a transient inactive event.
+  void _saveSkippedWhileRestoring() {
+    if (isClosed || inactiveGuardTimer?.isActive == true) return;
+    if (_backgroundStates.contains(WidgetsBinding.instance.lifecycleState)) _startSnapshotSave();
+  }
+
+  Future<void> _applyRestoredPayload(MobileSnapshotRestore payload) async {
     log('HandleMobileAutoSaveExtension::_applyRestoredPayload: restoring from cache');
     await payload.api.setText(payload.html);
     if (payload.html.isNotEmpty) _autoSaveNotifier()?.updateLastKnownContent(payload.html);
   }
 
-  Future<({HtmlEditorApi api, String html})?> _resolveRestorePayload() async {
+  Future<MobileSnapshotRestore?> _resolveRestorePayload() async {
     final currentContent = await _fetchEditorContent();
     if (currentContent != null && currentContent.trim().isNotEmpty) return null;
 
@@ -154,6 +170,8 @@ extension HandleMobileAutoSaveExtension on ComposerController {
     return (
       api: api,
       html: cache.email?.emailContentList.asHtmlString ?? '',
+      accountId: accountId,
+      userName: userName,
     );
   }
 
@@ -176,13 +194,15 @@ extension HandleMobileAutoSaveExtension on ComposerController {
     final saveResult = await saveComposerCacheInteractor.execute(
       createEmailRequest: createEmailRequest,
       isPersistent: true,
+      // A composer closed or discarded during the inline image upload must not write its snapshot back.
+      isWriteAllowed: () => notifier.mounted && !notifier.isCleanClose,
     );
     saveResult.fold(
       (failure) => logError(
         'HandleMobileAutoSaveExtension::_saveSnapshotToCache: save failure=${failure.runtimeType}',
         exception: failure is FeatureFailure ? failure.exception : null,
       ),
-      (_) { if (notifier.mounted) notifier.onSnapshotSaved(); },
+      (success) { if (success is SaveComposerCacheSuccess && notifier.mounted) notifier.onSnapshotSaved(); },
     );
   }
 
@@ -226,11 +246,17 @@ extension HandleMobileAutoSaveExtension on ComposerController {
     }
   }
 
-  Future<void> clearComposerMobileSnapshot() {
-    if (autoSaveComposerId == null) return Future.value();
+  /// A save still uploading inline images skips its write, so only the snapshot already stored is removed.
+  Future<void> discardComposerMobileSnapshot() async {
+    inactiveGuardTimer?.cancel();
+    inactiveGuardTimer = null;
+    _autoSaveNotifier()?.setCleanClose();
     final accountId = composerAccountId;
     final userName = mailboxDashBoardController.sessionCurrent?.username;
-    if (accountId == null || userName == null) return Future.value();
-    return _autoSaveNotifier()?.clearCache(accountId, userName) ?? Future.value();
+    if (accountId == null || userName == null) return;
+    await _clearSnapshotOf(accountId, userName);
   }
+
+  Future<void> _clearSnapshotOf(AccountId accountId, UserName userName) =>
+      _autoSaveNotifier()?.clearCache(accountId, userName) ?? Future.value();
 }

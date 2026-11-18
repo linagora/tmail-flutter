@@ -119,6 +119,34 @@ void main() {
       });
     });
 
+    group('isWriteAllowed:', () {
+      setUp(arrangeSuccess);
+
+      test('saves the cache when the caller still allows the write', () async {
+        final result = await interactor.execute(createEmailRequest: baseRequest, isWriteAllowed: () => true);
+
+        expect(result, Right(SaveComposerCacheSuccess()));
+        verify(mockCacheRepository.saveComposerCache(any, any, any)).called(1);
+      });
+
+      test('SHOULD NOT save the cache when the caller stopped allowing it while the email was generated', () async {
+        var writeAllowed = true;
+        when(mockComposerRepository.generateEmail(
+          any,
+          withIdentityHeader: anyNamed('withIdentityHeader'),
+          isDraft: anyNamed('isDraft'),
+        )).thenAnswer((_) async {
+          writeAllowed = false;
+          return Email();
+        });
+
+        final result = await interactor.execute(createEmailRequest: baseRequest, isWriteAllowed: () => writeAllowed);
+
+        expect(result, Right(SaveComposerCacheSkipped()));
+        verifyNever(mockCacheRepository.saveComposerCache(any, any, any));
+      });
+    });
+
     group('error handling', () {
       test('returns Left(SaveComposerCacheFailure) when generateEmail throws', () async {
         final exception = Exception('generate failed');

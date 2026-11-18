@@ -109,12 +109,6 @@ void main() {
       group('returns null and keeps hasRecoverableSnapshot=false', () {
         final cases = [
           (
-            'on interactor failure',
-            Left<Failure, Success>(
-              ResolveComposerCacheForRestoreFailure(Exception('storage error')),
-            ),
-          ),
-          (
             'when no restorable snapshot found',
             Right<Failure, Success>(ResolveComposerCacheForRestoreSuccess(null)),
           ),
@@ -131,6 +125,14 @@ void main() {
             expect(notifier.hasRecoverableSnapshot, isFalse);
           });
         }
+      });
+
+      test('throws on interactor failure, so a failed read is never taken for a missing snapshot', () async {
+        final failure = ResolveComposerCacheForRestoreFailure(Exception('storage error'));
+        when(mockResolveInteractor.execute(any, any)).thenAnswer((_) async => Left(failure));
+
+        await expectLater(notifier.restore(testAccountId, testUserName), throwsA(failure));
+        expect(notifier.hasRecoverableSnapshot, isFalse);
       });
 
       test('returns cache and sets hasRecoverableSnapshot=true when snapshot found', () async {
@@ -203,7 +205,7 @@ void main() {
           (_) async => Left(ResolveComposerCacheForRestoreFailure(Exception('err'))),
         );
 
-        await notifier.restore(testAccountId, testUserName);
+        await expectLater(notifier.restore(testAccountId, testUserName), throwsA(isA<ResolveComposerCacheForRestoreFailure>()));
         expect(notifier.hasRecoverableSnapshot, isFalse);
 
         await notifier.clearCache(testAccountId, testUserName);
