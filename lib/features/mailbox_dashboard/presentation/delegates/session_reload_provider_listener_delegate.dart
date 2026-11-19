@@ -54,15 +54,10 @@ class SessionReloadProviderListenerDelegate implements DashboardProviderListener
     if (reload.couldNotReturnToMine) {
       // The error toast must stay, a lost-items warning would replace it.
       unawaited(cleanupEndedDelegations(reload.session, fromCache: false));
-      _showCouldNotReturnToMine(contextOf());
+      _showCouldNotReturnToMine(contextOf(), reload);
       return;
     }
-    unawaited(cleanupEndedDelegationsAndWarn(
-      reload.session,
-      fromCache: false,
-      closedComposerCount: reload.closedComposerCount,
-      revokedOwnerEmailAddress: reload.revokedOwnerEmailAddress,
-    ));
+    unawaited(cleanupEndedDelegationsAndWarn(reload.session, fromCache: false, reload: reload));
   }
 
   bool _listsSameAccounts(Session? previous, Session next) {
@@ -71,9 +66,13 @@ class SessionReloadProviderListenerDelegate implements DashboardProviderListener
     return previousIds.length == nextIds.length && previousIds.containsAll(nextIds);
   }
 
-  void _showCouldNotReturnToMine(BuildContext context) {
+  void _showCouldNotReturnToMine(BuildContext context, SessionReload reload) {
     final appToast = getBinding<AppToast>();
     if (appToast == null || !context.mounted) return;
-    appToast.showToastErrorMessage(context, AppLocalizations.of(context).couldNotReturnToYourMailbox);
+    final l10n = AppLocalizations.of(context);
+    appToast.showToastErrorMessage(
+      context,
+      [l10n.couldNotReturnToYourMailbox, ...keptWorkMessages(l10n, reload)].join(' '),
+    );
   }
 }

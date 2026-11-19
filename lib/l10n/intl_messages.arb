@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-11-16T10:25:27.170234",
+  "@@last_modified": "2026-11-19T14:38:51.048439",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5882,6 +5882,26 @@
     ],
     "placeholders": {
       "owner": {}
+    }
+  },
+  "endedDelegationComposersKept": "{count,plural, =1{The message you were writing is open again in your mailbox.}other{{count} messages you were writing are open again in your mailbox.}}",
+  "@endedDelegationComposersKept": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "endedDelegationAttachmentsNotKept": "Their attachments stayed in the other mailbox: {names}.",
+  "@endedDelegationAttachmentsNotKept": {
+    "type": "text",
+    "placeholders_order": [
+      "names"
+    ],
+    "placeholders": {
+      "names": {}
     }
   },
   "delegation": "Delegation",
