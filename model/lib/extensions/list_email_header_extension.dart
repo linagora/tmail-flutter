@@ -15,7 +15,7 @@ extension ListEmailHeaderExtension on Set<EmailHeader>? {
   }
 
   String? get listUnsubscribe {
-    final listUnsubscribe = this?.firstWhereOrNull((header) => header.name == EmailProperty.headerUnsubscribeKey);
+    final listUnsubscribe = this?.firstWhereOrNull((header) => header.name.toLowerCase() == EmailProperty.headerUnsubscribeKey.toLowerCase());
     return listUnsubscribe?.value;
   }
 
@@ -26,7 +26,7 @@ extension ListEmailHeaderExtension on Set<EmailHeader>? {
   }
 
   String? get listPost {
-    final listPost = this?.firstWhereOrNull((header) => header.name == EmailProperty.headerListPostKey);
+    final listPost = this?.firstWhereOrNull((header) => header.name.toLowerCase() == EmailProperty.headerListPostKey.toLowerCase());
     return listPost?.value;
   }
 }
