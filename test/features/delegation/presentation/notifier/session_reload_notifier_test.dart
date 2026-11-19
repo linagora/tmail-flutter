@@ -9,11 +9,13 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/base/urgent_exception_handler.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/account_switch_view.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/delegation_ended_handler.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/session_reload.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/session_reload_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/account_switch_view_factory_provider.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/providers/delegation_ended_handlers_provider.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/delegation_config.dart';
@@ -80,6 +82,8 @@ void main() {
   late DateTime now;
   late bool dashboardIsOpen;
   late bool dashboardLookupFails;
+  late List<DelegationEndedHandler> handlers;
+  AccountSwitchView? dashboardViewOverride;
 
   SessionReloadNotifier notifier() => container.read(sessionReloadProvider.notifier);
   ActiveAccount? shownAccountOf() => container.read(activeAccountProvider);
@@ -105,11 +109,14 @@ void main() {
     now = DateTime(2026, 1, 1, 9);
     dashboardIsOpen = true;
     dashboardLookupFails = false;
+    handlers = [];
+    dashboardViewOverride = null;
     container = ProviderContainer(overrides: [
       sessionReloadClockProvider.overrideWithValue(() => now),
+      delegationEndedHandlersProvider.overrideWith((ref) => handlers),
       dashboardAccountSwitchViewProvider.overrideWithValue(() {
         if (dashboardLookupFails) throw StateError('dashboard');
-        return dashboardIsOpen ? view : null;
+        return dashboardIsOpen ? dashboardViewOverride ?? view : null;
       }),
     ]);
     DelegationFixtures.turnDelegationOn(container);
@@ -472,7 +479,7 @@ void main() {
         SessionReload(
           withoutBob,
           revokedOwnerEmailAddress: DelegationFixtures.bobAddress,
-          closedComposerCount: 2,
+          lostComposerCount: 2,
         ),
       );
     });
@@ -592,8 +599,158 @@ void main() {
       expect(shownAccountOf(), ActiveAccount.delegated(withoutBob, carol));
       expect(
         container.read(sessionReloadProvider),
-        SessionReload(withoutBob, revokedOwnerEmailAddress: DelegationFixtures.bobAddress, closedComposerCount: 1),
+        SessionReload(withoutBob, revokedOwnerEmailAddress: DelegationFixtures.bobAddress, lostComposerCount: 1),
       );
+    });
+
+    group('with a handler keeping two composers', () {
+      final withoutBob = DelegationFixtures.session(state: 'state-2', listsBob: false);
+      late _RecordingHandler keeper;
+
+      setUp(() async {
+        await showBobMailbox();
+        view.openComposerCount = 2;
+        keeper = _RecordingHandler(
+          'keeper',
+          view.calls,
+          shownAccountOf,
+          keptComposerCount: 2,
+          droppedAttachmentNames: ['notes.pdf', 'logo.png'],
+        );
+        handlers = [keeper];
+        serverAnswers(withoutBob);
+      });
+
+      test('reopens them in my mailbox after the switch and reports what was kept', () async {
+        await notifier().reload();
+
+        expect(view.calls, [
+          'beforeLeave(keeper)',
+          'closeComposers',
+          'blockInput',
+          'clearSelectionAndSearch',
+          'loadAccount(${alice.id.value})',
+          'unblockInput',
+          'afterLeave(keeper) in ${alice.id.value}',
+        ]);
+        expect(
+          container.read(sessionReloadProvider),
+          SessionReload(
+            withoutBob,
+            revokedOwnerEmailAddress: DelegationFixtures.bobAddress,
+            keptComposerCount: 2,
+            droppedAttachmentNames: const ['notes.pdf', 'logo.png'],
+          ),
+        );
+      });
+
+      test('counts as lost only the open composers no handler kept', () async {
+        view.openComposerCount = 3;
+
+        await notifier().reload();
+
+        expect(container.read(sessionReloadProvider)?.lostComposerCount, 1);
+        expect(container.read(sessionReloadProvider)?.keptComposerCount, 2);
+      });
+
+      test('SHOULD NOT report a negative loss when fewer composers closed than were kept', () async {
+        view.openComposerCount = 1;
+
+        await notifier().reload();
+
+        expect(container.read(sessionReloadProvider)?.lostComposerCount, 0);
+      });
+
+      test('reopens them in my mailbox shown by the fallback when the switch fails', () async {
+        view.failsClearSelection = true;
+
+        await notifier().reload();
+
+        expect(shownAccountOf(), ActiveAccount.personal(withoutBob));
+        expect(view.calls.last, 'afterLeave(keeper) in ${alice.id.value}');
+        expect(
+          container.read(sessionReloadProvider),
+          SessionReload(
+            withoutBob,
+            revokedOwnerEmailAddress: DelegationFixtures.bobAddress,
+            keptComposerCount: 2,
+            droppedAttachmentNames: const ['notes.pdf', 'logo.png'],
+            couldNotReturnToMine: true,
+          ),
+        );
+      });
+
+      test('SHOULD NOT reopen them in a mailbox I pick while the composers close', () async {
+        final close = Completer<void>();
+        view.heldClose = close.future;
+        final reload = notifier().reload();
+        await pumpEventQueue();
+
+        await container
+            .read(accountSwitchProvider.notifier)
+            .switchTo(DelegationFixtures.carolAccountId, view, closesOpenComposer: true);
+        view.calls.clear();
+        close.complete();
+        await reload;
+
+        expect(view.calls, isEmpty);
+        expect(container.read(sessionReloadProvider)?.lostComposerCount, 2);
+        expect(container.read(sessionReloadProvider)?.keptComposerCount, 0);
+      });
+
+      test('SHOULD NOT reopen them after a sign-out during the switch', () async {
+        final load = Completer<void>();
+        final heldView = _HeldLoadSwitchView(load.future)..openComposerCount = 2;
+        dashboardViewOverride = heldView;
+        final reload = notifier().reload();
+        await pumpEventQueue();
+
+        container.invalidate(sessionReloadProvider);
+        notifier();
+        load.complete();
+
+        expect(await reload, isNull);
+        expect(view.calls, isNot(contains(startsWith('afterLeave'))));
+      });
+
+      test('a failing handler stops neither the next one nor the switch', () async {
+        handlers = [_RecordingHandler('broken', view.calls, shownAccountOf, failsBeforeLeave: true), keeper];
+
+        await notifier().reload();
+
+        expect(shownAccountOf(), ActiveAccount.personal(withoutBob));
+        expect(view.calls.first, 'beforeLeave(broken)');
+        expect(view.calls[1], 'beforeLeave(keeper)');
+        expect(view.calls.last, 'afterLeave(keeper) in ${alice.id.value}');
+        expect(container.read(sessionReloadProvider)?.keptComposerCount, 2);
+      });
+
+      test('counts the composers of a failed reopen as lost and still runs the next reopen', () async {
+        final failing = _RecordingHandler(
+          'failing',
+          view.calls,
+          shownAccountOf,
+          keptComposerCount: 1,
+          droppedAttachmentNames: ['plan.txt'],
+          failsAfterLeave: true,
+        );
+        handlers = [failing, keeper];
+        view.openComposerCount = 3;
+
+        await notifier().reload();
+
+        expect(view.calls.last, 'afterLeave(keeper) in ${alice.id.value}');
+        expect(
+          container.read(sessionReloadProvider),
+          SessionReload(
+            withoutBob,
+            revokedOwnerEmailAddress: DelegationFixtures.bobAddress,
+            lostComposerCount: 1,
+            keptComposerCount: 2,
+            droppedAttachmentNames: const ['notes.pdf', 'logo.png'],
+          ),
+        );
+      });
     });
 
     test('still shows my mailbox once the dashboard is gone', () async {
@@ -621,6 +778,42 @@ class _UrgentExceptionHandler implements UrgentExceptionHandler {
   void handleUrgentException({Failure? failure, Exception? exception}) {
     if (throwsOnHandle) throw StateError('urgent');
     handled.add(failure ?? exception);
+  }
+}
+
+typedef _ShownAccountReader = ActiveAccount? Function();
+
+class _RecordingHandler implements DelegationEndedHandler {
+  final String name;
+  final List<String> calls;
+  final _ShownAccountReader shownAccountOf;
+  final int keptComposerCount;
+  final List<String> droppedAttachmentNames;
+  final bool failsBeforeLeave;
+  final bool failsAfterLeave;
+
+  _RecordingHandler(
+    this.name,
+    this.calls,
+    this.shownAccountOf, {
+    this.keptComposerCount = 0,
+    this.droppedAttachmentNames = const [],
+    this.failsBeforeLeave = false,
+    this.failsAfterLeave = false,
+  });
+
+  @override
+  Future<DelegationEndedHandling> beforeLeave() async {
+    calls.add('beforeLeave($name)');
+    if (failsBeforeLeave) throw StateError(name);
+    return DelegationEndedHandling(
+      keptComposerCount: keptComposerCount,
+      droppedAttachmentNames: droppedAttachmentNames,
+      afterLeave: () async {
+        if (failsAfterLeave) throw StateError(name);
+        calls.add('afterLeave($name) in ${shownAccountOf()?.accountId.id.value}');
+      },
+    );
   }
 }
 

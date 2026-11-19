@@ -9,7 +9,13 @@ class SessionReload with EquatableMixin {
   final String? revokedOwnerEmailAddress;
 
   /// Composers of the revoked mailbox closed without saving.
-  final int closedComposerCount;
+  final int lostComposerCount;
+
+  /// Composers of the revoked mailbox reopened in the user's own one.
+  final int keptComposerCount;
+
+  /// Files of the kept composers, which stay in the revoked mailbox.
+  final List<String> droppedAttachmentNames;
 
   /// The switch away from the revoked mailbox failed or timed out, so its mails may still be shown.
   final bool couldNotReturnToMine;
@@ -17,10 +23,19 @@ class SessionReload with EquatableMixin {
   const SessionReload(
     this.session, {
     this.revokedOwnerEmailAddress,
-    this.closedComposerCount = 0,
+    this.lostComposerCount = 0,
+    this.keptComposerCount = 0,
+    this.droppedAttachmentNames = const [],
     this.couldNotReturnToMine = false,
   });
 
   @override
-  List<Object?> get props => [session, revokedOwnerEmailAddress, closedComposerCount, couldNotReturnToMine];
+  List<Object?> get props => [
+        session,
+        revokedOwnerEmailAddress,
+        lostComposerCount,
+        keptComposerCount,
+        droppedAttachmentNames,
+        couldNotReturnToMine,
+      ];
 }

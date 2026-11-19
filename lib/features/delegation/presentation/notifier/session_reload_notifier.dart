@@ -9,11 +9,10 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tmail_ui_user/features/base/interactor_consumer.dart';
 import 'package:tmail_ui_user/features/delegation/domain/extensions/session_delegation_extension.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
-import 'package:tmail_ui_user/features/delegation/presentation/model/account_switch_result.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/delegation_ended_coordinator.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/session_reload.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
-import 'package:tmail_ui_user/features/delegation/presentation/providers/account_switch_view_factory_provider.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/delegation_enabled_provider.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
@@ -22,8 +21,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/providers/
 part 'session_reload_notifier.g.dart';
 
 typedef CurrentTime = DateTime Function();
-
-typedef RevokedAccountLeave = ({int closedComposerCount, bool couldNotReturnToMine});
 
 final sessionReloadClockProvider = Provider<CurrentTime>((ref) => DateTime.now);
 
@@ -148,14 +145,16 @@ class SessionReloadNotifier extends _$SessionReloadNotifier with InteractorConsu
     if (shownAccount?.session.username != session.username) return null;
 
     final revoked = _isRevokedAndIdle(shownAccount!, session);
-    final leave = revoked ? await _leaveRevokedAccount(shownAccount, isStale) : null;
+    final leave = revoked ? await ref.read(delegationEndedCoordinatorProvider).leave(shownAccount, isStale) : null;
     if (isStale()) return null;
     if (!ref.read(activeAccountProvider.notifier).applyReloadedSession(session)) return null;
 
     return state = SessionReload(
       session,
       revokedOwnerEmailAddress: revoked ? shownAccount.ownerEmailAddress : null,
-      closedComposerCount: leave?.closedComposerCount ?? 0,
+      lostComposerCount: leave?.lostComposerCount ?? 0,
+      keptComposerCount: leave?.keptComposerCount ?? 0,
+      droppedAttachmentNames: leave?.droppedAttachmentNames ?? const [],
       couldNotReturnToMine: leave?.couldNotReturnToMine ?? false,
     );
   }
@@ -165,37 +164,5 @@ class SessionReloadNotifier extends _$SessionReloadNotifier with InteractorConsu
     return shownAccount.isDelegated &&
         !session.isDelegatedAccount(shownAccount.accountId) &&
         !ref.read(accountSwitchProvider).isSwitching;
-  }
-
-  /// A cancelled switch is not a failure: a newer switch replaced it.
-  Future<RevokedAccountLeave?> _leaveRevokedAccount(ActiveAccount shownAccount, StaleGuard isStale) async {
-    final view = ref.read(dashboardAccountSwitchViewProvider)();
-    if (view == null) return null;
-    try {
-      final closedComposerCount = await view.closeComposers();
-      // A sign-out during the close must not switch the account of the next login.
-      if (isStale()) return null;
-      // A mailbox picked by the user during the close wins over the return to their own one.
-      if (ref.read(activeAccountProvider)?.accountId != shownAccount.accountId) {
-        return (closedComposerCount: closedComposerCount, couldNotReturnToMine: false);
-      }
-      final result = await ref.read(accountSwitchProvider.notifier).switchTo(
-        shownAccount.personalAccountId,
-        view,
-        closesOpenComposer: true,
-      );
-      return (
-        closedComposerCount: closedComposerCount,
-        couldNotReturnToMine: result is AccountSwitchFailed || result is AccountSwitchTimedOut,
-      );
-    } catch (error, stackTrace) {
-      // The session is still applied, so the revoked account is dropped and only the error toast shows.
-      logError(
-        'SessionReloadNotifier::_leaveRevokedAccount: ${error.runtimeType}',
-        exception: error,
-        stackTrace: stackTrace,
-      );
-      return (closedComposerCount: 0, couldNotReturnToMine: true);
-    }
   }
 }

@@ -174,10 +174,53 @@ void main() {
     await emit(
       tester,
       reloads,
-      SessionReload(withoutBob, revokedOwnerEmailAddress: DelegationFixtures.bobAddress, closedComposerCount: 1),
+      SessionReload(withoutBob, revokedOwnerEmailAddress: DelegationFixtures.bobAddress, lostComposerCount: 1),
     );
 
     expect(toast.warnings, [l10nOf(tester).endedDelegationLostItems(3)]);
+  });
+
+  testWidgets('warns that the access ended and the reopened composers kept their attachments behind', (tester) async {
+    final reloads = await pumpDelegate(tester);
+    final withoutBob = DelegationFixtures.session(state: 'state-2', listsBob: false);
+
+    await emit(
+      tester,
+      reloads,
+      SessionReload(
+        withoutBob,
+        revokedOwnerEmailAddress: DelegationFixtures.bobAddress,
+        keptComposerCount: 2,
+        droppedAttachmentNames: const ['notes.pdf', 'logo.png'],
+      ),
+    );
+
+    final l10n = l10nOf(tester);
+    expect(toast.warnings, [
+      '${l10n.delegatedMailboxAccessEnded(DelegationFixtures.bobAddress)} '
+          '${l10n.endedDelegationComposersKept(2)} '
+          '${l10n.endedDelegationAttachmentsNotKept('notes.pdf, logo.png')}',
+    ]);
+  });
+
+  testWidgets('warns about the lost items first, then the reopened composers without attachments', (tester) async {
+    final reloads = await pumpDelegate(tester);
+    cleanup.lostCount = 1;
+    final withoutBob = DelegationFixtures.session(state: 'state-2', listsBob: false);
+
+    await emit(
+      tester,
+      reloads,
+      SessionReload(
+        withoutBob,
+        revokedOwnerEmailAddress: DelegationFixtures.bobAddress,
+        lostComposerCount: 1,
+        keptComposerCount: 1,
+      ),
+    );
+
+    final l10n = l10nOf(tester);
+    expect(toast.warnings, ['${l10n.endedDelegationLostItems(2)} ${l10n.endedDelegationComposersKept(1)}']);
   });
 
   testWidgets('shows only the error when my mailbox could not be shown after a revocation', (tester) async {
@@ -194,6 +237,31 @@ void main() {
     expect(toast.errors, [l10nOf(tester).couldNotReturnToYourMailbox]);
     expect(toast.warnings, isEmpty);
     expect(cleanup.cleanedSessions, [withoutBob]);
+  });
+
+  testWidgets('adds the reopened composers and their attachments left behind to the error', (tester) async {
+    final reloads = await pumpDelegate(tester);
+    final withoutBob = DelegationFixtures.session(state: 'state-2', listsBob: false);
+
+    await emit(
+      tester,
+      reloads,
+      SessionReload(
+        withoutBob,
+        revokedOwnerEmailAddress: DelegationFixtures.bobAddress,
+        keptComposerCount: 2,
+        droppedAttachmentNames: const ['notes.pdf'],
+        couldNotReturnToMine: true,
+      ),
+    );
+
+    final l10n = l10nOf(tester);
+    expect(toast.errors, [
+      '${l10n.couldNotReturnToYourMailbox} '
+          '${l10n.endedDelegationComposersKept(2)} '
+          '${l10n.endedDelegationAttachmentsNotKept('notes.pdf')}',
+    ]);
+    expect(toast.warnings, isEmpty);
   });
 
   testWidgets('SHOULD NOT react once the dashboard is gone', (tester) async {
