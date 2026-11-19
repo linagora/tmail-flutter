@@ -31,5 +31,7 @@ abstract class FCMDatasource {
 
   Future<void> updateFirebaseRegistrationToken(UpdateTokenExpiredTimeRequest expiredTimeRequest);
 
+  Future<List<KeychainDelegatedAccount>> getDelegatedAccountsInKeychain(AccountId accountId);
+
   Future<void> storeDelegatedAccountsInKeychain(AccountId accountId, List<KeychainDelegatedAccount> delegatedAccounts);
 }

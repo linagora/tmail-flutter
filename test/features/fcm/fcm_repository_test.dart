@@ -19,9 +19,11 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/jmap_mailbox_respons
 import 'package:tmail_ui_user/features/push_notification/data/datasource/fcm_datasource.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource_impl/cache_fcm_datasource_impl.dart';
 import 'package:tmail_ui_user/features/push_notification/data/repository/fcm_repository_impl.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 
+import '../../fixtures/delegation_fixtures.dart';
 import '../../fixtures/session_fixtures.dart';
 
 import 'fcm_repository_test.mocks.dart';
@@ -217,6 +219,95 @@ void main() {
         bobState,
       )).called(1);
       verifyNoMoreInteractions(cacheFCMDatasourceImpl);
+    });
+
+    test('on iOS sends the item of a kept cursor without a state', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      when(mailboxCacheDataSourceImpl.getAllMailboxCache(bobAccountId, userNameFixture))
+          .thenAnswer((_) async => [inboxMailbox]);
+
+      await fcmRepository.storeDelegatedNotificationBaselines(sessionFixture, [
+        DelegatedNotificationBaseline(accountId: bobAccountId, ownerName: 'bob@domain.tld'),
+      ]);
+
+      verify(cacheFCMDatasourceImpl.storeDelegatedAccountsInKeychain(accountIdFixture, [
+        KeychainDelegatedAccount(
+          accountId: bobAccountId,
+          mailboxIdsBlockNotification: const [],
+          ownerName: 'bob@domain.tld',
+        ),
+      ])).called(1);
+    });
+
+    test('on Android keeps a cursor without a state and drops the cursor of a mailbox no longer notified', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      final session = DelegationFixtures.session();
+
+      await fcmRepository.storeDelegatedNotificationBaselines(session, [
+        DelegatedNotificationBaseline(
+          accountId: DelegationFixtures.bobAccountId,
+          ownerName: DelegationFixtures.bobAddress,
+        ),
+      ]);
+
+      verify(cacheFCMDatasourceImpl.deleteStateToRefresh(
+        DelegationFixtures.carolAccountId,
+        session.username,
+        TypeName.emailDelivery,
+      )).called(1);
+      verifyNoMoreInteractions(cacheFCMDatasourceImpl);
+    });
+  });
+
+  group('getDelegatedAccountIdsWithNotificationCursor:', () {
+    tearDown(() => debugDefaultTargetPlatformOverride = null);
+
+    test('on iOS returns the keychain items that hold a cursor', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      when(cacheFCMDatasourceImpl.getDelegatedAccountsInKeychain(accountIdFixture)).thenAnswer((_) async => [
+            KeychainDelegatedAccount(accountId: DelegationFixtures.bobAccountId, emailDeliveryState: 'bob-state'),
+            KeychainDelegatedAccount(accountId: DelegationFixtures.carolAccountId),
+          ]);
+
+      expect(
+        await fcmRepository.getDelegatedAccountIdsWithNotificationCursor(sessionFixture),
+        {DelegationFixtures.bobAccountId},
+      );
+    });
+
+    test('on Android returns the delegated mailboxes with a stored state', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      final session = DelegationFixtures.session();
+      when(cacheFCMDatasourceImpl.getStateToRefresh(
+        DelegationFixtures.bobAccountId,
+        session.username,
+        TypeName.emailDelivery,
+      )).thenAnswer((_) async => jmap.State('bob-state'));
+      when(cacheFCMDatasourceImpl.getStateToRefresh(
+        DelegationFixtures.carolAccountId,
+        session.username,
+        TypeName.emailDelivery,
+      )).thenThrow(const NotFoundEmailDeliveryStateException());
+
+      expect(
+        await fcmRepository.getDelegatedAccountIdsWithNotificationCursor(session),
+        {DelegationFixtures.bobAccountId},
+      );
+    });
+
+    test('on Android SHOULD NOT treat an unreadable cache as a missing cursor', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      final session = DelegationFixtures.session();
+      when(cacheFCMDatasourceImpl.getStateToRefresh(
+        DelegationFixtures.bobAccountId,
+        session.username,
+        TypeName.emailDelivery,
+      )).thenThrow(Exception('cache closed'));
+
+      await expectLater(
+        fcmRepository.getDelegatedAccountIdsWithNotificationCursor(session),
+        throwsA(isA<Exception>()),
+      );
     });
   });
 }

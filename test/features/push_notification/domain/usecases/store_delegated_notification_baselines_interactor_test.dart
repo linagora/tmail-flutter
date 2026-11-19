@@ -12,12 +12,27 @@ import '../../../../fixtures/delegation_fixtures.dart';
 class _FakeFCMRepository implements FCMRepository {
   final Map<AccountId, Object?> stateOrErrorByAccount;
   final Object? storeError;
+  final Set<AccountId> withCursor;
+  final Object? cursorError;
+  final List<AccountId> stateReads = [];
   List<DelegatedNotificationBaseline>? stored;
 
-  _FakeFCMRepository(this.stateOrErrorByAccount, {this.storeError});
+  _FakeFCMRepository(
+    this.stateOrErrorByAccount, {
+    this.storeError,
+    this.withCursor = const {},
+    this.cursorError,
+  });
+
+  @override
+  Future<Set<AccountId>> getDelegatedAccountIdsWithNotificationCursor(Session session) async {
+    if (cursorError != null) throw cursorError!;
+    return withCursor;
+  }
 
   @override
   Future<jmap.State?> getEmailState(Session session, AccountId accountId) async {
+    stateReads.add(accountId);
     final stateOrError = stateOrErrorByAccount[accountId];
     if (stateOrError is Exception) throw stateOrError;
     return stateOrError as jmap.State?;
@@ -70,23 +85,77 @@ void main() {
     ]);
   });
 
-  test('keeps the other mailboxes when one state cannot be read', () async {
+  test('keeps the other mailboxes when one state cannot be read, and fails so the caller retries', () async {
     final repository = _FakeFCMRepository({
       DelegationFixtures.bobAccountId: Exception('unreachable'),
       DelegationFixtures.carolAccountId: carolState,
     });
 
-    await StoreDelegatedNotificationBaselinesInteractor(repository).execute(session, ownerNames).drain<void>();
+    final states = await StoreDelegatedNotificationBaselinesInteractor(repository)
+        .execute(session, ownerNames)
+        .toList();
 
     expect(repository.stored?.map((baseline) => baseline.accountId), [DelegationFixtures.carolAccountId]);
+    expect(
+      states.last.fold((failure) => failure, (success) => success),
+      isA<StoreDelegatedNotificationBaselinesFailure>(),
+    );
   });
 
-  test('SHOULD NOT store a mailbox the server returns no state for', () async {
+  test('SHOULD NOT store a mailbox the server returns no state for, and fails so the caller retries', () async {
     final repository = _FakeFCMRepository({DelegationFixtures.carolAccountId: carolState});
 
-    await StoreDelegatedNotificationBaselinesInteractor(repository).execute(session, ownerNames).drain<void>();
+    final states = await StoreDelegatedNotificationBaselinesInteractor(repository)
+        .execute(session, ownerNames)
+        .toList();
 
     expect(repository.stored?.map((baseline) => baseline.accountId), [DelegationFixtures.carolAccountId]);
+    expect(
+      states.last.fold((failure) => failure, (success) => success),
+      isA<StoreDelegatedNotificationBaselinesFailure>(),
+    );
+  });
+
+  test('keeps the stored cursor of a mailbox that already has one and SHOULD NOT read its state', () async {
+    final repository = _FakeFCMRepository(
+      {DelegationFixtures.carolAccountId: carolState},
+      withCursor: {DelegationFixtures.bobAccountId},
+    );
+
+    final states = await StoreDelegatedNotificationBaselinesInteractor(repository)
+        .execute(session, ownerNames)
+        .toList();
+
+    expect(states.last.getOrElse(() => throw 'failure'), isA<StoreDelegatedNotificationBaselinesSuccess>());
+    expect(repository.stateReads, [DelegationFixtures.carolAccountId]);
+    expect(repository.stored, [
+      DelegatedNotificationBaseline(
+        accountId: DelegationFixtures.bobAccountId,
+        ownerName: DelegationFixtures.bobAddress,
+      ),
+      DelegatedNotificationBaseline(
+        accountId: DelegationFixtures.carolAccountId,
+        state: carolState,
+        ownerName: DelegationFixtures.carolAddress,
+      ),
+    ]);
+  });
+
+  test('SHOULD NOT store anything when the stored cursors cannot be read', () async {
+    final repository = _FakeFCMRepository(
+      {DelegationFixtures.bobAccountId: bobState},
+      cursorError: Exception('keychain locked'),
+    );
+
+    final states = await StoreDelegatedNotificationBaselinesInteractor(repository)
+        .execute(session, ownerNames)
+        .toList();
+
+    expect(repository.stored, isNull);
+    expect(
+      states.last.fold((failure) => failure, (success) => success),
+      isA<StoreDelegatedNotificationBaselinesFailure>(),
+    );
   });
 
   test('stores an empty list when no delegated mailbox is notified', () async {

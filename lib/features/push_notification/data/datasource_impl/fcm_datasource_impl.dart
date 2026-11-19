@@ -84,6 +84,11 @@ class FcmDatasourceImpl extends FCMDatasource {
   }
 
   @override
+  Future<List<KeychainDelegatedAccount>> getDelegatedAccountsInKeychain(AccountId accountId) {
+    throw UnimplementedError();
+  }
+
+  @override
   Future<void> storeDelegatedAccountsInKeychain(AccountId accountId, List<KeychainDelegatedAccount> delegatedAccounts) {
     throw UnimplementedError();
   }

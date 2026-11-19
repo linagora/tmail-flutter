@@ -87,6 +87,13 @@ class CacheFCMDatasourceImpl extends FCMDatasource {
   }
 
   @override
+  Future<List<KeychainDelegatedAccount>> getDelegatedAccountsInKeychain(AccountId accountId) {
+    return Future.sync(() async {
+      return await _iosSharingManager.getDelegatedAccountsInKeyChain(accountId);
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
   Future<void> storeDelegatedAccountsInKeychain(AccountId accountId, List<KeychainDelegatedAccount> delegatedAccounts) {
     return Future.sync(() async {
       return await _iosSharingManager.updateDelegatedAccountsInKeyChain(

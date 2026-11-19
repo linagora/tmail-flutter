@@ -83,3 +83,10 @@ class NotFoundFirebaseRegistrationDestroyedException extends AppBaseException {
   @override
   String get exceptionName => 'NotFoundFirebaseRegistrationDestroyedException';
 }
+
+class NotFoundKeychainSharingSessionException extends AppBaseException {
+  const NotFoundKeychainSharingSessionException([super.message]);
+
+  @override
+  String get exceptionName => 'NotFoundKeychainSharingSessionException';
+}

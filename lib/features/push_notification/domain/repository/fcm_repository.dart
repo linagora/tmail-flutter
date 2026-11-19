@@ -55,6 +55,9 @@ abstract class FCMRepository {
 
   Future<jmap.State?> getEmailState(Session session, AccountId accountId);
 
-  /// Stores [baselines] as the push cursor of each delegated mailbox, on iOS it also replaces the NSE list.
+  /// The delegated mailboxes of [session] that already have a stored push cursor.
+  Future<Set<AccountId>> getDelegatedAccountIdsWithNotificationCursor(Session session);
+
+  /// Stores [baselines] as the push cursor of each delegated mailbox and drops the cursor of the others, on iOS it also replaces the NSE list.
   Future<void> storeDelegatedNotificationBaselines(Session session, List<DelegatedNotificationBaseline> baselines);
 }

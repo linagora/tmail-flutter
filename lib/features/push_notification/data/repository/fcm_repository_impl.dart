@@ -21,6 +21,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource/fcm_datasource.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
+import 'package:tmail_ui_user/features/delegation/domain/extensions/session_delegation_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/email_changes_properties.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/update_token_expired_time_request.dart';
@@ -214,6 +215,27 @@ class FCMRepositoryImpl extends FCMRepository {
   }
 
   @override
+  Future<Set<AccountId>> getDelegatedAccountIdsWithNotificationCursor(Session session) async {
+    if (PlatformInfo.isIOS) {
+      final stored = await _fcmDatasource[DataSourceType.local]!.getDelegatedAccountsInKeychain(session.accountId);
+      return stored
+          .where((account) => account.emailDeliveryState?.isNotEmpty == true)
+          .map((account) => account.accountId)
+          .toSet();
+    }
+    final accountIds = <AccountId>{};
+    for (final accountId in session.delegatedAccounts.map((entry) => entry.key)) {
+      try {
+        await getStateToRefresh(accountId, session.username, TypeName.emailDelivery);
+        accountIds.add(accountId);
+      } on NotFoundEmailDeliveryStateException {
+        continue;
+      }
+    }
+    return accountIds;
+  }
+
+  @override
   Future<void> storeDelegatedNotificationBaselines(
     Session session,
     List<DelegatedNotificationBaseline> baselines,
@@ -223,7 +245,7 @@ class FCMRepositoryImpl extends FCMRepository {
       for (final baseline in baselines) {
         delegatedAccounts.add(KeychainDelegatedAccount(
           accountId: baseline.accountId,
-          emailDeliveryState: baseline.state.value,
+          emailDeliveryState: baseline.state?.value,
           mailboxIdsBlockNotification: await _mailboxIdsBlockNotification(session, baseline.accountId),
           ownerName: baseline.ownerName,
         ));
@@ -232,7 +254,17 @@ class FCMRepositoryImpl extends FCMRepository {
           .storeDelegatedAccountsInKeychain(session.accountId, delegatedAccounts);
     }
     for (final baseline in baselines) {
-      await storeStateToRefresh(baseline.accountId, session.username, TypeName.emailDelivery, baseline.state);
+      final state = baseline.state;
+      if (state != null) {
+        await storeStateToRefresh(baseline.accountId, session.username, TypeName.emailDelivery, state);
+      }
+    }
+    // A mailbox notified again later must restart from the server state, not from the cursor it stopped at.
+    final notifiedAccountIds = baselines.map((baseline) => baseline.accountId).toSet();
+    for (final accountId in session.delegatedAccounts.map((entry) => entry.key)) {
+      if (!notifiedAccountIds.contains(accountId)) {
+        await deleteStateToRefresh(accountId, session.username, TypeName.emailDelivery);
+      }
     }
   }
 
