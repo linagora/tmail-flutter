@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:labels/labels.dart';
 import 'package:tmail_ui_user/features/labels/data/network/label_api.dart';
@@ -10,6 +8,7 @@ import 'package:uuid/uuid.dart';
 import '../models/provisioning_email.dart';
 import '../models/provisioning_label.dart';
 import '../utils/jmap/jmap_test_client.dart';
+import '../utils/test_timeouts.dart';
 import '../utils/wait_for_mailbox_ready.dart';
 
 mixin ProvisioningLabelScenarioMixin {
@@ -43,24 +42,35 @@ mixin ProvisioningLabelScenarioMixin {
       }
     }
 
-    debugPrint('[label-diag] created=${createdLabels.map((l) => '${l.id?.value}:${l.safeDisplayName}').toList()} '
-        'backend=${client.backendUrl} account=${client.accountId.id.value}');
-    await _refreshLabelsInUi(client.accountId);
+    await _refreshLabelsInUi(client.accountId, createdLabels);
 
     return createdLabels;
   }
 
-  Future<void> _refreshLabelsInUi(AccountId accountId) async {
+  // Await the refresh itself so it cannot rebuild the sidebar mid-test.
+  Future<void> _refreshLabelsInUi(
+    AccountId accountId,
+    List<Label> created,
+  ) async {
     await waitForMailboxReady();
-    final dashboard = getBinding<MailboxDashBoardController>();
-    final lc = dashboard?.labelController;
-    debugPrint('[label-diag] before refresh appAccount=${dashboard?.accountId.value?.id.value} '
-        'enabled=${lc?.isLabelSettingEnabled.value} loaded=${lc?.isLabelsLoaded.value} '
-        'expand=${lc?.labelListExpandMode.value} labels=${lc?.labels.map((l) => l.safeDisplayName).toList()}');
-    if (lc != null) {
-      once(lc.labels, (labels) => debugPrint('[label-diag] refreshed labels=${labels.map((l) => l.safeDisplayName).toList()}'));
+    final labelController =
+        getBinding<MailboxDashBoardController>()?.labelController;
+    if (labelController == null) {
+      throw StateError('Provisioning labels: no LabelController');
     }
-    lc?.getAllLabels(accountId);
+    final createdIds = created.map((label) => label.id).toSet();
+    // Subscribe before triggering the refresh so its emission is not missed.
+    final refreshed = labelController.labels.stream.firstWhere(
+      (labels) => createdIds.every((id) => labels.any((l) => l.id == id)),
+    );
+    labelController.getAllLabels(accountId);
+    await refreshed.timeout(
+      TestTimeouts.long,
+      onTimeout: () => throw StateError(
+        'Provisioned labels did not reach the sidebar: '
+        '${created.map((l) => l.safeDisplayName).toList()}',
+      ),
+    );
   }
 
   Future<List<Label>> provisionLabelsByDisplayNames(List<String> labelNames) {

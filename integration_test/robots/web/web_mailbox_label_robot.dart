@@ -5,7 +5,6 @@ import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/create_new_label_modal.dart';
 
-import '../../utils/failure_diagnostics.dart';
 import '../mailbox_label_robot.dart';
 import 'web_hover_tap.dart';
 
@@ -16,15 +15,12 @@ class WebMailboxLabelRobot extends MailboxLabelRobot {
 
   @override
   Future<void> openLabelContextMenu(PatrolFinder label) async {
-    debugPrint('[label-diag] webMenu: ensureReady');
     await ensureLabelReady(label);
-    debugPrint('[label-diag] webMenu: hoverTap');
     await webHoverThenTap(
       $,
       label,
       label.$(const ValueKey(UiKeys.labelMoreActionButton)),
     );
-    debugPrint('[label-diag] webMenu: done ${describeLabelState()}');
   }
 
   @override

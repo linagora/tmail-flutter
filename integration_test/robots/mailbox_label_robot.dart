@@ -9,7 +9,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.da
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
-import '../utils/failure_diagnostics.dart';
 import '../utils/test_timeouts.dart';
 import '../utils/wait_for_condition.dart';
 import 'abstract/abstract_mailbox_label_robot.dart';
@@ -31,12 +30,8 @@ class MailboxLabelRobot extends CoreRobot implements AbstractMailboxLabelRobot {
 
   @override
   Future<void> openLabel(PatrolFinder label) async {
-    debugPrint('[label-diag] openLabel: ensureReady');
     await ensureLabelReady(label);
-    debugPrint('[label-diag] openLabel: tap');
     await label.tap();
-    await $.pump();
-    debugPrint('[label-diag] openLabel: done ${describeLabelState()}');
   }
 
   @override
