@@ -24,6 +24,7 @@ abstract class AbstractCommonRobot extends CoreRobot {
     bool requestReadReceipt = true,
     Role? folderLocationRole,
   }) async {
+    await waitForMailboxReady();
     await JmapEmailProvisioner().send(
       provisioningEmails,
       requestReadReceipt: requestReadReceipt,
@@ -34,7 +35,6 @@ abstract class AbstractCommonRobot extends CoreRobot {
     // A normal refresh may return that cache while the server-side provisioning
     // change is still being reconciled, so force a fresh query on web only.
     if (refreshEmailView) {
-      await waitForMailboxReady();
       await Get.find<ThreadController>().refreshAllEmail(
         shouldClearCache: PlatformInfo.isWeb,
       );
