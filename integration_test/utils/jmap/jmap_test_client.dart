@@ -15,6 +15,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/home/data/network/session_api.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/exceptions/mailbox_exception.dart';
 import 'package:tmail_ui_user/features/upload/data/network/blob_upload_adapter.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:uuid/uuid.dart';
@@ -120,9 +121,14 @@ class JmapTestClient {
       );
 
   Future<MailboxId?> _findMailboxId(bool Function(Mailbox) test) async {
-    final response =
-        await MailboxAPI(httpClient, const Uuid()).getAllMailbox(session, accountId);
-    return response.mailboxes.firstWhereOrNull(test)?.id;
+    try {
+      final response =
+          await MailboxAPI(httpClient, const Uuid()).getAllMailbox(session, accountId);
+      return response.mailboxes.firstWhereOrNull(test)?.id;
+    } on NotFoundMailboxException {
+      // Empty listing: the default folders are not created yet
+      return null;
+    }
   }
 
   Future<T> execute<T extends MethodResponse>(
