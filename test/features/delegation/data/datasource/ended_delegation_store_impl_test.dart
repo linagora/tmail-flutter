@@ -1,5 +1,7 @@
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -30,6 +32,8 @@ import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_
 import '../../../../fixtures/delegation_fixtures.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('EndedDelegationStoreImpl.delete', () {
     test(
       'a failed box delete is left out of the deleted accounts and the lost count',
@@ -95,6 +99,53 @@ void main() {
         expect(first + second, 1);
       },
     );
+
+    group('on iOS', () {
+      const channel = MethodChannel('notification_interaction_channel');
+      late List<MethodCall> calls;
+
+      setUp(() {
+        debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+        calls = [];
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(channel, (call) async => calls.add(call));
+      });
+
+      tearDown(() {
+        debugDefaultTargetPlatformOverride = null;
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(channel, null);
+      });
+
+      test('removes the notifications the NSE showed for the ended mailbox', () async {
+        await _Rig().store.delete(
+          userName: UserName('user'),
+          personalAccountId: AccountId(Id('personal')),
+          accountId: AccountId(Id('acc')),
+        );
+
+        expect(calls.map((call) => [call.method, call.arguments]), [
+          ['remove_delivered_notifications_of_account', {'account_id': 'acc'}],
+        ]);
+      });
+
+      test('SHOULD NOT remove the notifications while a box delete failed', () async {
+        final rig = _Rig();
+        rig.mailbox.memory.items[TupleKey('box', 'acc', 'user').encodeKey] = null;
+        rig.mailbox.memory.deleteError = StateError('acc');
+
+        await expectLater(
+          rig.store.delete(
+            userName: UserName('user'),
+            personalAccountId: AccountId(Id('personal')),
+            accountId: AccountId(Id('acc')),
+          ),
+          throwsStateError,
+        );
+
+        expect(calls, isEmpty);
+      });
+    });
 
     test(
       'a username that only continues this one is neither read nor deleted',
