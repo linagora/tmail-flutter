@@ -91,7 +91,7 @@ class AuthenticationClientMobile with AuthenticationClientInteractionMixin
       );
       log('$runtimeType::_logoutTwakeWorkplaceInSignInBrowser(): callback received');
       return true;
-    } on PlatformException catch (e) {
+    } on PlatformException catch (e, st) {
       if (e.code != 'CANCELED') rethrow;
       // The portal never redirects after the logout (#5037): the user closes the tab.
       Error.throwWithStackTrace(
@@ -99,7 +99,7 @@ class AuthenticationClientMobile with AuthenticationClientInteractionMixin
           code: OIDCConstant.endSessionFailedCode,
           message: e.message,
         ),
-        StackTrace.current,
+        st,
       );
     }
   }
