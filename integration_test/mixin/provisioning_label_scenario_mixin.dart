@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:labels/labels.dart';
 import 'package:tmail_ui_user/features/labels/data/network/label_api.dart';
@@ -56,6 +57,9 @@ mixin ProvisioningLabelScenarioMixin {
     debugPrint('[label-diag] before refresh appAccount=${dashboard?.accountId.value?.id.value} '
         'enabled=${lc?.isLabelSettingEnabled.value} loaded=${lc?.isLabelsLoaded.value} '
         'expand=${lc?.labelListExpandMode.value} labels=${lc?.labels.map((l) => l.safeDisplayName).toList()}');
+    if (lc != null) {
+      once(lc.labels, (labels) => debugPrint('[label-diag] refreshed labels=${labels.map((l) => l.safeDisplayName).toList()}'));
+    }
     lc?.getAllLabels(accountId);
   }
 
