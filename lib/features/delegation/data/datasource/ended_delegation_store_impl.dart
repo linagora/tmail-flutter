@@ -485,10 +485,16 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
     if (!PlatformInfo.isMobile) return;
     try {
       await LocalNotificationManager.instance.removeMatchingNotifications(
-        (payload, groupKey) =>
-            notificationGroupIsThisUser(groupKey, userName.value) &&
-            payloadNamesAccountOrEmail(payload, accountId.asString, emailIds),
+        (notification) =>
+            notificationGroupIsThisUser(notification.groupKey, userName.value) &&
+            notificationNamesAccountOrEmail(
+              tag: notification.tag,
+              payload: notification.payload,
+              accountId: accountId.asString,
+              emailIds: emailIds,
+            ),
       );
+      if (PlatformInfo.isAndroid) await LocalNotificationManager.instance.removeGroupPushNotification(userName.value);
       if (PlatformInfo.isIOS) await IOSNotificationManager.removeDeliveredNotificationsOf(accountId);
     } catch (error) {
       logWarning('EndedDelegationStoreImpl::_removeNotifications: $error');

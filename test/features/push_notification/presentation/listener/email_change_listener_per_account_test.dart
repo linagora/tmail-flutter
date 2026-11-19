@@ -6,6 +6,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:fcm/model/type_name.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -19,6 +20,7 @@ import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_changes_to_push_notification_state.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_changes_to_remove_notification_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_mailboxes_not_put_notifications_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_stored_email_delivery_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_changes_to_push_notification_interactor.dart';
@@ -476,6 +478,45 @@ void main() {
       pushOne(DelegationFixtures.unknownAccountId);
 
       expect(owners, [null]);
+    });
+
+    group('when an email is read', () {
+      const channel = MethodChannel('dexterous.com/flutter/local_notifications');
+      late List<MethodCall> cancels;
+
+      setUp(() {
+        cancels = [];
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, (call) async {
+          if (call.method == 'cancel') cancels.add(call);
+          return null;
+        });
+      });
+
+      tearDown(() {
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, null);
+      });
+
+      Future<void> readEmailOf(AccountId accountId) async {
+        listener.dispatchActions([
+          StoreEmailStateToRefreshAction(TypeName.emailType, newStateA, accountId, userA, delegatedSession),
+        ]);
+        listener.handleSuccessViewState(
+          GetEmailChangesToRemoveNotificationSuccess(userA, [EmailId(Id('e-1'))], accountId),
+        );
+        await pumpEventQueue();
+      }
+
+      test('cancels the notification of a delegated account with its tag although no push stored the session', () async {
+        await readEmailOf(bob);
+
+        expect(cancels.first.arguments, {'id': 'e-1'.hashCode, 'tag': bob.id.value});
+      });
+
+      test('SHOULD NOT tag the cancel of my own notification', () async {
+        await readEmailOf(alice);
+
+        expect(cancels.first.arguments, {'id': 'e-1'.hashCode, 'tag': null});
+      });
     });
   });
 }

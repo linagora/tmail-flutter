@@ -130,15 +130,16 @@ class LocalNotificationManager {
       ));
   }
 
+  /// [tag] is the Android tag that marks the account of a delegated notification, since Android lists active notifications without their payload.
   Future<void> showPushNotification({
     required String id,
     required String title,
-    bool silent = false,
     String? message,
     EmailAddress? emailAddress,
     String? payload,
     String? groupId,
     String? ownerName,
+    String? tag,
   }) async {
     final inboxStyleInformation = buildInboxStyleInformation(
       title: title,
@@ -154,7 +155,7 @@ class LocalNotificationManager {
       LocalNotificationConfig.instance.generateNotificationDetails(
         styleInformation: inboxStyleInformation,
         groupId: groupId,
-        silent: silent
+        tag: tag,
       ),
       payload: payload);
   }
@@ -196,25 +197,26 @@ class LocalNotificationManager {
   }
 
   Future<void> removeMatchingNotifications(
-    bool Function(String? payload, String? groupKey) matches,
+    bool Function(ActiveNotification notification) matches,
   ) async {
     if (!PlatformInfo.isMobile) return;
     try {
       final active = await _localNotificationsPlugin.getActiveNotifications();
       for (final notification in active) {
-        if (!matches(notification.payload, notification.groupKey)) continue;
+        if (!matches(notification)) continue;
         final id = notification.id;
         if (id == null) continue;
-        await _localNotificationsPlugin.cancel(id);
+        await _localNotificationsPlugin.cancel(id, tag: notification.tag);
       }
     } catch (error) {
       logWarning('LocalNotificationManager::removeMatchingNotifications: $error');
     }
   }
 
-  Future<void> removeNotification(String id) async {
+  /// [tag] must match the one the notification was shown with, Android keeps a tagged one otherwise.
+  Future<void> removeNotification(String id, {String? tag}) async {
     try {
-      await _localNotificationsPlugin.cancel(id.hashCode);
+      await _localNotificationsPlugin.cancel(id.hashCode, tag: tag);
     } catch (e) {
       logWarning('LocalNotificationManager::removeNotification(): id = $id | ERROR: $e');
     }

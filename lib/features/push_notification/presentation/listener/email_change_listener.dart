@@ -13,6 +13,7 @@ import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/email/email_property.dart';
+import 'package:model/extensions/account_id_extensions.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_presentation_email_extension.dart';
 import 'package:model/extensions/list_presentation_mailbox_extension.dart';
@@ -139,7 +140,7 @@ class EmailChangeListener extends ChangeListener {
         ).encodeToString,
         groupId: userName.value,
         ownerName: owner?.name,
-        silent: PlatformInfo.isAndroid,
+        tag: owner?.accountId.asString,
       );
     }
 
@@ -315,7 +316,11 @@ class EmailChangeListener extends ChangeListener {
     } else if (success is GetEmailChangesToRemoveNotificationSuccess) {
       _handleRemoveLocalNotification(
         userName: success.userName,
-        emailIds: success.emailIds
+        emailIds: success.emailIds,
+        tag: NotificationOwner.of(
+          _sessionByAccount[_accountKey(success.accountId)] ?? _session,
+          success.accountId,
+        )?.accountId.asString,
       );
     } else if (success is GetNewReceiveEmailFromNotificationSuccess) {
       _getListDetailedEmailByIdAction(success.session, success.accountId, success.emailIds);
@@ -421,6 +426,8 @@ class EmailChangeListener extends ChangeListener {
   }
 
   void _handleRemoveNotificationWhenEmailMarkAsRead(jmap.State newState, AccountId accountId, Session? session) {
+    // The removal resolves the Android tag of a delegated notification from it, no push may have stored it yet.
+    if (session != null) _sessionByAccount[_accountKey(accountId)] = session;
     if (_getEmailChangesToRemoveNotificationInteractor != null && session != null) {
       consumeState(_getEmailChangesToRemoveNotificationInteractor!.execute(
         session,
@@ -433,10 +440,11 @@ class EmailChangeListener extends ChangeListener {
 
   void _handleRemoveLocalNotification({
     required UserName userName,
-    required List<EmailId> emailIds
+    required List<EmailId> emailIds,
+    String? tag,
   }) async {
     log('EmailChangeListener::_handleRemoveLocalNotification():emailIds: $emailIds');
-    await Future.wait(emailIds.map((emailId) => LocalNotificationManager.instance.removeNotification(emailId.id.value)));
+    await Future.wait(emailIds.map((emailId) => LocalNotificationManager.instance.removeNotification(emailId.id.value, tag: tag)));
     await LocalNotificationManager.instance.removeGroupPushNotification(userName.value);
   }
 

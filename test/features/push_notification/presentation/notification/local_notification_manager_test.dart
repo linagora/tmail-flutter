@@ -149,6 +149,11 @@ void main() {
         NotificationVisibility.private,
       );
     });
+
+    test('posts an email notification silently and lets only the group summary alert', () {
+      expect(LocalNotificationConfig.instance.generateNotificationDetails().android?.silent, isTrue);
+      expect(LocalNotificationConfig.instance.generateNotificationDetails(setAsGroup: true).android?.silent, isFalse);
+    });
   });
 
   group('LocalNotificationManager.showPushNotification', () {
@@ -183,6 +188,54 @@ void main() {
       expect(style['contentTitle'], 'R&amp;D &lt;b&gt;');
       expect(style['lines'], ['<p style="color:#6D7885;">&lt;script&gt;x&lt;&#47;script&gt;</p>']);
       expect(style['summaryText'], '<b>attacker@evil.example (IT department)</b>');
+    });
+
+    test('tags a delegated notification with its account id', () async {
+      await LocalNotificationManager.instance.showPushNotification(id: 'e1', title: 'Subject', tag: 'delegated-1');
+
+      final android = (calls.single.arguments as Map)['platformSpecifics'] as Map;
+      expect(android['tag'], 'delegated-1');
+    });
+
+    test('removes a tagged notification with its tag', () async {
+      await LocalNotificationManager.instance.removeNotification('e1', tag: 'delegated-1');
+
+      expect(calls.single.method, 'cancel');
+      expect(calls.single.arguments, {'id': 'e1'.hashCode, 'tag': 'delegated-1'});
+    });
+  });
+
+  group('LocalNotificationManager.removeMatchingNotifications', () {
+    const channel = MethodChannel('dexterous.com/flutter/local_notifications');
+    final calls = <MethodCall>[];
+
+    setUp(() {
+      calls.clear();
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async {
+        calls.add(call);
+        if (call.method != 'getActiveNotifications') return null;
+        return [
+          {'id': 1, 'groupKey': 'alice@domain.tld', 'tag': 'delegated-1'},
+          {'id': 2, 'groupKey': 'alice@domain.tld'},
+        ];
+      });
+    });
+
+    tearDown(() {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, null);
+    });
+
+    test('cancels only the matching notification, with its tag', () async {
+      await LocalNotificationManager.instance.removeMatchingNotifications(
+        (notification) => notification.tag == 'delegated-1',
+      );
+
+      final cancels = calls.where((call) => call.method == 'cancel').map((call) => call.arguments).toList();
+      expect(cancels, [
+        {'id': 1, 'tag': 'delegated-1'},
+      ]);
     });
   });
 }

@@ -158,6 +158,18 @@ void main() {
       expect(payloadNamesAccountOrEmail('{"emailId":"email-10","accountId":"other"}', 'owner', emailIds), isFalse);
     });
 
+    test('notificationNamesAccountOrEmail matches the Android tag of the account when the payload is missing', () {
+      const emailIds = {'email-1'};
+      expect(notificationNamesAccountOrEmail(tag: 'owner', payload: null, accountId: 'owner', emailIds: emailIds), isTrue);
+      expect(notificationNamesAccountOrEmail(tag: 'other', payload: null, accountId: 'owner', emailIds: emailIds), isFalse);
+      expect(notificationNamesAccountOrEmail(tag: null, payload: null, accountId: 'owner', emailIds: emailIds), isFalse);
+      expect(notificationNamesAccountOrEmail(tag: '', payload: null, accountId: '', emailIds: emailIds), isFalse);
+      expect(
+        notificationNamesAccountOrEmail(tag: null, payload: '{"emailId":"email-1"}', accountId: 'owner', emailIds: emailIds),
+        isTrue,
+      );
+    });
+
     test('keeps a notification of another user', () {
       expect(notificationGroupIsThisUser('other@domain.tld', DelegationFixtures.aliceAddress), isFalse);
       expect(notificationGroupIsThisUser(DelegationFixtures.aliceAddress, ''), isFalse);
