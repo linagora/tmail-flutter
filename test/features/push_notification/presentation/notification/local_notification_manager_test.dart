@@ -197,11 +197,22 @@ void main() {
       expect(android['tag'], 'delegated-1');
     });
 
-    test('removes a tagged notification with its tag', () async {
+    test('removes a tagged notification with the id and tag it was shown with', () async {
+      await LocalNotificationManager.instance.showPushNotification(id: 'e1', title: 'Subject', tag: 'delegated-1');
       await LocalNotificationManager.instance.removeNotification('e1', tag: 'delegated-1');
 
-      expect(calls.single.method, 'cancel');
-      expect(calls.single.arguments, {'id': 'e1'.hashCode, 'tag': 'delegated-1'});
+      expect(calls.last.method, 'cancel');
+      expect(calls.last.arguments, {'id': (calls.first.arguments as Map)['id'], 'tag': 'delegated-1'});
+    });
+
+    test('gives the same email id in two accounts two numeric ids so each tap opens its own payload', () async {
+      await LocalNotificationManager.instance.showPushNotification(id: 'e1', title: 'Subject');
+      await LocalNotificationManager.instance.showPushNotification(id: 'e1', title: 'Subject', tag: 'delegated-1');
+      await LocalNotificationManager.instance.showPushNotification(id: 'e1', title: 'Subject', tag: 'delegated-2');
+
+      final ids = calls.map((call) => (call.arguments as Map)['id']).toList();
+      expect(ids.first, 'e1'.hashCode);
+      expect(ids.toSet(), hasLength(3));
     });
   });
 

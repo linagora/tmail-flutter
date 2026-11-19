@@ -506,10 +506,10 @@ void main() {
         await pumpEventQueue();
       }
 
-      test('cancels the notification of a delegated account with its tag although no push stored the session', () async {
+      test('cancels the notification of a delegated account with its id and tag although no push stored the session', () async {
         await readEmailOf(bob);
 
-        expect(cancels.first.arguments, {'id': 'e-1'.hashCode, 'tag': bob.id.value});
+        expect(cancels.first.arguments, {'id': '${bob.id.value}/e-1'.hashCode, 'tag': bob.id.value});
       });
 
       test('SHOULD NOT tag the cancel of my own notification', () async {

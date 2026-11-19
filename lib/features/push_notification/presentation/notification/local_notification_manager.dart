@@ -149,7 +149,7 @@ class LocalNotificationManager {
     );
 
     await _localNotificationsPlugin.show(
-      id.hashCode,
+      _notificationId(id, tag),
       title,
       message,
       LocalNotificationConfig.instance.generateNotificationDetails(
@@ -159,6 +159,9 @@ class LocalNotificationManager {
       ),
       payload: payload);
   }
+
+  /// Android keys the tap intent by the numeric id only, so the same email id in two accounts needs two ids.
+  static int _notificationId(String id, String? tag) => (tag == null ? id : '$tag/$id').hashCode;
 
   /// Subject, preview and sender come from the received email: escape them
   /// before they are rendered as HTML, and show the sender address first so
@@ -216,7 +219,7 @@ class LocalNotificationManager {
   /// [tag] must match the one the notification was shown with, Android keeps a tagged one otherwise.
   Future<void> removeNotification(String id, {String? tag}) async {
     try {
-      await _localNotificationsPlugin.cancel(id.hashCode, tag: tag);
+      await _localNotificationsPlugin.cancel(_notificationId(id, tag), tag: tag);
     } catch (e) {
       logWarning('LocalNotificationManager::removeNotification(): id = $id | ERROR: $e');
     }
