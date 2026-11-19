@@ -119,8 +119,9 @@ extension HandleMobileAutoSaveExtension on ComposerController {
     if (isRestoringFromCache) return;
     isRestoringFromCache = true;
     var restoreFailed = false;
+    MobileSnapshotRestore? payload;
     try {
-      final payload = await _resolveRestorePayload();
+      payload = await _resolveRestorePayload();
       if (payload == null) return;
       // Re-check: user may have closed (isClosed) or navigated away (isCleanClose)
       // during the async resolution above.
@@ -128,11 +129,13 @@ extension HandleMobileAutoSaveExtension on ComposerController {
       await _applyRestoredPayload(payload);
       // The shown account may change during setText, so the snapshot read is the one cleared.
       await _clearSnapshotOf(payload.accountId, payload.userName);
-      hasUnrestoredMobileSnapshot = false;
+      unrestoredMobileSnapshotOwner = null;
     } catch (e) {
       // The snapshot stays in the cache, and a save now would overwrite it with the blank editor.
       restoreFailed = true;
-      hasUnrestoredMobileSnapshot = true;
+      unrestoredMobileSnapshotOwner = payload != null
+          ? (accountId: payload.accountId, userName: payload.userName)
+          : _composerSnapshotOwner();
       logError(
         'HandleMobileAutoSaveExtension::restoreIfEditorBlank: error=${e.runtimeType}',
       );
@@ -155,13 +158,20 @@ extension HandleMobileAutoSaveExtension on ComposerController {
     if (payload.html.isNotEmpty) _autoSaveNotifier()?.updateLastKnownContent(payload.html);
   }
 
+  MobileSnapshotOwner? _composerSnapshotOwner() {
+    final accountId = composerAccountId;
+    final userName = mailboxDashBoardController.sessionCurrent?.username;
+    if (accountId == null || userName == null) return null;
+    return (accountId: accountId, userName: userName);
+  }
+
   Future<MobileSnapshotRestore?> _resolveRestorePayload() async {
     final currentContent = await _fetchEditorContent();
     if (currentContent != null && currentContent.trim().isNotEmpty) return null;
 
-    final accountId = composerAccountId;
-    final userName = mailboxDashBoardController.sessionCurrent?.username;
-    if (accountId == null || userName == null) return null;
+    final owner = _composerSnapshotOwner();
+    if (owner == null) return null;
+    final (:accountId, :userName) = owner;
 
     final cache = await _autoSaveNotifier()?.restore(accountId, userName);
     if (cache == null) return null;
@@ -204,8 +214,18 @@ extension HandleMobileAutoSaveExtension on ComposerController {
         'HandleMobileAutoSaveExtension::_saveSnapshotToCache: save failure=${failure.runtimeType}',
         exception: failure is FeatureFailure ? failure.exception : null,
       ),
-      (success) { if (success is SaveComposerCacheSuccess && notifier.mounted) notifier.onSnapshotSaved(); },
+      (success) {
+        if (success is! SaveComposerCacheSuccess) return;
+        _clearUnrestoredOwnerReplacedBy(createEmailRequest);
+        if (notifier.mounted) notifier.onSnapshotSaved();
+      },
     );
+  }
+
+  // The saved snapshot replaced the one a restore failed to apply, so a blank editor may now be saved over it.
+  void _clearUnrestoredOwnerReplacedBy(CreateEmailRequest createEmailRequest) {
+    final savedOwner = (accountId: createEmailRequest.accountId, userName: createEmailRequest.session.username);
+    if (unrestoredMobileSnapshotOwner == savedOwner) unrestoredMobileSnapshotOwner = null;
   }
 
   Future<void> _saveSnapshotToCache() async {
@@ -219,7 +239,7 @@ extension HandleMobileAutoSaveExtension on ComposerController {
       final freshContent = await _fetchEditorContent();
       final effectiveContent = _resolveAndSyncContent(freshContent, notifier);
       // The next resume retries the restore, so a blank editor must not replace the snapshot first.
-      if (hasUnrestoredMobileSnapshot && effectiveContent.trim().isEmpty) return;
+      if (unrestoredMobileSnapshotOwner != null && effectiveContent.trim().isEmpty) return;
 
       KeyboardUtils.hideSystemKeyboardMobile();
 

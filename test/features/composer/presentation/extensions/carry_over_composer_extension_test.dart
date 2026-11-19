@@ -150,6 +150,17 @@ void main() {
     expect(carried.arguments.emailContents, '<p><img src="data:image/png;base64,AAAA"></p>');
   });
 
+  test('leaves out and lists an inline image still pointing at an attachment of the ended account', () async {
+    when(composer.readContentInEditor()).thenAnswer((_) async =>
+        '<p>Draft body<img src="cid:cid-1"></p><blockquote><img src="cid:cid-2"></blockquote>');
+    when(upload.mapInlineAttachments).thenReturn({'cid-1': Attachment(name: 'logo.png', cid: 'cid-1')});
+
+    final carried = await composer.carryOverToAnotherAccount();
+
+    expect(carried.droppedAttachmentNames, ['logo.png', 'cid-2']);
+    expect(carried.arguments.emailContents, '<p>Draft body</p><blockquote></blockquote>');
+  });
+
   test('SHOULD NOT list an attachment without a name', () async {
     when(upload.listUploadAttachments).thenReturn(RxList([UploadFileState(const UploadTaskId('task-1'))]));
 

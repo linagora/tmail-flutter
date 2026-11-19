@@ -179,6 +179,28 @@ void main() {
     verifyNever(composerController.buildCreateEmailRequestForAutoSave(htmlContent: anyNamed('htmlContent')));
   }
 
+  _RecordingSaveComposerCacheInteractor stubSnapshotSaveTo(AccountId accountId) {
+    final composerRepository = MockComposerRepository();
+    final saveComposerCacheInteractor = _RecordingSaveComposerCacheInteractor(composerCacheRepository, composerRepository);
+    when(composerController.saveComposerCacheInteractor).thenReturn(saveComposerCacheInteractor);
+    when(composerController.buildCreateEmailRequestForAutoSave(htmlContent: anyNamed('htmlContent')))
+        .thenAnswer((_) async => CreateEmailRequest(
+              session: session,
+              accountId: accountId,
+              emailActionType: EmailActionType.compose,
+              ownEmailAddress: 'alice@example.test',
+              subject: '',
+              emailContent: '',
+            ));
+    when(composerRepository.generateEmail(
+      any,
+      withIdentityHeader: anyNamed('withIdentityHeader'),
+      isDraft: anyNamed('isDraft'),
+      isTemplate: anyNamed('isTemplate'),
+    )).thenAnswer((_) async => Email());
+    return saveComposerCacheInteractor;
+  }
+
   group('inactive lifecycle:', () {
     testWidgets('starts a snapshot save once the inactive guard ends', (tester) async {
       when(composerController.htmlEditorApi).thenReturn(_BlankEditor(onSetText: () {}));
@@ -306,12 +328,12 @@ void main() {
 
       await verifyNoSnapshotSave();
       expect((await snapshotsOf(alice)).map((snapshot) => snapshot.composerId), [composerId]);
-      verify(composerController.hasUnrestoredMobileSnapshot = true).called(1);
+      verify(composerController.unrestoredMobileSnapshotOwner = (accountId: alice, userName: session.username)).called(1);
     });
 
     test('SHOULD NOT save the blank editor over a snapshot that a restore failed to apply', () async {
       shownAccountId = alice;
-      when(composerController.hasUnrestoredMobileSnapshot).thenReturn(true);
+      when(composerController.unrestoredMobileSnapshotOwner).thenReturn((accountId: alice, userName: session.username));
       showAppIn(AppLifecycleState.resumed);
       when(composerController.htmlEditorApi).thenReturn(_BlankEditor(onSetText: () {}));
       showAppIn(AppLifecycleState.paused);
@@ -321,9 +343,35 @@ void main() {
       await verifyNoSnapshotSave();
     });
 
+    test('lets a blank editor be saved again once a written one replaced the snapshot a restore failed to apply', () async {
+      shownAccountId = alice;
+      when(composerController.unrestoredMobileSnapshotOwner).thenReturn((accountId: alice, userName: session.username));
+      final saveComposerCacheInteractor = stubSnapshotSaveTo(alice);
+      when(composerController.htmlEditorApi).thenReturn(_FilledEditor(onGetText: () => showAppIn(AppLifecycleState.paused)));
+
+      await composerController.restoreIfEditorBlank();
+      await pumpEventQueue();
+
+      expect(await saveComposerCacheInteractor.saves.single, Right<Failure, Success>(SaveComposerCacheSuccess()));
+      verify(composerController.unrestoredMobileSnapshotOwner = null).called(1);
+    });
+
+    test('SHOULD NOT forget a snapshot a restore failed to apply when the written editor was saved for another mailbox', () async {
+      shownAccountId = alice;
+      when(composerController.unrestoredMobileSnapshotOwner).thenReturn((accountId: alice, userName: session.username));
+      final saveComposerCacheInteractor = stubSnapshotSaveTo(bob);
+      when(composerController.htmlEditorApi).thenReturn(_FilledEditor(onGetText: () => showAppIn(AppLifecycleState.paused)));
+
+      await composerController.restoreIfEditorBlank();
+      await pumpEventQueue();
+
+      expect(await saveComposerCacheInteractor.saves.single, Right<Failure, Success>(SaveComposerCacheSuccess()));
+      verifyNever(composerController.unrestoredMobileSnapshotOwner = null);
+    });
+
     test('saves a written editor even while a snapshot is still to restore', () async {
       shownAccountId = alice;
-      when(composerController.hasUnrestoredMobileSnapshot).thenReturn(true);
+      when(composerController.unrestoredMobileSnapshotOwner).thenReturn((accountId: alice, userName: session.username));
       when(composerController.htmlEditorApi).thenReturn(_FilledEditor(onGetText: () => showAppIn(AppLifecycleState.paused)));
 
       await composerController.restoreIfEditorBlank();
