@@ -11,10 +11,11 @@ typedef CarriedOverComposer = ({ComposerArguments arguments, List<String> droppe
 
 extension CarryOverComposerExtension on ComposerController {
   /// Keeps what the user wrote for another account. Draft, identity and files belong to this account, so they stay.
-  /// Inline images are kept: they sit in the body and upload again when it is sent.
+  /// Inline images are kept: the editor holds them as `data:` URIs, which upload again when it is sent.
+  /// A failed editor read throws, so the composer counts as lost instead of reopening empty.
   Future<CarriedOverComposer> carryOverToAnotherAccount() async {
     autoCreateEmailTag();
-    final content = _withoutIdentitySignature(await getContentInEditor());
+    final content = _withoutIdentitySignature(await readContentInEditor());
     final openedWith = composerArguments.value;
     // The reopened composer has no former identity, so it would never remove this one's BCC.
     final identityBcc = identitySelected.value?.bcc ?? const {};

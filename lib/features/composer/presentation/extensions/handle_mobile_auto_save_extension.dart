@@ -128,9 +128,11 @@ extension HandleMobileAutoSaveExtension on ComposerController {
       await _applyRestoredPayload(payload);
       // The shown account may change during setText, so the snapshot read is the one cleared.
       await _clearSnapshotOf(payload.accountId, payload.userName);
+      hasUnrestoredMobileSnapshot = false;
     } catch (e) {
       // The snapshot stays in the cache, and a save now would overwrite it with the blank editor.
       restoreFailed = true;
+      hasUnrestoredMobileSnapshot = true;
       logError(
         'HandleMobileAutoSaveExtension::restoreIfEditorBlank: error=${e.runtimeType}',
       );
@@ -216,6 +218,8 @@ extension HandleMobileAutoSaveExtension on ComposerController {
     try {
       final freshContent = await _fetchEditorContent();
       final effectiveContent = _resolveAndSyncContent(freshContent, notifier);
+      // The next resume retries the restore, so a blank editor must not replace the snapshot first.
+      if (hasUnrestoredMobileSnapshot && effectiveContent.trim().isEmpty) return;
 
       KeyboardUtils.hideSystemKeyboardMobile();
 

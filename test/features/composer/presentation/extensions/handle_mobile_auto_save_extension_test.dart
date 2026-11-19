@@ -306,6 +306,29 @@ void main() {
 
       await verifyNoSnapshotSave();
       expect((await snapshotsOf(alice)).map((snapshot) => snapshot.composerId), [composerId]);
+      verify(composerController.hasUnrestoredMobileSnapshot = true).called(1);
+    });
+
+    test('SHOULD NOT save the blank editor over a snapshot that a restore failed to apply', () async {
+      shownAccountId = alice;
+      when(composerController.hasUnrestoredMobileSnapshot).thenReturn(true);
+      showAppIn(AppLifecycleState.resumed);
+      when(composerController.htmlEditorApi).thenReturn(_BlankEditor(onSetText: () {}));
+      showAppIn(AppLifecycleState.paused);
+
+      await composerController.restoreIfEditorBlank();
+
+      await verifyNoSnapshotSave();
+    });
+
+    test('saves a written editor even while a snapshot is still to restore', () async {
+      shownAccountId = alice;
+      when(composerController.hasUnrestoredMobileSnapshot).thenReturn(true);
+      when(composerController.htmlEditorApi).thenReturn(_FilledEditor(onGetText: () => showAppIn(AppLifecycleState.paused)));
+
+      await composerController.restoreIfEditorBlank();
+
+      await verifySnapshotSaveStarted();
     });
 
     test('saves a snapshot again when the editor already has content and the app went to the background meanwhile', () async {

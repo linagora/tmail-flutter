@@ -713,6 +713,38 @@ void main() {
         expect(view.calls, isNot(contains(startsWith('afterLeave'))));
       });
 
+      test('SHOULD NOT close the composers after a sign-out while a handler keeps them', () async {
+        handlers = [
+          _RecordingHandler('keeper', view.calls, shownAccountOf, whileLeaving: () async {
+            container.invalidate(sessionReloadProvider);
+            notifier();
+          }),
+        ];
+
+        await notifier().reload();
+
+        expect(view.calls, ['beforeLeave(keeper)']);
+      });
+
+      test('SHOULD NOT run the next reopen once a mailbox I pick replaced mine', () async {
+        final picker = _RecordingHandler(
+          'picker',
+          view.calls,
+          shownAccountOf,
+          keptComposerCount: 1,
+          onAfterLeave: () => container
+              .read(accountSwitchProvider.notifier)
+              .switchTo(DelegationFixtures.carolAccountId, view, closesOpenComposer: true),
+        );
+        handlers = [picker, keeper];
+
+        await notifier().reload();
+
+        expect(view.calls, isNot(contains('afterLeave(keeper) in ${alice.id.value}')));
+        expect(container.read(sessionReloadProvider)?.keptComposerCount, 1);
+        expect(container.read(sessionReloadProvider)?.lostComposerCount, 1);
+      });
+
       test('a failing handler stops neither the next one nor the switch', () async {
         handlers = [_RecordingHandler('broken', view.calls, shownAccountOf, failsBeforeLeave: true), keeper];
 
@@ -791,6 +823,8 @@ class _RecordingHandler implements DelegationEndedHandler {
   final List<String> droppedAttachmentNames;
   final bool failsBeforeLeave;
   final bool failsAfterLeave;
+  final Future<void> Function()? whileLeaving;
+  final Future<void> Function()? onAfterLeave;
 
   _RecordingHandler(
     this.name,
@@ -800,20 +834,24 @@ class _RecordingHandler implements DelegationEndedHandler {
     this.droppedAttachmentNames = const [],
     this.failsBeforeLeave = false,
     this.failsAfterLeave = false,
+    this.whileLeaving,
+    this.onAfterLeave,
   });
 
   @override
-  Future<DelegationEndedHandling> beforeLeave() async {
+  Future<AfterDelegationLeft?> beforeLeave() async {
     calls.add('beforeLeave($name)');
     if (failsBeforeLeave) throw StateError(name);
-    return DelegationEndedHandling(
-      keptComposerCount: keptComposerCount,
-      droppedAttachmentNames: droppedAttachmentNames,
-      afterLeave: () async {
-        if (failsAfterLeave) throw StateError(name);
-        calls.add('afterLeave($name) in ${shownAccountOf()?.accountId.id.value}');
-      },
-    );
+    await whileLeaving?.call();
+    return (_) async {
+      if (failsAfterLeave) throw StateError(name);
+      calls.add('afterLeave($name) in ${shownAccountOf()?.accountId.id.value}');
+      await onAfterLeave?.call();
+      return DelegationEndedHandling(
+        keptComposerCount: keptComposerCount,
+        droppedAttachmentNames: droppedAttachmentNames,
+      );
+    };
   }
 }
 
