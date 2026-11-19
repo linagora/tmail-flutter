@@ -25,6 +25,12 @@ extension Email {
         return [JmapConstants.EMAIL_ID: id, JmapConstants.ACCOUNT_ID: owner.accountId]
     }
 
+    /// Email ids are unique per account only, and a request with the same identifier replaces a pending one.
+    var notificationId: String {
+        guard let owner else { return id }
+        return "\(owner.accountId)/\(id)"
+    }
+
     /// Names the owner after the sender, as on Android.
     var notificationTitle: String? {
         guard let ownerName = owner?.name, !ownerName.isEmpty else { return getSenderName() }

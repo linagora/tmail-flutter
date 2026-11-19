@@ -94,6 +94,19 @@ final class MultiAccountEmailFetchBatchTests: XCTestCase {
         )
     }
 
+    func testOwnEmailNotificationIdIsTheEmailId() {
+        XCTAssertEqual(makeEmail().notificationId, "e1")
+    }
+
+    func testSameEmailIdInTwoDelegatedAccountsGetsTwoNotificationIds() {
+        let first = makeEmail().ownedBy(NotificationOwner(accountId: "delegated-1", name: "Owner One"))
+        let second = makeEmail().ownedBy(NotificationOwner(accountId: "delegated-2", name: "Owner Two"))
+
+        XCTAssertEqual(first.notificationId, "delegated-1/e1")
+        XCTAssertNotEqual(first.notificationId, second.notificationId)
+        XCTAssertEqual(first.notificationUserInfo[JmapConstants.EMAIL_ID] as? String, "e1")
+    }
+
     func testOwnEmailTitleIsTheSender() {
         XCTAssertEqual(makeEmail().notificationTitle, "Bob")
     }

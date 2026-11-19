@@ -325,7 +325,7 @@ class NotificationService: UNNotificationServiceExtension {
                                          subtitle: email.subject,
                                          body: email.preview,
                                          badgeCount: emails.count,
-                                         notificationId: email.id,
+                                         notificationId: email.notificationId,
                                          userInfo: email.notificationUserInfo)
             }
         }
