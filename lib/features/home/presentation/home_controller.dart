@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/cleanup/domain/model/recent_login_usernam
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_email_cache_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_url_cache_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_username_interactor.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/utils/forget_last_shown_account_on_sign_in.dart';
 import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_session_arguments.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
@@ -52,6 +53,7 @@ class HomeController extends ReloadableController {
 
   IOSNotificationManager? _iosNotificationManager;
   DeepLinksManager? _deepLinksManager;
+  bool _isSigningInViaDeepLink = false;
 
   HomeController(
     this._cleanupEmailCacheInteractor,
@@ -83,7 +85,8 @@ class HomeController extends ReloadableController {
   }
 
   @override
-  void handleReloaded(Session session) {
+  Future<void> handleReloaded(Session session) async {
+    if (_isSigningInViaDeepLink) await forgetLastShownAccountOnSignIn(session);
     pushAndPopAll(
       RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
       arguments: DashboardSessionArguments(
@@ -253,6 +256,7 @@ class HomeController extends ReloadableController {
   }
 
   void _handleAutoSignInViaDeepLinkSuccess(AutoSignInViaDeepLinkSuccess success) {
+    _isSigningInViaDeepLink = true;
     setDataToInterceptors(
       baseUrl: success.baseUri.toString(),
       tokenOIDC: success.tokenOIDC,

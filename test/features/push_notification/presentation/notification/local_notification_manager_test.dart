@@ -157,4 +157,31 @@ void main() {
       expect(style['summaryText'], '<b>attacker@evil.example (IT department)</b>');
     });
   });
+
+  group('LocalNotificationManager.wasAppLaunchedByNotification', () {
+    const channel = MethodChannel('dexterous.com/flutter/local_notifications');
+
+    void answerLaunchDetails(Map<String, Object?>? details) {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+        channel,
+        (call) async => call.method == 'getNotificationAppLaunchDetails' ? details : null,
+      );
+      addTearDown(() => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, null));
+    }
+
+    // The manager is a singleton that keeps the first launch details it reads, so one test walks the sequence.
+    test('reads the launch details once a tap started the app and keeps them', () async {
+      final manager = LocalNotificationManager.instance;
+
+      answerLaunchDetails(null);
+      expect(await manager.wasAppLaunchedByNotification(), isFalse);
+
+      answerLaunchDetails({'notificationLaunchedApp': true});
+      expect(await manager.wasAppLaunchedByNotification(), isTrue);
+
+      answerLaunchDetails({'notificationLaunchedApp': false});
+      expect(await manager.wasAppLaunchedByNotification(), isTrue);
+    });
+  });
 }

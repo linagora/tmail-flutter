@@ -55,6 +55,17 @@ class LocalNotificationManager {
     return null;
   }
 
+  /// True when a tap on one of the app's notifications started it.
+  Future<bool> wasAppLaunchedByNotification() async {
+    try {
+      _notificationAppLaunchDetails ??= await _localNotificationsPlugin.getNotificationAppLaunchDetails();
+      return _notificationAppLaunchDetails?.didNotificationLaunchApp ?? false;
+    } catch (e) {
+      logWarning('LocalNotificationManager::wasAppLaunchedByNotification(): ERROR: ${e.toString()}');
+      return false;
+    }
+  }
+
   set activatedNotificationClickedOnTerminate(bool clicked) => _isNotificationClickedOnTerminate = clicked;
 
   bool get isNotificationClickedOnTerminate => _isNotificationClickedOnTerminate;

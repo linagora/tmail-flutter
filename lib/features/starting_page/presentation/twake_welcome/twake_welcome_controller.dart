@@ -10,6 +10,7 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/utils/forget_last_shown_account_on_sign_in.dart';
 import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
@@ -195,8 +196,9 @@ class TwakeWelcomeController extends ReloadableController {
   }
 
   @override
-  void handleReloaded(Session session) {
+  Future<void> handleReloaded(Session session) async {
     SmartDialog.dismiss();
+    await forgetLastShownAccountOnSignIn(session);
 
     popAndPush(
       RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
