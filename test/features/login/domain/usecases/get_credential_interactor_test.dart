@@ -10,12 +10,16 @@ class _FakeCredentialRepository implements CredentialRepository {
   _FakeCredentialRepository(this.stored);
 
   final AuthenticationInfoCache stored;
+  int removeCalls = 0;
 
   @override
   Future<Uri> getBaseUrl() async => Uri.parse('https://jmap.example.com');
 
   @override
   Future<AuthenticationInfoCache> getAuthenticationInfoStored() async => stored;
+
+  @override
+  Future<void> removeAuthenticationInfo() async => removeCalls++;
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -29,20 +33,22 @@ void main() {
   );
 
   test('a stored login of another account does not sign the current one in', () async {
-    final interactor = GetCredentialInteractor(
-      _FakeCredentialRepository(AuthenticationInfoCache('alice@example.com', 'alice-pw')));
+    final repository = _FakeCredentialRepository(AuthenticationInfoCache('alice@example.com', 'alice-pw'));
+    final interactor = GetCredentialInteractor(repository);
 
     final result = await interactor.execute(personalAccount: bobAccount);
 
     expect(result.fold((f) => f, (s) => s), isA<GetCredentialFailure>());
+    expect(repository.removeCalls, 1);
   });
 
   test('the stored login of the current account signs it in', () async {
-    final interactor = GetCredentialInteractor(
-      _FakeCredentialRepository(AuthenticationInfoCache('bob@example.com', 'bob-pw')));
+    final repository = _FakeCredentialRepository(AuthenticationInfoCache('bob@example.com', 'bob-pw'));
+    final interactor = GetCredentialInteractor(repository);
 
     final result = await interactor.execute(personalAccount: bobAccount);
 
     expect(result.fold((f) => f, (s) => s), isA<GetCredentialViewState>());
+    expect(repository.removeCalls, 0);
   });
 }
