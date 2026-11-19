@@ -75,6 +75,8 @@ class FakeSecureStorage implements FlutterSecureStorage {
   bool throwOnDelete = false;
   bool dropDeletes = false;
   Completer<void>? holdWrite;
+  // Holds only the next read, so a later verify read inside clear() is not blocked.
+  Completer<void>? holdRead;
 
   @override
   dynamic noSuchMethod(Invocation invocation) {
@@ -84,11 +86,9 @@ class FakeSecureStorage implements FlutterSecureStorage {
       case #write:
         return _writeAfterHold(invocation);
       case #read:
-        return Future<String?>.value(values[key]);
+        return _readAfterHold(key);
       case #delete:
-        if (throwOnDelete) throw Exception('delete failed');
-        if (!dropDeletes) values.remove(key);
-        return Future<void>.value();
+        return _delete(key);
     }
     return super.noSuchMethod(invocation);
   }
@@ -96,6 +96,19 @@ class FakeSecureStorage implements FlutterSecureStorage {
   Future<void> _writeAfterHold(Invocation invocation) async {
     await holdWrite?.future;
     _write(invocation);
+  }
+
+  Future<String?> _readAfterHold(String key) async {
+    final snapshot = values[key];
+    final hold = holdRead;
+    holdRead = null;
+    await hold?.future;
+    return snapshot;
+  }
+
+  Future<void> _delete(String key) async {
+    if (throwOnDelete) throw Exception('delete failed');
+    if (!dropDeletes) values.remove(key);
   }
 
   void _write(Invocation invocation) {

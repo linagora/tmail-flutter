@@ -25,6 +25,18 @@ void main() {
   AuthenticationInfoCacheManager newManager() =>
       AuthenticationInfoCacheManager(client.mock, FakeSessionStorage(), secureStorage: storage);
 
+  // Starts a read, logs out while [hold] blocks it, then expects the read to find no login.
+  Future<void> expectReadAcrossLogoutFindsNothing(
+    AuthenticationInfoCacheManager manager,
+    Completer<void> hold,
+  ) async {
+    final pending = manager.getAuthenticationInfoStored();
+    await pumpEventQueue();
+    await manager.clear();
+    hold.complete();
+    await expectLater(pending, throwsA(isA<NotFoundAuthenticationInfoCache>()));
+  }
+
   group('mobile secure login', () {
     test('a throwing overwrite does not leave the previous account for the next cold start', () async {
       storage.values[key] = jsonEncode({'username': alice.username, 'password': alice.password});
@@ -95,11 +107,8 @@ void main() {
       client.holdGet = Completer<void>();
       final manager = newManager();
 
-      final pending = manager.getAuthenticationInfoStored();
-      await manager.clear();
-      client.holdGet!.complete();
+      await expectReadAcrossLogoutFindsNothing(manager, client.holdGet!);
 
-      await expectLater(pending, throwsA(isA<NotFoundAuthenticationInfoCache>()));
       expect(
         newManager().getAuthenticationInfoStored(),
         throwsA(isA<NotFoundAuthenticationInfoCache>()),
@@ -111,17 +120,9 @@ void main() {
       storage.holdWrite = Completer<void>();
       final manager = newManager();
 
-      final pending = manager.getAuthenticationInfoStored();
-      await pumpEventQueue();
-      await manager.clear();
-      storage.holdWrite!.complete();
+      await expectReadAcrossLogoutFindsNothing(manager, storage.holdWrite!);
 
-      await expectLater(pending, throwsA(isA<NotFoundAuthenticationInfoCache>()));
       expect(storage.values.containsKey(key), isFalse);
-      expect(
-        manager.getAuthenticationInfoStored(),
-        throwsA(isA<NotFoundAuthenticationInfoCache>()),
-      );
     });
   });
 }
