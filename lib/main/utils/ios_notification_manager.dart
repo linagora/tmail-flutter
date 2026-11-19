@@ -26,6 +26,11 @@ class IOSNotificationManager {
 
   StreamSubscription<NotificationPayload?>? _getCurrentEmailIdStreamSubscription;
 
+  Future<NotificationPayload?>? _terminatedTap;
+
+  /// True when a tap on a notification started the app.
+  Future<bool> wasAppLaunchedByNotification() async => await _terminatedTap != null;
+
   void listenClickNotification() {
     try {
       _notificationInteractionChannel.setMethodCallHandler((methodCall) async {
@@ -36,7 +41,8 @@ class IOSNotificationManager {
         }
       });
 
-      _getCurrentEmailIdStreamSubscription = Stream.fromFuture(_getCurrentEmailIdInNotificationClick()).listen((tap) {
+      _terminatedTap = _getCurrentEmailIdInNotificationClick();
+      _getCurrentEmailIdStreamSubscription = Stream.fromFuture(_terminatedTap!).listen((tap) {
         log('IOSNotificationManager::listenClickNotification:_getCurrentEmailIdInNotificationClick:EmailId = ${tap?.emailId?.asString}');
         if (tap != null) {
           setPendingCurrentEmailId(tap);
