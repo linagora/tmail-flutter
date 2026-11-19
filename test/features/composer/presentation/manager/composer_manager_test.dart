@@ -1,4 +1,5 @@
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -91,6 +92,20 @@ void main() {
     verify(mockController1.saveReloadSnapshot()).called(1);
     verify(mockController2.saveReloadSnapshot()).called(1);
     verify(mockController3.saveReloadSnapshot()).called(1);
+  });
+
+  testWidgets('keeps every composer opened in a row, even within the same millisecond', (tester) async {
+    PlatformInfo.isTestingForWeb = true;
+    addTearDown(() => PlatformInfo.isTestingForWeb = false);
+
+    for (var index = 0; index < 20; index++) {
+      composerManager.addComposer(ComposerArguments(emailContents: 'message $index'));
+    }
+
+    final openedIds = composerManager.composers.keys.skip(3).toList();
+    expect(openedIds.toSet(), hasLength(20));
+    expect(composerManager.composerIdsQueue.skip(3).toList(), openedIds);
+    expect(openedIds.where((id) => Get.isRegistered<ComposerController>(tag: id)), hasLength(20));
   });
 
   // Only test for desktop with minWidth = 1200
