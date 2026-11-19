@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:core/utils/platform_info.dart';
@@ -73,6 +74,52 @@ void main() {
 
       expect(
         newManager().getAuthenticationInfoStored(),
+        throwsA(isA<NotFoundAuthenticationInfoCache>()),
+      );
+    });
+
+    test('a delete that reports success but keeps the login still logs out', () async {
+      await newManager().storeAuthenticationInfo(alice);
+      storage.dropDeletes = true;
+
+      await newManager().clear();
+
+      expect(
+        newManager().getAuthenticationInfoStored(),
+        throwsA(isA<NotFoundAuthenticationInfoCache>()),
+      );
+    });
+
+    test('a Hive read pending during logout does not move the login back', () async {
+      client.item = alice;
+      client.holdGet = Completer<void>();
+      final manager = newManager();
+
+      final pending = manager.getAuthenticationInfoStored();
+      await manager.clear();
+      client.holdGet!.complete();
+
+      await expectLater(pending, throwsA(isA<NotFoundAuthenticationInfoCache>()));
+      expect(
+        newManager().getAuthenticationInfoStored(),
+        throwsA(isA<NotFoundAuthenticationInfoCache>()),
+      );
+    });
+
+    test('a secure write pending during logout does not persist the login', () async {
+      client.item = alice;
+      storage.holdWrite = Completer<void>();
+      final manager = newManager();
+
+      final pending = manager.getAuthenticationInfoStored();
+      await pumpEventQueue();
+      await manager.clear();
+      storage.holdWrite!.complete();
+
+      await expectLater(pending, throwsA(isA<NotFoundAuthenticationInfoCache>()));
+      expect(storage.values.containsKey(key), isFalse);
+      expect(
+        manager.getAuthenticationInfoStored(),
         throwsA(isA<NotFoundAuthenticationInfoCache>()),
       );
     });
