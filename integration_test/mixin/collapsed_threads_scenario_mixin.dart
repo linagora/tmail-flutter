@@ -71,12 +71,15 @@ mixin CollapsedThreadsScenarioMixin on BaseTestScenario {
       await threadProvisioner.deleteProvisionedThreads(threadSubjectPrefix);
       await body();
     } finally {
-      await threadProvisioner.deleteProvisionedThreads(threadSubjectPrefix);
-      _localSettings.update(previousSettings);
-      if (previousForceEmailQuery == null) {
-        dotenv.env.remove(_forceEmailQueryKey);
-      } else {
-        dotenv.env[_forceEmailQueryKey] = previousForceEmailQuery;
+      try {
+        await threadProvisioner.deleteProvisionedThreads(threadSubjectPrefix);
+      } finally {
+        _localSettings.update(previousSettings);
+        if (previousForceEmailQuery == null) {
+          dotenv.env.remove(_forceEmailQueryKey);
+        } else {
+          dotenv.env[_forceEmailQueryKey] = previousForceEmailQuery;
+        }
       }
     }
   }

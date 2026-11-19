@@ -1,13 +1,13 @@
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:labels/labels.dart';
-import 'package:tmail_ui_user/features/labels/domain/state/create_new_label_state.dart';
-import 'package:tmail_ui_user/features/labels/domain/usecases/create_new_label_interactor.dart';
+import 'package:tmail_ui_user/features/labels/data/network/label_api.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:uuid/uuid.dart';
 
 import '../models/provisioning_email.dart';
 import '../models/provisioning_label.dart';
-import '../utils/describe_failure.dart';
+import '../utils/jmap/jmap_test_client.dart';
 import '../utils/wait_for_mailbox_ready.dart';
 
 mixin ProvisioningLabelScenarioMixin {
@@ -18,60 +18,36 @@ mixin ProvisioningLabelScenarioMixin {
       return [];
     }
 
-    await waitForMailboxReady();
-
-    final dashboardController = getBinding<MailboxDashBoardController>();
-    final createLabelInteractor = getBinding<CreateNewLabelInteractor>();
-
-    final accountId = dashboardController?.accountId.value;
-    final labelController = dashboardController?.labelController;
-
-    if (dashboardController == null ||
-        createLabelInteractor == null ||
-        accountId == null) {
-      throw StateError(
-        'Provisioning labels: missing dashboardController, '
-        'CreateNewLabelInteractor, or accountId',
-      );
-    }
+    final client = await JmapTestClient.current();
+    final labelApi = LabelApi(client.httpClient, const Uuid());
 
     // Sequential: concurrent Label/set races in the memory backend
     final List<Label> createdLabels = [];
     for (final provisioningLabel in provisioningLabels) {
-      final label = await _createLabel(
-        createLabelInteractor,
-        accountId,
-        provisioningLabel,
-      );
-      createdLabels.add(label);
+      try {
+        createdLabels.add(
+          await labelApi.createNewLabel(
+            client.accountId,
+            provisioningLabel.toLabel(),
+          ),
+        );
+      } catch (e) {
+        throw StateError(
+          'Failed to provision label ${provisioningLabel.displayName}: $e',
+        );
+      }
     }
 
-    labelController?.getAllLabels(accountId);
+    await _refreshLabelsInUi(client.accountId);
 
     return createdLabels;
   }
 
-  Future<Label> _createLabel(
-    CreateNewLabelInteractor createLabelInteractor,
-    AccountId accountId,
-    ProvisioningLabel provisioningLabel,
-  ) async {
-    final result = await createLabelInteractor
-        .execute(accountId, provisioningLabel.toLabel())
-        .last;
-
-    return result.fold(
-      (failure) => throw StateError(
-        'Failed to provision label ${provisioningLabel.displayName}: '
-        '${describeFailure(failure)}',
-      ),
-      (success) => success is CreateNewLabelSuccess
-          ? success.newLabel
-          : throw StateError(
-              'Label ${provisioningLabel.displayName} ended in '
-              '${success.runtimeType}',
-            ),
-    );
+  Future<void> _refreshLabelsInUi(AccountId accountId) async {
+    await waitForMailboxReady();
+    getBinding<MailboxDashBoardController>()
+        ?.labelController
+        .getAllLabels(accountId);
   }
 
   Future<List<Label>> provisionLabelsByDisplayNames(List<String> labelNames) {
