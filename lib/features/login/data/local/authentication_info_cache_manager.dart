@@ -32,6 +32,9 @@ class AuthenticationInfoCacheManager extends CacheManagerInteraction {
   // Set once the Hive box is emptied this run; later reads skip the purge.
   bool _legacyHivePurged = false;
 
+  // Bumped by clear(); a read that started before a logout must not move the login back.
+  int _clearGeneration = 0;
+
   AuthenticationInfoCacheManager(
     this._authenticationInfoCacheClient,
     this._sessionStorageManager, {
@@ -42,6 +45,7 @@ class AuthenticationInfoCacheManager extends CacheManagerInteraction {
       _saveLogin(authenticationInfoCache, keepLegacyOnFailure: false);
 
   Future<AuthenticationInfoCache> getAuthenticationInfoStored() async {
+    final generation = _clearGeneration;
     final unsaved = _unsavedLogin;
     if (unsaved != null) {
       return unsaved;
@@ -52,25 +56,35 @@ class AuthenticationInfoCacheManager extends CacheManagerInteraction {
       return stored;
     }
     final legacy = await _authenticationInfoCacheClient.getItem(_key);
-    if (legacy == null) {
+    if (legacy == null || generation != _clearGeneration) {
       throw NotFoundAuthenticationInfoCache();
     }
     // One-time move of an earlier login out of the Hive box; kept there if the move fails.
     await _saveLogin(legacy, keepLegacyOnFailure: true);
+    if (generation != _clearGeneration) {
+      throw NotFoundAuthenticationInfoCache();
+    }
     return legacy;
   }
 
   Future<void> clear() async {
+    _clearGeneration++;
     _unsavedLogin = null;
     await _removeOutsideHive();
     await _authenticationInfoCacheClient.clearAllData();
   }
 
   Future<void> _saveLogin(AuthenticationInfoCache login, {required bool keepLegacyOnFailure}) async {
+    final generation = _clearGeneration;
     final saved = await _writeOutsideHive(jsonEncode({
       _usernameField: login.username,
       _passwordField: login.password,
     }));
+    if (generation != _clearGeneration) {
+      // Logout ran while the write was pending; undo it.
+      await _removeOutsideHive();
+      return;
+    }
     _unsavedLogin = saved ? null : login;
     // A new login supersedes the Hive copy even when the secure write failed.
     if (saved || !keepLegacyOnFailure) {
@@ -113,14 +127,17 @@ class AuthenticationInfoCacheManager extends CacheManagerInteraction {
   Future<void> _removeOutsideHive() async {
     try {
       await _putOutsideHive(null);
+      // fss 8 iOS reports a failed Keychain delete as a normal result.
+      if (await _readOutsideHive() == null) return;
+      logWarning('$runtimeType::_removeOutsideHive: delete_verify_failed=true');
     } catch (e) {
       logWarning('$runtimeType::_removeOutsideHive: $e');
-      try {
-        // An empty value decodes to no login, so a failed delete cannot resurrect it.
-        await _putOutsideHive('');
-      } catch (e) {
-        logWarning('$runtimeType::_removeOutsideHive: blank_failed=true | $e');
-      }
+    }
+    try {
+      // An empty value decodes to no login, so a failed delete cannot resurrect it.
+      await _putOutsideHive('');
+    } catch (e) {
+      logWarning('$runtimeType::_removeOutsideHive: blank_failed=true | $e');
     }
   }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -18,13 +20,18 @@ class FakeHiveLoginBox {
   int insertCalls = 0;
   int clearCalls = 0;
   int clearFailures = 0;
+  Completer<void>? holdGet;
 
   FakeHiveLoginBox() {
     when(mock.insertItem(any, any, isolated: anyNamed('isolated'))).thenAnswer((invocation) async {
       insertCalls++;
       item = invocation.positionalArguments[1] as AuthenticationInfoCache;
     });
-    when(mock.getItem(any, isolated: anyNamed('isolated'))).thenAnswer((_) async => item);
+    when(mock.getItem(any, isolated: anyNamed('isolated'))).thenAnswer((_) async {
+      final value = item;
+      await holdGet?.future;
+      return value;
+    });
     when(mock.clearAllData(isolated: anyNamed('isolated'))).thenAnswer((_) async {
       clearCalls++;
       if (clearFailures > 0) {
@@ -66,6 +73,8 @@ class FakeSecureStorage implements FlutterSecureStorage {
   int writesToDrop = 0;
   bool throwOnWrite = false;
   bool throwOnDelete = false;
+  bool dropDeletes = false;
+  Completer<void>? holdWrite;
 
   @override
   dynamic noSuchMethod(Invocation invocation) {
@@ -73,16 +82,20 @@ class FakeSecureStorage implements FlutterSecureStorage {
     final key = invocation.namedArguments[#key] as String;
     switch (invocation.memberName) {
       case #write:
-        _write(invocation);
-        return Future<void>.value();
+        return _writeAfterHold(invocation);
       case #read:
         return Future<String?>.value(values[key]);
       case #delete:
         if (throwOnDelete) throw Exception('delete failed');
-        values.remove(key);
+        if (!dropDeletes) values.remove(key);
         return Future<void>.value();
     }
     return super.noSuchMethod(invocation);
+  }
+
+  Future<void> _writeAfterHold(Invocation invocation) async {
+    await holdWrite?.future;
+    _write(invocation);
   }
 
   void _write(Invocation invocation) {
