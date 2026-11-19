@@ -53,18 +53,25 @@ class AuthenticationInfoCacheManager extends CacheManagerInteraction {
     final stored = _decode(await _readOutsideHive());
     if (stored != null) {
       await _purgeLegacyHive();
+      _throwIfClearedSince(generation);
       return stored;
     }
     final legacy = await _authenticationInfoCacheClient.getItem(_key);
-    if (legacy == null || generation != _clearGeneration) {
+    if (legacy == null) {
       throw NotFoundAuthenticationInfoCache();
     }
+    _throwIfClearedSince(generation);
     // One-time move of an earlier login out of the Hive box; kept there if the move fails.
     await _saveLogin(legacy, keepLegacyOnFailure: true);
+    _throwIfClearedSince(generation);
+    return legacy;
+  }
+
+  // A read that started before a logout must not hand out the logged-out password.
+  void _throwIfClearedSince(int generation) {
     if (generation != _clearGeneration) {
       throw NotFoundAuthenticationInfoCache();
     }
-    return legacy;
   }
 
   Future<void> clear() async {
