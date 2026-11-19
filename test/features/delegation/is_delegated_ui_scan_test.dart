@@ -9,6 +9,8 @@ final _allowedIsDelegatedPaths = {
   'lib/features/delegation/domain/extensions/session_delegation_extension.dart',
   'lib/features/delegation/presentation/model/shown_account_capabilities.dart',
   'lib/features/delegation/presentation/notifier/active_account_notifier.dart',
+  // Names the owner of a pushed email, no account is shown yet.
+  'lib/features/push_notification/presentation/model/notification_owner.dart',
 };
 
 final _lineComment = RegExp(r'^[ \t]*//.*$', multiLine: true);

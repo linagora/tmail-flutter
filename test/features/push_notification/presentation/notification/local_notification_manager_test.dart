@@ -87,6 +87,34 @@ void main() {
       expect(style.summaryText, equals('<b></b>'));
     });
 
+    test('names the owner of a delegated mailbox after the sender', () {
+      final style = LocalNotificationManager.buildInboxStyleInformation(
+        title: 'Subject',
+        emailAddress: EmailAddress(null, 'bob@example.com'),
+        ownerName: 'owner@example.com',
+      );
+
+      expect(style.summaryText, equals('<b>bob@example.com · owner@example.com</b>'));
+    });
+
+    test('shows the owner alone without a sender', () {
+      final style = LocalNotificationManager.buildInboxStyleInformation(
+        title: 'Subject',
+        ownerName: 'owner@example.com',
+      );
+
+      expect(style.summaryText, equals('<b>owner@example.com</b>'));
+    });
+
+    test('escapes a spoofed owner name', () {
+      final style = LocalNotificationManager.buildInboxStyleInformation(
+        title: 'Subject',
+        ownerName: '<img src=x>',
+      );
+
+      expect(style.summaryText, equals('<b>&lt;img src=x&gt;</b>'));
+    });
+
     test('escapes a spoofed display name', () {
       final style = LocalNotificationManager.buildInboxStyleInformation(
         title: 'Subject',

@@ -138,11 +138,13 @@ class LocalNotificationManager {
     EmailAddress? emailAddress,
     String? payload,
     String? groupId,
+    String? ownerName,
   }) async {
     final inboxStyleInformation = buildInboxStyleInformation(
       title: title,
       message: message,
       emailAddress: emailAddress,
+      ownerName: ownerName,
     );
 
     await _localNotificationsPlugin.show(
@@ -159,11 +161,13 @@ class LocalNotificationManager {
 
   /// Subject, preview and sender come from the received email: escape them
   /// before they are rendered as HTML, and show the sender address first so
-  /// that a long or spoofed display name cannot hide it.
+  /// that a long or spoofed display name cannot hide it. [ownerName] names
+  /// the owner of a delegated mailbox after the sender.
   static InboxStyleInformation buildInboxStyleInformation({
     required String title,
     String? message,
     EmailAddress? emailAddress,
+    String? ownerName,
   }) {
     const htmlEscape = HtmlEscape();
     return InboxStyleInformation(
@@ -173,8 +177,14 @@ class LocalNotificationManager {
       htmlFormatLines: true,
       contentTitle: htmlEscape.convert(title),
       htmlFormatContentTitle: true,
-      summaryText: htmlEscape.convert(_senderLine(emailAddress)).addBlockTag('b'),
+      summaryText: htmlEscape.convert(_summaryLine(emailAddress, ownerName)).addBlockTag('b'),
       htmlFormatSummaryText: true);
+  }
+
+  static String _summaryLine(EmailAddress? address, String? ownerName) {
+    final sender = _senderLine(address);
+    if (ownerName == null || ownerName.isEmpty) return sender;
+    return sender.isEmpty ? ownerName : '$sender · $ownerName';
   }
 
   static String _senderLine(EmailAddress? address) {

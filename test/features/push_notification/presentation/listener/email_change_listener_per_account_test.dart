@@ -27,7 +27,9 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_sto
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_email_delivery_state_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/action/push_notification_state_change_action.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/model/notification_owner.dart';
 
+import '../../../../fixtures/delegation_fixtures.dart';
 import '../../../../fixtures/session_fixtures.dart';
 
 class _UnusedFcmRepository implements FCMRepository {
@@ -136,6 +138,7 @@ void main() {
   late _RecordingGetEmailChangesInteractor getChanges;
   late _RecordingGetMailboxesInteractor getMailboxes;
   late List<(UserName, List<PresentationEmail>)> pushed;
+  late List<NotificationOwner?> owners;
   late EmailChangeListener listener;
   final viewRefreshes = _ViewRefreshes();
 
@@ -152,6 +155,7 @@ void main() {
     getChanges = _RecordingGetEmailChangesInteractor();
     getMailboxes = _RecordingGetMailboxesInteractor();
     pushed = [];
+    owners = [];
     listener = EmailChangeListener.forTesting(
       getStoredEmailDeliveryStateInteractor: getStored,
       storeEmailDeliveryStateInteractor: store,
@@ -161,8 +165,10 @@ void main() {
       presentLocalPush: ({
         required UserName userName,
         required List<PresentationEmail> emailList,
+        NotificationOwner? owner,
       }) async {
         pushed.add((userName, List.of(emailList)));
+        owners.add(owner);
       },
     );
   });
@@ -431,4 +437,45 @@ void main() {
       );
     },
   );
+
+  group('notification owner', () {
+    final delegatedSession = DelegationFixtures.session();
+    final bob = DelegationFixtures.bobAccountId;
+    final alice = DelegationFixtures.aliceAccountId;
+
+    void pushOne(AccountId accountId) {
+      listener.dispatchActions([
+        PushNotificationAction(TypeName.emailDelivery, newStateA, delegatedSession, accountId, userA),
+      ]);
+      listener.handleSuccessViewState(
+        GetStoredEmailDeliveryStateSuccess(storedStateA, accountId, userA),
+      );
+      listener.handleSuccessViewState(
+        GetEmailChangesToPushNotificationSuccess(accountId, userA, [emailWithId('e-1')]),
+      );
+      listener.handleSuccessViewState(
+        GetMailboxesNotPutNotificationsSuccess(const [], accountId, userA),
+      );
+    }
+
+    test('names the owner of a delegated account the session lists', () {
+      pushOne(bob);
+
+      expect(owners, [
+        NotificationOwner(accountId: bob, name: DelegationFixtures.bobAddress),
+      ]);
+    });
+
+    test('SHOULD NOT name an owner for my own account', () {
+      pushOne(alice);
+
+      expect(owners, [null]);
+    });
+
+    test('SHOULD NOT name an owner for an account the session does not list', () {
+      pushOne(DelegationFixtures.unknownAccountId);
+
+      expect(owners, [null]);
+    });
+  });
 }

@@ -42,12 +42,14 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_sto
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_email_delivery_state_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/action/push_notification_state_change_action.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/change_listener.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/model/notification_owner.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 typedef PresentLocalPushEmails = Future<void> Function({
   required UserName userName,
   required List<PresentationEmail> emailList,
+  NotificationOwner? owner,
 });
 
 class EmailChangeListener extends ChangeListener {
@@ -120,6 +122,7 @@ class EmailChangeListener extends ChangeListener {
   static Future<void> _presentWithSystemNotifications({
     required UserName userName,
     required List<PresentationEmail> emailList,
+    NotificationOwner? owner,
   }) async {
     final selectedEmails = emailList.selectEmailsForNotification();
     log('EmailChangeListener::_presentWithSystemNotifications(): SELECTED = ${selectedEmails.length}');
@@ -130,8 +133,12 @@ class EmailChangeListener extends ChangeListener {
         title: presentationEmail.subject ?? '',
         message: presentationEmail.preview,
         emailAddress: presentationEmail.firstFromAddress,
-        payload: NotificationPayload(emailId: presentationEmail.id).encodeToString,
+        payload: NotificationPayload(
+          emailId: presentationEmail.id,
+          accountId: owner?.accountId,
+        ).encodeToString,
         groupId: userName.value,
+        ownerName: owner?.name,
         silent: PlatformInfo.isAndroid,
       );
     }
@@ -273,6 +280,7 @@ class EmailChangeListener extends ChangeListener {
       final key = _accountKey(failure.accountId);
       final pending = _emailsAvailablePushNotificationByAccount.remove(key) ?? const [];
       _handleLocalPushNotification(
+        accountId: failure.accountId,
         userName: failure.userName,
         emailList: pending.toEmailsAvailablePushNotification(),
       );
@@ -298,6 +306,7 @@ class EmailChangeListener extends ChangeListener {
       final key = _accountKey(success.accountId);
       final pending = _emailsAvailablePushNotificationByAccount.remove(key) ?? const [];
       _handleLocalPushNotification(
+        accountId: success.accountId,
         userName: success.userName,
         emailList: pending.toEmailsAvailablePushNotification(
           mailboxIdsNotPutNotifications: success.mailboxes.mailboxIds,
@@ -388,6 +397,7 @@ class EmailChangeListener extends ChangeListener {
     } else {
       final pending = _emailsAvailablePushNotificationByAccount.remove(key) ?? const [];
       _handleLocalPushNotification(
+        accountId: accountId,
         userName: userName,
         emailList: pending.toEmailsAvailablePushNotification(),
       );
@@ -395,6 +405,7 @@ class EmailChangeListener extends ChangeListener {
   }
 
   void _handleLocalPushNotification({
+    required AccountId accountId,
     required UserName userName,
     required List<PresentationEmail> emailList
   }) async {
@@ -402,7 +413,11 @@ class EmailChangeListener extends ChangeListener {
     if (emailList.isEmpty) {
       return;
     }
-    await _presentLocalPush(userName: userName, emailList: emailList);
+    await _presentLocalPush(
+      userName: userName,
+      emailList: emailList,
+      owner: NotificationOwner.of(_sessionByAccount[_accountKey(accountId)] ?? _session, accountId),
+    );
   }
 
   void _handleRemoveNotificationWhenEmailMarkAsRead(jmap.State newState, AccountId accountId, Session? session) {
