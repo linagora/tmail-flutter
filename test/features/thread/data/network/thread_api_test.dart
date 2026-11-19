@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
@@ -612,6 +614,47 @@ void main() {
           ),
           throwsA(isA<NotFoundEmailException>()),
         );
+      });
+    });
+
+    group('getEmailState:', () {
+      test('should send Email/get with an empty ids array so the server returns no email', () async {
+        Map<String, dynamic>? emailGetArguments;
+        final captureRequest = InterceptorsWrapper(onRequest: (options, handler) {
+          final body = options.data is String ? jsonDecode(options.data) : options.data;
+          emailGetArguments = (body['methodCalls'] as List).first[1] as Map<String, dynamic>;
+          handler.next(options);
+        });
+        dio.interceptors.add(captureRequest);
+        addTearDown(() => dio.interceptors.remove(captureRequest));
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(200, {
+            'sessionState': sessionState.value,
+            'methodResponses': [
+              [
+                'Email/get',
+                {
+                  'accountId': AccountFixtures.aliceAccountId.id.value,
+                  'state': state.value,
+                  'list': [],
+                  'notFound': [],
+                },
+                'c0',
+              ],
+            ],
+          }),
+          data: Matchers.any,
+        );
+
+        final result = await threadApi.getEmailState(
+          SessionFixtures.aliceSession,
+          AccountFixtures.aliceAccountId,
+        );
+
+        expect(result, state);
+        expect(emailGetArguments, containsPair('ids', isEmpty));
+        expect(emailGetArguments!['ids'], isA<List>());
       });
     });
 
