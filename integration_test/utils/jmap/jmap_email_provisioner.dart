@@ -144,8 +144,11 @@ class _EmailSender {
         args.emailRequest,
         mailboxRequest: args.mailboxRequest,
       );
-    } catch (e) {
-      throw StateError('Provisioning email "$subject" was not sent: $e');
+    } catch (e, st) {
+      Error.throwWithStackTrace(
+        StateError('Provisioning email "$subject" was not sent: $e'),
+        st,
+      );
     }
   }
 }

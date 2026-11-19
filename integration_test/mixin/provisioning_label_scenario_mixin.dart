@@ -31,9 +31,12 @@ mixin ProvisioningLabelScenarioMixin {
             provisioningLabel.toLabel(),
           ),
         );
-      } catch (e) {
-        throw StateError(
-          'Failed to provision label ${provisioningLabel.displayName}: $e',
+      } catch (e, st) {
+        Error.throwWithStackTrace(
+          StateError(
+            'Failed to provision label ${provisioningLabel.displayName}: $e',
+          ),
+          st,
         );
       }
     }
