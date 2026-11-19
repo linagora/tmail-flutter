@@ -6339,4 +6339,82 @@ class AppLocalizations {
       name: 'delegatedMailboxUnavailable',
     );
   }
+
+  String get delegatedToMeExplanation {
+    return Intl.message(
+      'Accounts other people have given you access to. You can switch into them from the account menu, and remove your own access at any time.',
+      name: 'delegatedToMeExplanation',
+    );
+  }
+
+  String get delegationMenuExplanation {
+    return Intl.message(
+      'Give someone permission to manage your mailbox on your behalf.',
+      name: 'delegationMenuExplanation',
+    );
+  }
+
+  String get mailboxesDelegatedToMe {
+    return Intl.message(
+      'Mailboxes delegated to me',
+      name: 'mailboxesDelegatedToMe',
+    );
+  }
+
+  String get mailboxesSharedWithMe {
+    return Intl.message(
+      'Mailboxes shared with me',
+      name: 'mailboxesSharedWithMe',
+    );
+  }
+
+  String get noMailboxesSharedWithYou {
+    return Intl.message(
+      'No mailboxes shared with you',
+      name: 'noMailboxesSharedWithYou',
+    );
+  }
+
+  String get noMailboxesSharedWithYouMessage {
+    return Intl.message(
+      'When someone gives you access to their inbox, it will show up here.',
+      name: 'noMailboxesSharedWithYouMessage',
+    );
+  }
+
+  String get couldNotLoadDelegatedMailboxes {
+    return Intl.message(
+      "Couldn't load the mailboxes delegated to you",
+      name: 'couldNotLoadDelegatedMailboxes',
+    );
+  }
+
+  String get removeYourAccessTitle {
+    return Intl.message(
+      'Remove your access?',
+      name: 'removeYourAccessTitle',
+    );
+  }
+
+  String removeYourAccessMessage(String emailAddress) {
+    return Intl.message(
+      "You'll no longer be able to view or manage $emailAddress. They'll need to share access with you again if you need it back.",
+      name: 'removeYourAccessMessage',
+      args: [emailAddress],
+    );
+  }
+
+  String get removeAccess {
+    return Intl.message(
+      'Remove access',
+      name: 'removeAccess',
+    );
+  }
+
+  String get couldNotRemoveYourAccess {
+    return Intl.message(
+      "Couldn't remove your access",
+      name: 'couldNotRemoveYourAccess',
+    );
+  }
 }

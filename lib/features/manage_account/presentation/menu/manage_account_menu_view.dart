@@ -90,7 +90,7 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                          responsiveUtils: controller.responsiveUtils,
                          menuItem: menuItem,
                          menuItemSelected: controller.dashBoardController.accountMenuItemSelected.value,
-                         onSelectAccountMenuItemAction: controller.selectAccountMenuItem
+                         onSelectAccountMenuItemAction: controller.dashBoardController.selectSettings
                        );
                      })
                    );

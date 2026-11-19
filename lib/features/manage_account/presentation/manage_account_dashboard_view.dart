@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_a
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/preferences_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/delegation/delegation_settings_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/storage/storage_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
@@ -179,6 +180,8 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
           } else {
             return const SizedBox.shrink();
           }
+        case AccountMenuItem.delegation:
+          return const DelegationSettingsView();
         case AccountMenuItem.keyboardShortcuts:
           return const KeyboardShortcutsView();
         default:

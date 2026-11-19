@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-11-12T16:51:53.176713",
+  "@@last_modified": "2026-11-16T10:25:27.170234",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5972,6 +5972,76 @@
   },
   "delegatedMailboxUnavailable": "This delegated mailbox isn't available, so your mailbox is shown",
   "@delegatedMailboxUnavailable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delegatedToMeExplanation": "Accounts other people have given you access to. You can switch into them from the account menu, and remove your own access at any time.",
+  "@delegatedToMeExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delegationMenuExplanation": "Give someone permission to manage your mailbox on your behalf.",
+  "@delegationMenuExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailboxesDelegatedToMe": "Mailboxes delegated to me",
+  "@mailboxesDelegatedToMe": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailboxesSharedWithMe": "Mailboxes shared with me",
+  "@mailboxesSharedWithMe": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noMailboxesSharedWithYou": "No mailboxes shared with you",
+  "@noMailboxesSharedWithYou": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noMailboxesSharedWithYouMessage": "When someone gives you access to their inbox, it will show up here.",
+  "@noMailboxesSharedWithYouMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "couldNotLoadDelegatedMailboxes": "Couldn't load the mailboxes delegated to you",
+  "@couldNotLoadDelegatedMailboxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "removeYourAccessTitle": "Remove your access?",
+  "@removeYourAccessTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "removeYourAccessMessage": "You'll no longer be able to view or manage {emailAddress}. They'll need to share access with you again if you need it back.",
+  "@removeYourAccessMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "emailAddress"
+    ],
+    "placeholders": {
+      "emailAddress": {}
+    }
+  },
+  "removeAccess": "Remove access",
+  "@removeAccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "couldNotRemoveYourAccess": "Couldn't remove your access",
+  "@couldNotRemoveYourAccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

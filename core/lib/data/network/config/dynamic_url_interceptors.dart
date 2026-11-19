@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 
 class DynamicUrlInterceptors extends InterceptorsWrapper {
+  static const _sessionPath = '/.well-known/jmap';
+
   String? _jmapUrl;
   String? _baseUrl;
 
@@ -18,8 +20,10 @@ class DynamicUrlInterceptors extends InterceptorsWrapper {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    if (_baseUrl != null) {
-      options.baseUrl = _baseUrl!;
+    // The session lives at the server root, not under the session's apiUrl the base switches to after the first load.
+    final requestBaseUrl = options.path == _sessionPath ? (_jmapUrl ?? _baseUrl) : _baseUrl;
+    if (requestBaseUrl != null) {
+      options.baseUrl = requestBaseUrl;
     }
     super.onRequest(options, handler);
   }

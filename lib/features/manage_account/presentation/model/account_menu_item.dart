@@ -15,6 +15,7 @@ enum AccountMenuItem {
   notification,
   contactSupport,
   storage,
+  delegation,
   keyboardShortcuts,
   signOut,
   none;
@@ -41,6 +42,8 @@ enum AccountMenuItem {
         return imagePaths.icHelp;
       case AccountMenuItem.storage:
         return imagePaths.icStorage;
+      case AccountMenuItem.delegation:
+        return imagePaths.icDelegation;
       case AccountMenuItem.keyboardShortcuts:
         return imagePaths.icKeyboard;
       case AccountMenuItem.signOut:
@@ -72,6 +75,8 @@ enum AccountMenuItem {
         return appLocalizations.contactSupport;
       case AccountMenuItem.storage:
         return appLocalizations.storageQuotas;
+      case AccountMenuItem.delegation:
+        return appLocalizations.delegation;
       case AccountMenuItem.keyboardShortcuts:
         return appLocalizations.keyboardShortcuts;
       case AccountMenuItem.signOut:
@@ -97,6 +102,8 @@ enum AccountMenuItem {
         return appLocalizations.folderVisibilitySubtitle;
       case AccountMenuItem.storage:
         return appLocalizations.storageSettingExplanation;
+      case AccountMenuItem.delegation:
+        return appLocalizations.delegationMenuExplanation;
       case AccountMenuItem.notification:
         return appLocalizations.allowsTwakeMailToNotifyYouWhenANewMessageArrivesOnYourPhone;
       case AccountMenuItem.keyboardShortcuts:
@@ -128,6 +135,8 @@ enum AccountMenuItem {
         return 'contact-support';
       case AccountMenuItem.storage:
         return 'storage';
+      case AccountMenuItem.delegation:
+        return 'delegation';
       case AccountMenuItem.keyboardShortcuts:
         return 'keyboard-shortcuts';
       case AccountMenuItem.signOut:
@@ -139,6 +148,7 @@ enum AccountMenuItem {
 
   Key? get uiKey => switch (this) {
     AccountMenuItem.emailRules => const ValueKey(UiKeys.emailRulesSettingMenuItem),
+    AccountMenuItem.delegation => const ValueKey(UiKeys.delegationSettingMenuItem),
     _ => null
   };
 }
