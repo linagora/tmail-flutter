@@ -28,6 +28,11 @@ import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_r
 import 'package:tmail_ui_user/features/push_notification/domain/utils/fcm_constants.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
+import 'package:core/utils/platform_info.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/extensions/session_extension.dart';
+import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_delegated_account.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/model/delegated_notification_baseline.dart';
 
 class FCMRepositoryImpl extends FCMRepository {
 
@@ -201,5 +206,44 @@ class FCMRepositoryImpl extends FCMRepository {
   @override
   Future<void> deleteFirebaseRegistrationCache() {
     return _fcmDatasource[DataSourceType.local]!.deleteFirebaseRegistrationCache();
+  }
+
+  @override
+  Future<jmap.State?> getEmailState(Session session, AccountId accountId) {
+    return _threadDataSource.getEmailState(session, accountId);
+  }
+
+  @override
+  Future<void> storeDelegatedNotificationBaselines(
+    Session session,
+    List<DelegatedNotificationBaseline> baselines,
+  ) async {
+    if (PlatformInfo.isIOS) {
+      final delegatedAccounts = <KeychainDelegatedAccount>[];
+      for (final baseline in baselines) {
+        delegatedAccounts.add(KeychainDelegatedAccount(
+          accountId: baseline.accountId,
+          emailDeliveryState: baseline.state.value,
+          mailboxIdsBlockNotification: await _mailboxIdsBlockNotification(session, baseline.accountId),
+          ownerName: baseline.ownerName,
+        ));
+      }
+      return _fcmDatasource[DataSourceType.local]!
+          .storeDelegatedAccountsInKeychain(session.accountId, delegatedAccounts);
+    }
+    for (final baseline in baselines) {
+      await storeStateToRefresh(baseline.accountId, session.username, TypeName.emailDelivery, baseline.state);
+    }
+  }
+
+  /// Null when the mailboxes cannot be read: the NSE then notifies every mailbox, which beats losing an alert.
+  Future<List<MailboxId>?> _mailboxIdsBlockNotification(Session session, AccountId accountId) async {
+    try {
+      final excluded = await getExcludedMailboxesForNotification(session, accountId);
+      return excluded.map((mailbox) => mailbox.id).toList();
+    } catch (e) {
+      logWarning('FCMRepositoryImpl::_mailboxIdsBlockNotification: $e');
+      return null;
+    }
   }
 }

@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 import 'package:tmail_ui_user/features/push_notification/data/extensions/keychain_sharing_session_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_session.dart';
+import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_delegated_account.dart';
 
 class IOSSharingManager {
   final KeychainSharingManager _keychainSharingManager;
@@ -280,5 +281,16 @@ class IOSSharingManager {
       );
       rethrow;
     }
+  }
+
+  /// Replaces the delegated mailboxes the NSE notifies for, an empty list stops them all.
+  Future<void> updateDelegatedAccountsInKeyChain({
+    required AccountId accountId,
+    required List<KeychainDelegatedAccount> delegatedAccounts,
+  }) async {
+    final keychainSharingStored = await getKeychainSharingSession(accountId);
+    if (keychainSharingStored == null) return;
+    final newKeychain = keychainSharingStored.updating(delegatedAccounts: delegatedAccounts);
+    await _keychainSharingManager.saveSharingSession(newKeychain);
   }
 }

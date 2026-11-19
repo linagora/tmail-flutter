@@ -12,13 +12,16 @@ import 'package:tmail_ui_user/features/push_notification/data/local/fcm_cache_ma
 import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/update_token_expired_time_request.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
+import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_delegated_account.dart';
+import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class CacheFCMDatasourceImpl extends FCMDatasource {
 
   final FCMCacheManager _firebaseCacheManager;
   final ExceptionThrower _exceptionThrower;
+  final IOSSharingManager _iosSharingManager;
 
-  CacheFCMDatasourceImpl(this._firebaseCacheManager, this._exceptionThrower);
+  CacheFCMDatasourceImpl(this._firebaseCacheManager, this._exceptionThrower, this._iosSharingManager);
 
   @override
   Future<void> storeStateToRefresh(AccountId accountId, UserName userName, TypeName typeName, jmap.State newState) {
@@ -80,6 +83,16 @@ class CacheFCMDatasourceImpl extends FCMDatasource {
   Future<void> deleteFirebaseRegistrationCache() {
     return Future.sync(() async {
       return await _firebaseCacheManager.deleteFirebaseRegistration();
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<void> storeDelegatedAccountsInKeychain(AccountId accountId, List<KeychainDelegatedAccount> delegatedAccounts) {
+    return Future.sync(() async {
+      return await _iosSharingManager.updateDelegatedAccountsInKeyChain(
+        accountId: accountId,
+        delegatedAccounts: delegatedAccounts,
+      );
     }).catchError(_exceptionThrower.throwException);
   }
 }

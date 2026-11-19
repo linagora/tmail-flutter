@@ -153,4 +153,9 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
       return await _cachingManager.clearAllEmailAndStateCache();
     }).catchError(_exceptionThrower.throwException);
   }
+
+  @override
+  Future<State?> getEmailState(Session session, AccountId accountId) {
+    throw UnimplementedError();
+  }
 }

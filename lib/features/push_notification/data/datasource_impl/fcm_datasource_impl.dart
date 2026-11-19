@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/push_notification/domain/extensions/fireb
 import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/update_token_expired_time_request.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
+import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_delegated_account.dart';
 
 class FcmDatasourceImpl extends FCMDatasource {
 
@@ -79,6 +80,11 @@ class FcmDatasourceImpl extends FCMDatasource {
 
   @override
   Future<void> deleteFirebaseRegistrationCache() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> storeDelegatedAccountsInKeychain(AccountId accountId, List<KeychainDelegatedAccount> delegatedAccounts) {
     throw UnimplementedError();
   }
 }
