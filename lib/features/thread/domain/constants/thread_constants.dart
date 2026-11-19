@@ -2,6 +2,7 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:model/email/email_property.dart';
+import 'package:model/extensions/email_list_header_extension.dart';
 
 class ThreadConstants {
   static const maxCountEmails = 20;
@@ -26,7 +27,7 @@ class ThreadConstants {
     IndividualHeaderIdentifier.xPriorityHeader.value,
     IndividualHeaderIdentifier.importanceHeader.value,
     IndividualHeaderIdentifier.priorityHeader.value,
-    IndividualHeaderIdentifier.listUnsubscribeHeader.value,
+    ListHeaderIdentifier.listUnsubscribe.value,
   });
   static final propertiesUpdatedDefault = propertiesDefault;
 
@@ -70,6 +71,12 @@ class ThreadConstants {
   static final propertiesCalendarEvent = Properties({
     ...propertiesDefault.value,
     IndividualHeaderIdentifier.headerCalendarEvent.value,
+  });
+
+  static final propertiesThreadDetailAdditional = Properties({
+    ListHeaderIdentifier.listPost.value,
+    EmailProperty.references,
+    EmailProperty.messageId,
   });
 
   static const int defaultMaxHeightEmailItemOnBrowser = 40;
