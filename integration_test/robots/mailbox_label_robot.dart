@@ -30,8 +30,11 @@ class MailboxLabelRobot extends CoreRobot implements AbstractMailboxLabelRobot {
 
   @override
   Future<void> openLabel(PatrolFinder label) async {
+    debugPrint('[label-diag] openLabel: ensureReady');
     await ensureLabelReady(label);
+    debugPrint('[label-diag] openLabel: tap');
     await label.tap();
+    debugPrint('[label-diag] openLabel: done');
   }
 
   @override

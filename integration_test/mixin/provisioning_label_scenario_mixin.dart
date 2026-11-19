@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:labels/labels.dart';
 import 'package:tmail_ui_user/features/labels/data/network/label_api.dart';
@@ -41,6 +42,8 @@ mixin ProvisioningLabelScenarioMixin {
       }
     }
 
+    debugPrint('[label-diag] created=${createdLabels.map((l) => '${l.id?.value}:${l.safeDisplayName}').toList()} '
+        'backend=${client.backendUrl} account=${client.accountId.id.value}');
     await _refreshLabelsInUi(client.accountId);
 
     return createdLabels;
@@ -48,9 +51,12 @@ mixin ProvisioningLabelScenarioMixin {
 
   Future<void> _refreshLabelsInUi(AccountId accountId) async {
     await waitForMailboxReady();
-    getBinding<MailboxDashBoardController>()
-        ?.labelController
-        .getAllLabels(accountId);
+    final dashboard = getBinding<MailboxDashBoardController>();
+    final lc = dashboard?.labelController;
+    debugPrint('[label-diag] before refresh appAccount=${dashboard?.accountId.value?.id.value} '
+        'enabled=${lc?.isLabelSettingEnabled.value} loaded=${lc?.isLabelsLoaded.value} '
+        'expand=${lc?.labelListExpandMode.value} labels=${lc?.labels.map((l) => l.safeDisplayName).toList()}');
+    lc?.getAllLabels(accountId);
   }
 
   Future<List<Label>> provisionLabelsByDisplayNames(List<String> labelNames) {

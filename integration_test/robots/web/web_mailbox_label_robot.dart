@@ -15,12 +15,15 @@ class WebMailboxLabelRobot extends MailboxLabelRobot {
 
   @override
   Future<void> openLabelContextMenu(PatrolFinder label) async {
+    debugPrint('[label-diag] webMenu: ensureReady');
     await ensureLabelReady(label);
+    debugPrint('[label-diag] webMenu: hoverTap');
     await webHoverThenTap(
       $,
       label,
       label.$(const ValueKey(UiKeys.labelMoreActionButton)),
     );
+    debugPrint('[label-diag] webMenu: done');
   }
 
   @override

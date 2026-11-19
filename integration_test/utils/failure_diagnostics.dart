@@ -1,7 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart' show find;
 import 'package:get/get.dart';
+import 'package:labels/labels.dart';
 import 'package:patrol/patrol.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sidebar/sidebar_label_item.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 // Keeps the dump under the logcat buffer limit; the top route prints last, so keep the tail.
 const _maxTreeLines = 1500;
@@ -30,6 +35,22 @@ void logFlutterErrorDetails(FlutterErrorDetails details) {
   }
 }
 
+void _printLabelState() {
+  try {
+    final lc = getBinding<MailboxDashBoardController>()?.labelController;
+    List<String> names(Iterable<Element> elements) => elements
+        .map((e) => (e.widget as SidebarLabelItem).label.safeDisplayName)
+        .toList();
+    final items = names(find.byType(SidebarLabelItem).evaluate());
+    final hit = names(find.byType(SidebarLabelItem).hitTestable().evaluate());
+    debugPrintSynchronously('[FAILURE STATE] labels enabled=${lc?.isLabelSettingEnabled.value} '
+        'loaded=${lc?.isLabelsLoaded.value} expand=${lc?.labelListExpandMode.value} '
+        'ctrl=${lc?.labels.map((l) => l.safeDisplayName).toList()} items=$items hitTestable=$hit');
+  } catch (e) {
+    debugPrintSynchronously('[FAILURE STATE] label state failed: $e');
+  }
+}
+
 var _dumped = false;
 
 // A test dumps once: the error hook and the test's catch block both call it.
@@ -46,6 +67,7 @@ void dumpFailureState(PatrolIntegrationTester $) {
         'focus=${FocusManager.instance.primaryFocus} keyboardInset=$keyboardInset';
     $.log(summary);
     debugPrintSynchronously(summary);
+    _printLabelState();
     _printLines(FocusManager.instance.toStringDeep());
     _printLines(
       WidgetsBinding.instance.rootElement?.toStringDeep() ?? 'no root element',
