@@ -46,12 +46,10 @@ class WebSocketController extends PushBaseController {
 
   @visibleForTesting
   WebSocketController.forTesting({
-    required EmailChangeListener emailChangeListener,
-    required MailboxChangeListener mailboxChangeListener,
-    required LabelChangeListener labelChangeListener,
-  })  : _emailChangeListener = emailChangeListener,
-        _mailboxChangeListener = mailboxChangeListener,
-        _labelChangeListener = labelChangeListener;
+    required this._emailChangeListener,
+    required this._mailboxChangeListener,
+    required this._labelChangeListener,
+  });
 
   static final WebSocketController _instance = WebSocketController._internal();
 
@@ -320,10 +318,15 @@ class WebSocketController extends PushBaseController {
     try {
       log('WebSocketController::_handleStateChange:stateChange = $stateChange');
       _pendingStateChange = null;
-      if (stateChange == null || personalAccountId == null || session == null) return;
+      if (stateChange == null || !_hasAccountAndSession) {
+        log('WebSocketController::_handleStateChange: skipped, hasPersonalAccountId = ${personalAccountId != null}, hasSession = ${session != null}');
+        return;
+      }
 
       final filter = _accountFilter();
-      for (final accountId in filter.accountsToProcess(stateChange)) {
+      final accountsToProcess = filter.accountsToProcess(stateChange).toList();
+      log('WebSocketController::_handleStateChange:accountsToProcess = ${accountsToProcess.map((id) => id.asString).toList()}');
+      for (final accountId in accountsToProcess) {
         final mapTypeState = stateChange.getMapTypeState(accountId);
         if (mapTypeState.isEmpty) continue;
         mappingTypeStateToAction(
@@ -345,6 +348,8 @@ class WebSocketController extends PushBaseController {
       logWarning('WebSocketController::_handleStateChange:Exception = $e');
     }
   }
+
+  bool get _hasAccountAndSession => personalAccountId != null && session != null;
 
   StateChangeAccountFilter _accountFilter() {
     final source = getBinding<ActiveAccountSource>();

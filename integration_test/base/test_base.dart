@@ -1,4 +1,5 @@
 import 'package:core/utils/config/env_loader.dart';
+import 'package:core/utils/logging/app_logger_registry.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -12,6 +13,7 @@ import '../models/test_tags.dart';
 import '../utils/backend_reset_client.dart';
 import '../utils/failure_diagnostics.dart';
 import '../utils/mock_text_input.dart';
+import '../utils/push_refresh_log_handler.dart';
 import '../utils/test_backend.dart';
 import 'base_scenario.dart';
 import '../factories/robot_factory.dart';
@@ -101,6 +103,10 @@ class TestBase {
 
   Future<void> _setup() async {
     PlatformInfo.isIntegrationTesting = true;
+    // Tests skip main's registerLogHandlers, so the push refresh logs never reached logcat.
+    if (!kIsWeb) {
+      AppLoggerRegistry.instance.registerHandler(const PushRefreshLogHandler());
+    }
     if (BackendResetClient.isEnabled) {
       TestBackend.use(await BackendResetClient.lease());
     }
