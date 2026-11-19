@@ -124,5 +124,13 @@ void main() {
 
       expect(storage.values.containsKey(key), isFalse);
     });
+
+    test('a secure read pending during logout does not return the password', () async {
+      storage.values[key] = jsonEncode({'username': alice.username, 'password': alice.password});
+      storage.holdRead = Completer<void>();
+      final manager = newManager();
+
+      await expectReadAcrossLogoutFindsNothing(manager, storage.holdRead!);
+    });
   });
 }
