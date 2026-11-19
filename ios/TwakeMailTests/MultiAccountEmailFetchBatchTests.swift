@@ -67,4 +67,73 @@ final class MultiAccountEmailFetchBatchTests: XCTestCase {
         XCTAssertEqual(completionCount, 1)
         XCTAssertEqual(collected.map(\.id), ["e1"])
     }
+
+    private func makeEmail(sender: String? = "Bob") -> Email {
+        Email(
+            id: "e1",
+            subject: "hello",
+            preview: nil,
+            from: sender.map { [EmailAddress(name: $0, email: "bob@example.com")] },
+            receivedAt: nil,
+            mailboxIds: nil
+        )
+    }
+
+    func testOwnEmailUserInfoHasOnlyTheEmailId() {
+        let userInfo = makeEmail().notificationUserInfo
+
+        XCTAssertEqual(userInfo as? [String: String], [JmapConstants.EMAIL_ID: "e1"])
+    }
+
+    func testDelegatedEmailUserInfoCarriesTheOwnerAccountId() {
+        let email = makeEmail().ownedBy(NotificationOwner(accountId: "delegated-1", name: "Owner One"))
+
+        XCTAssertEqual(
+            email.notificationUserInfo as? [String: String],
+            [JmapConstants.EMAIL_ID: "e1", JmapConstants.ACCOUNT_ID: "delegated-1"]
+        )
+    }
+
+    func testOwnEmailTitleIsTheSender() {
+        XCTAssertEqual(makeEmail().notificationTitle, "Bob")
+    }
+
+    func testDelegatedEmailTitleNamesTheOwnerAfterTheSender() {
+        let email = makeEmail().ownedBy(NotificationOwner(accountId: "delegated-1", name: "Owner One"))
+
+        XCTAssertEqual(email.notificationTitle, "Bob · Owner One")
+    }
+
+    func testDelegatedEmailTitleIsTheOwnerWithoutASender() {
+        let email = makeEmail(sender: nil).ownedBy(NotificationOwner(accountId: "delegated-1", name: "Owner One"))
+
+        XCTAssertEqual(email.notificationTitle, "Owner One")
+    }
+
+    func testDelegatedEmailWithoutOwnerNameKeepsTheSenderTitle() {
+        let email = makeEmail().ownedBy(NotificationOwner(accountId: "delegated-1", name: nil))
+
+        XCTAssertEqual(email.notificationTitle, "Bob")
+        XCTAssertEqual(email.notificationUserInfo[JmapConstants.ACCOUNT_ID] as? String, "delegated-1")
+    }
+
+    func testDecodedEmailHasNoOwner() throws {
+        let email = try JSONDecoder().decode(Email.self, from: Data(#"{"id":"e1"}"#.utf8))
+
+        XCTAssertNil(email.owner)
+    }
+
+    func testNotificationOfTheDelegatedMailboxShowsItsAccount() {
+        let email = makeEmail().ownedBy(NotificationOwner(accountId: "delegated-1", name: "Owner One"))
+
+        XCTAssertTrue(CoreUtils.notificationShowsAccount(email.notificationUserInfo, accountId: "delegated-1"))
+    }
+
+    func testNotificationShouldNotShowAnotherAccount() {
+        let delegated = makeEmail().ownedBy(NotificationOwner(accountId: "delegated-11", name: "Owner One"))
+
+        XCTAssertFalse(CoreUtils.notificationShowsAccount(delegated.notificationUserInfo, accountId: "delegated-1"))
+        XCTAssertFalse(CoreUtils.notificationShowsAccount(makeEmail().notificationUserInfo, accountId: "delegated-1"))
+        XCTAssertFalse(CoreUtils.notificationShowsAccount(makeEmail().notificationUserInfo, accountId: ""))
+    }
 }

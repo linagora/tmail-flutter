@@ -7,12 +7,14 @@ final class KeychainSharingSessionTests: XCTestCase {
             KeychainDelegatedAccount(
                 accountId: "delegated-1",
                 emailDeliveryState: "delivery-1",
-                mailboxIdsBlockNotification: ["mb-1"]
+                mailboxIdsBlockNotification: ["mb-1"],
+                ownerName: "Owner One"
             ),
             KeychainDelegatedAccount(
                 accountId: "delegated-2",
                 emailDeliveryState: "delivery-2",
-                mailboxIdsBlockNotification: nil
+                mailboxIdsBlockNotification: nil,
+                ownerName: nil
             ),
         ]
     ) -> KeychainSharingSession {

@@ -8,16 +8,14 @@ import flutter_local_notifications
 
     var notificationInteractionChannel: FlutterMethodChannel?
     var fcmMethodChannel: FlutterMethodChannel?
-    var currentEmailId: String?
+    var currentNotificationTap: [String: String]?
     
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        if let payload = launchOptions?[.remoteNotification] as? [AnyHashable : Any],
-           let emailId = payload[JmapConstants.EMAIL_ID] as? String,
-           !emailId.isEmpty {
-            currentEmailId = emailId
+        if let payload = launchOptions?[.remoteNotification] as? [AnyHashable : Any] {
+            currentNotificationTap = AppDelegate.notificationTap(of: payload)
         }
         
         if #available(iOS 10.0, *) {
@@ -156,10 +154,10 @@ import flutter_local_notifications
         
         let userInfo = response.notification.request.content.userInfo
         
-        if let emailId = userInfo[JmapConstants.EMAIL_ID] as? String, !emailId.isEmpty {
+        if let tap = AppDelegate.notificationTap(of: userInfo) {
             self.notificationInteractionChannel?.invokeMethod(
                 CoreUtils.CURRENT_EMAIL_ID_IN_NOTIFICATION_CLICK_WHEN_APP_FOREGROUND_OR_BACKGROUND,
-                arguments: emailId)
+                arguments: tap)
         }
         
         completionHandler()
@@ -174,6 +172,26 @@ import flutter_local_notifications
 }
 
 extension AppDelegate {
+    /// The email id of a tapped notification, with the account id when it belongs to a delegated mailbox.
+    static func notificationTap(of userInfo: [AnyHashable: Any]) -> [String: String]? {
+        guard let emailId = userInfo[JmapConstants.EMAIL_ID] as? String, !emailId.isEmpty else { return nil }
+        guard let accountId = userInfo[JmapConstants.ACCOUNT_ID] as? String, !accountId.isEmpty else {
+            return [JmapConstants.EMAIL_ID: emailId]
+        }
+        return [JmapConstants.EMAIL_ID: emailId, JmapConstants.ACCOUNT_ID: accountId]
+    }
+
+    /// The NSE posts these itself, so the local notifications plugin does not list them.
+    static func removeDeliveredNotifications(ofAccount accountId: String) {
+        let center = UNUserNotificationCenter.current()
+        center.getDeliveredNotifications { notifications in
+            let ids = notifications
+                .filter { CoreUtils.notificationShowsAccount($0.request.content.userInfo, accountId: accountId) }
+                .map { $0.request.identifier }
+            if !ids.isEmpty { center.removeDeliveredNotifications(withIdentifiers: ids) }
+        }
+    }
+
     private func updateAppBadger(newBadgeCount: Int) {
         TwakeLogger.shared.log(message: "AppDelegate::updateAppBadger::newBadgeCount: \(newBadgeCount)")
         if #available(iOS 16.0, *) {
@@ -193,8 +211,12 @@ extension AppDelegate {
         self.notificationInteractionChannel?.setMethodCallHandler { (call, result) in
             switch call.method {
             case CoreUtils.CURRENT_EMAIL_ID_IN_NOTIFICATION_CLICK_WHEN_APP_TERMINATED:
-                result(self.currentEmailId)
-                self.currentEmailId = nil
+                result(self.currentNotificationTap)
+                self.currentNotificationTap = nil
+            case CoreUtils.REMOVE_DELIVERED_NOTIFICATIONS_OF_ACCOUNT:
+                let accountId = (call.arguments as? [String: Any])?[JmapConstants.ACCOUNT_ID] as? String ?? ""
+                AppDelegate.removeDeliveredNotifications(ofAccount: accountId)
+                result(nil)
             default:
                 break
             }

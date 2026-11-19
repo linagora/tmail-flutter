@@ -11,6 +11,13 @@ class CoreUtils {
     static let FCM_METHOD_CHANNEL_NAME = "plugins.flutter.io/firebase_messaging"
     static let FCM_ON_MESSAGE_METHOD_NAME = "Messaging#onMessage"
     static let APPLICATION_STATE = "applicationState"
+    static let REMOVE_DELIVERED_NOTIFICATIONS_OF_ACCOUNT = "remove_delivered_notifications_of_account"
+
+    /// True when a delivered notification shows an email of the delegated mailbox [accountId].
+    static func notificationShowsAccount(_ userInfo: [AnyHashable: Any], accountId: String) -> Bool {
+        guard !accountId.isEmpty else { return false }
+        return userInfo[JmapConstants.ACCOUNT_ID] as? String == accountId
+    }
 
     func getCurrentDate() -> Date {
         if #available(iOS 15, *) {

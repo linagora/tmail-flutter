@@ -6,4 +6,5 @@ struct ResolvedSharingSession {
     let emailDeliveryState: String?
     let mailboxIdsBlockNotification: [String]?
     let isDelegated: Bool
+    let ownerName: String?
 }
