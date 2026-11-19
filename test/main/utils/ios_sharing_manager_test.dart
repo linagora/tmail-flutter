@@ -224,6 +224,40 @@ void main() {
       );
     });
 
+    test('keeps the stored blocked mailboxes of an item sent without them', () async {
+      final blocked = KeychainDelegatedAccount(
+        accountId: delegated.accountId,
+        emailDeliveryState: 'delivery-1',
+        mailboxIdsBlockNotification: [MailboxId(Id('muted'))],
+        ownerName: 'owner@domain.com',
+      );
+      await keychainSharingManager.saveSharingSession(personalSession(delegatedAccounts: [blocked]));
+
+      await iosSharingManager.updateDelegatedAccountsInKeyChain(accountId: accountId, delegatedAccounts: [delegated]);
+
+      expect((await keychainSharingManager.getSharingSession(accountId))?.delegatedAccounts, [blocked]);
+    });
+
+    test('replaces the stored blocked mailboxes with the ones sent, an empty list included', () async {
+      final blocked = KeychainDelegatedAccount(
+        accountId: delegated.accountId,
+        emailDeliveryState: 'delivery-1',
+        mailboxIdsBlockNotification: [MailboxId(Id('muted'))],
+        ownerName: 'owner@domain.com',
+      );
+      await keychainSharingManager.saveSharingSession(personalSession(delegatedAccounts: [blocked]));
+      final unblocked = KeychainDelegatedAccount(
+        accountId: delegated.accountId,
+        emailDeliveryState: 'delivery-1',
+        mailboxIdsBlockNotification: const [],
+        ownerName: 'owner@domain.com',
+      );
+
+      await iosSharingManager.updateDelegatedAccountsInKeyChain(accountId: accountId, delegatedAccounts: [unblocked]);
+
+      expect((await keychainSharingManager.getSharingSession(accountId))?.delegatedAccounts, [unblocked]);
+    });
+
     test('replaces the stored cursor with the one sent', () async {
       await keychainSharingManager.saveSharingSession(personalSession(delegatedAccounts: [delegated]));
       final moved = KeychainDelegatedAccount(

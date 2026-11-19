@@ -301,20 +301,20 @@ class IOSSharingManager {
     if (keychainSharingStored == null) {
       throw const NotFoundKeychainSharingSessionException();
     }
-    final storedStates = {
+    final storedAccounts = {
       for (final stored in keychainSharingStored.delegatedAccounts ?? const <KeychainDelegatedAccount>[])
-        stored.accountId: stored.emailDeliveryState,
+        stored.accountId: stored,
     };
+    // A field sent as null was not read this time, so the stored value stays.
     final newKeychain = keychainSharingStored.updating(
       delegatedAccounts: delegatedAccounts
-          .map((account) => account.emailDeliveryState != null
-              ? account
-              : KeychainDelegatedAccount(
-                  accountId: account.accountId,
-                  emailDeliveryState: storedStates[account.accountId],
-                  mailboxIdsBlockNotification: account.mailboxIdsBlockNotification,
-                  ownerName: account.ownerName,
-                ))
+          .map((account) => KeychainDelegatedAccount(
+                accountId: account.accountId,
+                emailDeliveryState: account.emailDeliveryState ?? storedAccounts[account.accountId]?.emailDeliveryState,
+                mailboxIdsBlockNotification: account.mailboxIdsBlockNotification ??
+                    storedAccounts[account.accountId]?.mailboxIdsBlockNotification,
+                ownerName: account.ownerName,
+              ))
           .toList(),
     );
     await _keychainSharingManager.saveSharingSession(newKeychain);

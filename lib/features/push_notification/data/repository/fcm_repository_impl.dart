@@ -268,7 +268,7 @@ class FCMRepositoryImpl extends FCMRepository {
     }
   }
 
-  /// Null when the mailboxes cannot be read: the NSE then notifies every mailbox, which beats losing an alert.
+  /// Null when the mailboxes cannot be read: the keychain keeps the stored list, and without one the NSE notifies every mailbox.
   Future<List<MailboxId>?> _mailboxIdsBlockNotification(Session session, AccountId accountId) async {
     try {
       final excluded = await getExcludedMailboxesForNotification(session, accountId);
