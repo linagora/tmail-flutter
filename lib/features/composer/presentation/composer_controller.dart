@@ -299,6 +299,7 @@ class ComposerController extends BaseController
   Timer? periodicSnapshotTimer;
   Timer? inactiveGuardTimer;
   bool isRestoringFromCache = false;
+  bool hasUnrestoredMobileSnapshot = false;
 
   int? get savedEmailDraftHash => _savedEmailDraftHash;
 
@@ -991,14 +992,19 @@ class ComposerController extends BaseController
   bool _isEmptyEmailContentFailure(Failure failure) =>
     failure is GetEmailContentFailure && failure.exception is EmptyEmailContentException;
 
+  /// Unlike [getContentInEditor], a failed read throws instead of looking like an empty body.
+  Future<String> readContentInEditor() async {
+    final htmlTextEditor = PlatformInfo.isWeb
+      ? textEditorWeb
+      : await htmlEditorApi?.getText();
+    return htmlTextEditor?.isNotEmpty == true
+      ? htmlTextEditor!.removeEditorStartTag()
+      : '';
+  }
+
   Future<String> getContentInEditor() async {
     try {
-      final htmlTextEditor = PlatformInfo.isWeb
-        ? textEditorWeb
-        : await htmlEditorApi?.getText();
-      return htmlTextEditor?.isNotEmpty == true
-        ? htmlTextEditor!.removeEditorStartTag()
-        : '';
+      return await readContentInEditor();
     } catch (e) {
       logWarning('ComposerController::getContentInEditor:Exception = $e');
       return '';

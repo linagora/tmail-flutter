@@ -54,7 +54,7 @@ void main() {
     when(composer.listBccEmailAddress).thenReturn([dana]);
     when(composer.listReplyToEmailAddress).thenReturn([evan]);
     when(composer.subjectEmail).thenReturn(Rxn<String>('Quarterly plan'));
-    when(composer.getContentInEditor()).thenAnswer((_) async => '<p>Draft body</p>');
+    when(composer.readContentInEditor()).thenAnswer((_) async => '<p>Draft body</p>');
     when(composer.hasRequestReadReceipt).thenReturn(RxBool(true));
     when(composer.isMarkAsImportant).thenReturn(RxBool(true));
     when(composer.screenDisplayMode).thenReturn(Rx(ScreenDisplayMode.fullScreen));
@@ -141,7 +141,7 @@ void main() {
   });
 
   test('SHOULD NOT list an inline image, its body copy uploads again when sent', () async {
-    when(composer.getContentInEditor()).thenAnswer((_) async => '<p><img src="data:image/png;base64,AAAA"></p>');
+    when(composer.readContentInEditor()).thenAnswer((_) async => '<p><img src="data:image/png;base64,AAAA"></p>');
     when(upload.mapInlineAttachments).thenReturn({'cid-1': Attachment(name: 'logo.png', cid: 'cid-1')});
 
     final carried = await composer.carryOverToAnotherAccount();
@@ -157,7 +157,7 @@ void main() {
   });
 
   test('leaves out the signature of the ended identity but keeps a quoted one', () async {
-    when(composer.getContentInEditor()).thenAnswer((_) async =>
+    when(composer.readContentInEditor()).thenAnswer((_) async =>
         '<p>Draft body</p><div class="tmail-signature">Bob team</div>'
         '<blockquote><div class="tmail-signature">Quoted sender</div></blockquote>'
         '<cite><div class="tmail-signature">Cited sender</div></cite>');
@@ -174,7 +174,7 @@ void main() {
 
   test('SHOULD NOT rewrite a body without a signature of its own', () async {
     const body = '<p>Draft&nbsp;body<br></p><blockquote><div class="tmail-signature">Quoted</div></blockquote>';
-    when(composer.getContentInEditor()).thenAnswer((_) async => body);
+    when(composer.readContentInEditor()).thenAnswer((_) async => body);
 
     expect((await composer.carryOverToAnotherAccount()).arguments.emailContents, body);
   });

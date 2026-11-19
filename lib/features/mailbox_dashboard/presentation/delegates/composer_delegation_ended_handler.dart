@@ -13,10 +13,17 @@ class ComposerDelegationEndedHandler implements DelegationEndedHandler {
   const ComposerDelegationEndedHandler();
 
   @override
-  Future<DelegationEndedHandling> beforeLeave() async {
+  Future<AfterDelegationLeft?> beforeLeave() async {
     final dashboard = getBinding<MailboxDashBoardController>();
-    if (dashboard == null) return const DelegationEndedHandling();
+    if (dashboard == null) return null;
 
+    final carried = await _carryOver(dashboard);
+    if (carried.isEmpty) return null;
+
+    return (showsMine) => _reopen(dashboard, carried, showsMine);
+  }
+
+  Future<List<CarriedOverComposer>> _carryOver(MailboxDashBoardController dashboard) async {
     final carried = <CarriedOverComposer>[];
     for (final composer in _openComposers(dashboard)) {
       try {
@@ -30,17 +37,25 @@ class ComposerDelegationEndedHandler implements DelegationEndedHandler {
         );
       }
     }
-    if (carried.isEmpty) return const DelegationEndedHandling();
+    return carried;
+  }
 
+  Future<DelegationEndedHandling> _reopen(
+    MailboxDashBoardController dashboard,
+    List<CarriedOverComposer> carried,
+    ShowsMine showsMine,
+  ) async {
+    if (!PlatformInfo.isWeb) await _untilLeftComposerRouteIsGone();
+    final reopened = <CarriedOverComposer>[];
+    for (final composer in carried) {
+      // The user may switch mailbox or sign out while the left route closes.
+      if (!showsMine()) break;
+      dashboard.openComposer(composer.arguments);
+      reopened.add(composer);
+    }
     return DelegationEndedHandling(
-      keptComposerCount: carried.length,
-      droppedAttachmentNames: [for (final composer in carried) ...composer.droppedAttachmentNames],
-      afterLeave: () async {
-        if (!PlatformInfo.isWeb) await _untilLeftComposerRouteIsGone();
-        for (final composer in carried) {
-          dashboard.openComposer(composer.arguments);
-        }
-      },
+      keptComposerCount: reopened.length,
+      droppedAttachmentNames: [for (final composer in reopened) ...composer.droppedAttachmentNames],
     );
   }
 

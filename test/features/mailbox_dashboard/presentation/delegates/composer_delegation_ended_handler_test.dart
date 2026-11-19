@@ -40,6 +40,7 @@ void main() {
   late MockComposerManager composerManager;
   late RxMap<String, ComposerView> webComposers;
   const handler = ComposerDelegationEndedHandler();
+  bool showsMine() => true;
 
   setUp(() {
     PlatformInfo.isTestingForWeb = true;
@@ -66,7 +67,7 @@ void main() {
     when(composer.bccEmailAddressController).thenReturn(TextEditingController());
     when(composer.replyToEmailAddressController).thenReturn(TextEditingController());
     when(composer.subjectEmail).thenReturn(Rxn<String>(subject));
-    when(composer.getContentInEditor()).thenAnswer((_) async => '<p>$subject</p>');
+    when(composer.readContentInEditor()).thenAnswer((_) async => '<p>$subject</p>');
     when(composer.hasRequestReadReceipt).thenReturn(RxBool(false));
     when(composer.isMarkAsImportant).thenReturn(RxBool(false));
     when(composer.screenDisplayMode).thenReturn(Rx(ScreenDisplayMode.normal));
@@ -93,24 +94,24 @@ void main() {
     openWebComposer('composer-1', writingComposer('Budget', attachmentNames: ['notes.pdf']));
     openWebComposer('composer-2', writingComposer('Agenda', attachmentNames: ['slides.key']));
 
-    final handling = await handler.beforeLeave();
+    final afterLeave = await handler.beforeLeave();
+
+    verifyNever(composerManager.addComposer(any));
+
+    final handling = await afterLeave!(showsMine);
 
     expect(handling.keptComposerCount, 2);
     expect(handling.droppedAttachmentNames, ['notes.pdf', 'slides.key']);
-    verifyNever(composerManager.addComposer(any));
-
-    await handling.afterLeave!();
-
     expect(reopenedSubjects(), ['Budget', 'Agenda']);
     expect(dashboard.twakeAppManager.hasComposer, isTrue);
   });
 
   test('reopens as a browser composer without the identity of the ended mailbox', () async {
     openWebComposer('composer-1', writingComposer('Budget'));
-    final handling = await handler.beforeLeave();
+    final afterLeave = await handler.beforeLeave();
     when(dashboard.listIdentities).thenReturn([]);
 
-    await handling.afterLeave!();
+    await afterLeave!(showsMine);
 
     final arguments = verify(composerManager.addComposer(captureAny)).captured.single as ComposerArguments;
     expect(arguments.emailActionType, EmailActionType.reopenComposerBrowser);
@@ -119,10 +120,9 @@ void main() {
 
   test('keeps the open mobile composer route too', () async {
     Get.put<ComposerController>(writingComposer('Budget'));
+    final afterLeave = await handler.beforeLeave();
 
-    final handling = await handler.beforeLeave();
-
-    expect(handling.keptComposerCount, 1);
+    expect((await afterLeave!(showsMine)).keptComposerCount, 1);
   });
 
   test('reopens the mobile composer only once the route it left has released its controller', () {
@@ -131,12 +131,12 @@ void main() {
     fakeAsync((async) {
       PlatformInfo.isTestingForWeb = false;
       Get.put<ComposerController>(writingComposer('Budget'));
-      late DelegationEndedHandling handling;
-      handler.beforeLeave().then((value) => handling = value);
+      late AfterDelegationLeft afterLeave;
+      handler.beforeLeave().then((value) => afterLeave = value!);
       async.flushMicrotasks();
       var reopened = false;
 
-      handling.afterLeave!().then((_) => reopened = true);
+      afterLeave(showsMine).then((_) => reopened = true);
       async.elapse(const Duration(milliseconds: 300));
       expect(reopened, isFalse);
 
@@ -152,12 +152,12 @@ void main() {
     fakeAsync((async) {
       PlatformInfo.isTestingForWeb = false;
       Get.put<ComposerController>(writingComposer('Budget'));
-      late DelegationEndedHandling handling;
-      handler.beforeLeave().then((value) => handling = value);
+      late AfterDelegationLeft afterLeave;
+      handler.beforeLeave().then((value) => afterLeave = value!);
       async.flushMicrotasks();
       var reopened = false;
 
-      handling.afterLeave!().then((_) => reopened = true);
+      afterLeave(showsMine).then((_) => reopened = true);
       async.elapse(const Duration(seconds: 2));
 
       expect(reopened, isTrue);
@@ -166,27 +166,35 @@ void main() {
 
   test('SHOULD NOT count a composer it could not read, and still keeps the others', () async {
     final broken = writingComposer('Broken');
-    when(broken.getContentInEditor()).thenThrow(StateError('editor gone'));
+    when(broken.readContentInEditor()).thenThrow(StateError('editor gone'));
     openWebComposer('composer-1', broken);
     openWebComposer('composer-2', writingComposer('Agenda'));
 
-    final handling = await handler.beforeLeave();
-    await handling.afterLeave!();
+    final handling = await (await handler.beforeLeave())!(showsMine);
 
     expect(handling.keptComposerCount, 1);
     expect(reopenedSubjects(), ['Agenda']);
   });
 
+  test('SHOULD NOT reopen nor count the composers left once my mailbox is no longer shown', () async {
+    openWebComposer('composer-1', writingComposer('Budget', attachmentNames: ['notes.pdf']));
+    openWebComposer('composer-2', writingComposer('Agenda', attachmentNames: ['slides.key']));
+    final afterLeave = await handler.beforeLeave();
+    var checks = 0;
+
+    final handling = await afterLeave!(() => checks++ == 0);
+
+    expect(reopenedSubjects(), ['Budget']);
+    expect(handling, const DelegationEndedHandling(keptComposerCount: 1, droppedAttachmentNames: ['notes.pdf']));
+  });
+
   test('SHOULD NOT keep anything when no composer is open', () async {
-    expect(await handler.beforeLeave(), const DelegationEndedHandling());
+    expect(await handler.beforeLeave(), isNull);
   });
 
   test('SHOULD NOT keep anything once the dashboard is gone', () async {
     Get.delete<MailboxDashBoardController>(force: true);
 
-    final handling = await handler.beforeLeave();
-
-    expect(handling.keptComposerCount, 0);
-    expect(handling.afterLeave, isNull);
+    expect(await handler.beforeLeave(), isNull);
   });
 }
