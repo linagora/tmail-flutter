@@ -624,7 +624,7 @@ class MailboxController extends BaseMailboxController
   }
 
   void _refreshMailboxChanges({required jmap.State newState}) {
-    log('MailboxController::_refreshMailboxChanges():newState: $newState, currentMailboxState: $currentMailboxState, newFolderId: $_newFolderId');
+    log('MailboxController::_refreshMailboxChanges():newState: $newState');
     if (accountId == null ||
         session == null ||
         currentMailboxState == null ||
@@ -638,10 +638,7 @@ class MailboxController extends BaseMailboxController
 
   Future<void> _handleWebSocketMessage(WebSocketMessage message) async {
     // An account switch clears the folder state it leaves, so a message queued before it has nothing to refresh.
-    if (currentMailboxState == null) {
-      log('MailboxController::_handleWebSocketMessage: skipped, currentMailboxState is null');
-      return;
-    }
+    if (currentMailboxState == null) return;
     try {
       final refreshViewState = await awaitShownAccountState(refreshAllMailboxInteractor!.execute(
         session!,
