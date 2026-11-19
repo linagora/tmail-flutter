@@ -1,5 +1,3 @@
-import 'jmap/jmap_test_client.dart';
-
 /// Backend a test runs against; defaults to the --dart-define URL.
 class TestBackend {
   final String url;
@@ -17,8 +15,5 @@ class TestBackend {
 
   static TestBackend? get leased => _leased;
 
-  static void use(TestBackend? backend) {
-    _leased = backend;
-    JmapTestClient.reset();
-  }
+  static void use(TestBackend? backend) => _leased = backend;
 }

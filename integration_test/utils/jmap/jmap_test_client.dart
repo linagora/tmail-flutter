@@ -44,14 +44,6 @@ class JmapTestClient {
   final DioClient dioClient;
   final String apiUrl;
 
-  static JmapTestClient? _cached;
-  static String? _cachedKey;
-
-  static void reset() {
-    _cached = null;
-    _cachedKey = null;
-  }
-
   static Future<JmapTestClient> current() async {
     final backendUrl = TestBackend.current.url;
     const email = String.fromEnvironment('BASIC_AUTH_EMAIL');
@@ -64,14 +56,7 @@ class JmapTestClient {
     if (missing.isNotEmpty) {
       throw StateError('JmapTestClient: missing dart-define ${missing.join(', ')}');
     }
-    final key = '$backendUrl|$email';
-    final cached = _cached;
-    if (cached != null && _cachedKey == key) return cached;
-
-    final client = await _connect(backendUrl, email, password);
-    _cached = client;
-    _cachedKey = key;
-    return client;
+    return _connect(backendUrl, email, password);
   }
 
   static Future<JmapTestClient> _connect(
