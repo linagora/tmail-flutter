@@ -38,18 +38,8 @@ class AuthenticationInfoCacheManager extends CacheManagerInteraction {
     this._secureStorage = defaultSecureStorage,
   });
 
-  Future<void> storeAuthenticationInfo(AuthenticationInfoCache authenticationInfoCache) async {
-    final saved = await _writeOutsideHive(jsonEncode({
-      _usernameField: authenticationInfoCache.username,
-      _passwordField: authenticationInfoCache.password,
-    }));
-    if (saved) {
-      _unsavedLogin = null;
-      await _purgeLegacyHive();
-    } else {
-      _unsavedLogin = authenticationInfoCache;
-    }
-  }
+  Future<void> storeAuthenticationInfo(AuthenticationInfoCache authenticationInfoCache) =>
+      _saveLogin(authenticationInfoCache, keepLegacyOnFailure: false);
 
   Future<AuthenticationInfoCache> getAuthenticationInfoStored() async {
     final unsaved = _unsavedLogin;
@@ -65,8 +55,8 @@ class AuthenticationInfoCacheManager extends CacheManagerInteraction {
     if (legacy == null) {
       throw NotFoundAuthenticationInfoCache();
     }
-    // One-time move of an earlier login out of the Hive box.
-    await storeAuthenticationInfo(legacy);
+    // One-time move of an earlier login out of the Hive box; kept there if the move fails.
+    await _saveLogin(legacy, keepLegacyOnFailure: true);
     return legacy;
   }
 
@@ -74,6 +64,18 @@ class AuthenticationInfoCacheManager extends CacheManagerInteraction {
     _unsavedLogin = null;
     await _removeOutsideHive();
     await _authenticationInfoCacheClient.clearAllData();
+  }
+
+  Future<void> _saveLogin(AuthenticationInfoCache login, {required bool keepLegacyOnFailure}) async {
+    final saved = await _writeOutsideHive(jsonEncode({
+      _usernameField: login.username,
+      _passwordField: login.password,
+    }));
+    _unsavedLogin = saved ? null : login;
+    // A new login supersedes the Hive copy even when the secure write failed.
+    if (saved || !keepLegacyOnFailure) {
+      await _purgeLegacyHive();
+    }
   }
 
   // True only when secure storage reads the value back; fss 8 on iOS can drop a write without throwing.
@@ -89,7 +91,7 @@ class AuthenticationInfoCacheManager extends CacheManagerInteraction {
       }
       logError('$runtimeType::_writeOutsideHive: secure_write_verify_failed=true');
     } catch (e, st) {
-      // Login still works this run; the Hive copy is kept so the move retries on next read.
+      // Login still works this run through _unsavedLogin.
       logError('$runtimeType::_writeOutsideHive: secure_write_failed=true', exception: e, stackTrace: st);
     }
     // A failed overwrite must not leave the previous login for the next cold start.

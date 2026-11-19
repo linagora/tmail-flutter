@@ -40,6 +40,19 @@ void main() {
       );
     });
 
+    test('a dropped new login does not leave the earlier Hive login for the next cold start', () async {
+      client.item = alice;
+      storage.dropAllWrites = true;
+
+      await newManager().storeAuthenticationInfo(bob);
+
+      expect(client.item, isNull);
+      expect(
+        newManager().getAuthenticationInfoStored(),
+        throwsA(isA<NotFoundAuthenticationInfoCache>()),
+      );
+    });
+
     test('repeated reads clear the Hive box at most once', () async {
       await newManager().storeAuthenticationInfo(alice);
       final manager = newManager();

@@ -205,13 +205,12 @@ void main() {
       client.item = info;
       await manager.storeAuthenticationInfo(info);
       expect(await manager.getAuthenticationInfoStored(), info);
-      expect(client.item, info);
+      expect(client.item, isNull);
       expect(storage.values, isEmpty);
 
       await manager.storeAuthenticationInfo(info);
 
       expect(storage.values[key], isNotNull);
-      expect(client.item, isNull);
 
       // Stale memory would still return the login after secure storage is wiped.
       storage.values.clear();
