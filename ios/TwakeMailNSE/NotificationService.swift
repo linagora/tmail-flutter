@@ -312,8 +312,8 @@ class NotificationService: UNNotificationServiceExtension {
             return self.notify()
         }
 
-        for email in emails {
-            if (email.id == emails.last?.id) {
+        for (index, email) in emails.enumerated() {
+            if index == emails.count - 1 {
                 self.showModifiedNotification(title: email.notificationTitle,
                                               subtitle: email.subject,
                                               body: email.preview,
