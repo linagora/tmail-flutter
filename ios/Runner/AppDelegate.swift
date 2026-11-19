@@ -182,8 +182,15 @@ extension AppDelegate {
     }
 
     /// The NSE posts these itself, so the local notifications plugin does not list them.
-    static func removeDeliveredNotifications(ofAccount accountId: String) {
+    /// Pending ones too: the NSE schedules all but the last email with a short delay.
+    static func removeNotifications(ofAccount accountId: String) {
         let center = UNUserNotificationCenter.current()
+        center.getPendingNotificationRequests { requests in
+            let ids = requests
+                .filter { CoreUtils.notificationShowsAccount($0.content.userInfo, accountId: accountId) }
+                .map { $0.identifier }
+            if !ids.isEmpty { center.removePendingNotificationRequests(withIdentifiers: ids) }
+        }
         center.getDeliveredNotifications { notifications in
             let ids = notifications
                 .filter { CoreUtils.notificationShowsAccount($0.request.content.userInfo, accountId: accountId) }
@@ -215,7 +222,7 @@ extension AppDelegate {
                 self.currentNotificationTap = nil
             case CoreUtils.REMOVE_DELIVERED_NOTIFICATIONS_OF_ACCOUNT:
                 let accountId = (call.arguments as? [String: Any])?[JmapConstants.ACCOUNT_ID] as? String ?? ""
-                AppDelegate.removeDeliveredNotifications(ofAccount: accountId)
+                AppDelegate.removeNotifications(ofAccount: accountId)
                 result(nil)
             default:
                 break
