@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/main/bindings/delegation/delegation_bindings.dart';
@@ -9,6 +10,11 @@ import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.da
 import '../../../fixtures/delegation_fixtures.dart';
 
 void main() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    Get.put<SharedPreferences>(await SharedPreferences.getInstance());
+  });
+
   tearDown(() {
     appProviderContainer.read(activeAccountProvider.notifier).clear();
     appProviderContainer.invalidate(localSettingsProvider);
