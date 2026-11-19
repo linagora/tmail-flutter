@@ -1,7 +1,7 @@
 # One lease slot of scripts/backend-reset-server.py; keep the image and mounts in sync with docker-compose.yaml.
 services:
   tmail-backend:
-    image: &backend-image linagora/tmail-backend:memory-1.0.23
+    image: &backend-image linagora/tmail-backend:memory-1.0.23.1
     labels:
       - tmail.ci.pool=1
       - tmail.ci.node=${NODE_NAME:-}
