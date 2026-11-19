@@ -43,6 +43,19 @@ mixin AuthenticationClientInteractionMixin {
       ? ExternalUserAgent.ephemeralAsWebAuthenticationSession
       : ExternalUserAgent.asWebAuthenticationSession;
 
+  String getTwakeWorkplaceEndSessionUrl(
+    TokenId tokenId,
+    OIDCConfiguration config,
+    String endSessionEndpoint,
+  ) {
+    final endpoint = Uri.parse(endSessionEndpoint);
+    return endpoint.replace(queryParameters: {
+      ...endpoint.queryParameters,
+      if (tokenId.uuid.isNotEmpty) 'id_token_hint': tokenId.uuid,
+      'post_logout_redirect_uri': config.logoutRedirectUrl,
+    }).toString();
+  }
+
   TokenRequest getRefreshTokenRequest(
     String clientId,
     String redirectUrl,

@@ -160,6 +160,51 @@ void main() {
       );
     });
   });
+
+  group('AuthenticationClientInteractionMixin::getTwakeWorkplaceEndSessionUrl',
+      () {
+    final config = OIDCConfiguration(
+      authority: 'https://sso.example.com',
+      clientId: 'teammail-mobile',
+      scopes: const ['openid'],
+      isTWP: true,
+    );
+
+    test('adds the id token hint and the post-logout redirect', () {
+      final url = Uri.parse(authClient.getTwakeWorkplaceEndSessionUrl(
+        TokenId('an-id-token'),
+        config,
+        'https://sso.example.com/oauth2/logout',
+      ));
+
+      expect(url.path, '/oauth2/logout');
+      expect(url.queryParameters, {
+        'id_token_hint': 'an-id-token',
+        'post_logout_redirect_uri': 'twakemail.mobile://redirect',
+      });
+    });
+
+    test('keeps the query the endpoint already has', () {
+      final url = Uri.parse(authClient.getTwakeWorkplaceEndSessionUrl(
+        TokenId('an-id-token'),
+        config,
+        'https://sso.example.com/oauth2/logout?a=1',
+      ));
+
+      expect(url.queryParameters['a'], '1');
+      expect(url.queryParameters['id_token_hint'], 'an-id-token');
+    });
+
+    test('omits the id token hint when there is no id token', () {
+      final url = Uri.parse(authClient.getTwakeWorkplaceEndSessionUrl(
+        TokenId(''),
+        config,
+        'https://sso.example.com/oauth2/logout',
+      ));
+
+      expect(url.queryParameters.containsKey('id_token_hint'), isFalse);
+    });
+  });
 }
 
 /// Mirrors the shape the plugin builds from a token-endpoint failure: [code] is
