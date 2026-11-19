@@ -668,6 +668,7 @@ void main() {
       Map<String, dynamic> generateRequest({
         Properties? propertiesCreated,
         Properties? propertiesUpdated,
+        int maxChanges = 128,
       }) =>
           {
             "using": [
@@ -681,6 +682,7 @@ void main() {
                 {
                   "accountId": AccountFixtures.aliceAccountId.asString,
                   "sinceState": sinceState.value,
+                  "maxChanges": maxChanges,
                 },
                 "c0"
               ],
@@ -821,6 +823,41 @@ void main() {
             ),
           ),
         );
+      });
+
+      test(
+          'should cap maxChanges by the session maxObjectsInGet '
+          'when the server allows fewer ids per get than the default page', () async {
+        // arrange
+        final limitedSession = SessionFixtures.getAliceSessionWithMaxObjectsInGet(30);
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(
+            200,
+            generateResponse(
+              propertiesCreated: defaultCreatedProperties,
+              propertiesUpdated: defaultUpdatedProperties,
+            ),
+          ),
+          data: generateRequest(
+            propertiesCreated: defaultCreatedProperties,
+            propertiesUpdated: defaultUpdatedProperties,
+            maxChanges: 30,
+          ),
+          headers: dioAdapterHeaders,
+        );
+
+        // act
+        final result = await threadApi.getChanges(
+          limitedSession,
+          AccountFixtures.aliceAccountId,
+          sinceState,
+          propertiesCreated: defaultCreatedProperties,
+          propertiesUpdated: defaultUpdatedProperties,
+        );
+
+        // assert
+        expect(result.created, createdEmails);
       });
 
       test(

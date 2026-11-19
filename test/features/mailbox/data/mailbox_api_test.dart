@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -388,6 +389,58 @@ void main() {
           () => mailboxAPI.setRoleDefaultMailbox(session, accountId, listMailbox),
           throwsA(isA<Exception>()),
         );
+      });
+    });
+
+    group('getChanges::', () {
+      test('Should send maxChanges capped by the session maxObjectsInGet', () async {
+        when(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).thenAnswer((_) async => {
+          "methodResponses": [
+            [
+              "Mailbox/changes",
+              {
+                "accountId": accountId.asString,
+                "oldState": "old",
+                "newState": "new",
+                "hasMoreChanges": false,
+                "created": [],
+                "updated": [],
+                "destroyed": [],
+              },
+              "c0"
+            ],
+            for (final callId in ['c1', 'c2'])
+              [
+                "Mailbox/get",
+                {
+                  "accountId": accountId.asString,
+                  "state": "new",
+                  "list": [],
+                  "notFound": [],
+                },
+                callId
+              ],
+          ],
+          "sessionState": "0"
+        });
+
+        await mailboxAPI.getChanges(
+          SessionFixtures.getAliceSessionWithMaxObjectsInGet(30),
+          accountId,
+          State('old'),
+        );
+
+        final sent = verify(httpClient.post(
+          '',
+          data: captureAnyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).captured.single as Map<String, dynamic>;
+        final changesArgs = (sent['methodCalls'] as List).first[1] as Map<String, dynamic>;
+        expect(changesArgs['maxChanges'], 30);
       });
     });
 

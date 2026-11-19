@@ -100,7 +100,7 @@ class MailboxAPI with HandleSetErrorMixin, SessionMixin, MailAPIMixin {
 
     final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
 
-    final changesMailboxMethod = ChangesMailboxMethod(accountId, sinceState, maxChanges: UnsignedInt(128));
+    final changesMailboxMethod = ChangesMailboxMethod(accountId, sinceState, maxChanges: session.getMaxChanges(accountId));
 
     final changesMailboxInvocation = jmapRequestBuilder.invocation(changesMailboxMethod);
 
