@@ -260,7 +260,8 @@ void main() {
     for (final switched in [false, true]) {
       testWidgets('Retry on a failed folder load ${switched ? 'does nothing once another account is shown' : 'loads the folders again'}',
           (tester) async {
-        await pumpLocalizedApp(tester);
+        // The mobile start reads its providers from the view.
+        await pumpLocalizedApp(tester, container: ActiveAccountSourceFixtures.newContainer());
         // Never closed: a stream nobody listens to never completes its close.
         final retry = StreamController<Either<Failure, Success>>();
         when(getAllMailboxInteractor.execute(testSession, testAccountId)).thenAnswer((_) => Stream.value(
