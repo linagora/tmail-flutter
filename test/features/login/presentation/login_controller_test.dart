@@ -7,11 +7,15 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/oidc/response/oidc_link_dto.dart';
 import 'package:model/oidc/response/oidc_response.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/delegation/data/datasource/last_shown_account_store_impl.dart';
+import 'package:tmail_ui_user/features/delegation/domain/repository/last_shown_account_store.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
@@ -52,6 +56,7 @@ import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../fixtures/delegation_fixtures.dart';
 import 'login_controller_test.mocks.dart';
 
 class _MinifiedLikeException implements Exception {
@@ -523,6 +528,45 @@ void main() {
       )).captured.single;
       expect(captured, same(oidcResponse));
       expect(captured, isNot(isA<BaseUrlOidcResponse>()));
+    });
+  });
+  group('LoginController::handleReloaded::', () {
+    final alice = UserName(DelegationFixtures.aliceAddress);
+    final carol = UserName(DelegationFixtures.carolAddress);
+    late LastShownAccountStore store;
+
+    setUp(() async {
+      SharedPreferences.setMockInitialValues({});
+      store = LastShownAccountStoreImpl(await SharedPreferences.getInstance());
+      Get.put<LastShownAccountStore>(store);
+      addTearDown(() => Get.delete<LastShownAccountStore>());
+    });
+
+    test('forgets the last shown account of the signed-in user so the app starts on mine', () async {
+      await store.save(alice, DelegationFixtures.bobAccountId);
+
+      await loginController.handleReloaded(DelegationFixtures.session());
+
+      expect(store.read(alice), isNull);
+    });
+
+    test('should keep the last shown account of another user', () async {
+      await store.save(carol, DelegationFixtures.bobAccountId);
+
+      await loginController.handleReloaded(DelegationFixtures.session());
+
+      expect(store.read(carol), DelegationFixtures.bobAccountId);
+    });
+
+    test('should keep the entry on web, where the URL names the shown account', () async {
+      PlatformInfo.isTestingForWeb = true;
+      addTearDown(() => PlatformInfo.isTestingForWeb = false);
+      when(mockCachingManager.clearAllEmailAndStateCache()).thenAnswer((_) async {});
+      await store.save(alice, DelegationFixtures.bobAccountId);
+
+      await loginController.handleReloaded(DelegationFixtures.session());
+
+      expect(store.read(alice), DelegationFixtures.bobAccountId);
     });
   });
 }

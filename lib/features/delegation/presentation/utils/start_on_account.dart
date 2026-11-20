@@ -10,32 +10,32 @@ import 'package:tmail_ui_user/features/delegation/presentation/utils/account_swi
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/providers/app_toast_provider.dart';
 
-/// Shows the `account` of a web start URL through a switch (ADR-0114 Start on a delegated account).
+/// Shows the account of a start (web URL, remembered mobile account) through a switch (ADR-0114 Start on a delegated account).
 /// Returns false when mine stays shown, after its toast.
-Future<bool> startOnUrlAccount({
+Future<bool> startOnAccount({
   required BuildContext context,
-  required AccountId urlAccountId,
+  required AccountId accountId,
 }) async {
   final container = ProviderScope.containerOf(context, listen: false);
   final result = await container
       .read(accountSwitchProvider.notifier)
-      .switchTo(urlAccountId, container.read(accountSwitchViewFactoryProvider)(context));
+      .switchTo(accountId, container.read(accountSwitchViewFactoryProvider)(context));
   if (result is AccountSwitched) return true;
   if (!context.mounted) return false;
 
-  showUrlAccountStartToast(
+  showAccountStartToast(
     context: context,
     appToast: container.read(appToastProvider),
     args: AccountSwitchFailureToastArgs(
       result: result,
-      ownerDisplayName: _ownerDisplayName(container, urlAccountId),
+      ownerDisplayName: _ownerDisplayName(container, accountId),
     ),
   );
   return false;
 }
 
 /// An account the start cannot show gets the info toast, a switch that ran gets the switch toasts.
-void showUrlAccountStartToast({
+void showAccountStartToast({
   required BuildContext context,
   required AppToast appToast,
   required AccountSwitchFailureToastArgs args,
