@@ -2340,6 +2340,64 @@ void main() {
       });
     });
 
+    // The composer restore of my own draft can open it after a notification tap switched to a
+    // delegated mailbox: the draft keeps my identity id, and openComposer adds the identities of the
+    // shown mailbox. Web editor mocks are used, the identity and account logic is shared by mobile.
+    group('a draft of mine restored while a delegated mailbox is shown:', () {
+      const draftContent = '<p>my draft</p>';
+      final myIdentity = Identity(id: IdentityId(Id('my-identity')), name: 'Alice', email: 'alice@domain.tld');
+      final bobIdentity = Identity(id: IdentityId(Id('bob-identity')), name: 'Bob', email: DelegationFixtures.bobAddress);
+
+      setUp(() {
+        PlatformInfo.isTestingForWeb = true;
+        mockMailboxDashBoardController.currentSession = DelegationFixtures.session();
+        mockMailboxDashBoardController.shownAccountIdOverride = DelegationFixtures.bobAccountId;
+        addTearDown(() {
+          PlatformInfo.isTestingForWeb = false;
+          mockMailboxDashBoardController.currentSession = SessionFixtures.aliceSession;
+          mockMailboxDashBoardController.shownAccountIdOverride = null;
+        });
+        composerController?.richTextWebController = mockRichTextWebController;
+        composerController?.setTextEditorWeb(draftContent);
+        final arguments = ComposerArguments(
+          emailActionType: EmailActionType.restoreComposerFromPersistentCache,
+          selectedIdentityId: myIdentity.id,
+          identities: [bobIdentity],
+        );
+        composerController?.composerArguments.value = arguments;
+        composerController?.currentEmailActionType = arguments.emailActionType;
+        composerController?.listFromIdentities.value = arguments.identities!;
+        composerController?.identitySelected.value = null;
+      });
+
+      test('control: keeps my identity when the identities list it', () async {
+        composerController?.listFromIdentities.value = [bobIdentity, myIdentity];
+
+        await composerController?.setupSelectedIdentity();
+
+        expect(composerController?.identitySelected.value, myIdentity);
+      });
+
+      test('SHOULD NOT send my draft as the owner of the delegated mailbox', () async {
+        await composerController?.setupSelectedIdentity();
+
+        expect(composerController?.identitySelected.value, isNot(bobIdentity),
+            reason: 'my identity is not listed, so the first identity of the shown mailbox is taken');
+      });
+
+      test('SHOULD NOT save my draft into the delegated mailbox', () async {
+        when(mockUploadController.attachmentsUploaded).thenReturn([]);
+        when(mockComposerRepository.removeCollapsedExpandedSignatureEffect(
+          emailContent: anyNamed('emailContent'),
+        )).thenAnswer((_) async => draftContent);
+
+        final request = await composerController?.buildCreateEmailRequestForAutoSave();
+
+        expect(request?.accountId, AccountFixtures.aliceAccountId,
+            reason: 'the auto-save and the send use the shown account');
+      });
+    });
+
     group('onBeforeReconnect:', () {
       const emailContent = '<p>unsent draft</p>';
 
