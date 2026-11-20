@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
@@ -82,6 +83,9 @@ class _AccountSwitchLoadingDialogState extends State<AccountSwitchLoadingDialog>
     final statusTextStyle = dialogStyle.messageTextStyle.copyWith(
       color: const Color(0xFF424244),
     );
+    final message = widget.returningToMine
+        ? l10n.openingYourMailbox
+        : l10n.openingOwnerMailbox(widget.ownerName);
 
     return Shortcuts(
       shortcuts: const {
@@ -107,103 +111,113 @@ class _AccountSwitchLoadingDialogState extends State<AccountSwitchLoadingDialog>
             onPopInvokedWithResult: (didPop, _) {
               if (!didPop) widget.onCancel();
             },
-            child: Center(
-              // Same outer margin as [LinagoraDialog.insetPadding].
-              child: Padding(
-                key: const ValueKey(UiKeys.accountSwitchLoadingDialog),
-                padding: const EdgeInsetsDirectional.symmetric(
-                  horizontal: 16,
-                  vertical: 24,
-                ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 320),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: dialogStyle.surfaceColor,
-                        borderRadius:
-                            BorderRadius.circular(dialogStyle.surfaceRadius),
-                        boxShadow: dialogStyle.surfaceShadow,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 28, 24, 16),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SizedBox(
-                              width: 64,
-                              height: 64,
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: 64,
-                                    height: 64,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 3,
-                                      color: dialogStyle.primaryActionColor,
-                                      backgroundColor: dialogStyle
-                                          .primaryActionColor
-                                          .withValues(alpha: 0.12),
-                                    ),
-                                  ),
-                                  CircleAvatar(
-                                    radius: 22,
-                                    backgroundColor: dialogStyle
-                                        .primaryActionColor
-                                        .withValues(alpha: 0.12),
-                                    child: Text(
-                                      initial,
-                                      style: statusTextStyle.copyWith(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w600,
-                                        color: dialogStyle.primaryActionColor,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            Text.rich(
-                              TextSpan(
-                                children:
-                                    AccountSwitchLoadingDialog
-                                        .openingMessageSpans(
-                                  message: widget.returningToMine
-                                      ? l10n.openingYourMailbox
-                                      : l10n.openingOwnerMailbox(
-                                          widget.ownerName,
+            // Not a container: it merges with the autofocused Focus node, so focus lands on the named dialog.
+            child: Semantics(
+              role: SemanticsRole.dialog,
+              scopesRoute: true,
+              namesRoute: true,
+              explicitChildNodes: true,
+              label: message,
+              child: Center(
+                // Same outer margin as [LinagoraDialog.insetPadding].
+                child: Padding(
+                  key: const ValueKey(UiKeys.accountSwitchLoadingDialog),
+                  padding: const EdgeInsetsDirectional.symmetric(
+                    horizontal: 16,
+                    vertical: 24,
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 320),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: dialogStyle.surfaceColor,
+                          borderRadius: BorderRadius.circular(
+                            dialogStyle.surfaceRadius,
+                          ),
+                          boxShadow: dialogStyle.surfaceShadow,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 28, 24, 16),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              ExcludeSemantics(
+                                child: SizedBox(
+                                  width: 64,
+                                  height: 64,
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      SizedBox(
+                                        width: 64,
+                                        height: 64,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 3,
+                                          color: dialogStyle.primaryActionColor,
+                                          backgroundColor: dialogStyle
+                                              .primaryActionColor
+                                              .withValues(alpha: 0.12),
                                         ),
-                                  // Bold the owner only when switching to them.
-                                  ownerName: widget.returningToMine
-                                      ? ''
-                                      : widget.ownerName,
-                                  baseStyle: statusTextStyle,
+                                      ),
+                                      CircleAvatar(
+                                        radius: 22,
+                                        backgroundColor: dialogStyle
+                                            .primaryActionColor
+                                            .withValues(alpha: 0.12),
+                                        child: Text(
+                                          initial,
+                                          style: statusTextStyle.copyWith(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600,
+                                            color:
+                                                dialogStyle.primaryActionColor,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              textAlign: TextAlign.center,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 16),
-                            LinagoraButton(
-                              key: const ValueKey(
-                                UiKeys.accountSwitchLoadingCancel,
+                              const SizedBox(height: 20),
+                              // The dialog label already announces this message.
+                              ExcludeSemantics(
+                                child: Text.rich(
+                                  TextSpan(
+                                    children:
+                                        AccountSwitchLoadingDialog.openingMessageSpans(
+                                          message: message,
+                                          // Bold the owner only when switching to them.
+                                          ownerName: widget.returningToMine
+                                              ? ''
+                                              : widget.ownerName,
+                                          baseStyle: statusTextStyle,
+                                        ),
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                              label: l10n.cancel,
-                              onPressed: widget.onCancel,
-                              variant: LinagoraButtonVariant.filled,
-                              height: dialogStyle.actionHeight,
-                              padding: dialogStyle.actionPadding,
-                              textStyle: dialogStyle.actionTextStyle,
-                              // Match app cancel chips (Empty mailbox / confirm).
-                              backgroundColor:
-                                  AppColor.colorCancelPopupDialogButton,
-                              foregroundColor: const Color(0xFF424244),
-                            ),
-                          ],
+                              const SizedBox(height: 16),
+                              LinagoraButton(
+                                key: const ValueKey(
+                                  UiKeys.accountSwitchLoadingCancel,
+                                ),
+                                label: l10n.cancel,
+                                onPressed: widget.onCancel,
+                                variant: LinagoraButtonVariant.filled,
+                                height: dialogStyle.actionHeight,
+                                padding: dialogStyle.actionPadding,
+                                textStyle: dialogStyle.actionTextStyle,
+                                // Match app cancel chips (Empty mailbox / confirm).
+                                backgroundColor:
+                                    AppColor.colorCancelPopupDialogButton,
+                                foregroundColor: const Color(0xFF424244),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
