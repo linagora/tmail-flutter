@@ -1,5 +1,7 @@
 # Twake Mail
 
+- Decisions: `docs/decisions.md`, mandatory. Search it before asking a question or proposing a change; record every decision there, in the commit that applies it (skill `twake-decisions`).
+
  ## Build
 
  To update Flutter packages, run `./scripts/prebuild.sh` instead of `flutter pub get`.
