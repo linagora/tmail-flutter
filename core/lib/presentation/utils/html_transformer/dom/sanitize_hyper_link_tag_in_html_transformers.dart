@@ -2,6 +2,7 @@ import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/sanitize_url.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/external_link_policy.dart';
 import 'package:html/dom.dart';
 
 class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
@@ -49,27 +50,46 @@ class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
       // SanitizeUrl returns its input when decoding fails, so that is a
       // rejection too.
       element.attributes.remove('href');
-    } else if (urlSanitized.isNotEmpty) {
-      element.attributes['href'] = urlSanitized;
+      return;
+    }
+
+    final keptUrl = urlSanitized.isNotEmpty ? urlSanitized : url;
+    if (ExternalLinkPolicy.canKeepInContent(_trimBrowserWhitespace(keptUrl))) {
+      element.attributes['href'] = keptUrl;
+    } else {
+      element.attributes.remove('href');
     }
   }
 
   /// Only scheme-less hrefs that unambiguously name a host get `https`.
   /// A "looks like a domain" check would turn `setup.zip` into a real host.
   String _withDefaultScheme(String url) {
-    final trimmedUrl = url.trim();
+    final trimmedUrl = _trimBrowserWhitespace(url);
     if (trimmedUrl.startsWith('//')) return 'https:$trimmedUrl';
     if (trimmedUrl.toLowerCase().startsWith('www.')) return 'https://$trimmedUrl';
     return url;
   }
 
   bool _isRelativeUrl(String url) {
-    final trimmedUrl = url.trim();
-    if (trimmedUrl.isEmpty || trimmedUrl.startsWith('#')) {
-      return false;
-    }
-    final uri = Uri.tryParse(_tryDecode(trimmedUrl) ?? trimmedUrl);
+    final trimmedUrl = _trimBrowserWhitespace(url);
+    if (trimmedUrl.startsWith('#')) return false;
+    // The browser reads the raw value: `https%3A//x` and an empty href are relative to the app page.
+    final uri = Uri.tryParse(trimmedUrl);
     return uri == null || !uri.hasScheme;
+  }
+
+  /// Strips only what the browser URL parser strips (C0 controls and space).
+  /// `String.trim` also drops U+00A0 and U+FEFF, which the browser keeps, making the href relative.
+  String _trimBrowserWhitespace(String url) {
+    var start = 0;
+    var end = url.length;
+    while (start < end && url.codeUnitAt(start) <= 0x20) {
+      start++;
+    }
+    while (end > start && url.codeUnitAt(end - 1) <= 0x20) {
+      end--;
+    }
+    return url.substring(start, end);
   }
 
   String? _tryDecode(String url) {
