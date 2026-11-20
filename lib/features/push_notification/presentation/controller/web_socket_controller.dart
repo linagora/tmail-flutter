@@ -30,6 +30,8 @@ import 'package:tmail_ui_user/features/push_notification/presentation/listener/m
 import 'package:tmail_ui_user/features/push_notification/presentation/model/state_change_account_filter.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/model/state_change_action_roles.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
+import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -348,10 +350,16 @@ class WebSocketController extends PushBaseController {
 
   StateChangeAccountFilter _accountFilter() {
     final source = getBinding<ActiveAccountSource>();
+    final delegatedAccountIds = notifiedDelegatedAccountIds(
+      source?.activeAccount?.session,
+      appProviderContainer.read(localSettingsProvider),
+    );
     return StateChangeAccountFilter(
       personalAccountId: personalAccountId!,
       activeAccountId: source?.accountId ?? personalAccountId,
       isSwitching: source?.isSwitching ?? false,
+      delegatedAccountIds: delegatedAccountIds,
+      includeDelegated: delegatedAccountIds.isNotEmpty,
     );
   }
 

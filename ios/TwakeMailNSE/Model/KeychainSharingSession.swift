@@ -5,12 +5,14 @@ struct KeychainDelegatedAccount: Codable {
     let accountId: String
     let emailDeliveryState: String?
     let mailboxIdsBlockNotification: [String]?
+    let ownerName: String?
 
     func updateEmailDeliveryState(newEmailDeliveryState: String) -> KeychainDelegatedAccount {
         return KeychainDelegatedAccount(
             accountId: accountId,
             emailDeliveryState: newEmailDeliveryState,
-            mailboxIdsBlockNotification: mailboxIdsBlockNotification
+            mailboxIdsBlockNotification: mailboxIdsBlockNotification,
+            ownerName: ownerName
         )
     }
 }

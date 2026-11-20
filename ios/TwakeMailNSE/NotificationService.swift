@@ -144,6 +144,11 @@ class NotificationService: UNNotificationServiceExtension {
 
         guard let oldEmailDeliveryState = resolved.emailDeliveryState else {
             SentryManager.shared.capture(message: "NSE: No stored email state for account: \(accountId)")
+            persist(
+                .seedMissingCursor(isDelegated: resolved.isDelegated, payloadState: newEmailDeliveryState),
+                accountId: accountId,
+                resolved: resolved
+            )
             finishAccountStep(batch: batch, emails: [], then: continueNext)
             return
         }
@@ -217,7 +222,10 @@ class NotificationService: UNNotificationServiceExtension {
                     emails: emails,
                     mailboxIdsBlockNotification: resolved.mailboxIdsBlockNotification ?? []
                 )
-                self.finishAccountStep(batch: batch, emails: filtered, then: continueNext)
+                let owner = resolved.isDelegated
+                    ? NotificationOwner(accountId: accountId, name: resolved.ownerName)
+                    : nil
+                self.finishAccountStep(batch: batch, emails: filtered.map { $0.ownedBy(owner) }, then: continueNext)
             }
         )
     }
@@ -309,21 +317,21 @@ class NotificationService: UNNotificationServiceExtension {
             return self.notify()
         }
 
-        for email in emails {
-            if (email.id == emails.last?.id) {
-                self.showModifiedNotification(title: email.getSenderName(),
+        for (index, email) in emails.enumerated() {
+            if index == emails.count - 1 {
+                self.showModifiedNotification(title: email.notificationTitle,
                                               subtitle: email.subject,
                                               body: email.preview,
                                               badgeCount: emails.count,
-                                              userInfo: [JmapConstants.EMAIL_ID : email.id])
+                                              userInfo: email.notificationUserInfo)
                 return self.notify()
             } else {
-                self.showNewNotification(title: email.getSenderName(),
+                self.showNewNotification(title: email.notificationTitle,
                                          subtitle: email.subject,
                                          body: email.preview,
                                          badgeCount: emails.count,
-                                         notificationId: email.id,
-                                         userInfo: [JmapConstants.EMAIL_ID : email.id])
+                                         notificationId: email.notificationId,
+                                         userInfo: email.notificationUserInfo)
             }
         }
     }

@@ -24,6 +24,7 @@ import 'package:tmail_ui_user/features/delegation/domain/repository/ended_delega
 import 'package:tmail_ui_user/features/offline_mode/model/detailed_email_hive_cache.dart';
 import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
+import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
 import 'package:universal_html/html.dart' as html;
 
 typedef WebSessionStorageKeys = Iterable<String> Function();
@@ -194,7 +195,7 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
       throw StateError('EndedDelegationStoreImpl::delete: $lostFailures failed');
     }
     await _deleteComposerSnapshots(userName, accountId);
-    await _removeNotifications(userName, emailIds);
+    await _removeNotifications(userName, accountId, emailIds);
   }
 
   /// Opened and new rows stay when a file step failed so the next scan can retry.
@@ -478,15 +479,23 @@ class EndedDelegationStoreImpl implements EndedDelegationStore {
 
   Future<void> _removeNotifications(
     UserName userName,
+    AccountId accountId,
     Set<String> emailIds,
   ) async {
     if (!PlatformInfo.isMobile) return;
     try {
       await LocalNotificationManager.instance.removeMatchingNotifications(
-        (payload, groupKey) =>
-            notificationGroupIsThisUser(groupKey, userName.value) &&
-            payloadNamesEmail(payload, emailIds),
+        (notification) =>
+            notificationGroupIsThisUser(notification.groupKey, userName.value) &&
+            notificationNamesAccountOrEmail(
+              tag: notification.tag,
+              payload: notification.payload,
+              accountId: accountId.asString,
+              emailIds: emailIds,
+            ),
       );
+      if (PlatformInfo.isAndroid) await LocalNotificationManager.instance.removeGroupPushNotification(userName.value);
+      if (PlatformInfo.isIOS) await IOSNotificationManager.removeDeliveredNotificationsOf(accountId);
     } catch (error) {
       logWarning('EndedDelegationStoreImpl::_removeNotifications: $error');
     }

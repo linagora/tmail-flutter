@@ -96,4 +96,6 @@ abstract class ThreadDataSource {
   Future<PresentationEmail> getEmailById(Session session, AccountId accountId, EmailId emailId, {Properties? properties});
 
   Future<void> clearEmailCacheAndStateCache();
+
+  Future<State?> getEmailState(Session session, AccountId accountId);
 }

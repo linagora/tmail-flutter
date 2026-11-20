@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/update_token_expired_time_request.dart';
+import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_delegated_account.dart';
 
 abstract class FCMDatasource {
   Future<void> storeStateToRefresh(AccountId accountId, UserName userName, TypeName typeName, jmap.State newState);
@@ -29,4 +30,8 @@ abstract class FCMDatasource {
   Future<void> destroyFirebaseRegistration(FirebaseRegistrationId registrationId);
 
   Future<void> updateFirebaseRegistrationToken(UpdateTokenExpiredTimeRequest expiredTimeRequest);
+
+  Future<List<KeychainDelegatedAccount>> getDelegatedAccountsInKeychain(AccountId accountId);
+
+  Future<void> storeDelegatedAccountsInKeychain(AccountId accountId, List<KeychainDelegatedAccount> delegatedAccounts);
 }

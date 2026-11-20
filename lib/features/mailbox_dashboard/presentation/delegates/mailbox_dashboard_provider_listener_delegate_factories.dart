@@ -1,4 +1,5 @@
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/dashboard_provider_listener_delegate.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/delegated_notification_baseline_provider_listener_delegate.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/ecosystem_provider_listener_delegate.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/empty_folder_provider_listener_delegate.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/search_refresh_coordinator_provider_listener_delegate.dart';
@@ -9,4 +10,5 @@ const mailboxDashboardProviderListenerDelegateFactories =
   EmptyFolderProviderListenerDelegate.trash,
   EcosystemProviderListenerDelegate.new,
   SearchRefreshCoordinatorProviderListenerDelegate.new,
+  DelegatedNotificationBaselineProviderListenerDelegate.new,
 ];

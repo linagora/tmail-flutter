@@ -49,8 +49,6 @@ const _dashboardPersonalAccountReaders = <String, int>{
   '_handleSendEmailSuccess': 2,
   // Minimum autocomplete length: read once at start from my own account.
   '_setUpMinInputLengthAutocomplete': 2,
-  // Notification taps stay on my own account until delegated accounts are included.
-  '_handleNotificationMessageFromEmailId': 1,
   // Username-only personal: session owner empty, identities fill ownEmailAddress.
   'ownerEmailAddress': 1,
 };

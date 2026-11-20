@@ -65,6 +65,7 @@ import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker
 import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_delegated_notification_baselines_interactor.dart';
 
 class FcmInteractorBindings extends InteractorsBindings {
 
@@ -84,6 +85,7 @@ class FcmInteractorBindings extends InteractorsBindings {
     Get.lazyPut(() => CacheFCMDatasourceImpl(
       Get.find<FCMCacheManager>(),
       Get.find<CacheExceptionThrower>(),
+      Get.find<IOSSharingManager>(),
     ));
     Get.lazyPut(() => FcmDatasourceImpl(
       Get.find<FcmApi>(),
@@ -141,6 +143,7 @@ class FcmInteractorBindings extends InteractorsBindings {
   void bindingsInteractor() {
     Get.lazyPut(() => GetStoredEmailDeliveryStateInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => StoreEmailDeliveryStateInteractor(Get.find<FCMRepositoryImpl>()));
+    Get.lazyPut(() => StoreDelegatedNotificationBaselinesInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => GetEmailChangesToPushNotificationInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => GetEmailChangesToRemoveNotificationInteractor(
       Get.find<FCMRepositoryImpl>(),

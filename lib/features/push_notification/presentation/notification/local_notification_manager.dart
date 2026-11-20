@@ -130,40 +130,48 @@ class LocalNotificationManager {
       ));
   }
 
+  /// [tag] is the Android tag that marks the account of a delegated notification, since Android lists active notifications without their payload.
   Future<void> showPushNotification({
     required String id,
     required String title,
-    bool silent = false,
     String? message,
     EmailAddress? emailAddress,
     String? payload,
     String? groupId,
+    String? ownerName,
+    String? tag,
   }) async {
     final inboxStyleInformation = buildInboxStyleInformation(
       title: title,
       message: message,
       emailAddress: emailAddress,
+      ownerName: ownerName,
     );
 
     await _localNotificationsPlugin.show(
-      id.hashCode,
+      _notificationId(id, tag),
       title,
       message,
       LocalNotificationConfig.instance.generateNotificationDetails(
         styleInformation: inboxStyleInformation,
         groupId: groupId,
-        silent: silent
+        tag: tag,
       ),
       payload: payload);
   }
 
+  /// Android keys the tap intent by the numeric id only, so the same email id in two accounts needs two ids.
+  static int _notificationId(String id, String? tag) => (tag == null ? id : '$tag/$id').hashCode;
+
   /// Subject, preview and sender come from the received email: escape them
   /// before they are rendered as HTML, and show the sender address first so
-  /// that a long or spoofed display name cannot hide it.
+  /// that a long or spoofed display name cannot hide it. [ownerName] names
+  /// the owner of a delegated mailbox after the sender.
   static InboxStyleInformation buildInboxStyleInformation({
     required String title,
     String? message,
     EmailAddress? emailAddress,
+    String? ownerName,
   }) {
     const htmlEscape = HtmlEscape();
     return InboxStyleInformation(
@@ -173,8 +181,14 @@ class LocalNotificationManager {
       htmlFormatLines: true,
       contentTitle: htmlEscape.convert(title),
       htmlFormatContentTitle: true,
-      summaryText: htmlEscape.convert(_senderLine(emailAddress)).addBlockTag('b'),
+      summaryText: htmlEscape.convert(_summaryLine(emailAddress, ownerName)).addBlockTag('b'),
       htmlFormatSummaryText: true);
+  }
+
+  static String _summaryLine(EmailAddress? address, String? ownerName) {
+    final sender = _senderLine(address);
+    if (ownerName == null || ownerName.isEmpty) return sender;
+    return sender.isEmpty ? ownerName : '$sender · $ownerName';
   }
 
   static String _senderLine(EmailAddress? address) {
@@ -186,25 +200,26 @@ class LocalNotificationManager {
   }
 
   Future<void> removeMatchingNotifications(
-    bool Function(String? payload, String? groupKey) matches,
+    bool Function(ActiveNotification notification) matches,
   ) async {
     if (!PlatformInfo.isMobile) return;
     try {
       final active = await _localNotificationsPlugin.getActiveNotifications();
       for (final notification in active) {
-        if (!matches(notification.payload, notification.groupKey)) continue;
+        if (!matches(notification)) continue;
         final id = notification.id;
         if (id == null) continue;
-        await _localNotificationsPlugin.cancel(id);
+        await _localNotificationsPlugin.cancel(id, tag: notification.tag);
       }
     } catch (error) {
       logWarning('LocalNotificationManager::removeMatchingNotifications: $error');
     }
   }
 
-  Future<void> removeNotification(String id) async {
+  /// [tag] must match the one the notification was shown with, Android keeps a tagged one otherwise.
+  Future<void> removeNotification(String id, {String? tag}) async {
     try {
-      await _localNotificationsPlugin.cancel(id.hashCode);
+      await _localNotificationsPlugin.cancel(_notificationId(id, tag), tag: tag);
     } catch (e) {
       logWarning('LocalNotificationManager::removeNotification(): id = $id | ERROR: $e');
     }

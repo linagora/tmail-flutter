@@ -62,6 +62,7 @@ import 'package:tmail_ui_user/features/delegation/domain/model/owner_email_addre
 import 'package:tmail_ui_user/features/delegation/presentation/cleanup_ended_delegations.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/utils/show_notification_account.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
@@ -830,12 +831,17 @@ class MailboxDashBoardController extends ReloadableController
     _iosNotificationManager = getBinding<IOSNotificationManager>();
     _currentEmailIdInNotificationIOSStreamSubscription = _iosNotificationManager
         ?.pendingCurrentEmailIdInNotification.stream
-        .listen((emailId) {
-          if (emailId != null) {
-            _iosNotificationManager?.clearPendingCurrentEmailId();
-            _handleNotificationMessageFromEmailId(emailId);
-          }
-        });
+        .listen((_) => _openPendingIOSNotificationTap());
+  }
+
+  /// A tap before the session loads stays pending until [handleReloaded].
+  void _openPendingIOSNotificationTap() {
+    if (sessionCurrent == null) return;
+    final tap = _iosNotificationManager?.takePendingTap();
+    final emailId = tap?.emailId;
+    if (emailId != null) {
+      _handleNotificationMessageFromEmailId(emailId, notificationAccountId: tap?.accountId);
+    }
   }
 
   void _registerStreamListener() {
@@ -2026,6 +2032,7 @@ class MailboxDashBoardController extends ReloadableController
     if (PlatformInfo.isWeb) {
       _handleComposerCache();
     }
+    _openPendingIOSNotificationTap();
   }
 
   void _getRouteParameters() {
@@ -2508,7 +2515,11 @@ class MailboxDashBoardController extends ReloadableController
       log('MailboxDashBoardController::_handleMessageFromNotification():notificationPayload: $notificationPayload');
 
       if (notificationPayload.emailId != null) {
-        _handleNotificationMessageFromEmailId(notificationPayload.emailId!, onForeground: onForeground);
+        _handleNotificationMessageFromEmailId(
+          notificationPayload.emailId!,
+          notificationAccountId: notificationPayload.accountId,
+          onForeground: onForeground,
+        );
       } else if (notificationPayload.newState != null) {
         _handleNotificationMessageFromNewState(notificationPayload.newState!, onForeground: onForeground);
       } else {
@@ -2525,8 +2536,21 @@ class MailboxDashBoardController extends ReloadableController
     }
   }
 
-  void _handleNotificationMessageFromEmailId(EmailId emailId, {bool onForeground = true}) {
-    final currentAccountId = accountId.value;
+  Future<void> _handleNotificationMessageFromEmailId(
+    EmailId emailId, {
+    AccountId? notificationAccountId,
+    bool onForeground = true,
+  }) async {
+    final context = currentContext;
+    final accountShown = context == null
+        ? notificationAccountId == null
+        : await showNotificationAccount(context: context, notificationAccountId: notificationAccountId);
+    if (!accountShown) {
+      // A cold start still needs a view, a tap in the running app leaves the current one.
+      if (!onForeground) dispatchRoute(DashboardRoutes.thread);
+      return;
+    }
+    final currentAccountId = activeAccountId;
     final session = sessionCurrent;
     if (currentAccountId != null && session != null) {
       if (onForeground) {
@@ -2551,7 +2575,7 @@ class MailboxDashBoardController extends ReloadableController
 
   void _getPresentationEmailFromEmailIdAction(EmailId emailId, AccountId accountId, Session session) {
     log('MailboxDashBoardController:_getPresentationEmailFromEmailIdAction:emailId: $emailId');
-    consumeState(_getEmailByIdInteractor.execute(
+    consumeShownAccountState(_getEmailByIdInteractor.execute(
       session,
       accountId,
       emailId,

@@ -19,4 +19,5 @@ class JmapConstants {
     ]
     
     static let EMAIL_ID = "email_id"
+    static let ACCOUNT_ID = "account_id"
 }

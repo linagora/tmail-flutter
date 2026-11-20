@@ -146,14 +146,28 @@ void main() {
       expect(notificationGroupIsThisUser(null, DelegationFixtures.aliceAddress), isTrue);
     });
 
-    test('payloadNamesEmail matches only an emailId contained in the set', () {
+    test('payloadNamesAccountOrEmail matches only an emailId contained in the set or the account id', () {
       const emailIds = {'email-1'};
-      expect(payloadNamesEmail('{"emailId":"email-10"}', emailIds), isFalse);
-      expect(payloadNamesEmail('{"emailId":"email-1"}', emailIds), isTrue);
-      expect(payloadNamesEmail('{"newState":"email-1"}', emailIds), isFalse);
-      expect(payloadNamesEmail('not json', emailIds), isFalse);
-      expect(payloadNamesEmail(null, emailIds), isFalse);
-      expect(payloadNamesEmail('', emailIds), isFalse);
+      expect(payloadNamesAccountOrEmail('{"emailId":"email-10"}', 'owner', emailIds), isFalse);
+      expect(payloadNamesAccountOrEmail('{"emailId":"email-1"}', 'owner', emailIds), isTrue);
+      expect(payloadNamesAccountOrEmail('{"newState":"email-1"}', 'owner', emailIds), isFalse);
+      expect(payloadNamesAccountOrEmail('not json', 'owner', emailIds), isFalse);
+      expect(payloadNamesAccountOrEmail(null, 'owner', emailIds), isFalse);
+      expect(payloadNamesAccountOrEmail('', 'owner', emailIds), isFalse);
+      expect(payloadNamesAccountOrEmail('{"emailId":"email-10","accountId":"owner"}', 'owner', emailIds), isTrue);
+      expect(payloadNamesAccountOrEmail('{"emailId":"email-10","accountId":"other"}', 'owner', emailIds), isFalse);
+    });
+
+    test('notificationNamesAccountOrEmail matches the Android tag of the account when the payload is missing', () {
+      const emailIds = {'email-1'};
+      expect(notificationNamesAccountOrEmail(tag: 'owner', payload: null, accountId: 'owner', emailIds: emailIds), isTrue);
+      expect(notificationNamesAccountOrEmail(tag: 'other', payload: null, accountId: 'owner', emailIds: emailIds), isFalse);
+      expect(notificationNamesAccountOrEmail(tag: null, payload: null, accountId: 'owner', emailIds: emailIds), isFalse);
+      expect(notificationNamesAccountOrEmail(tag: '', payload: null, accountId: '', emailIds: emailIds), isFalse);
+      expect(
+        notificationNamesAccountOrEmail(tag: null, payload: '{"emailId":"email-1"}', accountId: 'owner', emailIds: emailIds),
+        isTrue,
+      );
     });
 
     test('keeps a notification of another user', () {

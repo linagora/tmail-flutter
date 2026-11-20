@@ -1,5 +1,8 @@
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -30,6 +33,15 @@ import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_
 import '../../../../fixtures/delegation_fixtures.dart';
 
 void main() {
+  setUpAll(() {
+    // The plugin singleton binds its platform on first use, an iOS test run first would leave Android unbound.
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    FlutterLocalNotificationsPlugin();
+    debugDefaultTargetPlatformOverride = null;
+  });
+
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('EndedDelegationStoreImpl.delete', () {
     test(
       'a failed box delete is left out of the deleted accounts and the lost count',
@@ -95,6 +107,106 @@ void main() {
         expect(first + second, 1);
       },
     );
+
+    group('on Android', () {
+      const channel = MethodChannel('dexterous.com/flutter/local_notifications');
+      late List<Map<String, Object?>> active;
+      late List<Object?> cancels;
+
+      setUp(() {
+        debugDefaultTargetPlatformOverride = TargetPlatform.android;
+        cancels = [];
+        active = [
+          {'id': 1, 'groupKey': 'user', 'tag': 'acc'},
+          {'id': 'user'.hashCode, 'groupKey': 'user'},
+        ];
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, (call) async {
+          if (call.method == 'getActiveNotifications') return active;
+          if (call.method == 'cancel') {
+            cancels.add(call.arguments);
+            active = active.where((notification) => notification['id'] != (call.arguments as Map)['id']).toList();
+          }
+          return null;
+        });
+      });
+
+      tearDown(() {
+        debugDefaultTargetPlatformOverride = null;
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, null);
+      });
+
+      test('removes the tagged notifications of the ended mailbox and the summary they leave alone', () async {
+        await _Rig().store.delete(
+          userName: UserName('user'),
+          personalAccountId: AccountId(Id('personal')),
+          accountId: AccountId(Id('acc')),
+        );
+
+        expect(cancels, [
+          {'id': 1, 'tag': 'acc'},
+          {'id': 'user'.hashCode, 'tag': null},
+        ]);
+      });
+
+      test('SHOULD NOT remove the summary while a notification of my own mailbox is still under it', () async {
+        active.add({'id': 2, 'groupKey': 'user'});
+
+        await _Rig().store.delete(
+          userName: UserName('user'),
+          personalAccountId: AccountId(Id('personal')),
+          accountId: AccountId(Id('acc')),
+        );
+
+        expect(cancels, [{'id': 1, 'tag': 'acc'}]);
+      });
+    });
+
+    group('on iOS', () {
+      const channel = MethodChannel('notification_interaction_channel');
+      late List<MethodCall> calls;
+
+      setUp(() {
+        debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+        calls = [];
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(channel, (call) async => calls.add(call));
+      });
+
+      tearDown(() {
+        debugDefaultTargetPlatformOverride = null;
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(channel, null);
+      });
+
+      test('removes the notifications the NSE showed for the ended mailbox', () async {
+        await _Rig().store.delete(
+          userName: UserName('user'),
+          personalAccountId: AccountId(Id('personal')),
+          accountId: AccountId(Id('acc')),
+        );
+
+        expect(calls.map((call) => [call.method, call.arguments]), [
+          ['remove_delivered_notifications_of_account', {'account_id': 'acc'}],
+        ]);
+      });
+
+      test('SHOULD NOT remove the notifications while a box delete failed', () async {
+        final rig = _Rig();
+        rig.mailbox.memory.items[TupleKey('box', 'acc', 'user').encodeKey] = null;
+        rig.mailbox.memory.deleteError = StateError('acc');
+
+        await expectLater(
+          rig.store.delete(
+            userName: UserName('user'),
+            personalAccountId: AccountId(Id('personal')),
+            accountId: AccountId(Id('acc')),
+          ),
+          throwsStateError,
+        );
+
+        expect(calls, isEmpty);
+      });
+    });
 
     test(
       'a username that only continues this one is neither read nor deleted',
