@@ -1,13 +1,14 @@
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:labels/labels.dart';
-import 'package:tmail_ui_user/features/labels/domain/state/create_new_label_state.dart';
-import 'package:tmail_ui_user/features/labels/domain/usecases/create_new_label_interactor.dart';
+import 'package:tmail_ui_user/features/labels/data/network/label_api.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:uuid/uuid.dart';
 
 import '../models/provisioning_email.dart';
 import '../models/provisioning_label.dart';
-import '../utils/describe_failure.dart';
+import '../utils/jmap/jmap_test_client.dart';
+import '../utils/test_timeouts.dart';
 import '../utils/wait_for_mailbox_ready.dart';
 
 mixin ProvisioningLabelScenarioMixin {
@@ -18,59 +19,57 @@ mixin ProvisioningLabelScenarioMixin {
       return [];
     }
 
-    await waitForMailboxReady();
-
-    final dashboardController = getBinding<MailboxDashBoardController>();
-    final createLabelInteractor = getBinding<CreateNewLabelInteractor>();
-
-    final accountId = dashboardController?.accountId.value;
-    final labelController = dashboardController?.labelController;
-
-    if (dashboardController == null ||
-        createLabelInteractor == null ||
-        accountId == null) {
-      throw StateError(
-        'Provisioning labels: missing dashboardController, '
-        'CreateNewLabelInteractor, or accountId',
-      );
-    }
+    final client = await JmapTestClient.current();
+    final labelApi = LabelApi(client.httpClient, const Uuid());
 
     // Sequential: concurrent Label/set races in the memory backend
     final List<Label> createdLabels = [];
     for (final provisioningLabel in provisioningLabels) {
-      final label = await _createLabel(
-        createLabelInteractor,
-        accountId,
-        provisioningLabel,
-      );
-      createdLabels.add(label);
+      try {
+        createdLabels.add(
+          await labelApi.createNewLabel(
+            client.accountId,
+            provisioningLabel.toLabel(),
+          ),
+        );
+      } catch (e, st) {
+        Error.throwWithStackTrace(
+          StateError(
+            'Failed to provision label ${provisioningLabel.displayName}: $e',
+          ),
+          st,
+        );
+      }
     }
 
-    labelController?.getAllLabels(accountId);
+    await _refreshLabelsInUi(client.accountId, createdLabels);
 
     return createdLabels;
   }
 
-  Future<Label> _createLabel(
-    CreateNewLabelInteractor createLabelInteractor,
+  // Await the refresh itself so it cannot rebuild the sidebar mid-test.
+  Future<void> _refreshLabelsInUi(
     AccountId accountId,
-    ProvisioningLabel provisioningLabel,
+    List<Label> created,
   ) async {
-    final result = await createLabelInteractor
-        .execute(accountId, provisioningLabel.toLabel())
-        .last;
-
-    return result.fold(
-      (failure) => throw StateError(
-        'Failed to provision label ${provisioningLabel.displayName}: '
-        '${describeFailure(failure)}',
+    await waitForMailboxReady();
+    final labelController =
+        getBinding<MailboxDashBoardController>()?.labelController;
+    if (labelController == null) {
+      throw StateError('Provisioning labels: no LabelController');
+    }
+    final createdIds = created.map((label) => label.id).toSet();
+    // Subscribe before triggering the refresh so its emission is not missed.
+    final refreshed = labelController.labels.stream.firstWhere(
+      (labels) => createdIds.every((id) => labels.any((l) => l.id == id)),
+    );
+    labelController.getAllLabels(accountId);
+    await refreshed.timeout(
+      TestTimeouts.long,
+      onTimeout: () => throw StateError(
+        'Provisioned labels did not reach the sidebar: '
+        '${created.map((l) => l.safeDisplayName).toList()}',
       ),
-      (success) => success is CreateNewLabelSuccess
-          ? success.newLabel
-          : throw StateError(
-              'Label ${provisioningLabel.displayName} ended in '
-              '${success.runtimeType}',
-            ),
     );
   }
 
