@@ -28,10 +28,15 @@ class DelegatedNotificationBaselineProviderListenerDelegate implements Dashboard
   @override
   void setup(WidgetRef ref, BuildContext Function() contextOf) {
     if (!PlatformInfo.isMobile) return;
-    void store() => _storeIfChanged(ref.read(activeAccountProvider)?.session, ref.read(localSettingsProvider));
+    void store() {
+      // A cold start applies the session before the saved settings load, and the defaults would stop every delegated mailbox.
+      if (!ref.read(localSettingsLoadedProvider)) return;
+      _storeIfChanged(ref.read(activeAccountProvider)?.session, ref.read(localSettingsProvider));
+    }
     _subscriptions
       ..add(ref.listenManual(activeAccountProvider.select((account) => account?.session), (_, __) => store()))
       ..add(ref.listenManual(localSettingsProvider, (_, __) => store()))
+      ..add(ref.listenManual(localSettingsLoadedProvider, (_, __) => store()))
       ..add(ref.listenManual(fcmBindingsRegistrationProvider, (_, __) {
         // A store queued before the binding existed may not have reset the key yet.
         _storedFor = null;

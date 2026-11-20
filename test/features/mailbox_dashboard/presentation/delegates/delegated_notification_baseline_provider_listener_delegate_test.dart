@@ -121,7 +121,7 @@ void main() {
     firstStore.complete();
     await tester.pump();
 
-    expect(finished, [<AccountId, String>{}, bobAndCarol, <AccountId, String>{}]);
+    expect(finished, [bobAndCarol, <AccountId, String>{}]);
   }, variant: mobile);
 
   testWidgets('keeps storing after a store fails', (tester) async {
@@ -135,7 +135,7 @@ void main() {
 
     await setDelegation(tester, container, false);
 
-    expect(stored, [<AccountId, String>{}, <AccountId, String>{}]);
+    expect(stored, [<AccountId, String>{}]);
   }, variant: mobile);
 
   testWidgets('retries the same accounts once the FCM interactors are bound', (tester) async {

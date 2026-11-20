@@ -23,6 +23,7 @@ class LocalSettingsService extends GetxService {
   }
 
   Future<void> _loadInitialSettings() {
+    final settingsNotifier = appProviderContainer.read(localSettingsProvider.notifier);
     return _getLocalSettingsInteractor.execute().last.then(
       (result) => result.fold(
         (failure) => logWarning(
@@ -30,9 +31,7 @@ class LocalSettingsService extends GetxService {
         ),
         (success) {
           if (success is GetLocalSettingsSuccess) {
-            appProviderContainer
-                .read(localSettingsProvider.notifier)
-                .update(success.preferencesSetting);
+            settingsNotifier.update(success.preferencesSetting);
           }
         },
       ),
@@ -40,6 +39,6 @@ class LocalSettingsService extends GetxService {
       logWarning(
         'LocalSettingsService::_loadInitialSettings:error: $error | stackTrace: $stackTrace',
       );
-    });
+    }).whenComplete(settingsNotifier.markLoaded);
   }
 }
