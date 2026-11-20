@@ -129,6 +129,21 @@ final class JmapClientChangesTests: XCTestCase {
         )
     }
 
+    func testMissingCursorIsSeededFromPayloadForDelegatedMailboxOnly() {
+        XCTAssertEqual(
+            DeliveryBookmarkUpdate.seedMissingCursor(isDelegated: true, payloadState: "payload"),
+            .write("payload")
+        )
+        XCTAssertEqual(
+            DeliveryBookmarkUpdate.seedMissingCursor(isDelegated: false, payloadState: "payload"),
+            .keep
+        )
+        XCTAssertEqual(
+            DeliveryBookmarkUpdate.seedMissingCursor(isDelegated: true, payloadState: ""),
+            .keep
+        )
+    }
+
     func testEmptyPayloadStateKeepsBookmark() {
         XCTAssertEqual(
             DeliveryBookmarkUpdate.resolve(

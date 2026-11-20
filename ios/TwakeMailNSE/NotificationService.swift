@@ -144,6 +144,11 @@ class NotificationService: UNNotificationServiceExtension {
 
         guard let oldEmailDeliveryState = resolved.emailDeliveryState else {
             SentryManager.shared.capture(message: "NSE: No stored email state for account: \(accountId)")
+            persist(
+                .seedMissingCursor(isDelegated: resolved.isDelegated, payloadState: newEmailDeliveryState),
+                accountId: accountId,
+                resolved: resolved
+            )
             finishAccountStep(batch: batch, emails: [], then: continueNext)
             return
         }

@@ -24,6 +24,7 @@ import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_detailed_email_by_id_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_stored_state_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_list_detailed_email_by_id_interator.dart';
+import 'package:tmail_ui_user/features/delegation/domain/extensions/session_delegation_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_stored_email_state_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_list_new_email_interator.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
@@ -106,8 +107,10 @@ class EmailChangeListener extends ChangeListener {
         getMailboxesNotPutNotificationsInteractor,
     required PresentLocalPushEmails presentLocalPush,
     MailboxDashBoardController? dashBoardController,
+    GetStoredEmailStateInteractor? getStoredEmailStateInteractor,
   })  : _presentLocalPush = presentLocalPush,
         _dashBoardController = dashBoardController,
+        _getStoredEmailStateInteractor = getStoredEmailStateInteractor,
         _getStoredEmailDeliveryStateInteractor =
             getStoredEmailDeliveryStateInteractor,
         _storeEmailDeliveryStateInteractor = storeEmailDeliveryStateInteractor,
@@ -235,6 +238,11 @@ class EmailChangeListener extends ChangeListener {
     consumeState(_getStoredEmailStateInteractor!.execute(session, accountId));
   }
 
+  void _storeLatestDeliveryState(AccountId accountId, UserName userName) {
+    final newState = _newStateEmailDeliveryByAccount[_accountKey(accountId)];
+    if (newState != null) _storeEmailDeliveryStateAction(accountId, userName, newState);
+  }
+
   void _getEmailChangesAction(
     jmap.State state,
     AccountId? accountId,
@@ -274,7 +282,11 @@ class EmailChangeListener extends ChangeListener {
       final session = accountId == null
           ? _session
           : _sessionByAccount[_accountKey(accountId)] ?? _session;
-      if (accountId != null && session != null) {
+      if (accountId == null || session == null) return;
+      if (session.isDelegatedAccount(accountId)) {
+        // Its email cache state is only as fresh as the last time it was shown, diffing from it would notify old emails.
+        _storeLatestDeliveryState(accountId, failure.userName ?? session.username);
+      } else {
         _getStoredEmailState(accountId, session);
       }
     } else if (failure is GetMailboxesNotPutNotificationsFailure) {

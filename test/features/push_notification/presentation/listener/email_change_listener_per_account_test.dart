@@ -16,7 +16,10 @@ import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_stored_email_state_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_changes_to_push_notification_state.dart';
@@ -89,6 +92,23 @@ class _RecordingGetEmailChangesInteractor
     jmap.State? deliveryState,
   }) {
     calls.add((session, accountId, userName, currentState, deliveryState));
+    return const Stream.empty();
+  }
+}
+
+class _UnusedEmailRepository implements EmailRepository {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _RecordingGetStoredEmailStateInteractor extends GetStoredEmailStateInteractor {
+  _RecordingGetStoredEmailStateInteractor() : super(_UnusedEmailRepository());
+
+  final calls = <AccountId>[];
+
+  @override
+  Stream<Either<Failure, Success>> execute(Session session, AccountId accountId) {
+    calls.add(accountId);
     return const Stream.empty();
   }
 }
@@ -517,6 +537,56 @@ void main() {
 
         expect(cancels.first.arguments, {'id': 'e-1'.hashCode, 'tag': null});
       });
+    });
+  });
+
+  group('without a stored delivery state', () {
+    final delegatedSession = DelegationFixtures.session();
+    final bob = DelegationFixtures.bobAccountId;
+    final alice = DelegationFixtures.aliceAccountId;
+    late _RecordingGetStoredEmailStateInteractor getStoredEmailState;
+
+    setUp(() {
+      getStoredEmailState = _RecordingGetStoredEmailStateInteractor();
+      listener = EmailChangeListener.forTesting(
+        getStoredEmailDeliveryStateInteractor: getStored,
+        storeEmailDeliveryStateInteractor: store,
+        getEmailChangesToPushNotificationInteractor: getChanges,
+        getMailboxesNotPutNotificationsInteractor: getMailboxes,
+        getStoredEmailStateInteractor: getStoredEmailState,
+        presentLocalPush: ({
+          required UserName userName,
+          required List<PresentationEmail> emailList,
+          NotificationOwner? owner,
+        }) async => pushed.add((userName, List.of(emailList))),
+      );
+    });
+
+    void pushWithoutDeliveryState(AccountId accountId) {
+      listener.dispatchActions([
+        PushNotificationAction(TypeName.emailDelivery, newStateA, delegatedSession, accountId, userA),
+      ]);
+      listener.handleFailureViewState(GetStoredEmailDeliveryStateFailure(
+        const NotFoundEmailDeliveryStateException(),
+        accountId: accountId,
+        userName: userA,
+      ));
+    }
+
+    test('a delegated account stores the pushed state as its cursor and notifies nothing', () {
+      pushWithoutDeliveryState(bob);
+
+      expect(store.calls, [(bob, userA, newStateA)]);
+      expect(getStoredEmailState.calls, isEmpty);
+      expect(getChanges.calls, isEmpty);
+      expect(pushed, isEmpty);
+    });
+
+    test('my own account diffs from its stored email state', () {
+      pushWithoutDeliveryState(alice);
+
+      expect(getStoredEmailState.calls, [alice]);
+      expect(store.calls, isEmpty);
     });
   });
 }
