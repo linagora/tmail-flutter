@@ -56,8 +56,9 @@ class _MemoryFcmCache implements FCMDatasource {
   @override
   Future<jmap.State> getStateToRefresh(AccountId accountId, UserName userName, TypeName typeName) async {
     final state = cursors[_key(accountId, typeName)];
-    if (state == null) throw const NotFoundEmailDeliveryStateException();
-    return state;
+    if (state != null) return state;
+    if (typeName == TypeName.emailDelivery) throw const NotFoundEmailDeliveryStateException();
+    throw const NotFoundStateToRefreshException();
   }
 
   @override
@@ -352,5 +353,39 @@ void main() {
     await baseline;
 
     expect(cache.cursorOf(bob), jmap.State('bob-S2'));
+    expect(await repository.getStateToRefresh(bob, session.username, TypeName.emailDelivery), jmap.State('bob-S2'));
+  });
+
+  test('on Android a cursor a push stores after the baseline SHOULD win over it', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    addTearDown(() => debugDefaultTargetPlatformOverride = null);
+    final session = DelegationFixtures.session(listsCarol: false);
+    server.states[bob] = jmap.State('bob-S1');
+
+    await StoreDelegatedNotificationBaselinesInteractor(repository)
+        .execute(session, {bob: DelegationFixtures.bobAddress})
+        .last;
+    final beforePush = await repository.getStateToRefresh(bob, session.username, TypeName.emailDelivery);
+    await repository.storeStateToRefresh(bob, session.username, TypeName.emailDelivery, jmap.State('bob-S2'));
+
+    expect(beforePush, jmap.State('bob-S1'));
+    expect(await repository.getStateToRefresh(bob, session.username, TypeName.emailDelivery), jmap.State('bob-S2'));
+  });
+
+  test('on Android a mailbox no longer notified SHOULD drop its baseline too', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    addTearDown(() => debugDefaultTargetPlatformOverride = null);
+    final session = DelegationFixtures.session(listsCarol: false);
+    server.states[bob] = jmap.State('bob-S1');
+    await StoreDelegatedNotificationBaselinesInteractor(repository)
+        .execute(session, {bob: DelegationFixtures.bobAddress})
+        .last;
+
+    await StoreDelegatedNotificationBaselinesInteractor(repository).execute(session, {}).last;
+
+    expect(
+      () => repository.getStateToRefresh(bob, session.username, TypeName.emailDelivery),
+      throwsA(isA<NotFoundEmailDeliveryStateException>()),
+    );
   });
 }

@@ -161,6 +161,10 @@ void main() {
       ownerName: 'bob@domain.tld',
     );
 
+    setUp(() {
+      when(cacheFCMDatasourceImpl.getDelegatedAccountsInKeychain(accountIdFixture)).thenAnswer((_) async => []);
+    });
+
     tearDown(() => debugDefaultTargetPlatformOverride = null);
 
     test('on iOS writes the keychain items of the personal session with the blocked mailboxes', () async {
@@ -178,17 +182,21 @@ void main() {
           ownerName: 'bob@domain.tld',
         ),
       ])).called(1);
+      verify(cacheFCMDatasourceImpl.getDelegatedAccountsInKeychain(accountIdFixture)).called(1);
       verifyNoMoreInteractions(cacheFCMDatasourceImpl);
     });
 
-    test('on iOS keeps the item without a block list when the mailboxes cannot be read', () async {
+    test('on iOS keeps the item without a block list and fails so the caller retries when the mailboxes cannot be read', () async {
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       when(mailboxCacheDataSourceImpl.getAllMailboxCache(bobAccountId, userNameFixture))
           .thenThrow(Exception('cache closed'));
       when(mailboxDataSource.getAllMailbox(sessionFixture, bobAccountId))
           .thenThrow(Exception('offline'));
 
-      await fcmRepository.storeDelegatedNotificationBaselines(sessionFixture, [baseline]);
+      await expectLater(
+        fcmRepository.storeDelegatedNotificationBaselines(sessionFixture, [baseline]),
+        throwsA(isA<NotFoundMailboxesBlockNotificationException>()),
+      );
 
       verify(cacheFCMDatasourceImpl.storeDelegatedAccountsInKeychain(accountIdFixture, [
         KeychainDelegatedAccount(
@@ -207,7 +215,7 @@ void main() {
       verify(cacheFCMDatasourceImpl.storeDelegatedAccountsInKeychain(accountIdFixture, [])).called(1);
     });
 
-    test('on Android stores the state to refresh of each delegated mailbox', () async {
+    test('on Android stores the baseline of each delegated mailbox under its own key, never over the cursor', () async {
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
 
       await fcmRepository.storeDelegatedNotificationBaselines(sessionFixture, [baseline]);
@@ -215,7 +223,7 @@ void main() {
       verify(cacheFCMDatasourceImpl.storeStateToRefresh(
         bobAccountId,
         userNameFixture,
-        TypeName.emailDelivery,
+        FCMRepositoryImpl.emailDeliveryBaseline,
         bobState,
       )).called(1);
       verifyNoMoreInteractions(cacheFCMDatasourceImpl);
@@ -255,6 +263,11 @@ void main() {
         session.username,
         TypeName.emailDelivery,
       )).called(1);
+      verify(cacheFCMDatasourceImpl.deleteStateToRefresh(
+        DelegationFixtures.carolAccountId,
+        session.username,
+        FCMRepositoryImpl.emailDeliveryBaseline,
+      )).called(1);
       verifyNoMoreInteractions(cacheFCMDatasourceImpl);
     });
   });
@@ -288,6 +301,35 @@ void main() {
         session.username,
         TypeName.emailDelivery,
       )).thenThrow(const NotFoundEmailDeliveryStateException());
+      when(cacheFCMDatasourceImpl.getStateToRefresh(
+        DelegationFixtures.carolAccountId,
+        session.username,
+        FCMRepositoryImpl.emailDeliveryBaseline,
+      )).thenThrow(const NotFoundStateToRefreshException());
+
+      expect(
+        await fcmRepository.getDelegatedAccountIdsWithNotificationCursor(session),
+        {DelegationFixtures.bobAccountId},
+      );
+    });
+
+    test('on Android counts a stored baseline as the cursor until a push stores one', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      final session = DelegationFixtures.session();
+      for (final accountId in [DelegationFixtures.bobAccountId, DelegationFixtures.carolAccountId]) {
+        when(cacheFCMDatasourceImpl.getStateToRefresh(accountId, session.username, TypeName.emailDelivery))
+            .thenThrow(const NotFoundEmailDeliveryStateException());
+      }
+      when(cacheFCMDatasourceImpl.getStateToRefresh(
+        DelegationFixtures.bobAccountId,
+        session.username,
+        FCMRepositoryImpl.emailDeliveryBaseline,
+      )).thenAnswer((_) async => jmap.State('bob-baseline'));
+      when(cacheFCMDatasourceImpl.getStateToRefresh(
+        DelegationFixtures.carolAccountId,
+        session.username,
+        FCMRepositoryImpl.emailDeliveryBaseline,
+      )).thenThrow(const NotFoundStateToRefreshException());
 
       expect(
         await fcmRepository.getDelegatedAccountIdsWithNotificationCursor(session),

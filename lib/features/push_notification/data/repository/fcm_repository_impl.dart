@@ -37,6 +37,9 @@ import 'package:tmail_ui_user/features/push_notification/domain/model/delegated_
 
 class FCMRepositoryImpl extends FCMRepository {
 
+  /// Key of the cursor a delegated mailbox starts from before its first push stores one.
+  static const emailDeliveryBaseline = TypeName('EmailDeliveryBaseline');
+
   final Map<DataSourceType, FCMDatasource> _fcmDatasource;
   final ThreadDataSource _threadDataSource;
   final Map<DataSourceType, MailboxDataSource> _mapMailboxDataSource;
@@ -78,13 +81,31 @@ class FCMRepositoryImpl extends FCMRepository {
   }
 
   @override
-  Future<jmap.State> getStateToRefresh(AccountId accountId, UserName userName, TypeName typeName) {
-    return _fcmDatasource[DataSourceType.local]!.getStateToRefresh(accountId, userName, typeName);
+  Future<jmap.State> getStateToRefresh(AccountId accountId, UserName userName, TypeName typeName) async {
+    try {
+      return await _fcmDatasource[DataSourceType.local]!.getStateToRefresh(accountId, userName, typeName);
+    } on NotFoundEmailDeliveryStateException {
+      final baseline = await _storedEmailDeliveryBaseline(accountId, userName);
+      if (baseline == null) rethrow;
+      return baseline;
+    }
+  }
+
+  /// Stands in for the cursor until a push stores one, so it is never written over a cursor.
+  Future<jmap.State?> _storedEmailDeliveryBaseline(AccountId accountId, UserName userName) async {
+    try {
+      return await _fcmDatasource[DataSourceType.local]!.getStateToRefresh(accountId, userName, emailDeliveryBaseline);
+    } on NotFoundStateToRefreshException {
+      return null;
+    }
   }
 
   @override
-  Future<void> deleteStateToRefresh(AccountId accountId, UserName userName, TypeName typeName) {
-    return _fcmDatasource[DataSourceType.local]!.deleteStateToRefresh(accountId, userName, typeName);
+  Future<void> deleteStateToRefresh(AccountId accountId, UserName userName, TypeName typeName) async {
+    await _fcmDatasource[DataSourceType.local]!.deleteStateToRefresh(accountId, userName, typeName);
+    if (typeName == TypeName.emailDelivery) {
+      await _fcmDatasource[DataSourceType.local]!.deleteStateToRefresh(accountId, userName, emailDeliveryBaseline);
+    }
   }
 
   @override
@@ -240,8 +261,8 @@ class FCMRepositoryImpl extends FCMRepository {
     Session session,
     List<DelegatedNotificationBaseline> readBaselines,
   ) async {
-    final baselines = await _keepingCursorsStoredMeanwhile(session, readBaselines);
     if (PlatformInfo.isIOS) {
+      final baselines = await _keepingCursorsStoredMeanwhile(session, readBaselines);
       final delegatedAccounts = <KeychainDelegatedAccount>[];
       for (final baseline in baselines) {
         delegatedAccounts.add(KeychainDelegatedAccount(
@@ -259,14 +280,14 @@ class FCMRepositoryImpl extends FCMRepository {
       }
       return;
     }
-    for (final baseline in baselines) {
+    for (final baseline in readBaselines) {
       final state = baseline.state;
       if (state != null) {
-        await storeStateToRefresh(baseline.accountId, session.username, TypeName.emailDelivery, state);
+        await storeStateToRefresh(baseline.accountId, session.username, emailDeliveryBaseline, state);
       }
     }
     // A mailbox notified again later must restart from the server state, not from the cursor it stopped at.
-    final notifiedAccountIds = baselines.map((baseline) => baseline.accountId).toSet();
+    final notifiedAccountIds = readBaselines.map((baseline) => baseline.accountId).toSet();
     for (final accountId in session.delegatedAccounts.map((entry) => entry.key)) {
       if (!notifiedAccountIds.contains(accountId)) {
         await deleteStateToRefresh(accountId, session.username, TypeName.emailDelivery);
@@ -274,7 +295,7 @@ class FCMRepositoryImpl extends FCMRepository {
     }
   }
 
-  /// A push may store a cursor while the baselines are read from the server, and that newer cursor wins.
+  /// The NSE may store a cursor while the baselines are read from the server, and that newer cursor wins.
   Future<List<DelegatedNotificationBaseline>> _keepingCursorsStoredMeanwhile(
     Session session,
     List<DelegatedNotificationBaseline> baselines,
