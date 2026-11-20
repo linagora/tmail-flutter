@@ -9,6 +9,8 @@ import flutter_local_notifications
     var notificationInteractionChannel: FlutterMethodChannel?
     var fcmMethodChannel: FlutterMethodChannel?
     var currentEmailId: String?
+    // Dart reads a cold-start tap through currentEmailId, so its didReceive is not forwarded again.
+    private var launchTapEmailId: String?
     
     override func application(
         _ application: UIApplication,
@@ -17,7 +19,7 @@ import flutter_local_notifications
         if let payload = launchOptions?[.remoteNotification] as? [AnyHashable : Any],
            let emailId = payload[JmapConstants.EMAIL_ID] as? String,
            !emailId.isEmpty {
-            currentEmailId = emailId
+            rememberLaunchTap(emailId: emailId)
         }
         
         if #available(iOS 10.0, *) {
@@ -156,7 +158,7 @@ import flutter_local_notifications
         
         let userInfo = response.notification.request.content.userInfo
         
-        if let emailId = userInfo[JmapConstants.EMAIL_ID] as? String, !emailId.isEmpty {
+        if let emailId = userInfo[JmapConstants.EMAIL_ID] as? String, !emailId.isEmpty, !consumeLaunchTap(emailId: emailId) {
             self.notificationInteractionChannel?.invokeMethod(
                 CoreUtils.CURRENT_EMAIL_ID_IN_NOTIFICATION_CLICK_WHEN_APP_FOREGROUND_OR_BACKGROUND,
                 arguments: emailId)
@@ -165,6 +167,17 @@ import flutter_local_notifications
         completionHandler()
     }
     
+    func rememberLaunchTap(emailId: String) {
+        currentEmailId = emailId
+        launchTapEmailId = emailId
+    }
+
+    private func consumeLaunchTap(emailId: String) -> Bool {
+        guard emailId == launchTapEmailId else { return false }
+        launchTapEmailId = nil
+        return true
+    }
+
     private func validateDisplayPushNotification(userInfo: [AnyHashable : Any]) -> Bool {
         if let emailId = userInfo[JmapConstants.EMAIL_ID] as? String, !emailId.isEmpty, UIApplication.shared.applicationState != .active {
             return true

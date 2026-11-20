@@ -32,7 +32,7 @@ class SceneDelegate: FlutterSceneDelegate {
         if let emailId = connectionOptions.notificationResponse?.notification.request.content.userInfo[JmapConstants.EMAIL_ID] as? String,
            !emailId.isEmpty,
            let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-            appDelegate.currentEmailId = emailId
+            appDelegate.rememberLaunchTap(emailId: emailId)
         }
         super.scene(scene, willConnectTo: session, options: connectionOptions)
     }
