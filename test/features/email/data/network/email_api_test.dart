@@ -1,6 +1,13 @@
+import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:collection/collection.dart';
 import 'package:core/data/network/dio_client.dart';
+import 'package:core/data/network/download/download_client.dart';
 import 'package:core/data/network/download/download_manager.dart';
+import 'package:core/domain/exceptions/download_file_exception.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -10,10 +17,14 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:model/account/account_request.dart';
+import 'package:model/email/attachment.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/account_id_extensions.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/forbidden_to_send_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/invalid_recipients_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
@@ -31,6 +42,7 @@ import 'email_api_test.mocks.dart';
 @GenerateNiceMocks([
   MockSpec<HttpClient>(),
   MockSpec<DownloadManager>(),
+  MockSpec<DownloadClient>(),
   MockSpec<DioClient>(),
   MockSpec<Uuid>(),
 ])
@@ -1508,5 +1520,117 @@ void main() {
         );
       });
     });
+
+    group('exportAttachment::test', () {
+      late Directory temporaryRoot;
+      late MockDownloadClient downloadClient;
+      late EmailAPI exportEmailApi;
+
+      setUp(() {
+        temporaryRoot = Directory.systemTemp.createTempSync('email_api_test_');
+        final previousPathProvider = PathProviderPlatform.instance;
+        PathProviderPlatform.instance = _FakePathProviderPlatform(temporaryRoot.path);
+        addTearDown(() {
+          PathProviderPlatform.instance = previousPathProvider;
+          temporaryRoot.deleteSync(recursive: true);
+        });
+        downloadClient = MockDownloadClient();
+        exportEmailApi = EmailAPI(httpClient, DownloadManager(downloadClient), dioClient, uuid);
+      });
+
+      Future<String> exportOnce(Attachment attachment) async => (await exportEmailApi.exportAttachment(
+        attachment,
+        AccountFixtures.aliceAccountId,
+        'https://example.com/download/{accountId}/{blobId}',
+        AccountRequest(),
+        CancelToken(),
+      )).filePath;
+
+      test(
+        'SHOULD keep the content of each export\n'
+        'WHEN two attachments that generate the same file name are exported at the same time',
+      () async {
+        final sharedPrefix = 'x' * 251;
+        final firstAttachment = Attachment(blobId: Id('blob-a'), name: '$sharedPrefix-A.pdf');
+        final secondAttachment = Attachment(blobId: Id('blob-b'), name: '$sharedPrefix-B.pdf');
+        expect(firstAttachment.generateFileSystemName(), secondAttachment.generateFileSystemName());
+        const firstContent = [1, 1, 1];
+        const secondContent = [2, 2];
+        when(downloadClient.downloadFile(any, any, any)).thenAnswer((invocation) async {
+          final downloadUrl = invocation.positionalArguments[0] as String;
+          return ResponseBody.fromBytes(downloadUrl.contains('blob-a') ? firstContent : secondContent, 200);
+        });
+
+        final exports = await Future.wait([firstAttachment, secondAttachment].map(exportOnce));
+
+        expect(File(exports[0]).readAsBytesSync(), firstContent);
+        expect(File(exports[1]).readAsBytesSync(), secondContent);
+        expect(File(exports[0]).parent.path, '${temporaryRoot.path}/attachment/blob-a');
+        expect(File(exports[1]).parent.path, '${temporaryRoot.path}/attachment/blob-b');
+      });
+
+      test(
+        'SHOULD reuse the same file\n'
+        'WHEN the same attachment is exported twice',
+      () async {
+        final attachment = Attachment(blobId: Id('blob-a'), name: 'report.pdf');
+        when(downloadClient.downloadFile(any, any, any))
+          .thenAnswer((_) async => ResponseBody.fromBytes([1, 2, 3], 200));
+
+        final firstPath = await exportOnce(attachment);
+        final secondPath = await exportOnce(attachment);
+
+        expect(secondPath, firstPath);
+        expect(File(secondPath).readAsBytesSync(), [1, 2, 3]);
+        expect(File(secondPath).parent.listSync().map((entity) => entity.path), [secondPath]);
+      });
+
+      test(
+        'SHOULD keep the completed file\n'
+        'WHEN a later export of the same attachment fails mid-download',
+      () async {
+        final attachment = Attachment(blobId: Id('blob-a'), name: 'report.pdf');
+        when(downloadClient.downloadFile(any, any, any))
+          .thenAnswer((_) async => ResponseBody.fromBytes([1, 2, 3], 200));
+        final completedPath = await exportOnce(attachment);
+        when(downloadClient.downloadFile(any, any, any)).thenAnswer((_) async => ResponseBody(
+          Stream<Uint8List>.multi((controller) {
+            controller.add(Uint8List.fromList([9]));
+            controller.addError(Exception('connection reset'));
+            controller.close();
+          }),
+          200,
+        ));
+
+        await expectLater(exportOnce(attachment), throwsA(isA<CommonDownloadFileException>()));
+
+        expect(File(completedPath).readAsBytesSync(), [1, 2, 3]);
+        expect(File(completedPath).parent.listSync().map((entity) => entity.path), [completedPath]);
+      });
+
+      test(
+        'SHOULD export the attachment\n'
+        'WHEN its blobId is the longest Id accepted',
+      () async {
+        final attachment = Attachment(blobId: Id('b' * 254), name: 'report.pdf');
+        when(downloadClient.downloadFile(any, any, any))
+          .thenAnswer((_) async => ResponseBody.fromBytes([1, 2, 3], 200));
+
+        final exportedPath = await exportOnce(attachment);
+
+        expect(File(exportedPath).readAsBytesSync(), [1, 2, 3]);
+      });
+    });
   });
+}
+
+class _FakePathProviderPlatform extends Fake
+    with MockPlatformInterfaceMixin
+    implements PathProviderPlatform {
+  _FakePathProviderPlatform(this.temporaryPath);
+
+  final String temporaryPath;
+
+  @override
+  Future<String?> getTemporaryPath() async => temporaryPath;
 }

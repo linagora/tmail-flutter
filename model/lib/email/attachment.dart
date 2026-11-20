@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+
 import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:equatable/equatable.dart';
 import 'package:http_parser/http_parser.dart';
@@ -31,6 +33,7 @@ class Attachment with EquatableMixin {
   static const String eventCalendarSubtype = 'calendar';
   static const String applicationRTFType = 'application/rtf';
   static const String _defaultName = 'unknown-attachment';
+  static const int _maxFileNameBytes = 255;
 
   final PartId? partId;
   final Id? blobId;
@@ -73,7 +76,12 @@ class Attachment with EquatableMixin {
     return downloadUri;
   }
 
-  String generateFileName() {
+  String generateFileName() => _withMeaningfulContent(_sanitizedFileName());
+
+  // Most filesystems reject a file name over 255 bytes, so only names written to disk are shortened.
+  String generateFileSystemName() => _withMeaningfulContent(_limitToMaxFileNameBytes(_sanitizedFileName()));
+
+  String _sanitizedFileName() {
     final rawName = (name?.trim().isNotEmpty == true)
         ? name!.trim()
         : (blobId != null
@@ -82,11 +90,52 @@ class Attachment with EquatableMixin {
                 : blobId!.value)
             : _defaultName);
 
-    final sanitized = rawName.sanitizedBidiForDisplay
+    return rawName.sanitizedBidiForDisplay
         .replaceAll(RegExp(r'[\\/:*?"<>|]'), '_')
         .trim();
-    // Fall back if sanitized name has no meaningful content (e.g. '???' → '___')
-    return sanitized.contains(RegExp(r'[^_\s]')) ? sanitized : _defaultName;
+  }
+
+  // Fall back if sanitized name has no meaningful content (e.g. '???' → '___')
+  static String _withMeaningfulContent(String fileName) =>
+      fileName.contains(RegExp(r'[^_\s]')) ? fileName : _defaultName;
+
+  // Shortens the base name and keeps the extension.
+  static String _limitToMaxFileNameBytes(String fileName) {
+    if (utf8.encode(fileName).length <= _maxFileNameBytes) return fileName;
+
+    final dotIndex = fileName.lastIndexOf('.');
+    final extension = dotIndex > 0 ? fileName.substring(dotIndex) : '';
+    final extensionBytes = utf8.encode(extension).length;
+    if (extension.isEmpty || extensionBytes >= _maxFileNameBytes) {
+      return _takeUtf8Bytes(fileName, _maxFileNameBytes).trimRight();
+    }
+
+    final baseName = fileName.substring(0, fileName.length - extension.length);
+    final shortenedBaseName = _takeUtf8Bytes(baseName, _maxFileNameBytes - extensionBytes);
+    // An empty base name would turn the file into a hidden dotfile.
+    if (shortenedBaseName.isEmpty) {
+      return _takeUtf8Bytes(fileName, _maxFileNameBytes).trimRight();
+    }
+    return '$shortenedBaseName$extension';
+  }
+
+  static String _takeUtf8Bytes(String value, int maxBytes) {
+    final buffer = StringBuffer();
+    var usedBytes = 0;
+    for (final rune in value.runes) {
+      usedBytes += _utf8ByteLength(rune);
+      if (usedBytes > maxBytes) break;
+      buffer.writeCharCode(rune);
+    }
+    return buffer.toString();
+  }
+
+  // A lone surrogate is encoded as U+FFFD, which takes 3 bytes like any other BMP rune.
+  static int _utf8ByteLength(int rune) {
+    if (rune < 0x80) return 1;
+    if (rune < 0x800) return 2;
+    if (rune < 0x10000) return 3;
+    return 4;
   }
 
   factory Attachment.fromJson(Map<String, dynamic> json) => _$AttachmentFromJson(json);
