@@ -98,22 +98,24 @@ class HiveCacheConfig {
   }
 
   Future<void> initializeEncryptionKey() async {
-    final encryptionKeyCacheManager = getBinding<EncryptionKeyCacheManager>() ?? getBinding<EncryptionKeyCacheManager>(tag: BindingTag.isolateTag);
+    final encryptionKeyCacheManager = _encryptionKeyCacheManager();
     if (encryptionKeyCacheManager == null) {
-      log('HiveCacheConfig::_initializeEncryptionKey(): encryptionKeyCacheManager not found');
+      log('HiveCacheConfig::initializeEncryptionKey(): encryptionKeyCacheManager not found');
       return;
     }
     final encryptionKeyCache = await encryptionKeyCacheManager.getEncryptionKeyStored();
     if (encryptionKeyCache == null) {
-      final secureKey = Hive.generateSecureKey();
-      final secureKeyEncode = base64Encode(secureKey);
-      log('HiveCacheConfig::_initializeEncryptionKey(): secureKeyEncode: $secureKeyEncode');
-      await encryptionKeyCacheManager.storeEncryptionKey(EncryptionKeyCache(secureKeyEncode));
+      final boxKey = Hive.generateSecureKey();
+      await encryptionKeyCacheManager.storeEncryptionKey(EncryptionKeyCache(base64Encode(boxKey)));
     }
   }
 
+  EncryptionKeyCacheManager? _encryptionKeyCacheManager() =>
+      getBinding<EncryptionKeyCacheManager>() ??
+      getBinding<EncryptionKeyCacheManager>(tag: BindingTag.isolateTag);
+
   Future<Uint8List?> getEncryptionKey() async {
-    final encryptionKeyCacheManager = getBinding<EncryptionKeyCacheManager>() ?? getBinding<EncryptionKeyCacheManager>(tag: BindingTag.isolateTag);
+    final encryptionKeyCacheManager = _encryptionKeyCacheManager();
     if (encryptionKeyCacheManager == null) {
       // No key → an encrypted box (incl. the OIDC token box) opens without a
       // cipher and cannot be decrypted, surfacing later as a "no token" startup
