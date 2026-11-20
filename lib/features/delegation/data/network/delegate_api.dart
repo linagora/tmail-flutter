@@ -1,3 +1,4 @@
+import 'package:core/utils/app_logger.dart';
 import 'package:delegation/delegation.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -101,7 +102,8 @@ class DelegateApi with HandleSetErrorMixin {
   List<Delegate>? _readDelegatesOrNull(ResponseObject result, MethodCallId getCallId) {
     try {
       return result.parse<GetDelegateResponse>(getCallId, GetDelegateResponse.deserialize)?.list ?? [];
-    } catch (_) {
+    } catch (e) {
+      logWarning('DelegateApi::_readDelegatesOrNull(): $e');
       return null;
     }
   }
