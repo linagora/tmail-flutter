@@ -20,7 +20,6 @@ Future<bool> startOnRememberedAccount(
   final store = container.read(lastShownAccountStoreProvider);
   final username = shown.session.username;
   final rememberedAccountId = store.read(username);
-  container.read(lastShownAccountRecorderProvider);
   // The user chose this delegated account before the first load ended, so it is the last shown one.
   if (shown.accountId != shown.personalAccountId) {
     await store.save(username, shown.accountId);
@@ -33,6 +32,10 @@ Future<bool> startOnRememberedAccount(
   if (!accountShown) await store.remove(username);
   return accountShown;
 }
+
+/// Stores each account the user switches to from now on. Call it before any async gap of the start, so no switch is missed.
+void recordShownAccounts(BuildContext context) =>
+    ProviderScope.containerOf(context, listen: false).read(lastShownAccountRecorderProvider);
 
 bool _startsOnMine(BuildContext context, ProviderContainer container, bool launchedByNotification) =>
     launchedByNotification || container.read(accountSwitchViewFactoryProvider)(context).hasOpenComposer;

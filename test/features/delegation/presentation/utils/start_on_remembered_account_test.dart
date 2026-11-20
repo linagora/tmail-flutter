@@ -118,6 +118,7 @@ void main() {
     ));
     await tester.pump();
 
+    recordShownAccounts(context);
     accountShown = await startOnRememberedAccount(
       context,
       launchedByNotification: launchedByNotification,

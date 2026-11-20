@@ -917,6 +917,8 @@ class MailboxController extends BaseMailboxController
   void _startOnceOnRememberedAccount({bool firstLoadFailed = false}) {
     if (!PlatformInfo.isMobile || _hasReadRememberedAccount) return;
     _hasReadRememberedAccount = true;
+    final context = currentContext;
+    if (context != null && context.mounted) recordShownAccounts(context);
     unawaited(_startOnRememberedAccount(firstLoadFailed));
   }
 

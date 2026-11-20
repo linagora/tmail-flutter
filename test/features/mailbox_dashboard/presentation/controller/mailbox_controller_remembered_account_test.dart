@@ -82,6 +82,14 @@ class _LaunchedByNotificationManager extends IOSNotificationManager {
   Future<bool> wasAppLaunchedByNotification() async => true;
 }
 
+/// Holds the launch check of an iOS start until the test completes it.
+class _PendingLaunchCheckManager extends IOSNotificationManager {
+  final launchedByNotification = Completer<bool>();
+
+  @override
+  Future<bool> wasAppLaunchedByNotification() => launchedByNotification.future;
+}
+
 Stream<Either<Failure, Success>> _loadedFolders() async* {
   await Future<void>(() {});
   yield Right(GetAllMailboxSuccess(
@@ -199,6 +207,25 @@ void main() {
     debugDefaultTargetPlatformOverride = null;
 
     expect(switchNotifier.switchToCalls, isEmpty);
+    expect(store.read(alice), isNull);
+  });
+
+  testWidgets('records a switch made while the start checks how the app was launched', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final notificationManager = _PendingLaunchCheckManager();
+    Get.put<IOSNotificationManager>(notificationManager);
+    addTearDown(() => Get.delete<IOSNotificationManager>(force: true));
+
+    final container = await start(tester);
+    container.read(activeAccountProvider.notifier)
+      ..select(DelegationFixtures.carolAccountId)
+      ..select(DelegationFixtures.aliceAccountId);
+    notificationManager.launchedByNotification.complete(false);
+    await tester.pumpAndSettle();
+    debugDefaultTargetPlatformOverride = null;
+
+    expect(switchNotifier.switchToCalls, isEmpty);
+    expect(container.read(activeAccountProvider)?.accountId, DelegationFixtures.aliceAccountId);
     expect(store.read(alice), isNull);
   });
 }
