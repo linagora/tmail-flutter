@@ -29,10 +29,10 @@ class SceneDelegate: FlutterSceneDelegate {
             )
         }
         // Under UIScene a notification tap that cold-starts the app arrives here, not in launchOptions.
-        if let emailId = connectionOptions.notificationResponse?.notification.request.content.userInfo[JmapConstants.EMAIL_ID] as? String,
-           !emailId.isEmpty,
+        if let userInfo = connectionOptions.notificationResponse?.notification.request.content.userInfo,
+           let tap = AppDelegate.notificationTap(of: userInfo),
            let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-            appDelegate.currentEmailId = emailId
+            appDelegate.rememberLaunchTap(tap)
         }
         super.scene(scene, willConnectTo: session, options: connectionOptions)
     }

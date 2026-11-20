@@ -9,6 +9,8 @@ import flutter_local_notifications
     var notificationInteractionChannel: FlutterMethodChannel?
     var fcmMethodChannel: FlutterMethodChannel?
     var currentNotificationTap: [String: String]?
+    // Dart reads a cold-start tap through currentNotificationTap, so its didReceive is not forwarded again.
+    private var launchTap: [String: String]?
     
     override func application(
         _ application: UIApplication,
@@ -16,8 +18,9 @@ import flutter_local_notifications
     ) -> Bool {
         excludeDocumentsFromBackup()
 
-        if let payload = launchOptions?[.remoteNotification] as? [AnyHashable : Any] {
-            currentNotificationTap = AppDelegate.notificationTap(of: payload)
+        if let payload = launchOptions?[.remoteNotification] as? [AnyHashable : Any],
+           let tap = AppDelegate.notificationTap(of: payload) {
+            rememberLaunchTap(tap)
         }
         
         if #available(iOS 10.0, *) {
@@ -156,7 +159,7 @@ import flutter_local_notifications
         
         let userInfo = response.notification.request.content.userInfo
         
-        if let tap = AppDelegate.notificationTap(of: userInfo) {
+        if let tap = AppDelegate.notificationTap(of: userInfo), !consumeLaunchTap(tap) {
             self.notificationInteractionChannel?.invokeMethod(
                 CoreUtils.CURRENT_EMAIL_ID_IN_NOTIFICATION_CLICK_WHEN_APP_FOREGROUND_OR_BACKGROUND,
                 arguments: tap)
@@ -165,6 +168,17 @@ import flutter_local_notifications
         completionHandler()
     }
     
+    func rememberLaunchTap(_ tap: [String: String]) {
+        currentNotificationTap = tap
+        launchTap = tap
+    }
+
+    private func consumeLaunchTap(_ tap: [String: String]) -> Bool {
+        guard tap == launchTap else { return false }
+        launchTap = nil
+        return true
+    }
+
     private func validateDisplayPushNotification(userInfo: [AnyHashable : Any]) -> Bool {
         if let emailId = userInfo[JmapConstants.EMAIL_ID] as? String, !emailId.isEmpty, UIApplication.shared.applicationState != .active {
             return true
