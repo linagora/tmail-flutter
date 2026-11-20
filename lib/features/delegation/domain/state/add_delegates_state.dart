@@ -14,5 +14,5 @@ class AddDelegatesSuccess extends UIState {
 }
 
 class AddDelegatesFailure extends FeatureFailure {
-  AddDelegatesFailure(dynamic exception) : super(exception: exception);
+  AddDelegatesFailure(Object? exception) : super(exception: exception);
 }

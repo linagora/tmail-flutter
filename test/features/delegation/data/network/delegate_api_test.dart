@@ -31,6 +31,10 @@ void main() {
 
   setUp(() {
     final dio = Dio(BaseOptions(method: 'POST'))..options.baseUrl = 'http://domain.com/jmap';
+    dio.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
+      httpCallCount++;
+      handler.next(options);
+    }));
     dioAdapter = DioAdapter(dio: dio);
     api = DelegateApi(HttpClient(dio));
     httpCallCount = 0;
@@ -42,13 +46,10 @@ void main() {
   }) {
     dioAdapter.onPost(
       '',
-      (server) {
-        httpCallCount++;
-        return server.reply(200, {
-          'sessionState': 'state',
-          'methodResponses': methodResponses,
-        });
-      },
+      (server) => server.reply(200, {
+        'sessionState': 'state',
+        'methodResponses': methodResponses,
+      }),
       data: request,
       headers: headers,
     );

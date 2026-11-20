@@ -14,5 +14,5 @@ class RemoveDelegateSuccess extends UIState {
 }
 
 class RemoveDelegateFailure extends FeatureFailure {
-  RemoveDelegateFailure(dynamic exception) : super(exception: exception);
+  RemoveDelegateFailure(Object? exception) : super(exception: exception);
 }
