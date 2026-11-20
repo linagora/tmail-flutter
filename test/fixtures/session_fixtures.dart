@@ -255,6 +255,34 @@ class SessionFixtures {
     State('2c9f1b12-b35a-43e6-9af2-0106fb53a943'),
   );
 
+  /// [aliceSession] whose account advertises [maxObjectsInGet] as its get limit.
+  static Session getAliceSessionWithMaxObjectsInGet(int maxObjectsInGet) {
+    final alice = aliceSession.accounts[AccountFixtures.aliceAccountId]!;
+    return Session(
+      aliceSession.capabilities,
+      {
+        AccountFixtures.aliceAccountId: Account(
+          alice.name,
+          alice.isPersonal,
+          alice.isReadOnly,
+          {
+            ...alice.accountCapabilities,
+            CapabilityIdentifier.jmapCore: CoreCapability(
+              maxObjectsInGet: UnsignedInt(maxObjectsInGet),
+            ),
+          },
+        ),
+      },
+      aliceSession.primaryAccounts,
+      aliceSession.username,
+      aliceSession.apiUrl,
+      aliceSession.downloadUrl,
+      aliceSession.uploadUrl,
+      aliceSession.eventSourceUrl,
+      aliceSession.state,
+    );
+  }
+
   static Session getAliceSessionWithSaaSCapability({
     required bool mailDnsConfigurationValidated,
   }) {

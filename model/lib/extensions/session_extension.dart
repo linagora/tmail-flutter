@@ -1,4 +1,5 @@
 
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:core/presentation/extensions/uri_extension.dart';
@@ -239,5 +240,17 @@ extension SessionExtension on Session {
       logWarning('SessionExtensions::getMaxObjectsInGet():Exception: $e');
       return null;
     }
+  }
+
+  static const int defaultMaxChanges = 128;
+
+  /// Page size for `*/changes`: its ids feed a back-referenced `*/get`, which
+  /// the server rejects above maxObjectsInGet.
+  UnsignedInt getMaxChanges(AccountId accountId) {
+    final maxObjectsInGet = getMaxObjectsInGet(accountId)?.value.toInt();
+    if (maxObjectsInGet == null || maxObjectsInGet < 1) {
+      return UnsignedInt(defaultMaxChanges);
+    }
+    return UnsignedInt(min(maxObjectsInGet, defaultMaxChanges));
   }
 }

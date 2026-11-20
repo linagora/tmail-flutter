@@ -21,6 +21,7 @@ import 'package:jmap_dart_client/jmap/mail/email/get/get_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/query/query_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/query/query_email_response.dart';
 import 'package:model/extensions/list_id_extension.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
@@ -169,7 +170,7 @@ class ThreadAPI with HandleSetErrorMixin, SessionMixin, MailAPIMixin {
 
     final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
 
-    final changesEmailMethod = ChangesEmailMethod(accountId, sinceState, maxChanges: UnsignedInt(128));
+    final changesEmailMethod = ChangesEmailMethod(accountId, sinceState, maxChanges: session.getMaxChanges(accountId));
 
     final changesEmailInvocation = jmapRequestBuilder.invocation(changesEmailMethod);
 
