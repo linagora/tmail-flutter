@@ -3,6 +3,7 @@ import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:html/dom.dart';
+import 'package:core/presentation/utils/html_transformer/linear_time_linkifiers.dart';
 import 'package:linkify/linkify.dart';
 
 /// Linkifies bare URLs and email addresses found in DOM text nodes.
@@ -21,8 +22,8 @@ class AutolinkTextNodeTransformer extends DomTransformer {
     removeWww: true,
   );
   static final _linkifiers = <Linkifier>[
-    const EmailLinkifier(),
-    const UrlLinkifier(),
+    const LinearTimeEmailLinkifier(),
+    const LinearTimeUrlLinkifier(),
   ];
   static const _skipTags = {'a', 'script', 'style', 'textarea'};
 
@@ -43,36 +44,45 @@ class AutolinkTextNodeTransformer extends DomTransformer {
   }
 
   void _linkifyNode(Node node) {
+    final rebuiltChildren = <Node>[];
+    var hasLinkifiedText = false;
     for (final child in node.nodes.toList()) {
-      if (child is Text) {
-        _linkifyTextNode(child);
-      } else if (child is Element &&
+      final replacements = child is Text ? _linkifyTextNode(child) : null;
+      if (replacements != null) {
+        rebuiltChildren.addAll(replacements);
+        hasLinkifiedText = true;
+        continue;
+      }
+      if (child is Element &&
           !_skipTags.contains(child.localName?.toLowerCase())) {
         _linkifyNode(child);
       }
+      rebuiltChildren.add(child);
+    }
+    // Rebuild the child list once: splicing per text node rescans the siblings, quadratic on many links.
+    if (hasLinkifiedText) {
+      node.nodes
+        ..clear()
+        ..addAll(rebuiltChildren);
     }
   }
 
-  void _linkifyTextNode(Text textNode) {
+  List<Node>? _linkifyTextNode(Text textNode) {
     final text = textNode.text;
-    if (text.isEmpty) return;
+    if (text.isEmpty) return null;
 
     final elements = linkify(text, options: _linkifyOption, linkifiers: _linkifiers);
-    if (elements.every((e) => e is TextElement)) return;
+    if (elements.every((e) => e is TextElement)) return null;
 
-    final parent = textNode.parentNode;
-    if (parent == null) return;
-
-    for (final el in elements) {
-      if (el is TextElement) {
-        parent.insertBefore(Text(el.text), textNode);
-      } else if (el is UrlElement) {
-        parent.insertBefore(_buildUrlAnchor(el.url, el.text), textNode);
-      } else if (el is EmailElement) {
-        parent.insertBefore(_buildEmailAnchor(el.url, el.text), textNode);
-      }
-    }
-    textNode.remove();
+    return [
+      for (final el in elements)
+        if (el is TextElement)
+          Text(el.text)
+        else if (el is UrlElement)
+          _buildUrlAnchor(el.url, el.text)
+        else if (el is EmailElement)
+          _buildEmailAnchor(el.url, el.text),
+    ];
   }
 
   Element _buildUrlAnchor(String href, String text) => Element.tag('a')
