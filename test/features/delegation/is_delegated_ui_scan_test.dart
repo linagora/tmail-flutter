@@ -11,6 +11,8 @@ final _allowedIsDelegatedPaths = {
   'lib/features/delegation/presentation/notifier/active_account_notifier.dart',
   // Names the owner of a pushed email, no account is shown yet.
   'lib/features/push_notification/presentation/model/notification_owner.dart',
+  // Picks the cursor fallback of a pushed account, no account is shown yet.
+  'lib/features/push_notification/presentation/listener/email_change_listener.dart',
 };
 
 final _lineComment = RegExp(r'^[ \t]*//.*$', multiLine: true);
