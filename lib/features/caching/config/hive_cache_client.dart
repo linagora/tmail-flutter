@@ -291,7 +291,8 @@ abstract class HiveCacheClient<T> {
   bool _matchedNestedKey(String key, String nestedKey) {
     final decodedKey = CacheUtils.decodeKey(key);
     final decodedNestedKey = CacheUtils.decodeKey(nestedKey);
-    return decodedKey.contains(decodedNestedKey);
+    // Whole parts only, so account 12 never matches inside the key of account 112.
+    return '|$decodedKey|'.contains('|$decodedNestedKey|');
   }
 
   Future<void> updateItem(

@@ -37,7 +37,10 @@ import 'package:tmail_ui_user/features/delegation/domain/model/ended_delegation_
 import 'package:tmail_ui_user/features/delegation/domain/repository/ended_delegation_store.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/account_not_found_reporter.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/method_level_exception.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
@@ -99,6 +102,17 @@ class MockBaseController extends BaseController {
     super.handleUrgentException(failure: failure, exception: exception);
     isUrgentExceptionEnable = true;
   }
+}
+
+class _CountingAccountNotFoundReporter implements AccountNotFoundReporter {
+  int reports = 0;
+
+  @override
+  void reportAccountNotFound() => reports++;
+}
+
+class _MethodFailure extends FeatureFailure {
+  _MethodFailure(Object exception) : super(exception: exception);
 }
 
 class FakeComposerCacheRepository extends Fake implements ComposerCacheRepository {
@@ -350,6 +364,39 @@ void main() {
       // assert
       expect(mockBaseController.isErrorViewStateEnable, true);
       expect(mockBaseController.isUrgentExceptionEnable, false);
+    });
+  });
+
+  group('BaseController reports accountNotFound', () {
+    final accountNotFound = MethodLevelErrors(ErrorMethodResponse.accountNotFound);
+    late _CountingAccountNotFoundReporter reporter;
+
+    setUp(() {
+      reporter = _CountingAccountNotFoundReporter();
+      Get.put<AccountNotFoundReporter>(reporter);
+    });
+
+    tearDown(() => Get.delete<AccountNotFoundReporter>());
+
+    test('from an error a stream throws', () {
+      mockBaseController.onError(accountNotFound, StackTrace.current);
+
+      expect(reporter.reports, 1);
+    });
+
+    test('from a failure a stream emits', () {
+      mockBaseController.onData(Left(_MethodFailure(accountNotFound)));
+
+      expect(reporter.reports, 1);
+    });
+
+    test('SHOULD NOT report another error or failure', () {
+      final otherError = MethodLevelErrors(ErrorMethodResponse.accountNotSupportedByMethod);
+
+      mockBaseController.onError(otherError, StackTrace.current);
+      mockBaseController.onData(Left(_MethodFailure(otherError)));
+
+      expect(reporter.reports, 0);
     });
   });
 

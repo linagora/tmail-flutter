@@ -3361,6 +3361,36 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "delegatedMailboxAccessEnded": "You no longer have access to the mailbox of {owner}.",
+  "@delegatedMailboxAccessEnded": {
+    "type": "text",
+    "placeholders_order": [
+      "owner"
+    ],
+    "placeholders": {
+      "owner": {}
+    }
+  },
+  "endedDelegationComposersKept": "{count,plural, =1{The message you were writing is open again in your mailbox.}other{{count} messages you were writing are open again in your mailbox.}}",
+  "@endedDelegationComposersKept": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "endedDelegationAttachmentsNotKept": "Their attachments stayed in the other mailbox: {names}.",
+  "@endedDelegationAttachmentsNotKept": {
+    "type": "text",
+    "placeholders_order": [
+      "names"
+    ],
+    "placeholders": {
+      "names": {}
+    }
+  },
   "delegation": "Delegation",
   "@delegation": {
     "type": "text",

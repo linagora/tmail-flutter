@@ -10,6 +10,7 @@ Updated: 2026-11-11
 Updated: 2026-11-10
 Updated: 2026-11-12
 Updated: 2026-11-16
+Updated: 2026-11-19
 
 ## Status
 
@@ -131,7 +132,7 @@ A test lists the remaining readers of `dashboard.accountId` and of the "me" sour
 ### Revocation and ended delegations
 
 - The server does not push a revocation, and James keeps the session `state` fixed, so the app notices it on resume or at the first `accountNotFound`. `accountNotFound` re-reads the session at once, not throttled, with one read in flight. If the account is still listed, later `accountNotFound` errors on it do not re-read the session before the next resume.
-- If the shown mailbox leaves the session, the app switches to `mine`, warns, and closes a composer open in it (counted in the warning below).
+- If the shown mailbox leaves the session, the app switches to `mine` and warns. Each composer open in it reopens in `mine` with its recipients, subject and body, but without its draft, identity, signature, identity BCC or attachments, and the warning names the attachments left behind. Nothing is saved on the server. A composer that cannot be read closes and counts as lost in the warning below.
 - A switch in flight to the removed account is cancelled and its late results are ignored. A switch away from it goes on and falls back to `mine` on failure.
 - The removed account's cache, content files, send queue, composer snapshots, its item in `delegatedAccounts` of the iOS keychain entry of `mine` and shown notifications under the signed-in username are deleted, even with the toggle off (on the session read at start). Data of other usernames in the shared database (ADR-0027) is never touched. If it had unsent mail or saved drafts, a warning says how many are lost, also when it was not shown. `mine` is always in the session, so it is never deleted.
 - An offline start of the Android and iOS app uses the cached session and starts on the account of the tapped notification, otherwise on the remembered account, from cache. Identities and `/changes` wait for the network instead of failing the start. The other delegated accounts stay hidden from the switcher until an online session confirms them. That session then applies the rules above, and the cleanup waits for it.

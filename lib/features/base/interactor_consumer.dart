@@ -3,6 +3,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:tmail_ui_user/features/base/handle_urgent_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 
 /// Invokes an interactor for one execution and yields its terminal result.
 typedef InteractorCall = Future<Either<Failure, Success>> Function();
@@ -88,16 +89,21 @@ mixin InteractorConsumer {
     StackTrace stackTrace,
     InteractorConsumeRequest request,
   ) {
-    logError(
-      'InteractorConsumer::consumeInteractor: interactor failed',
-      exception: error,
-      stackTrace: stackTrace,
-    );
     final shouldRoute = request.shouldRouteUrgentException;
     // Normalize before the predicate so type-only filters (is! ConnectionError)
     // soft-fail Left(FeatureFailure(ConnectionError)) the same as a bare throw.
     final routeError =
         error is FeatureFailure ? (error.exception ?? error) : error;
+    // Being offline or on a slow network is expected, so it stays out of the Sentry errors (ADR-0076).
+    if (routeError is NetworkException) {
+      logWarning('InteractorConsumer::consumeInteractor: interactor failed on the network: ${routeError.runtimeType}');
+    } else {
+      logError(
+        'InteractorConsumer::consumeInteractor: interactor failed',
+        exception: error,
+        stackTrace: stackTrace,
+      );
+    }
     if (shouldRoute == null || shouldRoute(routeError)) {
       error is Failure
           ? handleUrgentExceptionIfNeeded(failure: error)

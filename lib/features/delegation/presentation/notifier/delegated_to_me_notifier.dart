@@ -1,14 +1,11 @@
 import 'package:delegation/model/delegated_account.dart';
-import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tmail_ui_user/features/base/interactor_consumer.dart';
 import 'package:tmail_ui_user/features/delegation/domain/state/get_delegated_accounts_state.dart';
-import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/session_reload_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/delegated_account_providers.dart';
-import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
-import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 
 part 'delegated_to_me_notifier.g.dart';
 
@@ -17,10 +14,7 @@ typedef OnSessionReloaded = void Function(Session session);
 /// The mailboxes delegated to me, listed in Settings › Delegation. See ADR-0114.
 @riverpod
 class DelegatedToMeNotifier extends _$DelegatedToMeNotifier with InteractorConsumer {
-  GetSessionInteractor get _getSessionInteractor => Get.find<GetSessionInteractor>();
-
   int _latestLoadId = 0;
-  int _latestReloadId = 0;
   final _pendingRemovalIds = <Id>{};
 
   @override
@@ -64,7 +58,7 @@ class DelegatedToMeNotifier extends _$DelegatedToMeNotifier with InteractorConsu
   ) async {
     final interactor = ref.read(removeDelegatedAccountInteractorProvider);
     // Read before the await: the session must still reach the switcher if Settings closes meanwhile.
-    final activeAccount = ref.read(activeAccountProvider.notifier);
+    final sessionReload = ref.read(sessionReloadProvider.notifier);
     final removed = await consumeInteractor(InteractorConsumeRequest(
       run: () => interactor.execute(session, delegatedAccount).last,
       isStale: () => false,
@@ -72,7 +66,8 @@ class DelegatedToMeNotifier extends _$DelegatedToMeNotifier with InteractorConsu
       onFailure: (_, __) {},
     ));
     if (removed) {
-      await _reloadSession(activeAccount, onSessionReloaded);
+      final reloadedSession = await sessionReload.reload();
+      if (reloadedSession != null) onSessionReloaded?.call(reloadedSession);
     }
     return removed;
   }
@@ -82,23 +77,5 @@ class DelegatedToMeNotifier extends _$DelegatedToMeNotifier with InteractorConsu
     final accounts = state.value;
     if (accounts == null) return;
     state = AsyncData(accounts.where((account) => account != delegatedAccount).toList());
-  }
-
-  Future<void> _reloadSession(ActiveAccountNotifier activeAccount, OnSessionReloaded? onSessionReloaded) {
-    final reloadId = ++_latestReloadId;
-    return consumeInteractor(InteractorConsumeRequest(
-      run: () => _getSessionInteractor.execute().last,
-      // Only the latest re-read applies: it started after every removal that completed before it.
-      isStale: () => reloadId != _latestReloadId,
-      onSuccess: (success) {
-        // A cached session still lists the removed mailbox.
-        if (success is GetSessionSuccess &&
-            !success.fromCache &&
-            activeAccount.applyReloadedSession(success.session)) {
-          onSessionReloaded?.call(success.session);
-        }
-      },
-      onFailure: (_, __) {},
-    ));
   }
 }

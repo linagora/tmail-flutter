@@ -73,10 +73,8 @@ class ComposerAutoSaveNotifier extends _$ComposerAutoSaveNotifier {
   ) async {
     final result = await ref.read(resolveComposerCacheForRestoreProvider).execute(accountId, userName);
     return result.fold(
-      (failure) {
-        log('ComposerAutoSaveNotifier::restore: failure=${failure.runtimeType}');
-        return null;
-      },
+      // A failed read must not look like a missing snapshot, or the caller saves the blank editor over it.
+      (failure) => throw failure,
       (success) {
         if (success is! ResolveComposerCacheForRestoreSuccess) return null;
         final cache = success.cache;

@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/features/delegation/presentation/model/account_swi
 import 'package:tmail_ui_user/features/delegation/presentation/view/dashboard_account_switch_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/delegates/getx_account_switch_dashboard.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 typedef AccountSwitchViewFactory = AccountSwitchView Function(BuildContext context);
 
@@ -16,4 +17,17 @@ final accountSwitchViewFactoryProvider =
         GetXAccountSwitchDashboard(Get.find<MailboxDashBoardController>()),
         Get.key,
       );
+});
+
+typedef DashboardAccountSwitchViewBuilder = AccountSwitchView? Function();
+
+/// Builds the dashboard switch view for a switch with no entry point, such as a revocation.
+/// Null once the dashboard is gone.
+final dashboardAccountSwitchViewProvider =
+    Provider<DashboardAccountSwitchViewBuilder>((ref) {
+  return () {
+    final dashboard = getBinding<MailboxDashBoardController>();
+    if (dashboard == null) return null;
+    return DashboardAccountSwitchView(ref.container, GetXAccountSwitchDashboard(dashboard), Get.key);
+  };
 });

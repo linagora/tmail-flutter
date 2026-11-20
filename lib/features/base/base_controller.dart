@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/delegation/presentation/cleanup_ended_del
 import 'package:tmail_ui_user/features/delegation/presentation/providers/delegation_session_cleanup.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/account_not_found_reporter.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/mdn_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
@@ -153,6 +154,7 @@ abstract class BaseController extends GetxController
 
   void onError(dynamic error, StackTrace stackTrace) {
     logWarning('$runtimeType::onError():Error: $error | StackTrace: $stackTrace');
+    _reportIfAccountNotFound(error);
     final isUrgentException = validateUrgentException(error);
     if (isUrgentException) {
       handleUrgentException(exception: error);
@@ -315,6 +317,7 @@ abstract class BaseController extends GetxController
 
   void onDataFailureViewState(Failure failure) {
     log('$runtimeType::onDataFailureViewState:failure = ${failure.runtimeType}');
+    if (failure is FeatureFailure) _reportIfAccountNotFound(failure.exception);
     if (failure is FeatureFailure) {
       final isUrgentException = validateUrgentException(failure.exception);
       if (isUrgentException) {
@@ -324,6 +327,12 @@ abstract class BaseController extends GetxController
       }
     } else {
       handleFailureViewState(failure);
+    }
+  }
+
+  void _reportIfAccountNotFound(Object? exception) {
+    if (isAccountNotFound(exception)) {
+      getBinding<AccountNotFoundReporter>()?.reportAccountNotFound();
     }
   }
 

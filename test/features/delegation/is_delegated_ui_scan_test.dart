@@ -9,6 +9,7 @@ final _allowedIsDelegatedPaths = {
   'lib/features/delegation/domain/extensions/session_delegation_extension.dart',
   'lib/features/delegation/presentation/model/shown_account_capabilities.dart',
   'lib/features/delegation/presentation/notifier/active_account_notifier.dart',
+  'lib/features/delegation/presentation/notifier/session_reload_notifier.dart',
 };
 
 final _lineComment = RegExp(r'^[ \t]*//.*$', multiLine: true);

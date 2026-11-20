@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/session_reload_notifier.dart';
 
 /// Ends the account-switch session using the provider container above [context].
 ///
@@ -8,8 +9,8 @@ import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_
 /// same Riverpod scope as the rest of the app without adding another use of the
 /// frozen global provider container.
 void endDelegationSession(BuildContext context) {
-  ProviderScope.containerOf(
-    context,
-    listen: false,
-  ).read(accountSwitchProvider.notifier).endSession();
+  final container = ProviderScope.containerOf(context, listen: false);
+  container.read(accountSwitchProvider.notifier).endSession();
+  // The next user starts unthrottled, and a re-read still in flight is dropped.
+  container.invalidate(sessionReloadProvider);
 }

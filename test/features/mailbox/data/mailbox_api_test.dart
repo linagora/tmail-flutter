@@ -1,5 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
+import 'package:jmap_dart_client/jmap/core/error/error_type.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -387,6 +390,61 @@ void main() {
         expect(
           () => mailboxAPI.setRoleDefaultMailbox(session, accountId, listMailbox),
           throwsA(isA<Exception>()),
+        );
+      });
+    });
+
+    group('getMailboxByRole::', () {
+      List<Object> errorInvocation(ErrorType type, String methodCallId) =>
+          ["error", {"type": type.value}, methodCallId];
+
+      void serverAnswers(List<Object> query, List<Object> get) {
+        when(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).thenAnswer((_) async => {
+          "methodResponses": [query, get],
+          "sessionState": "0",
+        });
+      }
+
+      test('Should return the mailbox Mailbox/get finds for the role', () async {
+        serverAnswers(
+          ["Mailbox/query", {
+            "accountId": accountId.asString,
+            "queryState": "1",
+            "canCalculateChanges": false,
+            "position": 0,
+            "ids": ["sent-id"],
+          }, "c0"],
+          ["Mailbox/get", {
+            "accountId": accountId.asString,
+            "state": "1",
+            "list": [{"id": "sent-id", "role": "sent"}],
+            "notFound": [],
+          }, "c1"],
+        );
+
+        final result = await mailboxAPI.getMailboxByRole(session, accountId, PresentationMailbox.roleSent);
+
+        expect(result.mailbox?.id, MailboxId(Id('sent-id')));
+      });
+
+      test('Should throw the Mailbox/query error '
+          'when Mailbox/get fails only because it references the failed Mailbox/query', () async {
+        serverAnswers(
+          errorInvocation(ErrorMethodResponse.accountNotFound, "c0"),
+          errorInvocation(ErrorMethodResponse.invalidResultReference, "c1"),
+        );
+
+        await expectLater(
+          mailboxAPI.getMailboxByRole(session, accountId, PresentationMailbox.roleSent),
+          throwsA(isA<ErrorMethodResponseException>().having(
+            (exception) => exception.errorResponse,
+            'errorResponse',
+            isA<AccountNotFoundMethodResponse>(),
+          )),
         );
       });
     });
