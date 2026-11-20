@@ -238,8 +238,9 @@ class FCMRepositoryImpl extends FCMRepository {
   @override
   Future<void> storeDelegatedNotificationBaselines(
     Session session,
-    List<DelegatedNotificationBaseline> baselines,
+    List<DelegatedNotificationBaseline> readBaselines,
   ) async {
+    final baselines = await _keepingCursorsStoredMeanwhile(session, readBaselines);
     if (PlatformInfo.isIOS) {
       final delegatedAccounts = <KeychainDelegatedAccount>[];
       for (final baseline in baselines) {
@@ -250,8 +251,13 @@ class FCMRepositoryImpl extends FCMRepository {
           ownerName: baseline.ownerName,
         ));
       }
-      return _fcmDatasource[DataSourceType.local]!
+      await _fcmDatasource[DataSourceType.local]!
           .storeDelegatedAccountsInKeychain(session.accountId, delegatedAccounts);
+      // The keychain keeps the stored list, but a first store has none, so the caller must retry.
+      if (delegatedAccounts.any((account) => account.mailboxIdsBlockNotification == null)) {
+        throw const NotFoundMailboxesBlockNotificationException();
+      }
+      return;
     }
     for (final baseline in baselines) {
       final state = baseline.state;
@@ -266,6 +272,20 @@ class FCMRepositoryImpl extends FCMRepository {
         await deleteStateToRefresh(accountId, session.username, TypeName.emailDelivery);
       }
     }
+  }
+
+  /// A push may store a cursor while the baselines are read from the server, and that newer cursor wins.
+  Future<List<DelegatedNotificationBaseline>> _keepingCursorsStoredMeanwhile(
+    Session session,
+    List<DelegatedNotificationBaseline> baselines,
+  ) async {
+    if (baselines.every((baseline) => baseline.state == null)) return baselines;
+    final withCursor = await getDelegatedAccountIdsWithNotificationCursor(session);
+    return baselines
+        .map((baseline) => baseline.state != null && withCursor.contains(baseline.accountId)
+            ? DelegatedNotificationBaseline(accountId: baseline.accountId, ownerName: baseline.ownerName)
+            : baseline)
+        .toList();
   }
 
   /// Null when the mailboxes cannot be read: the keychain keeps the stored list, and without one the NSE notifies every mailbox.

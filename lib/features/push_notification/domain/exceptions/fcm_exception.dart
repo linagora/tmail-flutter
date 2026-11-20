@@ -90,3 +90,10 @@ class NotFoundKeychainSharingSessionException extends AppBaseException {
   @override
   String get exceptionName => 'NotFoundKeychainSharingSessionException';
 }
+
+class NotFoundMailboxesBlockNotificationException extends AppBaseException {
+  const NotFoundMailboxesBlockNotificationException([super.message]);
+
+  @override
+  String get exceptionName => 'NotFoundMailboxesBlockNotificationException';
+}
