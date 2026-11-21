@@ -65,8 +65,21 @@ Future<LinagoraEcosystem> loadEcosystem(
     logWarning('ecosystemProvider: GetLinagoraEcosystemInteractor is missing');
     throw StateError('GetLinagoraEcosystemInteractor is unavailable');
   }
+  final retryDelays = ref.watch(ecosystemTransportRetryDelaysProvider);
+  for (final delay in retryDelays) {
+    try {
+      return await _EcosystemLoader(ref).load(interactor, jmapUrl);
+    } catch (error) {
+      if (!_isTransportFailure(error)) rethrow;
+      await Future<void>.delayed(delay);
+      if (!ref.mounted) rethrow;
+    }
+  }
   return _EcosystemLoader(ref).load(interactor, jmapUrl);
 }
+
+bool _isTransportFailure(Object error) =>
+    (error is FeatureFailure ? error.exception : error) is NetworkException;
 
 EcosystemState resolveActiveEcosystem(
   Ref ref,

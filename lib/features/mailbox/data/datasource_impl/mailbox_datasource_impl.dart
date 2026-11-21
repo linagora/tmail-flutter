@@ -28,6 +28,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_reque
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_right_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_mailbox_request.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/retry_read_once_on_transport_error.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class MailboxDataSourceImpl extends MailboxDataSource {
@@ -40,9 +41,9 @@ class MailboxDataSourceImpl extends MailboxDataSource {
 
   @override
   Future<JmapMailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties}) {
-    return Future.sync(() async {
+    return retryReadOnceOnTransportError(() => Future.sync(() async {
       return await mailboxAPI.getAllMailbox(session, accountId, properties: properties);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError(_exceptionThrower.throwException));
   }
 
   @override

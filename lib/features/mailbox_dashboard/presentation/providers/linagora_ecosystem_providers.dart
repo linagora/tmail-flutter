@@ -1,3 +1,4 @@
+import 'package:core/utils/platform_info.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/linagora_ecosystem_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/linagora_ecosystem_datasource_impl.dart';
@@ -35,3 +36,15 @@ GetLinagoraEcosystemInteractor? getLinagoraEcosystemInteractor(Ref ref) {
   final repository = ref.watch(linagoraEcosystemRepositoryProvider);
   return repository == null ? null : GetLinagoraEcosystemInteractor(repository);
 }
+
+/// Waits before each new attempt when the ecosystem request fails on a
+/// transport error. Without the ecosystem, Sentry stays off for the session.
+/// None on web, where a missing or CORS-blocked document fails the same way.
+@riverpod
+List<Duration> ecosystemTransportRetryDelays(Ref ref) => PlatformInfo.isWeb
+    ? const []
+    : const [
+        Duration(seconds: 1),
+        Duration(seconds: 4),
+        Duration(seconds: 15),
+      ];

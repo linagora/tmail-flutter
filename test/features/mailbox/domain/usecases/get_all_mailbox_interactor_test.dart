@@ -1,5 +1,6 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/logging/app_logger_registry.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -12,8 +13,10 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dar
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
+import '../../../../fixtures/capturing_log_handler.dart';
 import '../../../../fixtures/mailbox_fixtures.dart';
 import '../../../../fixtures/session_fixtures.dart';
 import '../../../../fixtures/state_fixtures.dart';
@@ -158,6 +161,38 @@ void main() {
           .single;
 
       expect(failure.exception, exception);
+    });
+
+    group('reporting', () {
+      late CapturingLogHandler logHandler;
+
+      setUp(() {
+        logHandler = CapturingLogHandler();
+        AppLoggerRegistry.instance.registerHandler(logHandler);
+      });
+
+      tearDown(() => AppLoggerRegistry.instance.resetForTesting());
+
+      test('Should report the failure as an error '
+          'WHEN the folders cannot be loaded', () async {
+        stubGetAllMailbox(Stream<MailboxResponse>.error(const SocketError()));
+
+        await executeInteractor();
+
+        expect(
+          logHandler.errorRecords.single.exception,
+          isA<SocketError>(),
+        );
+      });
+
+      test('Should not report the failure '
+          'WHEN the device has no network', () async {
+        stubGetAllMailbox(Stream<MailboxResponse>.error(const NoNetworkError()));
+
+        await executeInteractor();
+
+        expect(logHandler.errorRecords, isEmpty);
+      });
     });
   });
 }

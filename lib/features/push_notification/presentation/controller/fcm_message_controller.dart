@@ -156,6 +156,8 @@ class FcmSentryRuntime {
 
   Future<void> setReportingConsent(bool? consent) async {
     SentryManager.instance.setSentryReportingConsent(consent);
+    // The worker reads the choice the app cached: it is known, not pending.
+    SentryManager.instance.resolveReportingConsent();
     await SentryManager.instance.pendingLifecycleTransition;
   }
 
