@@ -29,6 +29,7 @@ import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_user_
 
 void main() {
   group('ecosystem request caching', _ecosystemCachingTests);
+  group('ecosystem transport retry', _ecosystemTransportRetryTests);
   group('ecosystem request lifecycle', _ecosystemLifecycleTests);
   group('ecosystem JMAP URL keying', _jmapUrlKeyingTests);
   group('ecosystem account isolation', _accountIsolationTests);
@@ -41,6 +42,58 @@ void main() {
   group('premium CTA missing dependencies', _missingDependenciesTests);
   group('premium CTA degraded inputs', _degradedInputTests);
   group('ecosystem state equality', _ecosystemStateEqualityTests);
+}
+
+void _ecosystemTransportRetryTests() {
+  test('loads the ecosystem again after a socket error', () async {
+    final expected = _ecosystem(_paywallTemplate);
+    var calls = 0;
+    final repository = _EcosystemRepository((_) async {
+      if (calls++ == 0) throw const SocketError();
+      return expected;
+    });
+    final container = _createContainer(
+      repository,
+      transportRetryDelays: const [Duration.zero],
+    );
+    _keepEcosystemAlive(container, _firstTarget);
+
+    expect(await _readEcosystem(container, _firstTarget), same(expected));
+    expect(repository.callCount, 2);
+  });
+
+  test('gives up once every transport retry failed', () async {
+    final repository =
+        _EcosystemRepository((_) async => throw const ConnectionError());
+    final container = _createContainer(
+      repository,
+      transportRetryDelays: const [Duration.zero, Duration.zero],
+    );
+    _keepEcosystemAlive(container, _firstTarget);
+
+    await expectLater(
+      _readEcosystem(container, _firstTarget),
+      throwsA(isA<Failure>()),
+    );
+    expect(repository.callCount, 3);
+  });
+
+  test('does not load the ecosystem again after a non-transport failure',
+      () async {
+    final repository =
+        _EcosystemRepository((_) async => throw StateError('rejected'));
+    final container = _createContainer(
+      repository,
+      transportRetryDelays: const [Duration.zero],
+    );
+    _keepEcosystemAlive(container, _firstTarget);
+
+    await expectLater(
+      _readEcosystem(container, _firstTarget),
+      throwsA(isA<Failure>()),
+    );
+    expect(repository.callCount, 1);
+  });
 }
 
 void _ecosystemCachingTests() {
@@ -816,12 +869,16 @@ ProviderContainer _createContainer(
   _EcosystemRepository repository, {
   GetLinagoraEcosystemInteractor? interactor,
   FutureOr<bool> insideCozy = true,
+  List<Duration> transportRetryDelays = const [],
 }) {
   final container = ProviderContainer(overrides: [
     getLinagoraEcosystemInteractorProvider.overrideWithValue(
       interactor ?? GetLinagoraEcosystemInteractor(repository),
     ),
     insideCozyProvider.overrideWith((ref) => insideCozy),
+    ecosystemTransportRetryDelaysProvider.overrideWithValue(
+      transportRetryDelays,
+    ),
   ]);
   addTearDown(container.dispose);
   return container;
