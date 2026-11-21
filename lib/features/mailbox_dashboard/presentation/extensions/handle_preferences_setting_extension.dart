@@ -1,4 +1,5 @@
 
+import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:server_settings/server_settings/capability_server_settings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/save_language_interactor.dart';
@@ -27,7 +28,12 @@ extension HandlePreferencesSettingExtension on MailboxDashBoardController {
   }
 
   void getServerSetting() {
-    if (accountId.value == null || getServerSettingInteractor == null) return;
+    if (accountId.value == null) return;
+    if (getServerSettingInteractor == null) {
+      // Without server settings there is no stored choice to wait for.
+      SentryManager.instance.resolveReportingConsent();
+      return;
+    }
 
     consumeState(getServerSettingInteractor!.execute(accountId.value!));
   }

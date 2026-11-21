@@ -24,3 +24,10 @@ Categories: UX, UI, Product, Architecture, Infra, Tech.
 - Decided by: Crash-- (CTO), [fix plan of #5172](https://github.com/linagora/tmail-flutter/issues/5172#issuecomment-7058350249); the no-network exception: proposed by the agent ([Crash--/tmail-flutter#1](https://github.com/Crash--/tmail-flutter/pull/1)), confirmed by Crash-- (CTO) on 2026-11-21
 - Why: the exception behind the generic retry banner shows up in Sentry.
 - Scope: mobile and web, every screen that loads the folder list.
+
+## 2026-11-21, [Product] Errors raised before Sentry is configured wait in memory
+
+- Decision: the Sentry SDK still starts from a known configuration only (the ecosystem's, or the env one on web), and may run on the instance default before the user's choice is read. No error or message is sent until both the configuration and the user's choice are known (no server settings capability means no choice); until then they are kept in memory and sent once reporting is allowed. They are dropped without being sent when reporting is not allowed, when the ecosystem's Sentry configuration is invalid, when the user's choice cannot be read (later errors then follow the instance default), when the session ends, and in any case five minutes after the first one. At most 20 are kept. An explicit refusal drops them at once. This holds on web configured through env too: errors raised before sign-in wait for the user's choice, read after sign-in, so a failed sign-in is no longer reported.
+- Decided by: Crash-- (CTO), [fix plan of #5172](https://github.com/linagora/tmail-flutter/issues/5172#issuecomment-7058350249); the limits (20 errors, 5 minutes) and the web env case: proposed by the agent ([#5173](https://github.com/linagora/tmail-flutter/pull/5173)), confirmed by Crash-- (CTO) on 2026-11-21
+- Why: some customers have Sentry disabled, so nothing may leave the device before the decision, but the errors of the launch are the ones that explain what the user sees first.
+- Scope: mobile and web, every error and message reported to Sentry.
