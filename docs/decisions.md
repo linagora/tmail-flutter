@@ -45,3 +45,10 @@ Categories: UX, UI, Product, Architecture, Infra, Tech.
 - Decided by: Crash-- (CTO), [fix plan of #5172](https://github.com/linagora/tmail-flutter/issues/5172#issuecomment-7058350249); the delays and leaving web out: proposed by the agent ([Crash--/tmail-flutter#1](https://github.com/Crash--/tmail-flutter/pull/1)), confirmed by Crash-- (CTO) on 2026-11-21
 - Why: the ecosystem carries the Sentry configuration; one failed request at launch kept Sentry paused and hid the "Error reporting" toggle for the whole session. On web a missing or CORS-blocked document fails the same way as a dropped connection, so retrying would only delay every ecosystem consumer.
 - Scope: mobile, every ecosystem consumer (Sentry, app grid, premium CTA, Drive attachments, Scribe).
+
+## 2026-11-21, [Product] A folder list that fails to load is reported to Sentry
+
+- Decision: when the folders cannot be loaded, the failure is logged as an error (a Sentry event when reporting is on), except when the device has no network.
+- Decided by: Crash-- (CTO), [fix plan of #5172](https://github.com/linagora/tmail-flutter/issues/5172#issuecomment-7058350249); the no-network exception: proposed by the agent ([Crash--/tmail-flutter#1](https://github.com/Crash--/tmail-flutter/pull/1)), confirmed by Crash-- (CTO) on 2026-11-21
+- Why: the exception behind the generic retry banner shows up in Sentry.
+- Scope: mobile and web, every screen that loads the folder list.

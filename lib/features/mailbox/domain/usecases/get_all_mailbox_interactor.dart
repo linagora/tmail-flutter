@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/either_stream_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -9,6 +10,7 @@ import 'package:model/extensions/mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 
 class GetAllMailboxInteractor {
   final MailboxRepository _mailboxRepository;
@@ -25,16 +27,29 @@ class GetAllMailboxInteractor {
           accountId,
           properties: properties)
         .map(_toGetMailboxState)
-        .mapErrorToLeft((error, _) => GetAllMailboxFailure(
-          error,
-          onRetry: execute(session, accountId, properties: properties),
-        ));
-    } catch (e) {
+        .mapErrorToLeft((error, stackTrace) {
+          _report(error, stackTrace);
+          return GetAllMailboxFailure(
+            error,
+            onRetry: execute(session, accountId, properties: properties),
+          );
+        });
+    } catch (e, stackTrace) {
+      _report(e, stackTrace);
       yield Left<Failure, Success>(GetAllMailboxFailure(
         e,
-        onRetry: execute(session, accountId, properties: properties),  
+        onRetry: execute(session, accountId, properties: properties),
       ));
     }
+  }
+
+  void _report(Object error, StackTrace stackTrace) {
+    if (error is NoNetworkError) return;
+    logError(
+      'GetAllMailboxInteractor: the folders could not be loaded',
+      exception: error,
+      stackTrace: stackTrace,
+    );
   }
 
   Either<Failure, Success> _toGetMailboxState(MailboxResponse mailboxResponse) {
