@@ -20,9 +20,10 @@ void applySentryReportingConsent(
 ) {
   if (sentryEcosystem != null) {
     unawaited(sentryEcosystem.updateReportingConsent(consent));
-    return;
+  } else {
+    SentryManager.instance.setSentryReportingConsent(consent);
   }
-  SentryManager.instance.setSentryReportingConsent(consent);
+  SentryManager.instance.resolveReportingConsent();
 }
 
 class SentryEcosystem implements SentrySessionCleanup {
@@ -59,6 +60,7 @@ class SentryEcosystem implements SentrySessionCleanup {
         'SentryEcosystem::setUp: config invalid '
         '(enabled=${ecosystemConfig.enabled}, dsn=${dsn?.isNotEmpty}, env=${env?.isNotEmpty})',
       );
+      SentryManager.instance.discardPendingReports();
       await clear(clearUser: false);
       return;
     }

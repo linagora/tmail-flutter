@@ -114,7 +114,8 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
         _captureMessage = _captureSentryMessage,
         _addBreadcrumb = _addSentryBreadcrumb,
         _initializeSentrySdk = SentryInitializer.init,
-        _closeSentrySdk = _closeDefaultSentrySdk;
+        _closeSentrySdk = _closeDefaultSentrySdk,
+        _now = DateTime.now;
 
   @visibleForTesting
   SentryManager.forTesting({
@@ -125,7 +126,9 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
     SentrySdkInitializer? initializeSentrySdk,
     SentrySdkCloser? closeSentrySdk,
     bool isSentryAvailable = true,
+    DateTime Function()? now,
   })  : _isSentryAvailable = isSentryAvailable,
+        _now = now ?? DateTime.now,
         _userScopeCoordinator = SentryUserScopeCoordinator(
           synchronizeScope: synchronizeScope,
         ),
@@ -144,6 +147,16 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
   final SentryBreadcrumbAdder _addBreadcrumb;
   final SentrySdkInitializer _initializeSentrySdk;
   final SentrySdkCloser _closeSentrySdk;
+  final DateTime Function() _now;
+
+  static const int _maxPendingReports = 20;
+  static const Duration _pendingReportMaxAge = Duration(minutes: 5);
+
+  /// Reports raised before the configuration and consent are known. Memory
+  /// only: sent once reporting is allowed, dropped when it is not.
+  final List<_PendingReport> _pendingReports = [];
+  Timer? _pendingReportsExpiry;
+  bool _isConsentResolved = false;
 
   final SentryReportingPolicy _reportingPolicy = SentryReportingPolicy();
   SentryConfig? _sentryConfig;
@@ -188,6 +201,7 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
   @override
   void setSentryReportingConsent(bool? consent) {
     _reportingPolicy.setUserConsent(consent);
+    if (_reportingPolicy.isRefusedByUser) discardPendingReports();
     _onReportingPermissionChanged();
   }
 
@@ -197,6 +211,65 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
 
   /// The single gate every outgoing Sentry report passes through.
   bool get _canSendToSentry => _isSentryAvailable && isSentryReportingReady;
+
+  /// No configuration yet, the ecosystem is still being resolved, or the
+  /// user's own choice has not been read yet.
+  bool get _isReportingDecisionPending =>
+      _sentryConfig == null ||
+      _reportingPolicy.isSuspended ||
+      !_isConsentResolved;
+
+  /// The user's choice is known, even when it is "no choice": the reports kept
+  /// so far follow the resulting decision.
+  void resolveReportingConsent() {
+    _isConsentResolved = true;
+    // Chained only when there is something to settle: every link on this
+    // shared future is awaited by whoever reads pendingLifecycleTransition.
+    if (_pendingReports.isNotEmpty) _scheduleLifecycleTransition();
+  }
+
+  @visibleForTesting
+  bool get isReportingConsentResolved => _isConsentResolved;
+
+  /// Drops the kept reports without sending them, e.g. when the instance
+  /// turns Sentry off or the user's choice cannot be read.
+  void discardPendingReports() {
+    _pendingReports.clear();
+    _pendingReportsExpiry?.cancel();
+    _pendingReportsExpiry = null;
+  }
+
+  /// A new session starts its own decision.
+  void _forgetReportingDecision() {
+    discardPendingReports();
+    _isConsentResolved = false;
+  }
+
+  void _keepUntilReportingIsDecided(
+    Future<void> Function(Map<String, dynamic> extras) send,
+  ) {
+    if (!_isReportingDecisionPending || _reportingPolicy.isRefusedByUser) return;
+    if (_pendingReports.length >= _maxPendingReports) return;
+    _pendingReports.add(_PendingReport(_now(), send));
+    _pendingReportsExpiry ??= Timer(_pendingReportMaxAge, discardPendingReports);
+  }
+
+  Future<void> _settlePendingReports() async {
+    if (_pendingReports.isEmpty || _isReportingDecisionPending) return;
+    // A consent change on a running SDK returns before its scope update ends.
+    await _userScopeCoordinator.pendingSynchronization;
+    if (_pendingReports.isEmpty || _isReportingDecisionPending) return;
+    final reports = List.of(_pendingReports);
+    discardPendingReports();
+    // After a suspension the overdue expiry timer may not have run yet.
+    final deadline = reports.first.raisedAt.add(_pendingReportMaxAge);
+    if (!_now().isBefore(deadline) || !_canSendToSentry) return;
+    for (final report in reports) {
+      unawaited(report.send({
+        'raised_before_reporting_started_at': report.raisedAt.toUtc().toIso8601String(),
+      }));
+    }
+  }
 
   /// The identity the scope should carry: the one that was set, but only while
   /// reporting is allowed.
@@ -284,9 +357,10 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
   Future<void> _applyDesiredLifecycle() async {
     if (!_shouldRunSentry) {
       await _stopSentry();
-      return;
+    } else {
+      await _startSentry();
     }
-    await _startSentry();
+    await _settlePendingReports();
   }
 
   Future<void> _startSentry() async {
@@ -334,7 +408,16 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
     Map<String, dynamic>? extras,
     SentryLevel level = SentryLevel.error,
   }) {
-    if (!_canSendToSentry) return;
+    if (!_canSendToSentry || _isReportingDecisionPending) {
+      _keepUntilReportingIsDecided((sendExtras) => _captureExceptionInternal(
+            exception,
+            stackTrace,
+            message,
+            {...?extras, ...sendExtras},
+            level,
+          ));
+      return;
+    }
 
     // Use unawaited to prevent linter warnings about unawaited futures.
     // We do not want the UI to pause while Sentry writes the crash report.
@@ -364,7 +447,11 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
     Map<String, dynamic>? extras,
     SentryLevel level = SentryLevel.info,
   }) {
-    if (!_canSendToSentry) return;
+    if (!_canSendToSentry || _isReportingDecisionPending) {
+      _keepUntilReportingIsDecided((sendExtras) =>
+          _captureMessageInternal(message, level, {...?extras, ...sendExtras}));
+      return;
+    }
 
     unawaited(_captureMessageInternal(message, level, extras));
   }
@@ -431,6 +518,7 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
 
   /// Clears account-owned Sentry state while preserving the instance default.
   Future<void> clearSessionContext() async {
+    _forgetReportingDecision();
     _userScopeCoordinator.clearUser();
     _reportingPolicy.setUserConsent(null);
     _onReportingPermissionChanged();
@@ -447,4 +535,11 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
       shouldReport: _shouldRunSentry,
     );
   }
+}
+
+class _PendingReport {
+  const _PendingReport(this.raisedAt, this.send);
+
+  final DateTime raisedAt;
+  final Future<void> Function(Map<String, dynamic> extras) send;
 }

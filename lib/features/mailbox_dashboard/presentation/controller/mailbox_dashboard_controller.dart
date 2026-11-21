@@ -675,6 +675,9 @@ class MailboxDashBoardController extends ReloadableController
     } else if (failure is GetServerSettingFailure) {
       isSenderImportantFlagEnabled.value = true;
       setupAINeedsActionSetting();
+      // The user's choice is unknown: the reports kept so far must not leave.
+      SentryManager.instance.discardPendingReports();
+      SentryManager.instance.resolveReportingConsent();
     } else if (failure is GetAllIdentitiesFailure) {
       _handleGetAllIdentitiesFailure();
     } else if (failure is ClearMailboxFailure) {
