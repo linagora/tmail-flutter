@@ -1,3 +1,5 @@
+import 'dart:ui' show PointerDeviceKind;
+
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/platform_info.dart';
@@ -129,9 +131,10 @@ class SidebarMailboxItem extends StatelessWidget {
 
   Widget _withLongPress(Widget child, bool isWebDesktop) {
     if (onLongPressMailboxNodeAction == null || isWebDesktop) return child;
-    if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit) return child;
 
+    // Web: touch only, mouse users get the hover "⋮" menu instead.
     return GestureDetector(
+      supportedDevices: PlatformInfo.isWeb ? {PointerDeviceKind.touch} : null,
       onLongPress: () => onLongPressMailboxNodeAction?.call(mailboxNode),
       child: child,
     );
