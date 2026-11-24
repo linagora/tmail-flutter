@@ -87,7 +87,8 @@ def githubRepository() {
 
 // ---- Fork authorization and credentials. The same block is in the Jenkinsfiles of
 // twake-contacts-frontend, twake-calendar-frontend, twake-calendar-side-service, webadmin-proxy,
-// tmail-flutter and esn-sabre: change it in all of them. Only githubRepository() differs.
+// tmail-flutter, esn-sabre and tmail-backend: change it in all of them. Only githubRepository()
+// differs.
 //
 // No credential is bound at pipeline level: every stage runs code of the checked out sources (build
 // plugins, package scripts, tests, scripts/), so secrets are bound only around the steps that need
@@ -137,17 +138,24 @@ def checkedOutPullRequestHead() {
   return headSha
 }
 
-// The login of a linagora member who approved the given commit, or reviewed it with 'Build this please'
+// The login of a linagora member who approved the given commit, or reviewed it with 'Build this please'.
+// GitHub lists the reviews oldest first, 100 per page at most: every page is read.
 def memberReviewerOf(String sha) {
-  def reviews = githubApi("pulls/${env.CHANGE_ID}/reviews?per_page=100")
-  for (review in reviews) {
-    def approves = review.state == 'APPROVED' ||
-      (review.state != 'DISMISSED' && "${review.body}".trim() == 'Build this please')
-    if (review.commit_id == sha && approves && isOrgMember(review.user.login)) {
-      return review.user.login
+  def page = 1
+  while (true) {
+    def reviews = githubApi("pulls/${env.CHANGE_ID}/reviews?per_page=100&page=${page}")
+    for (review in reviews) {
+      def approves = review.state == 'APPROVED' ||
+        (review.state != 'DISMISSED' && "${review.body}".trim() == 'Build this please')
+      if (review.commit_id == sha && approves && isOrgMember(review.user.login)) {
+        return review.user.login
+      }
     }
+    if (reviews.size() < 100) {
+      return null
+    }
+    page++
   }
-  return null
 }
 
 def isOrgMember(String login) {
