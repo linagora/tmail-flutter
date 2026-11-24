@@ -1,30 +1,12 @@
 import 'package:get/get.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:jmap_dart_client/jmap/identities/identity.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:labels/extensions/list_label_extension.dart';
-import 'package:model/email/attachment.dart';
-import 'package:model/email/email_action_type.dart';
-import 'package:model/extensions/presentation_mailbox_extension.dart';
-import 'package:model/extensions/session_extension.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/upload/file_info.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
-import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
-import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 
 import '../../base/core_robot.dart';
 import '../../models/provisioning_email.dart';
-import '../../utils/describe_failure.dart';
+import '../../utils/jmap/jmap_email_provisioner.dart';
 import '../../utils/test_timeouts.dart';
 import '../../utils/wait_for_mailbox_ready.dart' as wait_for_mailbox_ready;
 
@@ -42,160 +24,21 @@ abstract class AbstractCommonRobot extends CoreRobot {
     bool requestReadReceipt = true,
     Role? folderLocationRole,
   }) async {
-    ComposerBindings().dependencies();
-
     await waitForMailboxReady();
-    final threadController = Get.find<ThreadController>();
-
-    final identity = await _getIdentity();
-
-    if (identity == null) {
-      throw StateError('Provisioning: no identity for the current account');
-    }
-
-    // Provision emails
-    for (final provisioningEmail in provisioningEmails) {
-      await _sendProvisioningEmail(
-        provisioningEmail,
-        identity: identity,
-        requestReadReceipt: requestReadReceipt,
-        folderLocationRole: folderLocationRole,
-      );
-    }
+    await JmapEmailProvisioner().send(
+      provisioningEmails,
+      requestReadReceipt: requestReadReceipt,
+      folderLocationRole: folderLocationRole,
+    );
 
     // Web e2e browser storage can retain mailbox data from a preceding test.
     // A normal refresh may return that cache while the server-side provisioning
     // change is still being reconciled, so force a fresh query on web only.
     if (refreshEmailView) {
-      await threadController.refreshAllEmail(
+      await Get.find<ThreadController>().refreshAllEmail(
         shouldClearCache: PlatformInfo.isWeb,
       );
     }
-
-    // No ComposerBindings().dispose() here: it runs with the default (null) tag,
-    // so it would delete the dashboard's own untagged registrations (for example
-    // ManageAccountRepository) and break closing a composer later in the test.
-  }
-
-  // A swallowed send failure otherwise surfaces 90 s later as a missing tile
-  Future<void> _sendProvisioningEmail(
-    ProvisioningEmail provisioningEmail, {
-    required Identity identity,
-    required bool requestReadReceipt,
-    Role? folderLocationRole,
-  }) async {
-    final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
-    final createNewAndSendEmailInteractor =
-        Get.find<CreateNewAndSendEmailInteractor>();
-    // The memory backend stores uploads in a plain HashMap, so keep them sequential.
-    final attachments = <Attachment>[];
-    for (final fileInfo in provisioningEmail.fileInfos) {
-      attachments.add(await uploadAttachments(fileInfo));
-    }
-    final inlineAttachments = <String, Attachment>{};
-    var emailContent = provisioningEmail.content;
-    for (var i = 0; i < provisioningEmail.inlineFileInfos.length; i++) {
-      final uploaded =
-          await uploadAttachments(provisioningEmail.inlineFileInfos[i]);
-      final cid = '${uploaded.blobId!.value}@tmail-memory';
-      inlineAttachments[cid] = Attachment(
-        partId: uploaded.partId,
-        blobId: uploaded.blobId,
-        size: uploaded.size,
-        name: uploaded.name,
-        type: uploaded.type,
-        cid: cid,
-        disposition: ContentDisposition.inline,
-      );
-      emailContent = emailContent.replaceAll('{{inline$i}}', cid);
-    }
-    final result = await createNewAndSendEmailInteractor
-        .execute(
-          createEmailRequest: CreateEmailRequest(
-            session: mailboxDashBoardController.sessionCurrent!,
-            accountId: mailboxDashBoardController.accountId.value!,
-            emailActionType: EmailActionType.compose,
-            ownEmailAddress: mailboxDashBoardController.ownEmailAddress.value,
-            subject: provisioningEmail.subject,
-            emailContent: emailContent,
-            toRecipients: {EmailAddress(null, provisioningEmail.toEmail)},
-            outboxMailboxId: mailboxDashBoardController.outboxMailbox?.mailboxId,
-            sentMailboxId: folderLocationRole != null
-                ? mailboxDashBoardController
-                    .mapDefaultMailboxIdByRole[folderLocationRole]
-                : mailboxDashBoardController
-                    .mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
-            identity: identity,
-            attachments: attachments,
-            inlineAttachments: inlineAttachments,
-            hasRequestReadReceipt: requestReadReceipt,
-            keywords: provisioningEmail.labels.keywords,
-          ),
-        )
-        .last;
-    result.fold(
-      (failure) => throw StateError(
-        'Provisioning email "${provisioningEmail.subject}" was not sent: ${describeFailure(failure)}',
-      ),
-      (success) {
-        if (success is! SendEmailSuccess) {
-          throw StateError(
-            'Provisioning email "${provisioningEmail.subject}" ended in ${success.runtimeType}',
-          );
-        }
-      },
-    );
-  }
-
-  Future<Identity?> _getIdentity() async {
-    final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
-    final getAllIdentitiesInteractor = Get.find<GetAllIdentitiesInteractor>();
-    final getAllIdentities = await getAllIdentitiesInteractor
-        .execute(
-          mailboxDashBoardController.sessionCurrent!,
-          mailboxDashBoardController.accountId.value!,
-        )
-        .last;
-    return getAllIdentities.fold(
-      (failure) => null,
-      (success) {
-        if (success is GetAllIdentitiesSuccess) {
-          return success.identities?.firstOrNull;
-        }
-        return null;
-      },
-    );
-  }
-
-  Future<Attachment> uploadAttachments(FileInfo fileInfo) async {
-    final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
-
-    final uploadUri = mailboxDashBoardController.sessionCurrent!.getUploadUri(
-      mailboxDashBoardController.accountId.value!,
-      jmapUrl: mailboxDashBoardController.dynamicUrlInterceptors.jmapUrl,
-    );
-
-    final uploadAttachmentInteractor = Get.find<UploadAttachmentInteractor>();
-    final uploadAttachmentState =
-        await uploadAttachmentInteractor.execute(fileInfo, uploadUri).last;
-    final attachment = await uploadAttachmentState.fold(
-      (failure) => null,
-      (success) async {
-        if (success is UploadAttachmentSuccess) {
-          final uploadAttachment =
-              await success.uploadAttachment.progressState.last;
-          return uploadAttachment.fold(
-            (failure) => null,
-            (success) => success is SuccessAttachmentUploadState
-                ? success.attachment
-                : null,
-          );
-        }
-      },
-    );
-    // If attachment is null, the test will fail anyway,
-    // so we can ignore the null check
-    return attachment!;
   }
 
   Future<FileInfo> prepareTxtFile(String content);

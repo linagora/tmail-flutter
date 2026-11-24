@@ -1,6 +1,4 @@
-import 'package:get/get.dart';
 import 'package:http_parser/http_parser.dart';
-import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/method/method.dart';
 import 'package:jmap_dart_client/jmap/core/method/method_response.dart';
@@ -9,7 +7,6 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
-import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
@@ -25,24 +22,30 @@ import 'package:jmap_dart_client/jmap/mail/email/set/set_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
 import '../models/provisioning_threads.dart';
+import 'jmap/jmap_test_client.dart';
 
 class CollapsedThreadProvisioner {
-  MailboxDashBoardController get _dashboard =>
-      Get.find<MailboxDashBoardController>();
+  late JmapTestClient _client;
+  late MailboxId _inboxId;
+
+  Future<void> _connect() async {
+    _client = await JmapTestClient.current();
+    _inboxId = await _client.mailboxIdByRole(PresentationMailbox.roleInbox);
+  }
 
   Future<CreatedThreads> provision(ProvisioningThreads threads) async {
-    final setEmailMethod = SetEmailMethod(_dashboard.accountId.value!);
+    await _connect();
+    final setEmailMethod = SetEmailMethod(_client.accountId);
     _addCreates(setEmailMethod, threads);
     final response = await _executeSetEmail(setEmailMethod);
-    final created = response?.created ?? {};
+    final created = response.created ?? {};
     final expectedCount =
         threads.threadNumbers.length * threads.repliesPerThread;
     if (created.length != expectedCount) {
-      throw StateError('provisioning failed: ${response?.notCreated}');
+      throw StateError('provisioning failed: ${response.notCreated}');
     }
     if (created.values.map((email) => email.threadId).toSet().length !=
         threads.threadNumbers.length) {
@@ -50,12 +53,11 @@ class CollapsedThreadProvisioner {
     }
     return (
       emailIds: _createdEmailIds(created, threads),
-      state: response?.newState,
+      state: response.newState,
     );
   }
 
   void _addCreates(SetEmailMethod setEmailMethod, ProvisioningThreads threads) {
-    final inboxId = _inboxId;
     final runId = DateTime.now().microsecondsSinceEpoch;
     for (var index = 0; index < threads.threadNumbers.length; index++) {
       final thread = threads.threadNumbers[index];
@@ -64,7 +66,7 @@ class CollapsedThreadProvisioner {
           Id('thread-$thread-$reply'),
           _threadEmail(
             (
-              inboxId: inboxId,
+              inboxId: _inboxId,
               messageIdPrefix: 'thread-$runId-$thread',
               seen: threads.seen,
               starred: threads.starred,
@@ -100,23 +102,26 @@ class CollapsedThreadProvisioner {
   }
 
   Future<State?> destroyEmails(Iterable<EmailId> emailIds) async {
-    final method = SetEmailMethod(_dashboard.accountId.value!)
+    await _connect();
+    final method = SetEmailMethod(_client.accountId)
       ..addDestroy(emailIds.map((emailId) => emailId.id).toSet());
-    return (await _executeSetEmail(method))?.newState;
+    return (await _executeSetEmail(method)).newState;
   }
 
   Future<int> countEmailsWithKeyword(String keyword) async {
+    await _connect();
     final queried = await _execute(
-      QueryEmailMethod(_dashboard.accountId.value!)
+      QueryEmailMethod(_client.accountId)
         ..addFilters(EmailFilterCondition(hasKeyword: keyword))
         ..addLimit(UnsignedInt(1)),
       QueryEmailResponse.deserialize,
     );
-    return queried?.ids.length ?? 0;
+    return queried.ids.length;
   }
 
   Future<State?> markEmailsAsRead(Iterable<EmailId> emailIds) async {
-    final method = SetEmailMethod(_dashboard.accountId.value!)
+    await _connect();
+    final method = SetEmailMethod(_client.accountId)
       ..addUpdates({
         for (final emailId in emailIds)
           emailId.id: PatchObject({
@@ -124,11 +129,12 @@ class CollapsedThreadProvisioner {
                 true,
           }),
       });
-    return (await _executeSetEmail(method))?.newState;
+    return (await _executeSetEmail(method)).newState;
   }
 
   Future<void> deleteProvisionedThreads(String prefix) async {
-    final accountId = _dashboard.accountId.value!;
+    await _connect();
+    final accountId = _client.accountId;
     final maxObjectsInGet = _maxObjectsInGet;
     final ownEmailIds = <EmailId>{};
     var position = 0;
@@ -143,7 +149,7 @@ class CollapsedThreadProvisioner {
           ..addPosition(position),
         QueryEmailResponse.deserialize,
       );
-      final ids = queried?.ids.toList() ?? [];
+      final ids = queried.ids.toList();
       if (ids.isEmpty) break;
 
       final emails = await _execute(
@@ -153,7 +159,7 @@ class CollapsedThreadProvisioner {
         GetEmailResponse.deserialize,
       );
       ownEmailIds.addAll(
-        (emails?.list ?? [])
+        emails.list
             .where((email) => _isProvisionedSubject(email.subject, prefix))
             .map((email) => email.id!)
             .whereType<EmailId>(),
@@ -171,18 +177,9 @@ class CollapsedThreadProvisioner {
     return RegExp('^(Re: )?${RegExp.escape(prefix)} \\d+\$').hasMatch(subject);
   }
 
-  int get _maxObjectsInGet {
-    final session = _dashboard.sessionCurrent;
-    final accountId = _dashboard.accountId.value;
-    if (session == null || accountId == null) {
-      return CapabilityIdentifierExtension.defaultMaxObjectsInGet;
-    }
-    return session.getMaxObjectsInGet(accountId)?.value.toInt() ??
-        CapabilityIdentifierExtension.defaultMaxObjectsInGet;
-  }
-
-  MailboxId get _inboxId =>
-      _dashboard.mapDefaultMailboxIdByRole[PresentationMailbox.roleInbox]!;
+  int get _maxObjectsInGet =>
+      _client.session.getMaxObjectsInGet(_client.accountId)?.value.toInt() ??
+      CapabilityIdentifierExtension.defaultMaxObjectsInGet;
 
   Email _threadEmail(
     ({
@@ -238,29 +235,12 @@ class CollapsedThreadProvisioner {
     return keywords.isEmpty ? null : keywords;
   }
 
-  Future<SetEmailResponse?> _executeSetEmail(SetEmailMethod method) =>
+  Future<SetEmailResponse> _executeSetEmail(SetEmailMethod method) =>
       _execute(method, SetEmailResponse.deserialize);
 
-  Future<T?> _execute<T extends MethodResponse>(
+  Future<T> _execute<T extends MethodResponse>(
     Method method,
     T Function(Map<String, dynamic>) deserialize,
-  ) async {
-    final session = _dashboard.sessionCurrent!;
-    final accountId = _dashboard.accountId.value!;
-    final requestBuilder = JmapRequestBuilder(
-      Get.find<HttpClient>(),
-      ProcessingInvocation(),
-    );
-    final invocation = requestBuilder.invocation(method);
-    final response =
-        await (requestBuilder..usings(
-              method.requiredCapabilities.toCapabilitiesSupportTeamMailboxes(
-                session,
-                accountId,
-              ),
-            ))
-            .build()
-            .execute();
-    return response.parse<T>(invocation.methodCallId, deserialize);
-  }
+  ) =>
+      _client.execute(method, deserialize);
 }
