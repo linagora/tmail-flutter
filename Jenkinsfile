@@ -1,61 +1,3 @@
-def isPrImageEligible() {
-    if (!env.CHANGE_ID) {
-        return false
-    }
-    if (env.CHANGE_FORK) {
-      def forkOwner = env.CHANGE_FORK.split('/')[0]
-      def memberStatus = sh(
-        script: """curl -s -o /dev/null -w "%{http_code}" \
-          -H "Authorization: token \${GITHUB_CREDENTIAL_PSW}" \
-          "https://api.github.com/orgs/linagora/members/${forkOwner}" """,
-        returnStdout: true
-      ).trim()
-      echo "GitHub org membership check returned HTTP ${memberStatus} for '${forkOwner}'"
-      if (memberStatus == '204') {
-        echo "Fork owner '${forkOwner}' is a linagora org member, proceeding."
-      } else if (memberStatus == '404') {
-        echo "Fork owner '${forkOwner}' is not a member of the linagora organization."
-        def approvedByMember = false
-        def commentsStatus = sh(
-          script: """curl -s -o /tmp/pr_comments_${CHANGE_ID}.json -w "%{http_code}" \
-            -H "Authorization: token \${GITHUB_CREDENTIAL_PSW}" \
-            "https://api.github.com/repos/linagora/tmail-flutter/issues/\${CHANGE_ID}/comments" """,
-          returnStdout: true
-        ).trim()
-        if (commentsStatus != '200') {
-          error("GitHub API error ${commentsStatus} while fetching PR comments for approval check")
-        }
-        def commentsJson = readFile("/tmp/pr_comments_${CHANGE_ID}.json")
-        def comments = new groovy.json.JsonSlurper().parseText(commentsJson)
-        for (comment in comments) {
-          if (comment.body?.trim()?.toLowerCase() == 'build this please') {
-            def commenter = comment.user.login
-            def commenterStatus = sh(
-              script: """curl -s -o /dev/null -w "%{http_code}" \
-                -H "Authorization: token \${GITHUB_CREDENTIAL_PSW}" \
-                "https://api.github.com/orgs/linagora/members/${commenter}" """,
-              returnStdout: true
-            ).trim()
-            if (commenterStatus == '204') {
-              echo "Build approved by linagora member '${commenter}', proceeding."
-              approvedByMember = true
-              break
-            }
-          }
-        }
-        if (!approvedByMember) {
-          echo "No linagora member approval found. Skipping PR image delivery."
-          return false
-        }
-      } else if (memberStatus == '401' || memberStatus == '403') {
-        error("Authentication/permission error validating fork owner: ${memberStatus}")
-      } else {
-        error("GitHub API error ${memberStatus} while checking membership for '${forkOwner}'")
-      }
-    }
-    return true
-}
-
 pipeline {
     agent {
         label 'flutter-web'
@@ -79,7 +21,21 @@ pipeline {
         PR_IMAGE_CPU_QUOTA = '100000'
     }
 
+    // No pipeline-level credentials, see withGithubCredential and withDockerHubLogin.
     stages {
+        stage('Authorize fork') {
+            // A fork pull request runs no code of its own before an org member vouches for its head
+            // commit, see authorizeFork
+            when {
+                changeRequest()
+                expression { env.CHANGE_FORK != null }
+            }
+            steps {
+                script {
+                    authorizeFork()
+                }
+            }
+        }
         stage('Check Flutter version') {
             steps {
                 sh './scripts/ci-assert-flutter-version.sh'
@@ -90,21 +46,8 @@ pipeline {
             steps {
                 script {
                     env.PR_IMAGE_BUILT = 'false'
-                    // Decided before the PR's scripts run: the GitHub token must not be bound beside them.
-                    def buildPrImage = false
-                    if (env.CHANGE_ID) {
-                        withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GITHUB_CREDENTIAL_USR', passwordVariable: 'GITHUB_CREDENTIAL_PSW')]) {
-                            try {
-                                buildPrImage = isPrImageEligible()
-                            } catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException e) {
-                                throw e
-                            } catch (Exception e) {
-                                // A GitHub API failure must skip only the PR image, not the web tests.
-                                echo "PR image eligibility check failed: ${e.message}. Skipping PR image delivery."
-                                buildPrImage = false
-                            }
-                        }
-                    }
+                    // A fork pull request reaches this stage only once authorized, see authorizeFork
+                    def buildPrImage = env.CHANGE_ID != null
                     parallel(
                         tests: {
                             sh './scripts/prebuild.sh'
@@ -147,35 +90,25 @@ pipeline {
               expression { env.PR_IMAGE_BUILT == 'true' }
             }
           }
-          environment {
-            DOCKER_HUB_CREDENTIAL = credentials('dockerHub')
-            GITHUB_CREDENTIAL = credentials('github')
-          }
           steps {
             script {
               // Publish only after the parallel tests and image build succeed.
-              sh '''
-                set -eu
-                export DOCKER_CONFIG="$(mktemp -d)"
-                cleanup() {
-                  docker logout || true
-                  rm -rf "$DOCKER_CONFIG"
-                }
-                trap cleanup EXIT
-                echo "$DOCKER_HUB_CREDENTIAL_PSW" | docker login -u "$DOCKER_HUB_CREDENTIAL_USR" --password-stdin
-                docker push linagora/tmail-web-pr:$CHANGE_ID
-              '''
-              sh """
-                HTTP_STATUS=\$(curl -s -o /tmp/gh_comment_response.json -w "%{http_code}" -X POST \\
-                  -H "Authorization: token \${GITHUB_CREDENTIAL_PSW}" \\
-                  -H "Content-Type: application/json" \\
-                  -d "{\\"body\\": \\"Docker image published for this PR: linagora/tmail-web-pr:\${CHANGE_ID}\\"}" \\
-                  "https://api.github.com/repos/linagora/tmail-flutter/issues/\${CHANGE_ID}/comments")
-                if [ "\$HTTP_STATUS" -lt 200 ] || [ "\$HTTP_STATUS" -ge 300 ]; then
-                  echo "WARNING: GitHub API comment failed with HTTP \$HTTP_STATUS"
-                  cat /tmp/gh_comment_response.json
-                fi
-              """
+              withDockerHubLogin {
+                sh 'docker push linagora/tmail-web-pr:$CHANGE_ID'
+              }
+              withGithubCredential {
+                sh """
+                  HTTP_STATUS=\$(curl -s -o /tmp/gh_comment_response.json -w "%{http_code}" -X POST \\
+                    -H "Authorization: token \${GITHUB_CREDENTIAL_PSW}" \\
+                    -H "Content-Type: application/json" \\
+                    -d "{\\"body\\": \\"Docker image published for this PR: linagora/tmail-web-pr:\${CHANGE_ID}\\"}" \\
+                    "https://api.github.com/repos/linagora/tmail-flutter/issues/\${CHANGE_ID}/comments")
+                  if [ "\$HTTP_STATUS" -lt 200 ] || [ "\$HTTP_STATUS" -ge 300 ]; then
+                    echo "WARNING: GitHub API comment failed with HTTP \$HTTP_STATUS"
+                    cat /tmp/gh_comment_response.json
+                  fi
+                """
+              }
             }
           }
         }
@@ -189,11 +122,13 @@ pipeline {
                 archiveArtifacts artifacts: 'ci-logs/**', allowEmptyArchive: true
 
                 // Tear down the backend Docker stack if it is still running and belongs to this workspace.
-                sh '''
-                    [ -f scripts/ci-backend-teardown.sh ] || exit 0
-                    flock -n -o /tmp/tmail-patrol-backend.lock bash scripts/ci-backend-teardown.sh \
-                        || echo "agent backend lock held by another job; skip teardown."
-                '''
+                if (mayRunChangeCode()) {
+                  sh '''
+                      [ -f scripts/ci-backend-teardown.sh ] || exit 0
+                      flock -n -o /tmp/tmail-patrol-backend.lock bash scripts/ci-backend-teardown.sh \
+                          || echo "agent backend lock held by another job; skip teardown."
+                  '''
+                }
             }
             deleteDir() /* clean up our workspace */
         }
@@ -201,4 +136,128 @@ pipeline {
             echo 'Pipeline failed. Review the console log and emulator.log for details.'
         }
     }
+}
+
+def githubRepository() {
+  return 'linagora/tmail-flutter'
+}
+
+// ---- Fork authorization and credentials. The same block is in the Jenkinsfiles of
+// twake-contacts-frontend, twake-calendar-frontend, twake-calendar-side-service, webadmin-proxy
+// and tmail-flutter: change it in all of them. Only githubRepository() differs.
+//
+// No credential is bound at pipeline level: every stage runs code of the checked out sources (build
+// plugins, package scripts, tests, scripts/), so secrets are bound only around the steps that need
+// them, see withGithubCredential and withDockerHubLogin.
+
+// A fork pull request runs no code of its own before an org member vouches for its head commit: the
+// owner of the fork is a linagora member, or a member submitted a review on that very commit (an
+// approval, or a review comment 'Build this please'). GitHub ties the review to that commit
+// (commit_id), so a commit pushed after the approval is not built until a member reviews it again.
+def authorizeFork() {
+  withGithubCredential {
+    // CHANGE_FORK is 'owner', or 'owner/repository' for a fork renamed on GitHub
+    def forkOwner = env.CHANGE_FORK.tokenize('/')[0]
+    if (isOrgMember(forkOwner)) {
+      echo "Fork owner '${forkOwner}' is a linagora org member, proceeding."
+      env.FORK_AUTHORIZED = 'true'
+      return
+    }
+    def headSha = checkedOutPullRequestHead()
+    def approver = memberReviewerOf(headSha)
+    if (approver) {
+      echo "Commit ${headSha} approved by linagora member '${approver}', proceeding."
+      env.FORK_AUTHORIZED = 'true'
+      return
+    }
+    error("Fork owner '${forkOwner}' is not a linagora org member and no member reviewed commit ${headSha}. " +
+      "A linagora member must approve the pull request, or submit a review 'Build this please', " +
+      "on this commit, then re-run the build.")
+  }
+}
+
+// Whether the build may run code of the checked out sources, for the post actions that run even
+// when the fork authorization failed
+def mayRunChangeCode() {
+  return env.CHANGE_FORK == null || env.FORK_AUTHORIZED == 'true'
+}
+
+// The head commit of the pull request, checked against the sources Jenkins checked out: HEAD itself,
+// or the second parent of the merge commit Jenkins builds with the target branch
+def checkedOutPullRequestHead() {
+  def headSha = githubApi("pulls/${env.CHANGE_ID}").head.sha
+  def checkedOut = sh(script: 'git rev-parse HEAD; git rev-parse -q --verify "HEAD^2" || true', returnStdout: true)
+    .trim().tokenize('\n')
+  if (!checkedOut.contains(headSha)) {
+    error("The pull request head moved to ${headSha} since the checkout of ${checkedOut}: re-run the build.")
+  }
+  return headSha
+}
+
+// The login of a linagora member who approved the given commit, or reviewed it with 'Build this please'
+def memberReviewerOf(String sha) {
+  def reviews = githubApi("pulls/${env.CHANGE_ID}/reviews?per_page=100")
+  for (review in reviews) {
+    def approves = review.state == 'APPROVED' ||
+      (review.state != 'DISMISSED' && "${review.body}".trim() == 'Build this please')
+    if (review.commit_id == sha && approves && isOrgMember(review.user.login)) {
+      return review.user.login
+    }
+  }
+  return null
+}
+
+def isOrgMember(String login) {
+  def status
+  withEnv(["GITHUB_LOGIN=${login}"]) {
+    status = sh(
+      script: 'curl -s -o /dev/null -w "%{http_code}" -H "Authorization: token $GITHUB_CREDENTIAL_PSW" ' +
+        '"https://api.github.com/orgs/linagora/members/$GITHUB_LOGIN"',
+      returnStdout: true
+    ).trim()
+  }
+  echo "GitHub org membership check returned HTTP ${status} for '${login}'"
+  if (status == '204') {
+    return true
+  }
+  if (status == '404') {
+    return false
+  }
+  error("GitHub API error ${status} while checking the membership of '${login}'")
+}
+
+def githubApi(String path) {
+  def json
+  withEnv(["GITHUB_API_PATH=${path}", "GITHUB_API_REPOSITORY=${githubRepository()}"]) {
+    json = sh(
+      script: 'curl -sf -H "Authorization: token $GITHUB_CREDENTIAL_PSW" ' +
+        '"https://api.github.com/repos/$GITHUB_API_REPOSITORY/$GITHUB_API_PATH"',
+      returnStdout: true
+    )
+  }
+  return readJSON(text: json)
+}
+
+// Binds the GitHub token as GITHUB_CREDENTIAL_USR / GITHUB_CREDENTIAL_PSW around the given steps only
+def withGithubCredential(Closure body) {
+  withCredentials([usernamePassword(credentialsId: 'github',
+      usernameVariable: 'GITHUB_CREDENTIAL_USR', passwordVariable: 'GITHUB_CREDENTIAL_PSW')]) {
+    body()
+  }
+}
+
+// Logs in Docker Hub in a throwaway Docker config deleted afterwards, so that the credential never
+// stays on the agent where a later build could read it
+def withDockerHubLogin(Closure body) {
+  withEnv(["DOCKER_CONFIG=${pwd(tmp: true)}/docker-config"]) {
+    try {
+      withCredentials([usernamePassword(credentialsId: 'dockerHub',
+          usernameVariable: 'DOCKER_HUB_CREDENTIAL_USR', passwordVariable: 'DOCKER_HUB_CREDENTIAL_PSW')]) {
+        sh 'mkdir -p "$DOCKER_CONFIG" && printf \'%s\' "$DOCKER_HUB_CREDENTIAL_PSW" | docker login -u "$DOCKER_HUB_CREDENTIAL_USR" --password-stdin'
+      }
+      body()
+    } finally {
+      sh 'docker logout || true; rm -rf "$DOCKER_CONFIG"'
+    }
+  }
 }
