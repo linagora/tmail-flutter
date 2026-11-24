@@ -144,22 +144,24 @@ def githubRepository() {
 
 // ---- Fork authorization and credentials. The same block is in the Jenkinsfiles of
 // twake-contacts-frontend, twake-calendar-frontend, twake-calendar-side-service, webadmin-proxy,
-// tmail-flutter, esn-sabre and tmail-backend: change it in all of them. Only githubRepository()
-// differs.
+// tmail-flutter, esn-sabre, tmail-backend and twake-mail-admin: change it in all of them. Only
+// githubRepository() differs.
 //
 // No credential is bound at pipeline level: every stage runs code of the checked out sources (build
 // plugins, package scripts, tests, scripts/), so secrets are bound only around the steps that need
 // them, see withGithubCredential and withDockerHubLogin.
 
 // A fork pull request runs no code of its own before an org member vouches for its head commit: the
-// owner of the fork is a linagora member, or a member submitted a review on that very commit (an
-// approval, or a review comment 'Build this please'). GitHub ties the review to that commit
-// (commit_id), so a commit pushed after the approval is not built until a member reviews it again.
+// owner of the fork is a linagora member, or a member approved that very commit (see
+// memberReviewerOf). An approval names one commit, so a commit pushed after it is not built until a
+// member approves it again.
 def authorizeFork() {
   withGithubCredential {
     // CHANGE_FORK is 'owner', or 'owner/repository' for a fork renamed on GitHub
     def forkOwner = env.CHANGE_FORK.tokenize('/')[0]
-    if (isOrgMember(forkOwner)) {
+    // Jenkins may set CHANGE_FORK to 'linagora' for a branch of the repository itself: only someone
+    // with write access pushes there, and an organization is not a member of itself.
+    if (forkOwner == 'linagora' || isOrgMember(forkOwner)) {
       echo "Fork owner '${forkOwner}' is a linagora org member, proceeding."
       env.FORK_AUTHORIZED = 'true'
       return
@@ -172,8 +174,8 @@ def authorizeFork() {
       return
     }
     error("Fork owner '${forkOwner}' is not a linagora org member and no member reviewed commit ${headSha}. " +
-      "A linagora member must approve the pull request, or submit a review 'Build this please', " +
-      "on this commit, then re-run the build.")
+      "A linagora member must approve the pull request on this commit, or comment 'Build this please ${headSha}', " +
+      "then re-run the build.")
   }
 }
 
@@ -195,8 +197,10 @@ def checkedOutPullRequestHead() {
   return headSha
 }
 
-// The login of a linagora member who approved the given commit, or reviewed it with 'Build this please'.
-// GitHub lists the reviews oldest first, 100 per page at most: every page is read.
+// The login of a linagora member who vouched for the given commit: an approving review of it, a review
+// 'Build this please' of it, or a comment 'Build this please <sha>' naming its full id. A prefix is not
+// accepted: the contributor writes the commits, and can craft one sharing a short prefix with the
+// reviewed one. GitHub lists reviews and comments oldest first, 100 per page at most: every page is read.
 def memberReviewerOf(String sha) {
   def page = 1
   while (true) {
@@ -209,6 +213,21 @@ def memberReviewerOf(String sha) {
       }
     }
     if (reviews.size() < 100) {
+      break
+    }
+    page++
+  }
+  def approval = "build this please ${sha}".toString()
+  page = 1
+  while (true) {
+    def comments = githubApi("issues/${env.CHANGE_ID}/comments?per_page=100&page=${page}")
+    for (comment in comments) {
+      def body = "${comment.body}".trim().toLowerCase().replaceAll('\\s+', ' ')
+      if (body == approval && isOrgMember(comment.user.login)) {
+        return comment.user.login
+      }
+    }
+    if (comments.size() < 100) {
       return null
     }
     page++
