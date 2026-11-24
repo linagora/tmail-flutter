@@ -143,8 +143,8 @@ def githubRepository() {
 }
 
 // ---- Fork authorization and credentials. The same block is in the Jenkinsfiles of
-// twake-contacts-frontend, twake-calendar-frontend, twake-calendar-side-service, webadmin-proxy
-// and tmail-flutter: change it in all of them. Only githubRepository() differs.
+// twake-contacts-frontend, twake-calendar-frontend, twake-calendar-side-service, webadmin-proxy,
+// tmail-flutter and esn-sabre: change it in all of them. Only githubRepository() differs.
 //
 // No credential is bound at pipeline level: every stage runs code of the checked out sources (build
 // plugins, package scripts, tests, scripts/), so secrets are bound only around the steps that need
