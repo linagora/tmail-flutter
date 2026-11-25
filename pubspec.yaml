@@ -340,7 +340,7 @@ dependency_overrides:
   jmap_dart_client:
     git:
       url: https://github.com/linagora/jmap-dart-client.git
-      ref: 8e07a7d8d1167f9ab95b1ffbefc50b0ab964504c
+      ref: main
 
   linagora_design_flutter:
     git:
