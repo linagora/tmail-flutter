@@ -71,6 +71,13 @@ class ComposerManager extends GetxController {
     }
   }
 
+  // Same write each composer does on beforeunload, so a forced page leave keeps every draft.
+  void saveAllReloadSnapshots() {
+    for (final id in composers.keys.toList()) {
+      composers[id]?.controller.saveReloadSnapshot();
+    }
+  }
+
   void _arrangeComposerIfNeeded() {
     if (currentContext != null && composerIdsQueue.isNotEmpty) {
       arrangeComposerWhenComposerQueueChanged(
