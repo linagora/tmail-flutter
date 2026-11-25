@@ -22,6 +22,10 @@ class ExternalLinkPolicy {
     final uri = Uri.tryParse(href);
     if (uri == null) return false;
     if (!uri.hasScheme) return uri.host.isEmpty;
-    return canLaunchFromContent(uri);
+    return canLaunchFromContent(uri) && !_isWebLinkWithoutHost(uri);
   }
+
+  // `https:%2f/x` or `https://\@x` has no host for Dart but one for the browser, or a relative target.
+  static bool _isWebLinkWithoutHost(Uri uri) =>
+      (uri.isScheme('http') || uri.isScheme('https')) && uri.host.isEmpty;
 }

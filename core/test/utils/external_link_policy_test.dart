@@ -35,6 +35,8 @@ void main() {
   group('ExternalLinkPolicy.canKeepInContent', () {
     for (final href in const [
       'https://a.b',
+      'http://localhost:8080/x',
+      r'http://intranet.example.com/share\doc.pdf',
       'tel:+33123456789',
       'geo:1,2',
       'webcal://x/f.ics',
@@ -53,6 +55,10 @@ void main() {
       'file:///etc/hosts',
       '//evil.example',
       'http://[::1',
+      'https://',
+      r'https://\@[::1]',
+      'https:%2f/[::1]',
+      'javascript:alert(1)',
     ]) {
       test('SHOULD drop $href', () {
         expect(ExternalLinkPolicy.canKeepInContent(href), isFalse);
