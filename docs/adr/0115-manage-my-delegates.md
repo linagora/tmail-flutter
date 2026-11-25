@@ -9,7 +9,7 @@ Proposed
 
 ## Related ADRs
 
-- [ADR-0114](./0114-delegated-mailbox-access.md) — phase 1, delegate side: `mine` / `active`, the delegation toggle, switching, revocation, Settings › Delegation with "Delegated to me", tickets T-01 to T-14. This ADR merges after it.
+- [ADR-0114](./0114-delegated-mailbox-access.md) — phase 1, delegate side: `mine` / `active`, the delegation toggle, switching, revocation, Settings › Delegation listing the mailboxes delegated to me, tickets T-01 to T-14. This ADR merges after it.
 - [ADR-0092](./0092-upgrade-flutter-riverpod-3.md), [ADR-0103](./0103-urgent-exception-handling-for-riverpod-flows.md) — new state in Riverpod
 
 ## Context
@@ -30,7 +30,7 @@ add(addresses)   → one request: Delegate/set create (all addresses), then Dele
 remove(delegate) → one request: Delegate/set destroy [id], then Delegate/get
 ```
 
-- Settings › Delegation gets two tabs: **My delegates** (default, #4977 §1) and **Delegated to me** (ADR-0114 T-11, unchanged). It follows the ADR-0114 toggle: shown only with the delegation capability and the toggle on.
+- Settings › Delegation gets two tabs: **By me** (default, my delegates, #4977 §1) and **With me** (the mailboxes delegated to me, ADR-0114 T-11, unchanged). It follows the ADR-0114 toggle: shown only with the delegation capability and the toggle on.
 - A delegate is shown by name and address when a name is known, otherwise by address only. The backend gives only the address, and there is no per-row contact lookup, so v1 shows the address.
 
 ### What changes in the code base
@@ -45,7 +45,7 @@ remove(delegate) → one request: Delegate/set destroy [id], then Delegate/get
 | Mailbox view, push, caches | Untouched | — |
 | Delegate's running app | Loses access at once on the server and follows the ADR-0114 revocation rules | Already covered by ADR-0114 |
 
-### My delegates tab
+### By me tab
 
 - States: loading, error with Retry, empty ("No one has access yet" + **+ Add**), list ("Who has access to your mailbox", a trash icon per row, then **+ Add**).
 - Only the latest read updates the tab, so a slow earlier read never overwrites a newer list.
@@ -88,7 +88,7 @@ remove(delegate) → one request: Delegate/set destroy [id], then Delegate/get
 |---|---|---|
 | DS-5 | Segmented tabs (design system) | — |
 | T-15 | `Delegate/get\|set` in the `delegation` package + data layer | ADR-0114 T-10 |
-| T-16 | Tabs + "My delegates" list, **+ Add** shown but inactive, no trash icon yet | T-15, DS-1, DS-4, DS-5, ADR-0114 T-06, T-11 |
+| T-16 | Tabs + my delegates list on "By me", **+ Add** shown but inactive, no trash icon yet | T-15, DS-1, DS-4, DS-5, ADR-0114 T-06, T-11 |
 | T-17 | Add delegates dialog, opened by **+ Add** | T-16 |
 | T-18 | Remove delegate dialog, opened by a new trash icon per row | T-16 |
 | T-19 | Email links kept across sign-in (`?account=` itself is read by the ADR-0114 web start, T-07.1) | ADR-0114 T-07, T-07.1, T-08, T-09, T-11 |
