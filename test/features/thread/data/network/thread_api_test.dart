@@ -668,7 +668,7 @@ void main() {
       Map<String, dynamic> generateRequest({
         Properties? propertiesCreated,
         Properties? propertiesUpdated,
-        int maxChanges = 128,
+        int? maxChanges = 128,
       }) =>
           {
             "using": [
@@ -682,7 +682,7 @@ void main() {
                 {
                   "accountId": AccountFixtures.aliceAccountId.asString,
                   "sinceState": sinceState.value,
-                  "maxChanges": maxChanges,
+                  if (maxChanges != null) "maxChanges": maxChanges,
                 },
                 "c0"
               ],
@@ -858,6 +858,81 @@ void main() {
 
         // assert
         expect(result.created, createdEmails);
+      });
+
+      test(
+          'should ask again without maxChanges '
+          'when the server cannot split a single change into pages of maxChanges', () async {
+        // arrange
+        // James keeps one Email/set as one change. With maxChanges 128 it
+        // rejects a change of 129 to 256 emails, which it served before the
+        // cap. Without maxChanges it applies its own limit of 256 again.
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(
+            200,
+            {
+              "sessionState": sessionState.value,
+              "methodResponses": [
+                [
+                  "error",
+                  {
+                    "type": "cannotCalculateChanges",
+                    "description": "Too many changes: the change collector limit 128 is exceeded by a single change",
+                  },
+                  "c0"
+                ],
+                [
+                  "error",
+                  {"type": "invalidResultReference"},
+                  "c1"
+                ],
+                [
+                  "error",
+                  {"type": "invalidResultReference"},
+                  "c2"
+                ],
+              ],
+            },
+          ),
+          data: generateRequest(
+            propertiesCreated: defaultCreatedProperties,
+            propertiesUpdated: defaultUpdatedProperties,
+          ),
+          headers: dioAdapterHeaders,
+        );
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(
+            200,
+            generateResponse(
+              propertiesCreated: defaultCreatedProperties,
+              propertiesUpdated: defaultUpdatedProperties,
+            ),
+          ),
+          data: generateRequest(
+            propertiesCreated: defaultCreatedProperties,
+            propertiesUpdated: defaultUpdatedProperties,
+            maxChanges: null,
+          ),
+          headers: dioAdapterHeaders,
+        );
+
+        // act
+        final result = await threadApi.getChanges(
+          SessionFixtures.aliceSession,
+          AccountFixtures.aliceAccountId,
+          sinceState,
+          propertiesCreated: defaultCreatedProperties,
+          propertiesUpdated: defaultUpdatedProperties,
+        );
+
+        // assert
+        // An incremental sync, not a cannotCalculateChanges that clears the
+        // whole email cache and reloads the list.
+        expect(result.created, createdEmails);
+        expect(result.updated, updatedEmails);
+        expect(result.newStateChanges, newState);
       });
 
       test(
