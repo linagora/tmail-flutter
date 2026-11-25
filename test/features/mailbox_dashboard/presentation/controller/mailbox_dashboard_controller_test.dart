@@ -1,6 +1,12 @@
 import 'dart:async';
 
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/foundation.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
+import 'package:model/notification/notification_payload.dart';
+import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_callback_action_define.dart';
@@ -41,6 +47,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:model/email/presentation_email.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:server_settings/server_settings/tmail_server_settings.dart';
@@ -1571,6 +1578,124 @@ void main() {
       },
     );
   });
+  group('iOS notification tap:', () {
+    late IOSNotificationManager iosNotificationManager;
+    final emailId = EmailId(Id('e-1'));
+    final session = DelegationFixtures.session();
+    final ios = TargetPlatformVariant.only(TargetPlatform.iOS);
+
+    VerificationResult verifyEmailFetched() => verify(getEmailByIdInteractor.execute(
+          session,
+          DelegationFixtures.aliceAccountId,
+          emailId,
+          properties: anyNamed('properties'),
+        ));
+
+    void verifyNoEmailFetched() =>
+        verifyNever(getEmailByIdInteractor.execute(any, any, any, properties: anyNamed('properties')));
+
+    void tapNotification() =>
+        iosNotificationManager.setPendingCurrentEmailId(NotificationPayload(emailId: emailId));
+
+    /// A live app, so the tap never reads a context an earlier test left behind.
+    Future<void> startDashboard(WidgetTester tester) async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      await pumpLocalizedApp(tester, container: container);
+      Get.delete<MailboxDashBoardController>(force: true);
+      Get.put(mailboxDashboardController);
+      mailboxDashboardController.onReady();
+    }
+
+    setUp(() {
+      iosNotificationManager = IOSNotificationManager();
+      Get.put<IOSNotificationManager>(iosNotificationManager);
+      when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
+      when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
+      when(labelController.isLabelSettingEnabled).thenReturn(RxBool(false));
+      // The mock is shared by the whole file, so calls of an earlier test must not count here.
+      reset(getEmailByIdInteractor);
+      when(getEmailByIdInteractor.execute(any, any, any, properties: anyNamed('properties')))
+          .thenAnswer((_) => const Stream.empty());
+    });
+
+    tearDown(() {
+      Get.delete<IOSNotificationManager>();
+      reset(getEmailByIdInteractor);
+    });
+
+    testWidgets('opens a tap that arrived before the session once the session loads', (tester) async {
+      await startDashboard(tester);
+      tapNotification();
+      await tester.pump();
+      verifyNoEmailFetched();
+
+      mailboxDashboardController.handleReloaded(session);
+      await tester.pump();
+
+      verifyEmailFetched().called(1);
+    }, variant: ios);
+
+    testWidgets('SHOULD NOT open the same tap again on a later session re-read', (tester) async {
+      await startDashboard(tester);
+      tapNotification();
+      mailboxDashboardController.handleReloaded(session);
+      await tester.pump();
+      verifyEmailFetched().called(1);
+
+      mailboxDashboardController.handleReloaded(session);
+      await tester.pump();
+
+      verifyNoEmailFetched();
+    }, variant: ios);
+
+    testWidgets('opens a tap at once while the session is loaded', (tester) async {
+      await startDashboard(tester);
+      mailboxDashboardController.handleReloaded(session);
+      await tester.pump();
+
+      tapNotification();
+      await tester.pump();
+
+      verifyEmailFetched().called(1);
+    }, variant: ios);
+
+    group('when the fetched email arrives', () {
+      late StreamController<Either<Failure, Success>> fetch;
+      final email = PresentationEmail(id: emailId);
+
+      Future<void> tapWhileLoaded(WidgetTester tester) async {
+        fetch = StreamController();
+        addTearDown(fetch.close);
+        when(getEmailByIdInteractor.execute(any, any, any, properties: anyNamed('properties')))
+            .thenAnswer((_) => fetch.stream);
+        await startDashboard(tester);
+        mailboxDashboardController.handleReloaded(session);
+        tapNotification();
+        await tester.pump();
+      }
+
+      testWidgets('opens it while its account is still shown', (tester) async {
+        await tapWhileLoaded(tester);
+
+        fetch.add(Right(GetEmailByIdSuccess(email)));
+        await tester.pump();
+
+        expect(mailboxDashboardController.selectedEmail.value, email);
+      }, variant: ios);
+
+      testWidgets('SHOULD NOT open it once another account switch started', (tester) async {
+        await tapWhileLoaded(tester);
+        (mailboxDashboardController.activeAccountSource as FakeActiveAccountSource).currentSwitchAttemptId++;
+
+        fetch.add(Right(GetEmailByIdSuccess(email)));
+        await tester.pump();
+
+        expect(mailboxDashboardController.selectedEmail.value, isNull);
+      }, variant: ios);
+    });
+  });
+
   group('switch account from a sign-in link:', () {
     late _DashboardSwitchDeepLinksManager deepLinksManager;
 

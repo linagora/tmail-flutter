@@ -212,4 +212,11 @@ class ThreadDataSourceImpl extends ThreadDataSource {
   Future<void> clearEmailCacheAndStateCache() {
     throw UnimplementedError();
   }
+
+  @override
+  Future<State?> getEmailState(Session session, AccountId accountId) {
+    return Future.sync(() async {
+      return await threadAPI.getEmailState(session, accountId);
+    }).catchError(_exceptionThrower.throwException);
+  }
 }

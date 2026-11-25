@@ -78,6 +78,12 @@ enum DeliveryBookmarkUpdate: Equatable {
         guard !payloadState.isEmpty else { return .keep }
         return .write(payloadState)
     }
+
+    /// A delegated mailbox without a cursor starts from this push, its notifications are skipped rather than diffed from an older state.
+    static func seedMissingCursor(isDelegated: Bool, payloadState: String) -> DeliveryBookmarkUpdate {
+        guard isDelegated, !payloadState.isEmpty else { return .keep }
+        return .write(payloadState)
+    }
 }
 
 extension JmapResponseObject where T == Email {

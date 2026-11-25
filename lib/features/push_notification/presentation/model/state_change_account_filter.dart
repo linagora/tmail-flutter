@@ -1,10 +1,20 @@
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/push/state_change.dart';
+import 'package:tmail_ui_user/features/delegation/domain/extensions/session_delegation_extension.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/providers/delegation_enabled_provider.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
+
+/// The delegated accounts of [session] whose pushes are kept, none while delegation is off.
+Set<AccountId> notifiedDelegatedAccountIds(Session? session, PreferencesSetting settings) =>
+    isDelegationEnabled(session, settings)
+        ? session!.delegatedAccounts.map((entry) => entry.key).toSet()
+        : const {};
 
 /// Which accounts of a [StateChange] the push layer may handle (ADR-0114 Sync).
 ///
-/// Delegated accounts are dropped. [includeDelegated] turns on when
-/// `delegationEnabledProvider` is true and the session still lists them.
+/// Delegated accounts are dropped unless [includeDelegated] is on and
+/// [delegatedAccountIds] lists them (see [notifiedDelegatedAccountIds]).
 class StateChangeAccountFilter {
   final AccountId personalAccountId;
   final AccountId? activeAccountId;

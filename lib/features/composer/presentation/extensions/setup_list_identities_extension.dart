@@ -10,15 +10,17 @@ extension SetupListIdentitiesExtension on ComposerController {
 
   Future<void> setupListIdentities(ComposerArguments arguments) async {
     final identities = arguments.identities ?? [];
-    if (identities.isEmpty) {
+    // The identities given by the dashboard are the shown mailbox's.
+    if (identities.isEmpty || isComposingOutsideShownAccount) {
       await getAllIdentitiesAsSynchronize();
     } else {
       listFromIdentities.value = identities;
+      fromIdentitiesAccountId = composerAccountId;
     }
   }
 
   Future<void> getAllIdentitiesAsSynchronize() async {
-    final accountId = mailboxDashBoardController.activeAccountId;
+    final accountId = composerAccountId;
     final session = mailboxDashBoardController.sessionCurrent;
 
     if (accountId == null || session == null) return;
@@ -39,10 +41,16 @@ extension SetupListIdentitiesExtension on ComposerController {
 
   void applyFromPickerIdentities(List<Identity>? identities) {
     final fromList = (identities ?? []).forComposerFromPicker(
-      keepServerDefaults: mailboxDashBoardController.shownAccountCapabilities.offersServerDefaultIdentities,
+      keepServerDefaults: _keepsServerDefaultIdentities,
     );
     if (fromList.isNotEmpty) {
       listFromIdentities.value = fromList;
+      fromIdentitiesAccountId = composerAccountId;
     }
   }
+
+  /// Only a delegated mailbox offers its server default identities, whichever mailbox is shown.
+  bool get _keepsServerDefaultIdentities => isComposingOutsideShownAccount
+      ? composerAccountId != mailboxDashBoardController.accountId.value
+      : mailboxDashBoardController.shownAccountCapabilities.offersServerDefaultIdentities;
 }

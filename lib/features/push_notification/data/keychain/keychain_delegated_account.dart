@@ -14,11 +14,13 @@ class KeychainDelegatedAccount with EquatableMixin {
   final AccountId accountId;
   final String? emailDeliveryState;
   final List<MailboxId>? mailboxIdsBlockNotification;
+  final String? ownerName;
 
   KeychainDelegatedAccount({
     required this.accountId,
     this.emailDeliveryState,
     this.mailboxIdsBlockNotification,
+    this.ownerName,
   });
 
   factory KeychainDelegatedAccount.fromJson(Map<String, dynamic> json) =>
@@ -31,5 +33,6 @@ class KeychainDelegatedAccount with EquatableMixin {
         accountId,
         emailDeliveryState,
         mailboxIdsBlockNotification,
+        ownerName,
       ];
 }

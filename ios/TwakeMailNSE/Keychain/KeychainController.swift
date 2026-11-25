@@ -94,7 +94,8 @@ class KeychainController: KeychainControllerDelegate, SentryConfigProvider {
                 personalAccountId: accountId,
                 emailDeliveryState: ownSession.emailDeliveryState ?? ownSession.emailState,
                 mailboxIdsBlockNotification: ownSession.mailboxIdsBlockNotification,
-                isDelegated: false
+                isDelegated: false,
+                ownerName: nil
             )
         }
 
@@ -108,7 +109,8 @@ class KeychainController: KeychainControllerDelegate, SentryConfigProvider {
                 personalAccountId: credentials.accountId,
                 emailDeliveryState: delegated.emailDeliveryState,
                 mailboxIdsBlockNotification: delegated.mailboxIdsBlockNotification,
-                isDelegated: true
+                isDelegated: true,
+                ownerName: delegated.ownerName
             )
         }
         return nil

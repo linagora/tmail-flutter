@@ -42,7 +42,7 @@ class GetEmailChangesToRemoveNotificationInteractor {
             updated: propertiesUpdated,
           ),
         );
-        yield Right<Failure, Success>(GetEmailChangesToRemoveNotificationSuccess(session.username, emailIds));
+        yield Right<Failure, Success>(GetEmailChangesToRemoveNotificationSuccess(session.username, emailIds, accountId));
       } else {
         yield Left<Failure, Success>(GetEmailChangesToRemoveNotificationFailure(const NotFoundEmailStateException()));
       }

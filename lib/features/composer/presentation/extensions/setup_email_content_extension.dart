@@ -163,7 +163,7 @@ extension SetupEmailContentExtension on ComposerController {
   }
 
   Future<void> _restoreInlineImages(String content, List<Attachment> inlineImages) async {
-    final accountId = mailboxDashBoardController.activeAccountId;
+    final accountId = composerAccountId;
     final downloadUrl = mailboxDashBoardController.baseDownloadUrl;
 
     if (restoreEmailInlineImagesInteractor == null) {
@@ -232,7 +232,7 @@ extension SetupEmailContentExtension on ComposerController {
     Properties? additionalProperties,
   }) async {
     final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.activeAccountId;
+    final accountId = composerAccountId;
     final emailId = arguments.presentationEmail?.id;
 
     if (session == null) {

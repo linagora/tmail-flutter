@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/push_notification/domain/model/register_n
 import 'package:tmail_ui_user/features/push_notification/domain/model/update_token_expired_time_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:tmail_ui_user/features/push_notification/domain/model/delegated_notification_baseline.dart';
 
 abstract class FCMRepository {
   Future<EmailsResponse> getEmailChangesToPushNotification(
@@ -51,4 +52,12 @@ abstract class FCMRepository {
   });
 
   Future<List<EmailId>> getNewReceiveEmailFromNotification(Session session, AccountId accountId, jmap.State currentState);
+
+  Future<jmap.State?> getEmailState(Session session, AccountId accountId);
+
+  /// The delegated mailboxes of [session] that already have a stored push cursor.
+  Future<Set<AccountId>> getDelegatedAccountIdsWithNotificationCursor(Session session);
+
+  /// Stores [baselines] as the push cursor of each delegated mailbox and drops the cursor of the others, on iOS it also replaces the NSE list.
+  Future<void> storeDelegatedNotificationBaselines(Session session, List<DelegatedNotificationBaseline> baselines);
 }

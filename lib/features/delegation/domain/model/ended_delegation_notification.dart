@@ -8,11 +8,20 @@ bool notificationGroupIsThisUser(String? groupKey, String userName) {
   return groupKey == userName;
 }
 
-/// A notification without a payload is kept. Android's active listing does
-/// not return one, so the username group is not cleared.
+/// Android lists active notifications without their payload, so a delegated one also carries its account id as [tag].
+bool notificationNamesAccountOrEmail({
+  required String? tag,
+  required String? payload,
+  required String accountId,
+  required Set<String> emailIds,
+}) =>
+    (accountId.isNotEmpty && tag == accountId) || payloadNamesAccountOrEmail(payload, accountId, emailIds);
+
+/// A notification without a payload is kept, so the username group is not cleared.
 ///
-/// [payload] is NotificationPayload JSON (`emailId`, `newState` only).
-bool payloadNamesEmail(String? payload, Set<String> emailIds) {
+/// [payload] is NotificationPayload JSON: it matches when its `accountId` is
+/// [accountId] or its `emailId` is in [emailIds].
+bool payloadNamesAccountOrEmail(String? payload, String accountId, Set<String> emailIds) {
   if (payload == null || payload.isEmpty) return false;
   final Object? decoded;
   try {
@@ -21,6 +30,7 @@ bool payloadNamesEmail(String? payload, Set<String> emailIds) {
     return false;
   }
   if (decoded is! Map) return false;
+  if (decoded['accountId'] == accountId) return true;
   final emailId = decoded['emailId'];
   return emailId is String && emailId.isNotEmpty && emailIds.contains(emailId);
 }

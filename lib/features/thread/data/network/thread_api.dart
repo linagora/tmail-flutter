@@ -304,4 +304,23 @@ class ThreadAPI with HandleSetErrorMixin, SessionMixin, MailAPIMixin {
       throw NotFoundEmailException();
     }
   }
+
+  /// `Email/get` with no ids returns only the current Email state.
+  Future<State?> getEmailState(Session session, AccountId accountId) async {
+    final processingInvocation = ProcessingInvocation();
+    final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
+    final getEmailMethod = GetEmailMethod(accountId)..addIds({});
+    final getEmailInvocation = jmapRequestBuilder.invocation(getEmailMethod);
+    final capabilities = getEmailMethod.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+    final result = await (jmapRequestBuilder
+        ..usings(capabilities))
+      .build()
+      .execute();
+
+    return result
+      .parse<GetEmailResponse>(getEmailInvocation.methodCallId, GetEmailResponse.deserialize)
+      ?.state;
+  }
 }

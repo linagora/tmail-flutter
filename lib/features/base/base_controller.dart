@@ -52,6 +52,8 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/destroy
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_stored_firebase_registration_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/attachment_keyword_config_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/notifier/fcm_bindings_registration_notifier.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/web_socket_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_message_controller.dart';
@@ -421,6 +423,7 @@ abstract class BaseController extends GetxController
       if (AppConfig.fcmAvailable) {
         await FcmConfiguration.initialize();
         FcmInteractorBindings().dependencies();
+        appProviderContainer.read(fcmBindingsRegistrationProvider.notifier).registered();
         FcmService.instance.initialStreamController();
         FcmMessageController.instance.initialize(accountId: accountId, session: session);
         FcmTokenController.instance.initialBindingInteractor();

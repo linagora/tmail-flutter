@@ -21,6 +21,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource/fcm_datasource.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
+import 'package:tmail_ui_user/features/delegation/domain/extensions/session_delegation_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/email_changes_properties.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/update_token_expired_time_request.dart';
@@ -28,8 +29,16 @@ import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_r
 import 'package:tmail_ui_user/features/push_notification/domain/utils/fcm_constants.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
+import 'package:core/utils/platform_info.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/extensions/session_extension.dart';
+import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_delegated_account.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/model/delegated_notification_baseline.dart';
 
 class FCMRepositoryImpl extends FCMRepository {
+
+  /// Key of the cursor a delegated mailbox starts from before its first push stores one.
+  static const emailDeliveryBaseline = TypeName('EmailDeliveryBaseline');
 
   final Map<DataSourceType, FCMDatasource> _fcmDatasource;
   final ThreadDataSource _threadDataSource;
@@ -72,13 +81,31 @@ class FCMRepositoryImpl extends FCMRepository {
   }
 
   @override
-  Future<jmap.State> getStateToRefresh(AccountId accountId, UserName userName, TypeName typeName) {
-    return _fcmDatasource[DataSourceType.local]!.getStateToRefresh(accountId, userName, typeName);
+  Future<jmap.State> getStateToRefresh(AccountId accountId, UserName userName, TypeName typeName) async {
+    try {
+      return await _fcmDatasource[DataSourceType.local]!.getStateToRefresh(accountId, userName, typeName);
+    } on NotFoundEmailDeliveryStateException {
+      final baseline = await _storedEmailDeliveryBaseline(accountId, userName);
+      if (baseline == null) rethrow;
+      return baseline;
+    }
+  }
+
+  /// Stands in for the cursor until a push stores one, so it is never written over a cursor.
+  Future<jmap.State?> _storedEmailDeliveryBaseline(AccountId accountId, UserName userName) async {
+    try {
+      return await _fcmDatasource[DataSourceType.local]!.getStateToRefresh(accountId, userName, emailDeliveryBaseline);
+    } on NotFoundStateToRefreshException {
+      return null;
+    }
   }
 
   @override
-  Future<void> deleteStateToRefresh(AccountId accountId, UserName userName, TypeName typeName) {
-    return _fcmDatasource[DataSourceType.local]!.deleteStateToRefresh(accountId, userName, typeName);
+  Future<void> deleteStateToRefresh(AccountId accountId, UserName userName, TypeName typeName) async {
+    await _fcmDatasource[DataSourceType.local]!.deleteStateToRefresh(accountId, userName, typeName);
+    if (typeName == TypeName.emailDelivery) {
+      await _fcmDatasource[DataSourceType.local]!.deleteStateToRefresh(accountId, userName, emailDeliveryBaseline);
+    }
   }
 
   @override
@@ -201,5 +228,95 @@ class FCMRepositoryImpl extends FCMRepository {
   @override
   Future<void> deleteFirebaseRegistrationCache() {
     return _fcmDatasource[DataSourceType.local]!.deleteFirebaseRegistrationCache();
+  }
+
+  @override
+  Future<jmap.State?> getEmailState(Session session, AccountId accountId) {
+    return _threadDataSource.getEmailState(session, accountId);
+  }
+
+  @override
+  Future<Set<AccountId>> getDelegatedAccountIdsWithNotificationCursor(Session session) async {
+    if (PlatformInfo.isIOS) {
+      final stored = await _fcmDatasource[DataSourceType.local]!.getDelegatedAccountsInKeychain(session.accountId);
+      return stored
+          .where((account) => account.emailDeliveryState?.isNotEmpty == true)
+          .map((account) => account.accountId)
+          .toSet();
+    }
+    final accountIds = <AccountId>{};
+    for (final accountId in session.delegatedAccounts.map((entry) => entry.key)) {
+      try {
+        await getStateToRefresh(accountId, session.username, TypeName.emailDelivery);
+        accountIds.add(accountId);
+      } on NotFoundEmailDeliveryStateException {
+        continue;
+      }
+    }
+    return accountIds;
+  }
+
+  @override
+  Future<void> storeDelegatedNotificationBaselines(
+    Session session,
+    List<DelegatedNotificationBaseline> readBaselines,
+  ) async {
+    if (PlatformInfo.isIOS) {
+      final baselines = await _keepingCursorsStoredMeanwhile(session, readBaselines);
+      final delegatedAccounts = <KeychainDelegatedAccount>[];
+      for (final baseline in baselines) {
+        delegatedAccounts.add(KeychainDelegatedAccount(
+          accountId: baseline.accountId,
+          emailDeliveryState: baseline.state?.value,
+          mailboxIdsBlockNotification: await _mailboxIdsBlockNotification(session, baseline.accountId),
+          ownerName: baseline.ownerName,
+        ));
+      }
+      await _fcmDatasource[DataSourceType.local]!
+          .storeDelegatedAccountsInKeychain(session.accountId, delegatedAccounts);
+      // The keychain keeps the stored list, but a first store has none, so the caller must retry.
+      if (delegatedAccounts.any((account) => account.mailboxIdsBlockNotification == null)) {
+        throw const NotFoundMailboxesBlockNotificationException();
+      }
+      return;
+    }
+    for (final baseline in readBaselines) {
+      final state = baseline.state;
+      if (state != null) {
+        await storeStateToRefresh(baseline.accountId, session.username, emailDeliveryBaseline, state);
+      }
+    }
+    // A mailbox notified again later must restart from the server state, not from the cursor it stopped at.
+    final notifiedAccountIds = readBaselines.map((baseline) => baseline.accountId).toSet();
+    for (final accountId in session.delegatedAccounts.map((entry) => entry.key)) {
+      if (!notifiedAccountIds.contains(accountId)) {
+        await deleteStateToRefresh(accountId, session.username, TypeName.emailDelivery);
+      }
+    }
+  }
+
+  /// The NSE may store a cursor while the baselines are read from the server, and that newer cursor wins.
+  Future<List<DelegatedNotificationBaseline>> _keepingCursorsStoredMeanwhile(
+    Session session,
+    List<DelegatedNotificationBaseline> baselines,
+  ) async {
+    if (baselines.every((baseline) => baseline.state == null)) return baselines;
+    final withCursor = await getDelegatedAccountIdsWithNotificationCursor(session);
+    return baselines
+        .map((baseline) => baseline.state != null && withCursor.contains(baseline.accountId)
+            ? DelegatedNotificationBaseline(accountId: baseline.accountId, ownerName: baseline.ownerName)
+            : baseline)
+        .toList();
+  }
+
+  /// Null when the mailboxes cannot be read: the keychain keeps the stored list, and without one the NSE notifies every mailbox.
+  Future<List<MailboxId>?> _mailboxIdsBlockNotification(Session session, AccountId accountId) async {
+    try {
+      final excluded = await getExcludedMailboxesForNotification(session, accountId);
+      return excluded.map((mailbox) => mailbox.id).toList();
+    } catch (e) {
+      logWarning('FCMRepositoryImpl::_mailboxIdsBlockNotification: $e');
+      return null;
+    }
   }
 }

@@ -35,13 +35,14 @@ ComposerAttachmentExtensionRegistry composerAttachmentExtensionRegistry(Ref ref)
 }
 
 /// Read at picker-open time, so it's always the current session's answer. Drive files are
-/// uploaded into the shown mailbox, so that account must support upload-from-url.
-bool _isUploadFromUrlSupported() {
+/// uploaded into the account the composer writes in, so that account must support upload-from-url.
+bool _isUploadFromUrlSupported(String? composerId) {
   final dashboard = getBinding<MailboxDashBoardController>();
   final jmapUrl = dashboard?.dynamicUrlInterceptors.jmapUrl;
   if (jmapUrl == null || jmapUrl.isEmpty) return false;
   return dashboard?.sessionCurrent?.isUploadFromUrlSupported(
-        dashboard.activeAccountId,
+        getBinding<ComposerController>(tag: composerId)?.composerAccountId ??
+            dashboard.activeAccountId,
         jmapUrl: jmapUrl,
       ) ??
       false;

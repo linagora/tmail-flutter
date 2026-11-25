@@ -34,6 +34,8 @@ import 'package:tmail_ui_user/features/push_notification/presentation/controller
 import 'package:tmail_ui_user/features/push_notification/presentation/extensions/state_change_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/extensions/state_change_merge_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
+import 'package:tmail_ui_user/features/manage_account/data/local/preferences_setting_manager.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/label_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/mailbox_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/model/state_change_account_filter.dart';
@@ -602,11 +604,7 @@ class FcmMessageController extends PushBaseController {
       if (apiUrl.isNotEmpty && stateChange != null) {
         _dynamicUrlInterceptors?.changeBaseUrl(apiUrl);
 
-        _pushActionFromRemoteMessageBackground(
-          accountId: success.session.accountId,
-          userName: success.session.username,
-          stateChange: stateChange,
-          session: success.session);
+        unawaited(_pushWithDelegatedAccounts(success.session, stateChange));
       } else {
         logTrace(
           'FcmMessageController::_handleGetSessionSuccess: Api url or state change is null',
@@ -621,14 +619,35 @@ class FcmMessageController extends PushBaseController {
     }
   }
 
+  /// Android reads the session, so it also keeps the delegated accounts it lists while delegation is on.
+  Future<void> _pushWithDelegatedAccounts(Session session, StateChange stateChange) async {
+    var settings = PreferencesSetting.initial();
+    try {
+      settings = await getBinding<PreferencesSettingManager>()?.loadPreferences() ?? settings;
+    } catch (e, st) {
+      logWarning('FcmMessageController::_pushWithDelegatedAccounts: $e | $st');
+    }
+    _pushActionFromRemoteMessageBackground(
+      accountId: session.accountId,
+      userName: session.username,
+      stateChange: stateChange,
+      session: session,
+      delegatedAccountIds: notifiedDelegatedAccountIds(session, settings),
+    );
+  }
+
   void _pushActionFromRemoteMessageBackground({
     required AccountId accountId,
     required UserName userName,
     required StateChange stateChange,
-    Session? session
+    Session? session,
+    Set<AccountId> delegatedAccountIds = const {},
   }) {
-    // Delegated entries are dropped until the delegation toggle turns includeDelegated on.
-    final filter = StateChangeAccountFilter(personalAccountId: accountId);
+    final filter = StateChangeAccountFilter(
+      personalAccountId: accountId,
+      delegatedAccountIds: delegatedAccountIds,
+      includeDelegated: delegatedAccountIds.isNotEmpty,
+    );
     for (final changedAccountId in filter.accountsToProcess(stateChange)) {
       final mapTypeState = stateChange.getMapTypeState(changedAccountId);
       if (mapTypeState.isEmpty) continue;

@@ -20,6 +20,8 @@ import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 import 'package:tmail_ui_user/features/push_notification/data/extensions/keychain_sharing_session_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_session.dart';
+import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_delegated_account.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
 
 class IOSSharingManager {
   final KeychainSharingManager _keychainSharingManager;
@@ -280,5 +282,41 @@ class IOSSharingManager {
       );
       rethrow;
     }
+  }
+
+  /// Read errors propagate, an unreadable keychain must not pass for one without cursors.
+  Future<List<KeychainDelegatedAccount>> getDelegatedAccountsInKeyChain(AccountId accountId) async {
+    if (!await _keychainSharingManager.isSessionExist(accountId)) return const [];
+    final keychainSharingStored = await _keychainSharingManager.getSharingSession(accountId);
+    return keychainSharingStored?.delegatedAccounts ?? const [];
+  }
+
+  /// Replaces the delegated mailboxes the NSE notifies for, an empty list stops them all.
+  /// An item without emailDeliveryState keeps the stored one, read here so a cursor the NSE just moved is not lost.
+  Future<void> updateDelegatedAccountsInKeyChain({
+    required AccountId accountId,
+    required List<KeychainDelegatedAccount> delegatedAccounts,
+  }) async {
+    final keychainSharingStored = await getKeychainSharingSession(accountId);
+    if (keychainSharingStored == null) {
+      throw const NotFoundKeychainSharingSessionException();
+    }
+    final storedAccounts = {
+      for (final stored in keychainSharingStored.delegatedAccounts ?? const <KeychainDelegatedAccount>[])
+        stored.accountId: stored,
+    };
+    // A field sent as null was not read this time, so the stored value stays.
+    final newKeychain = keychainSharingStored.updating(
+      delegatedAccounts: delegatedAccounts
+          .map((account) => KeychainDelegatedAccount(
+                accountId: account.accountId,
+                emailDeliveryState: account.emailDeliveryState ?? storedAccounts[account.accountId]?.emailDeliveryState,
+                mailboxIdsBlockNotification: account.mailboxIdsBlockNotification ??
+                    storedAccounts[account.accountId]?.mailboxIdsBlockNotification,
+                ownerName: account.ownerName,
+              ))
+          .toList(),
+    );
+    await _keychainSharingManager.saveSharingSession(newKeychain);
   }
 }

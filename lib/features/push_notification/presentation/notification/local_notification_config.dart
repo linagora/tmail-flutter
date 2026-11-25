@@ -15,14 +15,15 @@ class LocalNotificationConfig {
   NotificationDetails generateNotificationDetails({
     StyleInformation? styleInformation,
     bool setAsGroup = false,
-    bool silent = false,
     String? groupId,
+    String? tag,
   }) {
     return NotificationDetails(
       android: AndroidNotificationDetails(
         NOTIFICATION_CHANNEL,
         NOTIFICATION_CHANNEL,
         groupKey: groupId,
+        tag: tag,
         // Email subject, sender and preview are attacker-controlled and
         // confidential: honour the "hide sensitive content" lock screen
         // setting instead of forcing full display.
@@ -31,7 +32,8 @@ class LocalNotificationConfig {
         priority: Priority.high,
         setAsGroupSummary: setAsGroup,
         styleInformation: styleInformation,
-        silent: silent,
+        // Only the group summary alerts, each email notification is posted silently under it.
+        silent: !setAsGroup,
         groupAlertBehavior: setAsGroup
           ? GroupAlertBehavior.summary
           : GroupAlertBehavior.all,

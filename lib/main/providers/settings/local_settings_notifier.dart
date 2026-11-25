@@ -8,5 +8,20 @@ class LocalSettingsNotifier extends _$LocalSettingsNotifier {
   @override
   PreferencesSetting build() => PreferencesSetting.initial();
 
-  void update(PreferencesSetting settings) => state = settings;
+  /// Sets the state before the loaded flag, so a reader woken by the flag sees the saved settings.
+  void update(PreferencesSetting settings) {
+    state = settings;
+    markLoaded();
+  }
+
+  void markLoaded() => ref.read(localSettingsLoadedProvider.notifier).markLoaded();
+}
+
+/// False until the saved settings are read (or their read fails), so a reader can tell the defaults from saved values.
+@Riverpod(keepAlive: true)
+class LocalSettingsLoaded extends _$LocalSettingsLoaded {
+  @override
+  bool build() => false;
+
+  void markLoaded() => state = true;
 }

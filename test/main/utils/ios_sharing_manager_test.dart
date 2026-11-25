@@ -9,6 +9,8 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/account/personal_account.dart';
+import 'package:model/oidc/token_id.dart';
+import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
@@ -20,6 +22,7 @@ import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_delegated_account.dart';
 import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_session.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class _FailingKeychainSharingManager extends KeychainSharingManager {
@@ -143,5 +146,154 @@ void main() {
 
     final saved = await keychainSharingManager.getSharingSession(accountId);
     expect(saved?.delegatedAccounts, [delegated]);
+  });
+
+  group('updateDelegatedAccountsInKeyChain', () {
+    final accountId = AccountId(Id('personal-account'));
+    final delegated = KeychainDelegatedAccount(
+      accountId: AccountId(Id('delegated-account')),
+      emailDeliveryState: 'delivery-1',
+      ownerName: 'owner@domain.com',
+    );
+    late KeychainSharingManager keychainSharingManager;
+    late IOSSharingManager iosSharingManager;
+
+    KeychainSharingSession personalSession({List<KeychainDelegatedAccount>? delegatedAccounts}) =>
+        KeychainSharingSession(
+          accountId: accountId,
+          userName: UserName('user@domain.com'),
+          authenticationType: AuthenticationType.oidc,
+          apiUrl: 'https://jmap.example/jmap',
+          emailState: 'email-state',
+          emailDeliveryState: 'personal-delivery',
+          tokenOIDC: TokenOIDC('access', TokenId('id'), 'refresh', expiredTime: DateTime.utc(2030)),
+          basicAuth: 'basic',
+          tokenEndpoint: 'https://sso.example/token',
+          oidcScopes: const ['openid', 'offline_access'],
+          mailboxIdsBlockNotification: [MailboxId(Id('spam'))],
+          delegatedAccounts: delegatedAccounts,
+          isTWP: true,
+        );
+
+    setUp(() {
+      FlutterSecureStorage.setMockInitialValues({});
+      keychainSharingManager = KeychainSharingManager(const FlutterSecureStorage());
+      iosSharingManager = IOSSharingManager(
+        keychainSharingManager,
+        _FakeStateCacheManager(),
+        _MockTokenOidcCacheManager(),
+        _FakeAuthenticationInfoCacheManager(),
+        _MockOidcConfigurationCacheManager(),
+        _MockOIDCHttpClient(),
+        _FakeMailboxCacheManager(),
+      );
+    });
+
+    final updates = {
+      'stores the delegated accounts': (stored: null, update: [delegated]),
+      'an empty list clears the delegated accounts': (stored: [delegated], update: <KeychainDelegatedAccount>[]),
+    };
+    for (final MapEntry(key: name, value: (:stored, :update)) in updates.entries) {
+      test('keeps every field of the personal account while $name', () async {
+        await keychainSharingManager.saveSharingSession(personalSession(delegatedAccounts: stored));
+
+        await iosSharingManager.updateDelegatedAccountsInKeyChain(accountId: accountId, delegatedAccounts: update);
+
+        expect(
+          await keychainSharingManager.getSharingSession(accountId),
+          personalSession(delegatedAccounts: update),
+        );
+      });
+    }
+
+    test('keeps the stored cursor of an item sent without one and takes the new owner name', () async {
+      await keychainSharingManager.saveSharingSession(personalSession(delegatedAccounts: [delegated]));
+      final renamed = KeychainDelegatedAccount(accountId: delegated.accountId, ownerName: 'renamed@domain.com');
+
+      await iosSharingManager.updateDelegatedAccountsInKeyChain(accountId: accountId, delegatedAccounts: [renamed]);
+
+      expect(
+        (await keychainSharingManager.getSharingSession(accountId))?.delegatedAccounts,
+        [
+          KeychainDelegatedAccount(
+            accountId: delegated.accountId,
+            emailDeliveryState: 'delivery-1',
+            ownerName: 'renamed@domain.com',
+          ),
+        ],
+      );
+    });
+
+    test('keeps the stored blocked mailboxes of an item sent without them', () async {
+      final blocked = KeychainDelegatedAccount(
+        accountId: delegated.accountId,
+        emailDeliveryState: 'delivery-1',
+        mailboxIdsBlockNotification: [MailboxId(Id('muted'))],
+        ownerName: 'owner@domain.com',
+      );
+      await keychainSharingManager.saveSharingSession(personalSession(delegatedAccounts: [blocked]));
+
+      await iosSharingManager.updateDelegatedAccountsInKeyChain(accountId: accountId, delegatedAccounts: [delegated]);
+
+      expect((await keychainSharingManager.getSharingSession(accountId))?.delegatedAccounts, [blocked]);
+    });
+
+    test('replaces the stored blocked mailboxes with the ones sent, an empty list included', () async {
+      final blocked = KeychainDelegatedAccount(
+        accountId: delegated.accountId,
+        emailDeliveryState: 'delivery-1',
+        mailboxIdsBlockNotification: [MailboxId(Id('muted'))],
+        ownerName: 'owner@domain.com',
+      );
+      await keychainSharingManager.saveSharingSession(personalSession(delegatedAccounts: [blocked]));
+      final unblocked = KeychainDelegatedAccount(
+        accountId: delegated.accountId,
+        emailDeliveryState: 'delivery-1',
+        mailboxIdsBlockNotification: const [],
+        ownerName: 'owner@domain.com',
+      );
+
+      await iosSharingManager.updateDelegatedAccountsInKeyChain(accountId: accountId, delegatedAccounts: [unblocked]);
+
+      expect((await keychainSharingManager.getSharingSession(accountId))?.delegatedAccounts, [unblocked]);
+    });
+
+    test('replaces the stored cursor with the one sent', () async {
+      await keychainSharingManager.saveSharingSession(personalSession(delegatedAccounts: [delegated]));
+      final moved = KeychainDelegatedAccount(
+        accountId: delegated.accountId,
+        emailDeliveryState: 'delivery-2',
+        ownerName: 'owner@domain.com',
+      );
+
+      await iosSharingManager.updateDelegatedAccountsInKeyChain(accountId: accountId, delegatedAccounts: [moved]);
+
+      expect((await keychainSharingManager.getSharingSession(accountId))?.delegatedAccounts, [moved]);
+    });
+
+    test('returns the stored delegated accounts', () async {
+      await keychainSharingManager.saveSharingSession(personalSession(delegatedAccounts: [delegated]));
+
+      expect(await iosSharingManager.getDelegatedAccountsInKeyChain(accountId), [delegated]);
+    });
+
+    test('returns no delegated account when the keychain does not hold the account', () async {
+      expect(await iosSharingManager.getDelegatedAccountsInKeyChain(accountId), isEmpty);
+    });
+
+    test('SHOULD NOT treat an unreadable keychain as one without delegated accounts', () async {
+      await const FlutterSecureStorage().write(key: accountId.id.value, value: 'not json');
+
+      await expectLater(iosSharingManager.getDelegatedAccountsInKeyChain(accountId), throwsA(isA<FormatException>()));
+    });
+
+    test('SHOULD NOT create an entry for an account the keychain does not hold, and fails so the caller retries', () async {
+      await expectLater(
+        iosSharingManager.updateDelegatedAccountsInKeyChain(accountId: accountId, delegatedAccounts: [delegated]),
+        throwsA(isA<NotFoundKeychainSharingSessionException>()),
+      );
+
+      expect(await keychainSharingManager.getSharingSession(accountId), isNull);
+    });
   });
 }

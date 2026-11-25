@@ -87,6 +87,34 @@ void main() {
       expect(style.summaryText, equals('<b></b>'));
     });
 
+    test('names the owner of a delegated mailbox after the sender', () {
+      final style = LocalNotificationManager.buildInboxStyleInformation(
+        title: 'Subject',
+        emailAddress: EmailAddress(null, 'bob@example.com'),
+        ownerName: 'owner@example.com',
+      );
+
+      expect(style.summaryText, equals('<b>bob@example.com · owner@example.com</b>'));
+    });
+
+    test('shows the owner alone without a sender', () {
+      final style = LocalNotificationManager.buildInboxStyleInformation(
+        title: 'Subject',
+        ownerName: 'owner@example.com',
+      );
+
+      expect(style.summaryText, equals('<b>owner@example.com</b>'));
+    });
+
+    test('escapes a spoofed owner name', () {
+      final style = LocalNotificationManager.buildInboxStyleInformation(
+        title: 'Subject',
+        ownerName: '<img src=x>',
+      );
+
+      expect(style.summaryText, equals('<b>&lt;img src=x&gt;</b>'));
+    });
+
     test('escapes a spoofed display name', () {
       final style = LocalNotificationManager.buildInboxStyleInformation(
         title: 'Subject',
@@ -120,6 +148,11 @@ void main() {
         LocalNotificationConfig.instance.generateNotificationDetails().android?.visibility,
         NotificationVisibility.private,
       );
+    });
+
+    test('posts an email notification silently and lets only the group summary alert', () {
+      expect(LocalNotificationConfig.instance.generateNotificationDetails().android?.silent, isTrue);
+      expect(LocalNotificationConfig.instance.generateNotificationDetails(setAsGroup: true).android?.silent, isFalse);
     });
   });
 
@@ -155,6 +188,65 @@ void main() {
       expect(style['contentTitle'], 'R&amp;D &lt;b&gt;');
       expect(style['lines'], ['<p style="color:#6D7885;">&lt;script&gt;x&lt;&#47;script&gt;</p>']);
       expect(style['summaryText'], '<b>attacker@evil.example (IT department)</b>');
+    });
+
+    test('tags a delegated notification with its account id', () async {
+      await LocalNotificationManager.instance.showPushNotification(id: 'e1', title: 'Subject', tag: 'delegated-1');
+
+      final android = (calls.single.arguments as Map)['platformSpecifics'] as Map;
+      expect(android['tag'], 'delegated-1');
+    });
+
+    test('removes a tagged notification with the id and tag it was shown with', () async {
+      await LocalNotificationManager.instance.showPushNotification(id: 'e1', title: 'Subject', tag: 'delegated-1');
+      await LocalNotificationManager.instance.removeNotification('e1', tag: 'delegated-1');
+
+      expect(calls.last.method, 'cancel');
+      expect(calls.last.arguments, {'id': (calls.first.arguments as Map)['id'], 'tag': 'delegated-1'});
+    });
+
+    test('gives the same email id in two accounts two numeric ids so each tap opens its own payload', () async {
+      await LocalNotificationManager.instance.showPushNotification(id: 'e1', title: 'Subject');
+      await LocalNotificationManager.instance.showPushNotification(id: 'e1', title: 'Subject', tag: 'delegated-1');
+      await LocalNotificationManager.instance.showPushNotification(id: 'e1', title: 'Subject', tag: 'delegated-2');
+
+      final ids = calls.map((call) => (call.arguments as Map)['id']).toList();
+      expect(ids.first, 'e1'.hashCode);
+      expect(ids.toSet(), hasLength(3));
+    });
+  });
+
+  group('LocalNotificationManager.removeMatchingNotifications', () {
+    const channel = MethodChannel('dexterous.com/flutter/local_notifications');
+    final calls = <MethodCall>[];
+
+    setUp(() {
+      calls.clear();
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async {
+        calls.add(call);
+        if (call.method != 'getActiveNotifications') return null;
+        return [
+          {'id': 1, 'groupKey': 'alice@domain.tld', 'tag': 'delegated-1'},
+          {'id': 2, 'groupKey': 'alice@domain.tld'},
+        ];
+      });
+    });
+
+    tearDown(() {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, null);
+    });
+
+    test('cancels only the matching notification, with its tag', () async {
+      await LocalNotificationManager.instance.removeMatchingNotifications(
+        (notification) => notification.tag == 'delegated-1',
+      );
+
+      final cancels = calls.where((call) => call.method == 'cancel').map((call) => call.arguments).toList();
+      expect(cancels, [
+        {'id': 1, 'tag': 'delegated-1'},
+      ]);
     });
   });
 }

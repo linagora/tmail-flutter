@@ -6,6 +6,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:fcm/model/type_name.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -15,10 +16,14 @@ import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_stored_email_state_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_changes_to_push_notification_state.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_changes_to_remove_notification_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_mailboxes_not_put_notifications_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_stored_email_delivery_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_changes_to_push_notification_interactor.dart';
@@ -27,7 +32,9 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_sto
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_email_delivery_state_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/action/push_notification_state_change_action.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/model/notification_owner.dart';
 
+import '../../../../fixtures/delegation_fixtures.dart';
 import '../../../../fixtures/session_fixtures.dart';
 
 class _UnusedFcmRepository implements FCMRepository {
@@ -89,6 +96,23 @@ class _RecordingGetEmailChangesInteractor
   }
 }
 
+class _UnusedEmailRepository implements EmailRepository {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _RecordingGetStoredEmailStateInteractor extends GetStoredEmailStateInteractor {
+  _RecordingGetStoredEmailStateInteractor() : super(_UnusedEmailRepository());
+
+  final calls = <AccountId>[];
+
+  @override
+  Stream<Either<Failure, Success>> execute(Session session, AccountId accountId) {
+    calls.add(accountId);
+    return const Stream.empty();
+  }
+}
+
 class _ViewRefreshes extends Fake implements MailboxDashBoardController {
   final actions = <EmailUIAction>[];
 
@@ -136,6 +160,7 @@ void main() {
   late _RecordingGetEmailChangesInteractor getChanges;
   late _RecordingGetMailboxesInteractor getMailboxes;
   late List<(UserName, List<PresentationEmail>)> pushed;
+  late List<NotificationOwner?> owners;
   late EmailChangeListener listener;
   final viewRefreshes = _ViewRefreshes();
 
@@ -152,6 +177,7 @@ void main() {
     getChanges = _RecordingGetEmailChangesInteractor();
     getMailboxes = _RecordingGetMailboxesInteractor();
     pushed = [];
+    owners = [];
     listener = EmailChangeListener.forTesting(
       getStoredEmailDeliveryStateInteractor: getStored,
       storeEmailDeliveryStateInteractor: store,
@@ -161,8 +187,10 @@ void main() {
       presentLocalPush: ({
         required UserName userName,
         required List<PresentationEmail> emailList,
+        NotificationOwner? owner,
       }) async {
         pushed.add((userName, List.of(emailList)));
+        owners.add(owner);
       },
     );
   });
@@ -431,4 +459,134 @@ void main() {
       );
     },
   );
+
+  group('notification owner', () {
+    final delegatedSession = DelegationFixtures.session();
+    final bob = DelegationFixtures.bobAccountId;
+    final alice = DelegationFixtures.aliceAccountId;
+
+    void pushOne(AccountId accountId) {
+      listener.dispatchActions([
+        PushNotificationAction(TypeName.emailDelivery, newStateA, delegatedSession, accountId, userA),
+      ]);
+      listener.handleSuccessViewState(
+        GetStoredEmailDeliveryStateSuccess(storedStateA, accountId, userA),
+      );
+      listener.handleSuccessViewState(
+        GetEmailChangesToPushNotificationSuccess(accountId, userA, [emailWithId('e-1')]),
+      );
+      listener.handleSuccessViewState(
+        GetMailboxesNotPutNotificationsSuccess(const [], accountId, userA),
+      );
+    }
+
+    test('names the owner of a delegated account the session lists', () {
+      pushOne(bob);
+
+      expect(owners, [
+        NotificationOwner(accountId: bob, name: DelegationFixtures.bobAddress),
+      ]);
+    });
+
+    test('SHOULD NOT name an owner for my own account', () {
+      pushOne(alice);
+
+      expect(owners, [null]);
+    });
+
+    test('SHOULD NOT name an owner for an account the session does not list', () {
+      pushOne(DelegationFixtures.unknownAccountId);
+
+      expect(owners, [null]);
+    });
+
+    group('when an email is read', () {
+      const channel = MethodChannel('dexterous.com/flutter/local_notifications');
+      late List<MethodCall> cancels;
+
+      setUp(() {
+        cancels = [];
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, (call) async {
+          if (call.method == 'cancel') cancels.add(call);
+          return null;
+        });
+      });
+
+      tearDown(() {
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, null);
+      });
+
+      Future<void> readEmailOf(AccountId accountId) async {
+        listener.dispatchActions([
+          StoreEmailStateToRefreshAction(TypeName.emailType, newStateA, accountId, userA, delegatedSession),
+        ]);
+        listener.handleSuccessViewState(
+          GetEmailChangesToRemoveNotificationSuccess(userA, [EmailId(Id('e-1'))], accountId),
+        );
+        await pumpEventQueue();
+      }
+
+      test('cancels the notification of a delegated account with its id and tag although no push stored the session', () async {
+        await readEmailOf(bob);
+
+        expect(cancels.first.arguments, {'id': '${bob.id.value}/e-1'.hashCode, 'tag': bob.id.value});
+      });
+
+      test('SHOULD NOT tag the cancel of my own notification', () async {
+        await readEmailOf(alice);
+
+        expect(cancels.first.arguments, {'id': 'e-1'.hashCode, 'tag': null});
+      });
+    });
+  });
+
+  group('without a stored delivery state', () {
+    final delegatedSession = DelegationFixtures.session();
+    final bob = DelegationFixtures.bobAccountId;
+    final alice = DelegationFixtures.aliceAccountId;
+    late _RecordingGetStoredEmailStateInteractor getStoredEmailState;
+
+    setUp(() {
+      getStoredEmailState = _RecordingGetStoredEmailStateInteractor();
+      listener = EmailChangeListener.forTesting(
+        getStoredEmailDeliveryStateInteractor: getStored,
+        storeEmailDeliveryStateInteractor: store,
+        getEmailChangesToPushNotificationInteractor: getChanges,
+        getMailboxesNotPutNotificationsInteractor: getMailboxes,
+        getStoredEmailStateInteractor: getStoredEmailState,
+        presentLocalPush: ({
+          required UserName userName,
+          required List<PresentationEmail> emailList,
+          NotificationOwner? owner,
+        }) async => pushed.add((userName, List.of(emailList))),
+      );
+    });
+
+    void pushWithoutDeliveryState(AccountId accountId) {
+      listener.dispatchActions([
+        PushNotificationAction(TypeName.emailDelivery, newStateA, delegatedSession, accountId, userA),
+      ]);
+      listener.handleFailureViewState(GetStoredEmailDeliveryStateFailure(
+        const NotFoundEmailDeliveryStateException(),
+        accountId: accountId,
+        userName: userA,
+      ));
+    }
+
+    test('a delegated account stores the pushed state as its cursor and notifies nothing', () {
+      pushWithoutDeliveryState(bob);
+
+      expect(store.calls, [(bob, userA, newStateA)]);
+      expect(getStoredEmailState.calls, isEmpty);
+      expect(getChanges.calls, isEmpty);
+      expect(pushed, isEmpty);
+    });
+
+    test('my own account diffs from its stored email state', () {
+      pushWithoutDeliveryState(alice);
+
+      expect(getStoredEmailState.calls, [alice]);
+      expect(store.calls, isEmpty);
+    });
+  });
 }

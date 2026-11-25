@@ -3,7 +3,11 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/push/state_change.dart';
 import 'package:jmap_dart_client/jmap/push/type_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/delegation_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/model/state_change_account_filter.dart';
+
+import '../../../../fixtures/delegation_fixtures.dart';
 
 void main() {
   final mine = AccountId(Id('mine'));
@@ -88,6 +92,40 @@ void main() {
       expect(filter.shouldKeepDelivery(owner), isTrue);
       expect(filter.shouldRefreshView(owner), isFalse);
       expect(filter.shouldStoreOfflineBodies(owner), isFalse);
+    });
+  });
+
+  group('notifiedDelegatedAccountIds', () {
+    final on = PreferencesSetting([DelegationConfig(isEnabled: true)]);
+    final off = PreferencesSetting([DelegationConfig(isEnabled: false)]);
+
+    test('lists the delegated accounts of the session while delegation is on', () {
+      expect(
+        notifiedDelegatedAccountIds(DelegationFixtures.session(), on),
+        {DelegationFixtures.bobAccountId, DelegationFixtures.carolAccountId},
+      );
+    });
+
+    test('SHOULD NOT list any account while delegation is off', () {
+      expect(notifiedDelegatedAccountIds(DelegationFixtures.session(), off), isEmpty);
+    });
+
+    test('SHOULD NOT list any account without the delegation capability', () {
+      expect(
+        notifiedDelegatedAccountIds(DelegationFixtures.sessionWithoutDelegationCapability(), on),
+        isEmpty,
+      );
+    });
+
+    test('SHOULD NOT list any account without a session', () {
+      expect(notifiedDelegatedAccountIds(null, on), isEmpty);
+    });
+
+    test('SHOULD NOT list an account the session no longer lists', () {
+      expect(
+        notifiedDelegatedAccountIds(DelegationFixtures.session(listsCarol: false), on),
+        {DelegationFixtures.bobAccountId},
+      );
     });
   });
 }
