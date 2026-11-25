@@ -143,6 +143,7 @@ class ThreadController extends BaseController
   @visibleForTesting
   bool isListEmailScrollViewJumping = false;
   WebSocketQueueHandler? _webSocketQueueHandler;
+  jmap.State? _stoppedDrainCursor;
   FocusNode? keyboardFocusNode;
   StreamController<MailListShortcutActionViewEvent>? shortcutActionEventController;
   StreamSubscription<MailListShortcutActionViewEvent>? shortcutActionEventSubscription;
@@ -921,7 +922,26 @@ class ThreadController extends BaseController
         _webSocketQueueHandler?.removeMessagesUpToCurrent(
             mailboxDashBoardController.currentEmailState!.value);
       }
+      _continueStoppedDrain();
     }
+  }
+
+  jmap.State? _advancedCursorWithMoreChanges(
+    EmailChangeResponse? response,
+    jmap.State? requestedState,
+  ) {
+    if (response == null || !response.hasMoreChanges) return null;
+    final cursor = response.newStateChanges;
+    // A cursor that did not move would request the same page forever.
+    if (cursor == null || cursor == requestedState) return null;
+    return cursor;
+  }
+
+  void _continueStoppedDrain() {
+    final cursor = _stoppedDrainCursor;
+    _stoppedDrainCursor = null;
+    if (cursor == null) return;
+    _webSocketQueueHandler?.enqueue(WebSocketMessage(newState: cursor));
   }
 
   Future<Either<Failure, Success>> _refreshChangeListEmailCache({bool collapseThreads = false}) async {
@@ -974,6 +994,7 @@ class ThreadController extends BaseController
     final holdLoadMore = _folderLoadMore.paging.pagesByPosition;
     if (holdLoadMore) _holdLoadMoreForRefresh();
     try {
+      final requestedState = mailboxDashBoardController.currentEmailState;
       final refreshViewState = await _refreshChangeListEmailCache(
         collapseThreads: collapseThreads,
       );
@@ -989,6 +1010,10 @@ class ThreadController extends BaseController
 
       if (refreshState is RefreshChangesAllEmailSuccess) {
         _refreshChangesAllEmailSuccess(refreshState);
+        _stoppedDrainCursor = _advancedCursorWithMoreChanges(
+          refreshState.emailChangeResponse,
+          requestedState,
+        );
       } else if (refreshState != null) {
         onDataFailureViewState(refreshState);
       }
