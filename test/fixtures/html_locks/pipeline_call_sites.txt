@@ -1,4 +1,5 @@
 lib/features/composer/presentation/composer_controller.dart: forComposerSignature
+lib/features/composer/presentation/extensions/setup_email_content_extension.dart: forEditAsNewEmail
 lib/features/composer/presentation/extensions/setup_email_content_extension.dart: forEditDraftsEmail
 lib/features/composer/presentation/extensions/setup_email_content_extension.dart: forReplyForwardEmail
 lib/features/composer/presentation/extensions/setup_email_content_extension.dart: forReplyForwardEmptyEmail
