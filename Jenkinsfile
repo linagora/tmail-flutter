@@ -170,7 +170,7 @@ def authorizeFork() {
     def approver = memberReviewerOf(headSha)
     if (approver) {
       echo "Commit ${headSha} approved by linagora member '${approver}', proceeding."
-      checkOutApproved(headSha)
+      requireApprovedCheckout(headSha)
       env.FORK_AUTHORIZED = 'true'
       return
     }
@@ -187,35 +187,32 @@ def mayRunChangeCode() {
 }
 
 // The head commit of the pull request, as GitHub reports it now. It need not be the commit Jenkins
-// checked out, and nothing in the workspace proves which one it is: the contributor can push between
-// the checkout and this call, and chooses the parents of the commits they push. The build runs this
-// commit instead, see checkOutApproved.
+// checked out: the contributor can push between the checkout and this call. See
+// requireApprovedCheckout.
 def pullRequestHead() {
   return githubApi("pulls/${env.CHANGE_ID}").head.sha
 }
 
-// Replaces the checked out sources with the approved commit, before any code of the pull request runs,
-// so that what is built is what a member vouched for, however the pull request head moved. The commit is
-// merged with the target branch when Jenkins fetched it from this repository, as a merge build does. The
-// commit status Jenkins reports still names the revision it checked out.
-def checkOutApproved(String sha) {
+// Fails the build unless what Jenkins checked out is the approved commit: HEAD itself, or the merge
+// Jenkins made of the pull request revision it pinned with the target branch, whose first parent is
+// that revision. The pinned revision is the one Jenkins reports the build status on, so the status
+// always names an approved commit. The contributor chooses the parents of the commits they push, so
+// a parent of HEAD is trusted only when the pinned revision, fetched as origin/<BRANCH_NAME>, is it.
+def requireApprovedCheckout(String sha) {
   withEnv(["APPROVED_SHA=${sha}"]) {
     sh '''
       head=$(git rev-parse HEAD)
       if [ "$head" = "$APPROVED_SHA" ]; then
         exit 0
       fi
-      if ! git cat-file -e "$APPROVED_SHA^{commit}" 2>/dev/null; then
-        echo "The pull request head moved to $APPROVED_SHA since the checkout of $head: re-run the build." >&2
-        exit 1
+      pinned=$(git rev-parse -q --verify "refs/remotes/origin/$BRANCH_NAME^{commit}" || true)
+      first=$(git rev-parse -q --verify "HEAD^1" || true)
+      if [ "$pinned" = "$APPROVED_SHA" ] && [ "$first" = "$APPROVED_SHA" ]; then
+        echo "Building $head, the merge of the approved commit $APPROVED_SHA with the target branch"
+        exit 0
       fi
-      target=$(git rev-parse -q --verify "refs/remotes/origin/$CHANGE_TARGET^{commit}" || true)
-      echo "Building the approved commit $APPROVED_SHA instead of the checked out $head"
-      git checkout -q --force --detach "$APPROVED_SHA"
-      git clean -q -ffdx
-      if [ -n "$target" ]; then
-        git -c user.name=Jenkins -c user.email=jenkins@localhost merge -q --no-edit "$target"
-      fi
+      echo "The pull request head moved to $APPROVED_SHA since the checkout of $head (pull request revision ${pinned:-unknown}): re-run the build." >&2
+      exit 1
     '''
   }
 }
