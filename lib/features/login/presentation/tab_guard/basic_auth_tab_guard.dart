@@ -45,6 +45,7 @@ class BasicAuthTabGuard {
   void start() {
     if (!PlatformInfo.isWeb || _subscriptions.isNotEmpty) return;
     _cacheManager.adoptInheritedTabTag();
+    checkAndLeaveIfRevoked();
     _subscriptions
       ..add(_browser.storageEventKeys.listen(_onStorageEvent))
       ..add(_browser.pageActivations.listen((_) => checkAndLeaveIfRevoked()));

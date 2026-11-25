@@ -214,6 +214,23 @@ void main() {
     expect(childSession.values.containsKey(tagKey), isFalse);
   });
 
+  test('a restored tab with a stale copy leaves once at start, not again on activation', () async {
+    signOutElsewhere();
+    final restoredSession = FakeSessionStorage()..values.addAll(session.values);
+    final restoredCalls = <String>[];
+    final restoredBrowser = FakeTabGuardBrowser(restoredCalls);
+    final restoredGuard = BasicAuthTabGuard(
+      newTab(restoredSession), restoredBrowser, () => restoredCalls.add('save'))..start();
+    addTearDown(restoredGuard.dispose);
+
+    expect(restoredCalls, ['save', 'login']);
+    expect(restoredSession.values.containsKey(loginKey), isFalse);
+
+    restoredBrowser.activations.add(null);
+
+    expect(restoredCalls, ['save', 'login']);
+  });
+
   test('a tab without any login is never kicked', () {
     final emptyGuard = BasicAuthTabGuard(newTab(FakeSessionStorage()), browser, () => calls.add('save'))..start();
     addTearDown(emptyGuard.dispose);
