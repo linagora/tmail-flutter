@@ -3,4 +3,4 @@ text:
 dom:
   - ImageTransformer
   - NormalizeLineHeightInStyleTransformer
-  - SanitizeHyperLinkTagInHtmlTransformer(addsNewTabAttributes: false)
+  - SanitizeHyperLinkTagInHtmlTransformer(rewritesKeptLinks: false)

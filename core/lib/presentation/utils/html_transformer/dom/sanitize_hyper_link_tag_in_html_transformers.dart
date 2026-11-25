@@ -8,12 +8,13 @@ import 'package:html/dom.dart';
 class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
   final _sanitizeUrl = SanitizeUrl();
 
-  /// Whether links also get `target="_blank"` and `rel="noreferrer"`. The
-  /// composer turns it off: it opens links itself, and the sanitizer reorders
-  /// these attributes, so a reopened draft would not round-trip unchanged.
-  final bool addsNewTabAttributes;
+  /// Whether a kept link is rewritten: href replaced by its decoded form, plus
+  /// `target="_blank"` and `rel="noreferrer"`. The composer turns it off so the
+  /// sender's links reach the new email unchanged (`%26` must not become `&`)
+  /// and a reopened draft round-trips; unsafe hrefs are still dropped.
+  final bool rewritesKeptLinks;
 
-  SanitizeHyperLinkTagInHtmlTransformer({this.addsNewTabAttributes = true});
+  SanitizeHyperLinkTagInHtmlTransformer({this.rewritesKeptLinks = true});
 
   @override
   Future<void> process({
@@ -28,7 +29,7 @@ class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
 
       await Future.wait(elements.map((element) async {
         _sanitizeUrlResource(element);
-        if (!addsNewTabAttributes) return;
+        if (!rewritesKeptLinks) return;
         _addBlankForTargetProperty(element);
         _addNoReferrerForRelProperty(element);
       }));
@@ -59,7 +60,7 @@ class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
       return;
     }
 
-    final keptUrl = urlSanitized.isNotEmpty ? urlSanitized : url;
+    final keptUrl = rewritesKeptLinks && urlSanitized.isNotEmpty ? urlSanitized : url;
     if (ExternalLinkPolicy.canKeepInContent(_trimBrowserWhitespace(keptUrl))) {
       element.attributes['href'] = keptUrl;
     } else {

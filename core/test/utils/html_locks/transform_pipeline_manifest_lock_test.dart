@@ -24,8 +24,8 @@ void main() {
       return allowed == null ? name : '$name(allowAttributes: $allowed)';
     }
     if (transformer is SanitizeHyperLinkTagInHtmlTransformer &&
-        !transformer.addsNewTabAttributes) {
-      return '$name(addsNewTabAttributes: false)';
+        !transformer.rewritesKeptLinks) {
+      return '$name(rewritesKeptLinks: false)';
     }
     return name;
   }

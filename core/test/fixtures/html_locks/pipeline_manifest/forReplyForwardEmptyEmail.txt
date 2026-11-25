@@ -6,4 +6,4 @@ dom:
   - RemoveCollapsedSignatureButtonTransformer
   - NormalizeLineHeightInStyleTransformer
   - ImageTransformer
-  - SanitizeHyperLinkTagInHtmlTransformer(addsNewTabAttributes: false)
+  - SanitizeHyperLinkTagInHtmlTransformer(rewritesKeptLinks: false)

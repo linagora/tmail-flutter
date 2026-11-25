@@ -68,7 +68,7 @@ class TransformConfiguration {
     [
       ...TransformConfiguration.forReplyForwardEmail().domTransformers,
       const ImageTransformer(),
-      SanitizeHyperLinkTagInHtmlTransformer(addsNewTabAttributes: false),
+      SanitizeHyperLinkTagInHtmlTransformer(rewritesKeptLinks: false),
     ],
     const [
       StandardizeHtmlSanitizingTransformers(allowAttributes: ['contenteditable']),
@@ -105,7 +105,7 @@ class TransformConfiguration {
     return TransformConfiguration(
       [
         ...editDrafts.domTransformers,
-        SanitizeHyperLinkTagInHtmlTransformer(addsNewTabAttributes: false),
+        SanitizeHyperLinkTagInHtmlTransformer(rewritesKeptLinks: false),
       ],
       editDrafts.textTransformers,
     );

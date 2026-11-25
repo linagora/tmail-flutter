@@ -4,4 +4,4 @@ dom:
   - ImageTransformer
   - NormalizeLineHeightInStyleTransformer
   - HideDraftSignatureTransformer
-  - SanitizeHyperLinkTagInHtmlTransformer(addsNewTabAttributes: false)
+  - SanitizeHyperLinkTagInHtmlTransformer(rewritesKeptLinks: false)

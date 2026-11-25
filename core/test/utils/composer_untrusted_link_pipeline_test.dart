@@ -77,6 +77,17 @@ void main() {
         }
       });
 
+      test('SHOULD keep the percent-encoding of an absolute href', () async {
+        final document = await transform(
+          '<a href="https://example.com/?q=a%26b%3Dc">query</a>'
+          '<a href="https://example.com/a%23frag">hash</a>',
+          createConfiguration(),
+        );
+
+        expect(hrefOf(document, 'query'), 'https://example.com/?q=a%26b%3Dc');
+        expect(hrefOf(document, 'hash'), 'https://example.com/a%23frag');
+      });
+
       test('SHOULD keep a drive link card with its href and contenteditable guard', () async {
         final document = await transform(
           '<a class="tmail-file-link-card" contenteditable="false" '
