@@ -57,6 +57,10 @@ class RemoteExceptionThrower extends ExceptionThrower {
       throw RefreshTokenFailedException();
     }
 
+    if (error.error is CredentialRevokedException) {
+      throw const CredentialRevokedException();
+    }
+
     final response = error.response;
     if (response != null) {
       return _responseHandler.handle(response, stackTrace);

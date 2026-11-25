@@ -12,6 +12,7 @@ import 'authentication_info_cache_test_doubles.dart';
 void main() {
   late FakeHiveLoginBox client;
   late FakeSessionStorage session;
+  late FakeSignOutMarkerStorage marker;
   late AuthenticationInfoCacheManager manager;
 
   final info = AuthenticationInfoCache('alice@example.com', 'alice');
@@ -21,7 +22,13 @@ void main() {
     client = FakeHiveLoginBox();
     session = FakeSessionStorage();
     FlutterSecureStorage.setMockInitialValues({});
-    manager = AuthenticationInfoCacheManager(client.mock, session, secureStorage: const FlutterSecureStorage());
+    marker = FakeSignOutMarkerStorage();
+    manager = AuthenticationInfoCacheManager(
+      client.mock,
+      session,
+      secureStorage: const FlutterSecureStorage(),
+      markerStorage: marker,
+    );
   });
 
   tearDown(() => PlatformInfo.isTestingForWeb = false);
@@ -78,7 +85,9 @@ void main() {
     });
 
     test('get ignores a malformed session value', () async {
+      marker.value = 'marker';
       session.values[key] = 'not json';
+      session.values[AuthenticationInfoCacheManager.signOutTagKey] = 'marker';
       client.item = info;
 
       expect(await manager.getAuthenticationInfoStored(), info);

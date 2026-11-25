@@ -14,6 +14,16 @@ class BadCredentialsException extends AuthenticationException {
   String get exceptionName => 'BadCredentialsException';
 }
 
+/// This tab's basic login was revoked by a sign out in another tab.
+/// Not a server rejection: it must never be treated as [BadCredentialsException].
+class CredentialRevokedException extends AuthenticationException {
+  const CredentialRevokedException()
+      : super(message: 'Login was revoked by a sign out in another tab');
+
+  @override
+  String get exceptionName => 'CredentialRevokedException';
+}
+
 class RefreshTokenFailedException extends AuthenticationException {
   /// The server rejection that killed the session, for the caller to log.
   final Object? cause;

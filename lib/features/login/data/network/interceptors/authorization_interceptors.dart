@@ -51,6 +51,9 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   final RefreshTokenErrorClassifier? _injectedErrorClassifier;
 
+  /// Web basic auth: true once another tab's sign out invalidated this tab's login.
+  final bool Function()? _isBasicLoginRevoked;
+
   late final RefreshTokenErrorClassifier _errorClassifier =
       _injectedErrorClassifier ??
           (PlatformInfo.isWeb
@@ -72,6 +75,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     this._accountCacheManager,
     this._iosSharingManager, {
     RefreshTokenErrorClassifier? errorClassifier,
+    this._isBasicLoginRevoked,
   }) : _injectedErrorClassifier = errorClassifier;
 
   void setBasicAuthorization(UserName userName, Password password) {
@@ -164,6 +168,20 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       return;
     }
 
+    if (_isRevokedBasicLogin) {
+      _rejectRevokedLogin(options, handler);
+      return;
+    }
+    _attachAuthorization(options);
+    log('AuthorizationInterceptors::onRequest(): URL = ${options.uri} | DATA = ${options.data}');
+    super.onRequest(options, handler);
+  }
+
+  bool get _isRevokedBasicLogin =>
+      _authenticationType == AuthenticationType.basic &&
+      _isBasicLoginRevoked?.call() == true;
+
+  void _attachAuthorization(RequestOptions options) {
     switch(_authenticationType) {
       case AuthenticationType.basic:
         if (_authorization != null) {
@@ -178,8 +196,15 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       case AuthenticationType.none:
         break;
     }
-    log('AuthorizationInterceptors::onRequest(): URL = ${options.uri} | DATA = ${options.data}');
-    super.onRequest(options, handler);
+  }
+
+  // Synchronous on purpose: a request without credentials would earn a 401 that wipes shared data.
+  void _rejectRevokedLogin(RequestOptions options, RequestInterceptorHandler handler) {
+    options.headers.remove(HttpHeaders.authorizationHeader);
+    handler.reject(DioException(
+      requestOptions: options,
+      error: const CredentialRevokedException(),
+    ));
   }
 
   @override

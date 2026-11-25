@@ -100,6 +100,9 @@ class CachingManager {
     }
   }
 
+  /// Web basic auth: invalidates the login copies held by other tabs.
+  void revokeOtherTabs() => _authenticationInfoCacheManager.revokeOtherTabs();
+
   Future<void> clearAccountDataCached() async {
     try {
       await Future.wait([
