@@ -44,7 +44,7 @@ void main() {
       EmailAddress('Alice', DelegationFixtures.aliceAddress),
       EmailAddress('Bob', DelegationFixtures.bobAddress),
       EmailAddress('Carol', DelegationFixtures.carolAddress),
-    ];
+    ].where((contact) => contact.email!.contains(query)).toList();
   }
 
   Delegate delegate(String username) => Delegate(id: Id(username.split('@').first), username: username);
@@ -375,6 +375,56 @@ void main() {
     expect(find.text(l10n.addDelegatesConfirmation), findsNothing);
     expect(find.byType(Chip), findsOneWidget);
     expect(isEnabled(tester, UiKeys.addDelegatesNextButton), isTrue);
+  });
+
+  group('a typed address not yet a chip', () {
+    const daveAddress = 'dave@domain.tld';
+
+    Future<void> typeWithoutEnter(WidgetTester tester, String address) async {
+      await tester.enterText(addressInput(), address);
+      await tester.pumpAndSettle(const Duration(milliseconds: 200));
+    }
+
+    testWidgets('should be picked on Next and listed on the confirm step', (tester) async {
+      await openDialog(tester);
+      await typeAddress(tester, DelegationFixtures.bobAddress);
+      await typeWithoutEnter(tester, daveAddress);
+
+      await goNext(tester);
+
+      expect(find.text(l10n.addDelegatesConfirmation), findsOneWidget);
+      expect(find.text(DelegationFixtures.bobAddress), findsOneWidget);
+      expect(find.text(daveAddress), findsOneWidget);
+    });
+
+    testWidgets('should keep the pick step, the text and toast the reason when refused on Next', (tester) async {
+      await openDialog(tester);
+      await typeAddress(tester, DelegationFixtures.bobAddress);
+      await typeWithoutEnter(tester, DelegationFixtures.aliceAddress);
+
+      await goNext(tester);
+
+      expect(find.text(l10n.addDelegatesConfirmation), findsNothing);
+      expect(appToast.errorMessages, [l10n.cannotDelegateToYourself]);
+      expect(tester.widget<TextField>(addressInput()).controller!.text, DelegationFixtures.aliceAddress);
+      expect(find.byType(Chip), findsOneWidget);
+    });
+
+    testWidgets('should not come back after its chip is removed on the pick step', (tester) async {
+      await openDialog(tester);
+      await typeAddress(tester, DelegationFixtures.bobAddress);
+      await typeWithoutEnter(tester, daveAddress);
+      await goNext(tester);
+      await tester.tap(find.byKey(const ValueKey(UiKeys.addDelegatesCancelButton)));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.descendant(of: find.byType(Chip), matching: find.byType(SvgPicture)).last);
+      await tester.pumpAndSettle();
+      await goNext(tester);
+
+      expect(find.text(DelegationFixtures.bobAddress), findsOneWidget);
+      expect(find.text(daveAddress), findsNothing);
+    });
   });
 
   testWidgets('should count the added delegates in the toast when several are added', (tester) async {

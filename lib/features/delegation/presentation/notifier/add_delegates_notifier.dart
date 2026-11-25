@@ -45,8 +45,12 @@ class AddDelegatesNotifier extends _$AddDelegatesNotifier with InteractorConsume
     state = state.copyWith(candidates: state.candidates.where((item) => item != candidate).toList());
   }
 
+  void typeAddress(String text) {
+    if (text != state.pendingAddress) state = state.copyWith(pendingAddress: text);
+  }
+
   void next() {
-    if (state.canGoNext) state = state.copyWith(step: AddDelegatesStep.confirm);
+    if (state.canGoNext) state = state.copyWith(step: AddDelegatesStep.confirm, pendingAddress: '');
   }
 
   void back() {

@@ -20,6 +20,7 @@ typedef DelegateSuggestionLoader = Future<List<EmailAddress>> Function(String qu
 /// Returns false when the address is refused, so a typed address stays in the field to be fixed.
 typedef OnPickDelegateAddress = bool Function(EmailAddress emailAddress);
 typedef OnUnpickDelegate = void Function(DelegateCandidate candidate);
+typedef OnDelegateAddressTyped = void Function(String text);
 
 /// Contact autocomplete with one chip per picked address. Rejected chips are outlined in red.
 class DelegateAddressField extends StatefulWidget {
@@ -27,6 +28,7 @@ class DelegateAddressField extends StatefulWidget {
   final DelegateSuggestionLoader loadSuggestions;
   final OnPickDelegateAddress onPick;
   final OnUnpickDelegate onUnpick;
+  final OnDelegateAddressTyped onTyped;
 
   const DelegateAddressField({
     super.key,
@@ -34,6 +36,7 @@ class DelegateAddressField extends StatefulWidget {
     required this.loadSuggestions,
     required this.onPick,
     required this.onUnpick,
+    required this.onTyped,
   });
 
   @override
@@ -48,7 +51,14 @@ class _DelegateAddressFieldState extends State<DelegateAddressField> {
   int _focusedTagIndex = -1;
 
   @override
+  void initState() {
+    super.initState();
+    _textController.addListener(_reportTyped);
+  }
+
+  @override
   void dispose() {
+    _textController.removeListener(_reportTyped);
     _textController.dispose();
     _focusNode
       ..removeListener(_onFocusChanged)
@@ -144,6 +154,8 @@ class _DelegateAddressFieldState extends State<DelegateAddressField> {
       ),
     );
   }
+
+  void _reportTyped() => widget.onTyped(_textController.text);
 
   void _pickTyped(String value) {
     final address = value.trim();

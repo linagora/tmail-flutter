@@ -132,6 +132,7 @@ class AddDelegatesDialog extends ConsumerWidget {
           loadSuggestions: (query, {limit}) => _loadAllowedSuggestions(ref, query, limit: limit),
           onPick: (emailAddress) => _pick(context, ref, emailAddress),
           onUnpick: ref.read(addDelegatesProvider.notifier).unpick,
+          onTyped: ref.read(addDelegatesProvider.notifier).typeAddress,
         ),
         if (hasRejected)
           Padding(
@@ -193,10 +194,17 @@ class AddDelegatesDialog extends ConsumerWidget {
         if (form.isSubmitting) return;
         isPickStep ? popBack() : notifier.back();
       },
-      onPositiveAction: () => isPickStep ? notifier.next() : _submit(context, ref),
+      onPositiveAction: () => isPickStep ? _next(context, ref) : _submit(context, ref),
     );
     // Add takes the place of Next, so a double click on Next must not press it.
     return isPickStep ? footer : _DoubleClickGuard(child: footer);
+  }
+
+  /// A typed address not yet a chip is picked first, so Next never drops it. Refused, it stays to be fixed.
+  void _next(BuildContext context, WidgetRef ref) {
+    final pendingAddress = ref.read(addDelegatesProvider).pendingAddress.trim();
+    if (pendingAddress.isNotEmpty && !_pick(context, ref, EmailAddress(null, pendingAddress))) return;
+    ref.read(addDelegatesProvider.notifier).next();
   }
 
   Future<List<EmailAddress>> _loadAllowedSuggestions(WidgetRef ref, String query, {int? limit}) async {

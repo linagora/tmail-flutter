@@ -26,10 +26,14 @@ class AddDelegatesForm with EquatableMixin {
   final AddDelegatesStep step;
   final bool isSubmitting;
 
+  /// Text typed in the field but not yet a chip.
+  final String pendingAddress;
+
   const AddDelegatesForm({
     this.candidates = const [],
     this.step = AddDelegatesStep.pick,
     this.isSubmitting = false,
+    this.pendingAddress = '',
   });
 
   bool get canGoNext =>
@@ -39,16 +43,18 @@ class AddDelegatesForm with EquatableMixin {
     List<DelegateCandidate>? candidates,
     AddDelegatesStep? step,
     bool? isSubmitting,
+    String? pendingAddress,
   }) {
     return AddDelegatesForm(
       candidates: candidates ?? this.candidates,
       step: step ?? this.step,
       isSubmitting: isSubmitting ?? this.isSubmitting,
+      pendingAddress: pendingAddress ?? this.pendingAddress,
     );
   }
 
   @override
-  List<Object?> get props => [candidates, step, isSubmitting];
+  List<Object?> get props => [candidates, step, isSubmitting, pendingAddress];
 }
 
 /// What a tap on Add led to.
