@@ -69,6 +69,7 @@ void main() {
     _testForwardsMailboxContextMenuAnchor();
     _testForwardsMailboxLongPressOnMobile();
     _testForwardsOnlyTouchLongPressOnWebDesktop();
+    _testForwardsMouseLongPressOnNative();
     _testKeepsDotsTriggerActiveUntilMenuCloses();
     _testUsesConfirmPopoverForClean();
     _testCleanPopoverUsesPrimaryConfirmInDarkRtl();
@@ -632,6 +633,32 @@ void _testForwardsOnlyTouchLongPressOnWebDesktop() {
     expect(calls, 0);
 
     await longPress(PointerDeviceKind.touch);
+    expect(calls, 1);
+  });
+}
+
+void _testForwardsMouseLongPressOnNative() {
+  testWidgets('forwards a mouse long press on native platforms', (tester) async {
+    var calls = 0;
+
+    await _pump(
+      tester,
+      SidebarMailboxItem(
+        mailboxNode: _mailboxNode(id: 'folder'),
+        imagePaths: _imagePaths,
+        isWebDesktop: false,
+        onLongPressMailboxNodeAction: (_) => calls++,
+      ),
+    );
+
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.byType(LinagoraSidebarItem)),
+      kind: PointerDeviceKind.mouse,
+    );
+    await tester.pump(const Duration(milliseconds: 600));
+    await gesture.up();
+    await tester.pump();
+
     expect(calls, 1);
   });
 }
