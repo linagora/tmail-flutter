@@ -193,11 +193,12 @@ def pullRequestHead() {
   return githubApi("pulls/${env.CHANGE_ID}").head.sha
 }
 
-// Fails the build unless what Jenkins checked out is the approved commit: HEAD itself, or the merge
-// Jenkins made of the pull request revision it pinned with the target branch, whose first parent is
-// that revision. The pinned revision is the one Jenkins reports the build status on, so the status
-// always names an approved commit. The contributor chooses the parents of the commits they push, so
-// a parent of HEAD is trusted only when the pinned revision, fetched as origin/<BRANCH_NAME>, is it.
+// Fails the build unless the checked out tree is the approved commit, or its merge with the target
+// branch as fetched from this repository. A merge build checks out a merge commit Jenkins made locally:
+// its first parent is the pull request revision, its second the target. The contributor writes the
+// commits they push, parents and tree included, so the merge is redone and its tree compared: no ref
+// of the workspace tells which revision Jenkins pinned. Whatever it reports the status on, that
+// revision holds the tree that was tested.
 def requireApprovedCheckout(String sha) {
   withEnv(["APPROVED_SHA=${sha}"]) {
     sh '''
@@ -205,14 +206,25 @@ def requireApprovedCheckout(String sha) {
       if [ "$head" = "$APPROVED_SHA" ]; then
         exit 0
       fi
-      pinned=$(git rev-parse -q --verify "refs/remotes/origin/$BRANCH_NAME^{commit}" || true)
-      first=$(git rev-parse -q --verify "HEAD^1" || true)
-      if [ "$pinned" = "$APPROVED_SHA" ] && [ "$first" = "$APPROVED_SHA" ]; then
-        echo "Building $head, the merge of the approved commit $APPROVED_SHA with the target branch"
-        exit 0
-      fi
-      echo "The pull request head moved to $APPROVED_SHA since the checkout of $head (pull request revision ${pinned:-unknown}): re-run the build." >&2
-      exit 1
+      refuse() {
+        echo "The checkout of $head is not the approved commit $APPROVED_SHA, nor its merge with $CHANGE_TARGET: $1. Re-run the build." >&2
+        exit 1
+      }
+      target=$(git rev-parse -q --verify "refs/remotes/origin/$CHANGE_TARGET^{commit}") || refuse "origin/$CHANGE_TARGET was not fetched"
+      [ "$(git rev-parse -q --verify 'HEAD^1' || true)" = "$APPROVED_SHA" ] || refuse "its first parent is not the approved commit"
+      [ "$(git rev-parse -q --verify 'HEAD^2' || true)" = "$target" ] || refuse "its second parent is not origin/$CHANGE_TARGET"
+      [ -z "$(git rev-parse -q --verify 'HEAD^3' || true)" ] || refuse "it has more than two parents"
+      # The contributor may have written this merge commit with a tree of their own: redo the merge
+      # in a scratch worktree, outside the workspace, and compare the trees.
+      scratch="$WORKSPACE@tmp/approved-merge"
+      rm -rf "$scratch"
+      git worktree add -q --detach "$scratch" "$APPROVED_SHA"
+      git -C "$scratch" -c user.name=Jenkins -c user.email=jenkins@localhost merge -q --no-edit "$target" >/dev/null 2>&1 || true
+      expected=$(git -C "$scratch" rev-parse 'HEAD^{tree}')
+      clean=$(git -C "$scratch" status --porcelain)
+      git worktree remove --force "$scratch"
+      [ -z "$clean" ] && [ "$expected" = "$(git rev-parse 'HEAD^{tree}')" ] || refuse "its tree is not the merge of the approved commit with origin/$CHANGE_TARGET"
+      echo "Building $head, the merge of the approved commit $APPROVED_SHA with origin/$CHANGE_TARGET"
     '''
   }
 }
