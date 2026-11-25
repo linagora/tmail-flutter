@@ -11,7 +11,7 @@ import 'package:tmail_ui_user/features/delegation/presentation/notifier/my_deleg
 import 'package:tmail_ui_user/features/delegation/presentation/widgets/account_switcher_avatar.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-/// "My delegates" tab of Settings › Delegation: who can use my mailbox. See ADR-0115.
+/// "By me" tab of Settings › Delegation: my delegates, who can use my mailbox. See ADR-0115.
 class MyDelegatesSection extends ConsumerStatefulWidget {
   final Session session;
 

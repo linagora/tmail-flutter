@@ -15,8 +15,8 @@ class ShowMyDelegatesScenario extends BaseTestScenario
   @override
   Future<void> runTestLogic() async {
     final provisioner = JmapDelegateProvisioner();
-    await provisioner.add(delegateAddresses.toSet());
     addTearDown(provisioner.removeAll);
+    await provisioner.add(delegateAddresses.toSet());
     final settingsRobot = robots.settingsRobot();
 
     await enableDelegationAndReturnToMailbox();
