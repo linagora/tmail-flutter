@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/utils/sign_out_marker_storage.dart';
 import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/model/authentication_info_cache.dart';
@@ -240,6 +241,31 @@ void main() {
     browser.storageKeys.add(markerKey);
 
     expect(calls, isEmpty);
+  });
+
+  group('isBasicLoginRevokedAndNotifyGuard', () {
+    setUp(() {
+      Get.put<AuthenticationInfoCacheManager>(manager);
+      Get.put<BasicAuthTabGuard>(guard);
+    });
+
+    tearDown(Get.reset);
+
+    test('not revoked: false and the guard stays idle', () async {
+      expect(isBasicLoginRevokedAndNotifyGuard(), isFalse);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(calls, isEmpty);
+    });
+
+    test('revoked: true and the guard leaves', () async {
+      signOutElsewhere();
+
+      expect(isBasicLoginRevokedAndNotifyGuard(), isTrue);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(calls, ['save', 'login']);
+    });
   });
 
   test('inert when not on web', () {

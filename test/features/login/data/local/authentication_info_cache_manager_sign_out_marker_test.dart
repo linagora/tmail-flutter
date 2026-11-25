@@ -97,6 +97,7 @@ void main() {
       await manager.storeAuthenticationInfo(AuthenticationInfoCache('bob@example.com', 'bob'));
 
       expect(session.values.containsKey(loginKey), isFalse);
+      expect(manager.isLoginRevokedInThisTab(), isFalse);
     });
   });
 
@@ -157,6 +158,16 @@ void main() {
   });
 
   group('sign out', () {
+    test('clear forgets the tag, so a later sign out elsewhere does not revoke this tab', () async {
+      final (manager, _) = newTab();
+      await manager.storeAuthenticationInfo(info);
+
+      await manager.clear();
+      marker.value = 'rotated-by-other-tab';
+
+      expect(manager.isLoginRevokedInThisTab(), isFalse);
+    });
+
     test('clear does not rotate the marker', () async {
       final (manager, _) = newTab();
       await manager.storeAuthenticationInfo(info);
