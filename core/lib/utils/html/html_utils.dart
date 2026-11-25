@@ -780,9 +780,11 @@ class HtmlUtils {
 
     final url = html.Url.createObjectUrlFromBlob(blob);
 
-    html.window.open(url, '_blank');
+    // noopener: the new tab must not inherit a copy of this tab's sessionStorage (the login).
+    html.window.open(url, '_blank', windowFeatures(noOpener: true));
 
-    html.Url.revokeObjectUrl(url);
+    // The new tab fetches the blob after open() returns; revoking at once can race it.
+    Future.delayed(const Duration(minutes: 1), () => html.Url.revokeObjectUrl(url));
   }
 
   static String windowFeatures({String? size, required bool noOpener}) =>
