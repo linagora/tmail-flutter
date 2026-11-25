@@ -10,6 +10,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/html_transformer/dom/normalize_line_height_in_style_transformer.dart';
+import 'package:core/presentation/utils/html_transformer/dom/sanitize_hyper_link_tag_in_html_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
@@ -44,6 +45,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:model/email/presentation_email.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:model/extensions/session_extension.dart';
@@ -3557,6 +3559,45 @@ void main() {
         expect(composerController?.currentTemplateEmailId, equals(newEmailId));
         verify(mockUploadController.refreshAllAttachments([], [])).called(1);
       });
+    });
+
+    group('setupEmailContent - link cleanup of loaded content:', () {
+      final cases = <({String name, EmailActionType action, EmailId? templateId, bool cleansLinks})>[
+        (name: 'Edit as new of a received email', action: EmailActionType.editAsNewEmail, templateId: null, cleansLinks: true),
+        (name: 'reopening a draft', action: EmailActionType.editDraft, templateId: null, cleansLinks: false),
+        (name: 'opening a saved template', action: EmailActionType.editAsNewEmail, templateId: EmailId(Id('template-1')), cleansLinks: false),
+      ];
+
+      for (final testCase in cases) {
+        test(
+          'Should ${testCase.cleansLinks ? '' : 'NOT '}clean the sender links\n'
+          'When ${testCase.name}',
+        () async {
+          composerController?.currentEmailActionType = testCase.action;
+          when(mockGetEmailContentInteractor.execute(
+            any, any, any, any, any,
+            additionalProperties: anyNamed('additionalProperties'),
+          )).thenAnswer((_) => Stream.value(
+              Right(GetEmailContentSuccess(htmlEmailContent: '<p>x</p>'))));
+
+          await composerController?.setupEmailContent(ComposerArguments(
+            emailActionType: testCase.action,
+            displayMode: ScreenDisplayMode.normal,
+            presentationEmail: PresentationEmail(id: EmailId(Id('e1'))),
+            savedEmailTemplateId: testCase.templateId,
+          ));
+
+          final configuration = verify(mockGetEmailContentInteractor.execute(
+            any, any, any, any, captureAny,
+            additionalProperties: anyNamed('additionalProperties'),
+          )).captured.single as TransformConfiguration;
+          expect(
+            configuration.domTransformers
+                .any((transformer) => transformer is SanitizeHyperLinkTagInHtmlTransformer),
+            testCase.cleansLinks,
+          );
+        });
+      }
     });
 
     group('setupEmailContent - mailto textEditorWeb:', () {

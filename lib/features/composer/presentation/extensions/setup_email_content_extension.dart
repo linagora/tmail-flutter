@@ -32,7 +32,7 @@ extension SetupEmailContentExtension on ComposerController {
     if (_isEditDraftContentAction) {
       await _getEmailContent(
         arguments,
-        transformConfiguration: currentEmailActionType == EmailActionType.editAsNewEmail
+        transformConfiguration: _loadsSenderContent(arguments)
             ? TransformConfiguration.forEditAsNewEmail()
             : TransformConfiguration.forEditDraftsEmail(),
         additionalProperties: Properties({IndividualHeaderIdentifier.identityHeader.value}),
@@ -53,6 +53,12 @@ extension SetupEmailContentExtension on ComposerController {
       emailContentsViewState.value = Right(LoadEmailContentCompleted());
     }
   }
+
+  /// "Edit as new" of a received email loads the sender's HTML. A saved
+  /// template opens through the same action but is the user's own content.
+  bool _loadsSenderContent(ComposerArguments arguments) =>
+      currentEmailActionType == EmailActionType.editAsNewEmail &&
+      arguments.savedEmailTemplateId == null;
 
   bool get _isEditDraftContentAction => const {
     EmailActionType.editAsNewEmail,
