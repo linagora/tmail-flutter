@@ -258,6 +258,10 @@ void main() {
       expect(mockBaseController.validateUrgentException(const BadCredentialsException()), isTrue);
     });
 
+    test('should return false when exception is CredentialRevokedException', () {
+      expect(mockBaseController.validateUrgentException(const CredentialRevokedException()), isFalse);
+    });
+
     test('should return true when exception is ConnectionError', () {
       expect(mockBaseController.validateUrgentException(const ConnectionError()), isTrue);
     });

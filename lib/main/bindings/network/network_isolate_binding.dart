@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/login/data/network/authentication_client/
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/login/data/utils/library_platform/app_auth_plugin/app_auth_plugin.dart';
+import 'package:tmail_ui_user/features/login/presentation/tab_guard/basic_auth_tab_guard.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
@@ -54,6 +55,7 @@ class NetworkIsolateBindings extends Bindings {
       Get.find<TokenOidcCacheManager>(tag: BindingTag.isolateTag),
       Get.find<AccountCacheManager>(tag: BindingTag.isolateTag),
       Get.find<IOSSharingManager>(tag: BindingTag.isolateTag),
+      isBasicLoginRevoked: isBasicLoginRevokedAndNotifyGuard,
     );
     Get.put(authorizationInterceptors, tag: BindingTag.isolateTag);
 

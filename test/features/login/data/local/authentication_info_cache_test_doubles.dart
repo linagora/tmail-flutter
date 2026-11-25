@@ -6,6 +6,7 @@ import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/caching/clients/authentication_info_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/exceptions/local_storage_exception.dart';
 import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
+import 'package:tmail_ui_user/features/caching/utils/sign_out_marker_storage.dart';
 import 'package:tmail_ui_user/features/login/data/model/authentication_info_cache.dart';
 
 import 'authentication_info_cache_test_doubles.mocks.dart';
@@ -41,6 +42,31 @@ class FakeHiveLoginBox {
       item = null;
     });
   }
+}
+
+// Shared across fake tabs the way localStorage is; failWrites models a full quota.
+class FakeSignOutMarkerStorage implements SignOutMarkerStorage {
+  String? value;
+  bool failWrites = false;
+  // Simulates another tab replacing the marker right after this write lands.
+  String? replaceAfterNextWrite;
+
+  @override
+  String? read() => value;
+
+  @override
+  void write(String marker) {
+    if (failWrites) throw Exception('QuotaExceededError');
+    value = marker;
+    final other = replaceAfterNextWrite;
+    if (other != null) {
+      replaceAfterNextWrite = null;
+      value = other;
+    }
+  }
+
+  @override
+  void remove() => value = null;
 }
 
 // Same noSuchMethod approach as FakeSecureStorage: SessionStorageManager exposes dart:html types.
