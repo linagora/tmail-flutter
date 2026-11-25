@@ -57,14 +57,14 @@ class DownloadManager {
                 }
               }).catchError((error) async {
                 await subscription.cancel();
-                await stagingDirectory.delete(recursive: true);
+                await randomAccessFile.close();
                 streamController.sink.addError(CommonDownloadFileException(error.toString()));
                 await streamController.close();
+                await _deleteStagingDirectory(stagingDirectory);
               });
         }, onDone: () async {
           await randomAccessFile.close();
           if (cancelToken != null && cancelToken.isCancelled) {
-            await stagingDirectory.delete(recursive: true);
             streamController.sink.addError(CancelDownloadFileException(cancelToken.cancelError?.message));
           } else {
             try {
@@ -73,14 +73,14 @@ class DownloadManager {
             } catch (error) {
               streamController.sink.addError(CommonDownloadFileException(error.toString()));
             }
-            await stagingDirectory.delete(recursive: true);
           }
           await streamController.close();
+          await _deleteStagingDirectory(stagingDirectory);
         }, onError: (error) async {
           await randomAccessFile.close();
-          await stagingDirectory.delete(recursive: true);
           streamController.sink.addError(CommonDownloadFileException(error.toString()));
           await streamController.close();
+          await _deleteStagingDirectory(stagingDirectory);
         }, cancelOnError: true);
       });
     } catch(exception) {
@@ -93,6 +93,15 @@ class DownloadManager {
       }
     }
     return streamController.stream.first;
+  }
+
+  // Runs after the result is sent, so a leftover staging directory never blocks the download from settling.
+  Future<void> _deleteStagingDirectory(Directory stagingDirectory) async {
+    try {
+      await stagingDirectory.delete(recursive: true);
+    } catch (error) {
+      logWarning('DownloadManager::_deleteStagingDirectory(): $error');
+    }
   }
 
   void createAnchorElementDownloadFileWeb(
