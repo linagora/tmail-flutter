@@ -11,6 +11,10 @@ part 'my_delegates_notifier.g.dart';
 @riverpod
 class MyDelegatesNotifier extends _$MyDelegatesNotifier with InteractorConsumer {
   int _latestLoadId = 0;
+  Set<String> _lastUsernames = const {};
+
+  /// The usernames of the last list shown, kept while a reload runs or after it failed.
+  Set<String> get lastUsernames => _lastUsernames;
 
   @override
   AsyncValue<List<Delegate>> build() => const AsyncLoading();
@@ -25,11 +29,20 @@ class MyDelegatesNotifier extends _$MyDelegatesNotifier with InteractorConsumer 
       // A slow earlier read must not overwrite a newer list.
       isStale: () => !ref.mounted || loadId != _latestLoadId,
       onSuccess: (success) {
-        if (success is GetDelegatesSuccess) {
-          state = AsyncData(success.delegates);
-        }
+        if (success is GetDelegatesSuccess) _showList(success.delegates);
       },
       onFailure: (error, stackTrace) => state = AsyncError(error, stackTrace),
     ));
+  }
+
+  /// Shows a list read elsewhere, such as the one an add request re-reads, and drops any older read in flight.
+  void show(List<Delegate> delegates) {
+    _latestLoadId++;
+    _showList(delegates);
+  }
+
+  void _showList(List<Delegate> delegates) {
+    _lastUsernames = delegates.map((delegate) => delegate.username).toSet();
+    state = AsyncData(delegates);
   }
 }

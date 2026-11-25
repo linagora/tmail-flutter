@@ -19,6 +19,7 @@ class ContactInputTagItem extends StatelessWidget {
 
   final EmailAddress contact;
   final bool isTagFocused;
+  final bool hasError;
   final DeleteContactCallbackAction? deleteContactCallbackAction;
 
   const ContactInputTagItem(
@@ -26,6 +27,7 @@ class ContactInputTagItem extends StatelessWidget {
     {
       Key? key,
       this.isTagFocused = false,
+      this.hasError = false,
       this.deleteContactCallbackAction
     }
   ) : super(key: key);
@@ -92,13 +94,15 @@ class ContactInputTagItem extends StatelessWidget {
     }
   }
 
+  bool get _isValid => !hasError && _isValidEmailAddress(contact.emailAddress);
+
   bool _isValidEmailAddress(String value) => value.isEmail || AppUtils.isEmailLocalhost(value);
 
   Color _getTagBackgroundColor() {
     if (isTagFocused) {
       return AppColor.colorItemRecipientSelected;
     } else {
-      return _isValidEmailAddress(contact.emailAddress)
+      return _isValid
         ? AppColor.colorBackgroundContactTagItem
         : Colors.white;
     }
@@ -111,8 +115,8 @@ class ContactInputTagItem extends StatelessWidget {
       color: AppColor.primaryColor);
     } else {
       return BorderSide(
-        width: _isValidEmailAddress(contact.emailAddress) ? 0 : 1,
-        color: _isValidEmailAddress(contact.emailAddress)
+        width: _isValid ? 0 : 1,
+        color: _isValid
           ? AppColor.colorBackgroundContactTagItem
           : AppColor.colorBorderEmailAddressInvalid
       );
