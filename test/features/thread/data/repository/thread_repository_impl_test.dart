@@ -1518,6 +1518,64 @@ void main() {
       },
     );
 
+    for (final drainStopped in [true, false]) {
+      test(
+        'SHOULD emit ${drainStopped ? 'the reached changes cursor' : 'the network state'}\n'
+        'WHEN collapseThreads is true and the changes drain '
+        '${drainStopped ? 'stopped' : 'completed'}',
+        () async {
+          when(localDataSource.getAllEmailCache(
+            any,
+            any,
+            filterOption: anyNamed('filterOption'),
+            inMailboxId: anyNamed('inMailboxId'),
+            limit: anyNamed('limit'),
+            sort: anyNamed('sort'),
+          )).thenAnswer((_) async => []);
+
+          when(refreshChangesStateDataSource.getState(any, any, any))
+              .thenAnswer((_) async => State('S100'));
+
+          when(networkDataSource.getAllEmailChanges(
+            any,
+            any,
+            any,
+            propertiesCreated: anyNamed('propertiesCreated'),
+            propertiesUpdated: anyNamed('propertiesUpdated'),
+          )).thenAnswer((_) async => EmailChangeResponse(
+                hasMoreChanges: drainStopped,
+                newStateChanges: State('S100'),
+                newStateEmail: State('S157'),
+              ));
+
+          when(networkDataSource.getAllEmail(
+            any,
+            any,
+            limit: anyNamed('limit'),
+            position: anyNamed('position'),
+            sort: anyNamed('sort'),
+            filter: anyNamed('filter'),
+            properties: anyNamed('properties'),
+            collapseThreads: anyNamed('collapseThreads'),
+          )).thenAnswer((_) async => EmailsResponse(
+                emailList: [Email(id: EmailId(Id('e1')))],
+                state: State('S157'),
+              ));
+
+          final result = await refreshChangesThreadRepository
+              .refreshChanges(
+                SessionFixtures.aliceSession,
+                AccountFixtures.aliceAccountId,
+                State('S0'),
+                collapseThreads: true,
+              )
+              .first;
+
+          expect(result.state, State(drainStopped ? 'S100' : 'S157'));
+        },
+      );
+    }
+
     tearDown(() {
       reset(networkDataSource);
       reset(localDataSource);

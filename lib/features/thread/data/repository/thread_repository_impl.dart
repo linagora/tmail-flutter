@@ -415,7 +415,12 @@ class ThreadRepositoryImpl extends ThreadRepository {
         'CountEmailNetwork = ${networkEmailResponse.emailList?.length}, '
         'EmailStateNetwork = ${networkEmailResponse.state?.value}, ',
       );
-      yield networkEmailResponse.copyWith(emailChangeResponse: emailChangeResponse);
+      // A stopped drain must not let the list state skip changes not yet applied.
+      final isDrainStopped = emailChangeResponse?.hasMoreChanges == true;
+      yield networkEmailResponse.copyWith(
+        state: isDrainStopped ? newEmailResponse.state : null,
+        emailChangeResponse: emailChangeResponse,
+      );
     } else {
       logTrace(
         'ThreadRepositoryImpl::refreshChanges():'
