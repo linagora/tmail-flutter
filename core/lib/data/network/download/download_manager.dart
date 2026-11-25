@@ -35,10 +35,13 @@ class DownloadManager {
         final response = (values[0] as ResponseBody);
         final mediaType = _extractMediaTypeFromResponse(response);
         final fileStream = response.stream;
-        final tempFilePath = '${(values[1] as Directory).absolute.path}/$filename';
+        final directory = (values[1] as Directory).absolute;
+        final tempFilePath = '${directory.path}/$filename';
 
-        final file = File(tempFilePath);
-        file.createSync(recursive: true);
+        // Download into a sibling staging directory and rename on success, so a failed or cancelled download never touches a completed file.
+        directory.createSync(recursive: true);
+        final stagingDirectory = directory.createTempSync('.download_');
+        final file = File('${stagingDirectory.path}/$filename');
         var randomAccessFile = file.openSync(mode: FileMode.write);
         late StreamSubscription subscription;
 
@@ -54,23 +57,32 @@ class DownloadManager {
                 }
               }).catchError((error) async {
                 await subscription.cancel();
+                await _closeFileAfterFailure(randomAccessFile);
                 streamController.sink.addError(CommonDownloadFileException(error.toString()));
                 await streamController.close();
+                await _deleteStagingDirectory(stagingDirectory);
               });
         }, onDone: () async {
-          await randomAccessFile.close();
           if (cancelToken != null && cancelToken.isCancelled) {
+            await _closeFileAfterFailure(randomAccessFile);
             streamController.sink.addError(CancelDownloadFileException(cancelToken.cancelError?.message));
           } else {
-            streamController.sink.add(DownloadedResponse(tempFilePath, mediaType: mediaType));
+            try {
+              await randomAccessFile.close();
+              await file.rename(tempFilePath);
+              streamController.sink.add(DownloadedResponse(tempFilePath, mediaType: mediaType));
+            } catch (error) {
+              streamController.sink.addError(CommonDownloadFileException(error.toString()));
+            }
           }
           await streamController.close();
+          await _deleteStagingDirectory(stagingDirectory);
         }, onError: (error) async {
-          await randomAccessFile.close();
-          await file.delete();
+          await _closeFileAfterFailure(randomAccessFile);
           streamController.sink.addError(CommonDownloadFileException(error.toString()));
           await streamController.close();
-        });
+          await _deleteStagingDirectory(stagingDirectory);
+        }, cancelOnError: true);
       });
     } catch(exception) {
       if (cancelToken != null && cancelToken.isCancelled) {
@@ -82,6 +94,24 @@ class DownloadManager {
       }
     }
     return streamController.stream.first;
+  }
+
+  // The download already failed, so a close error must not stop that failure from being sent.
+  Future<void> _closeFileAfterFailure(RandomAccessFile randomAccessFile) async {
+    try {
+      await randomAccessFile.close();
+    } catch (error) {
+      logWarning('DownloadManager::_closeFileAfterFailure(): $error');
+    }
+  }
+
+  // Runs after the result is sent, so a leftover staging directory never blocks the download from settling.
+  Future<void> _deleteStagingDirectory(Directory stagingDirectory) async {
+    try {
+      await stagingDirectory.delete(recursive: true);
+    } catch (error) {
+      logWarning('DownloadManager::_deleteStagingDirectory(): $error');
+    }
   }
 
   void createAnchorElementDownloadFileWeb(
