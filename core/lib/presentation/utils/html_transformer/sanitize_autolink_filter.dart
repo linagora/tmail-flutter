@@ -22,6 +22,9 @@ class SanitizeAutolinkFilter {
     const LinearTimeUrlLinkifier(),
   ];
 
+  // The href is always double-quoted, so attribute mode is enough.
+  static const _attributeEscape = HtmlEscape(HtmlEscapeMode.attribute);
+
   SanitizeAutolinkFilter(this.htmlEscape);
 
   String process(String inputText) {
@@ -56,10 +59,14 @@ class SanitizeAutolinkFilter {
   }
 
   String _buildUrlLinkTag({required String urlLink, required String value}) {
-    return '<a href="$urlLink" target="_blank" rel="noreferrer" style="white-space: nowrap; word-break: keep-all;">$value</a>';
+    final href = _attributeEscape.convert(urlLink);
+    final text = htmlEscape.convert(value);
+    return '<a href="$href" target="_blank" rel="noreferrer" style="white-space: nowrap; word-break: keep-all;">$text</a>';
   }
 
   String _buildEmailLinkTag({required String mailToLink, required String value}) {
-    return '<a href="$mailToLink" style="white-space: nowrap; word-break: keep-all;">$value</a>';
+    final href = _attributeEscape.convert(mailToLink);
+    final text = htmlEscape.convert(value);
+    return '<a href="$href" style="white-space: nowrap; word-break: keep-all;">$text</a>';
   }
 }
