@@ -1,7 +1,7 @@
 # 115. Delegation: manage who can use my mailbox
 
 Date: 2026-10-20
-Updated: 2026-11-20
+Updated: 2026-11-25
 
 ## Status
 
@@ -47,7 +47,7 @@ remove(delegate) → one request: Delegate/set destroy [id], then Delegate/get
 
 ### My delegates tab
 
-- States: loading, error with Retry, empty ("No one has access yet" + **+ Add**), list ("Who has access to me", a trash icon per row, then **+ Add**).
+- States: loading, error with Retry, empty ("No one has access yet" + **+ Add**), list ("Who has access to your mailbox", a trash icon per row, then **+ Add**).
 - Only the latest read updates the tab, so a slow earlier read never overwrites a newer list.
 - Add and remove send `Delegate/set` and `Delegate/get` in one request, and JMAP answers each method on its own:
   - `Delegate/set` succeeded but `Delegate/get` failed: the result toast is shown and the list is marked stale with Retry. Retry only re-reads, the change is never sent again.
@@ -57,10 +57,11 @@ remove(delegate) → one request: Delegate/set destroy [id], then Delegate/get
 ### Add delegates
 
 - Contacts autocomplete with chips, several at once. My own address and current delegates are left out and refused when typed. Addresses that are not users of this server are not filtered out by the app: the server rejects them and their chip shows the error.
-- **Next** is enabled once one valid address is picked. The confirmation step lists the chosen people with **Add**, and Back to edit them.
+- **Add** is enabled once one valid address is picked and sends them at once: there is no confirmation step.
+- The design adds a "Sender display" step ("Show sender in signature": "Sent by [Delegate]" or "Sent by [Delegate] on behalf of [Owner]"). `Delegate/get|set` has no field for it, so it waits for the backend (T-21).
 - One `Delegate/set` for all addresses. While it runs, **Add** is disabled and repeat taps are ignored, so a double tap sends one request. The dialog cannot be dismissed either (Cancel, Escape, Back).
 - All created: the dialog closes, the list refreshes, toast "[Delegate] has been added" (or "[n] delegates have been added").
-- Some or all rejected: the created chips leave the field and the "has been added" toast names them (no toast when nothing was created), the list refreshes, and the dialog goes back to the chips step with the rejected chips and their error. **Next** stays disabled until they are removed.
+- Some or all rejected: the created chips leave the field and the "has been added" toast names them (no toast when nothing was created), the list refreshes, and the dialog stays open with the rejected chips and their error. **Add** stays disabled until they are removed.
 - Request failed: every chip stays, error toast.
 
 ### Remove a delegate
@@ -87,19 +88,20 @@ remove(delegate) → one request: Delegate/set destroy [id], then Delegate/get
 |---|---|---|
 | DS-5 | Segmented tabs (design system) | — |
 | T-15 | `Delegate/get\|set` in the `delegation` package + data layer | ADR-0114 T-10 |
-| T-16 | Add delegates dialog | T-15, DS-1 |
-| T-17 | Remove delegate dialog | T-15, DS-1 |
-| T-18 | Tabs + "My delegates" list | T-15, T-16, T-17, DS-1, DS-4, DS-5, ADR-0114 T-06, T-11 |
+| T-16 | Tabs + "My delegates" list, **+ Add** shown but inactive, no trash icon yet | T-15, DS-1, DS-4, DS-5, ADR-0114 T-06, T-11 |
+| T-17 | Add delegates dialog, opened by **+ Add** | T-16 |
+| T-18 | Remove delegate dialog, opened by a new trash icon per row | T-16 |
 | T-19 | Email links kept across sign-in (`?account=` itself is read by the ADR-0114 web start, T-07.1) | ADR-0114 T-07, T-07.1, T-08, T-09, T-11 |
 | T-20 | Delegation toggle on by default, out of the experimental reveal | T-18, T-19, every ADR-0114 ticket |
+| T-21 | Sender display step of the add dialog | Backend support |
 | BE-1 | tmail-backend: §5 email to the delegate on add, with the link above | T-18, T-19, T-20 |
 | BE-2 | tmail-backend: §7 email to the owner when a delegate gives up access | T-18, T-19, T-20 |
 
-Ticket ids continue after ADR-0114 T-14 and follow the implementation order. T-18 is the only way into the owner side, so it merges after T-15, T-16 and T-17. T-19 merges after every ADR-0114 entry point (web and mobile), so a link kept across sign-in lands on a layout with the switcher, and after ADR-0114 T-11, which adds the Delegation settings page the owner's link opens. The emails go live after the app pages they open, once T-20 turns the toggle on by default. A ticket whose UI works ships its e2e scenarios, on every platform that has that UI (the dialogs of T-16 and T-17 have no entry point before T-18, so their e2e ships with T-18). The whole e2e suite runs on Android, iOS and Web before T-20 merges.
+Ticket ids continue after ADR-0114 T-14 and follow the implementation order. Each owner side ticket ships UI that works once merged: T-16 the list, then T-17 and T-18 the dialogs it opens. T-19 merges after every ADR-0114 entry point (web and mobile), so a link kept across sign-in lands on a layout with the switcher, and after ADR-0114 T-11, which adds the Delegation settings page the owner's link opens. The emails go live after the app pages they open, once T-20 turns the toggle on by default. A ticket whose UI works ships its e2e scenarios, on every platform that has that UI. The whole e2e suite runs on Android, iOS and Web before T-20 merges.
 
 ```mermaid
 flowchart LR
-  P1["ADR-0114 T-10"] --> S1["1. No visible change<br/>T-15, T-16, T-17, DS-5"] --> S2["2. Owner side release<br/>T-18"]
+  P1["ADR-0114 T-10"] --> S1["1. No visible change<br/>T-15, DS-5"] --> S2["2. Owner side, one usable step per ticket<br/>T-16, T-17, T-18"]
   P2["ADR-0114 T-06, T-11"] --> S2
   P3["ADR-0114 entry points<br/>T-07, T-07.1, T-08, T-09, T-11"] --> S3["3. Email links<br/>T-19"]
   S2 & S3 --> S4["4. Toggle on by default, emails live<br/>T-20, BE-1, BE-2"]
