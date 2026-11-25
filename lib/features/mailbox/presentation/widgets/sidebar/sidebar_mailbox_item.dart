@@ -79,10 +79,7 @@ class SidebarMailboxItem extends StatelessWidget {
 
     return _withTreeIndent(
       context,
-      _withLongPress(
-        _withDropTarget(row, isWebDesktop),
-        isWebDesktop,
-      ),
+      _withLongPress(_withDropTarget(row, isWebDesktop)),
     );
   }
 
@@ -129,8 +126,8 @@ class SidebarMailboxItem extends StatelessWidget {
     );
   }
 
-  Widget _withLongPress(Widget child, bool isWebDesktop) {
-    if (onLongPressMailboxNodeAction == null || isWebDesktop) return child;
+  Widget _withLongPress(Widget child) {
+    if (onLongPressMailboxNodeAction == null) return child;
 
     // Web: touch only, mouse users get the hover "⋮" menu instead.
     return GestureDetector(

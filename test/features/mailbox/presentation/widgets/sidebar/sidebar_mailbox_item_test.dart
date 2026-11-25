@@ -68,6 +68,7 @@ void main() {
     _testKeepsActionRequiredMailboxOutOfDropTargets();
     _testForwardsMailboxContextMenuAnchor();
     _testForwardsMailboxLongPressOnMobile();
+    _testForwardsOnlyTouchLongPressOnWebDesktop();
     _testKeepsDotsTriggerActiveUntilMenuCloses();
     _testUsesConfirmPopoverForClean();
     _testCleanPopoverUsesPrimaryConfirmInDarkRtl();
@@ -597,6 +598,41 @@ void _testForwardsMailboxLongPressOnMobile() {
     );
 
     expect(longPressedMailbox, same(mailboxNode));
+  });
+}
+
+void _testForwardsOnlyTouchLongPressOnWebDesktop() {
+  testWidgets('forwards a touch long press on the web desktop layout, not a mouse one',
+      (tester) async {
+    PlatformInfo.isTestingForWeb = true;
+    addTearDown(() => PlatformInfo.isTestingForWeb = false);
+    var calls = 0;
+
+    await _pump(
+      tester,
+      SidebarMailboxItem(
+        mailboxNode: _mailboxNode(id: 'folder'),
+        imagePaths: _imagePaths,
+        isWebDesktop: true,
+        onLongPressMailboxNodeAction: (_) => calls++,
+      ),
+    );
+
+    Future<void> longPress(PointerDeviceKind kind) async {
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byType(LinagoraSidebarItem)),
+        kind: kind,
+      );
+      await tester.pump(const Duration(milliseconds: 600));
+      await gesture.up();
+      await tester.pump();
+    }
+
+    await longPress(PointerDeviceKind.mouse);
+    expect(calls, 0);
+
+    await longPress(PointerDeviceKind.touch);
+    expect(calls, 1);
   });
 }
 
