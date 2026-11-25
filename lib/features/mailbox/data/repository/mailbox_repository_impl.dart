@@ -173,6 +173,8 @@ class MailboxRepositoryImpl extends MailboxRepository {
 
       hasMoreChanges = changesResponse.hasMoreChanges;
       sinceState = changesResponse.newStateChanges;
+      // Persist the /changes cursor so a failed next page resumes, not skips.
+      final newState = changesResponse.newStateChanges ?? changesResponse.newStateMailbox;
 
       final newMailboxUpdated = await _combineMailboxCache(
           mailboxUpdatedList: changesResponse.updated,
@@ -186,8 +188,8 @@ class MailboxRepositoryImpl extends MailboxRepository {
             updated: newMailboxUpdated,
             created: changesResponse.created,
             destroyed: changesResponse.destroyed),
-        if (changesResponse.newStateMailbox != null)
-          stateDataSource.saveState(accountId, session.username, changesResponse.newStateMailbox!.toStateCache(StateType.mailbox)),
+        if (newState != null)
+          stateDataSource.saveState(accountId, session.username, newState.toStateCache(StateType.mailbox)),
       ]);
     }
 

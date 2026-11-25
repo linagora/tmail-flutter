@@ -566,8 +566,10 @@ class ThreadRepositoryImpl extends ThreadRepository {
           newUpdated: newEmailUpdated,
           newDestroyed: emailChangeResponse.destroyed);
 
-      if (emailChangeResponse.newStateEmail != null) {
-        await _updateState(accountId, session.username, emailChangeResponse.newStateEmail!);
+      // Resume from the /changes cursor reached; Email/get state may be ahead of applied pages.
+      final newState = emailChangeResponse.newStateChanges ?? emailChangeResponse.newStateEmail;
+      if (newState != null) {
+        await _updateState(accountId, session.username, newState);
       }
     }
 
