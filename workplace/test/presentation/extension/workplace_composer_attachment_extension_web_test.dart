@@ -53,7 +53,7 @@ final _bridgeIntentResponse = {
 WorkplaceComposerAttachmentExtension _makeExtension(ValueListenable<Uri?> notifier) =>
     WorkplaceComposerAttachmentExtension(
       workplaceUri: notifier,
-      uploadFromUrlSupported: () => true,
+      uploadFromUrlSupported: (_) => true,
       oidcTokenGetter: () => 'oidc-token',
       maxAttachmentSizeBytesGetter: () => null,
       remainingAttachmentCapacityBytesGetter: (_) => null,

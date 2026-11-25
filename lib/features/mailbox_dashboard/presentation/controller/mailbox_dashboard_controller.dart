@@ -63,6 +63,7 @@ import 'package:tmail_ui_user/features/delegation/presentation/cleanup_ended_del
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/utils/show_notification_account.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/utils/until_no_account_switch_runs.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
@@ -505,6 +506,12 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _handleComposerCache() async {
+    if (isAccountSwitchRunning(appProviderContainer)) {
+      final shownAccountId = activeAccountId;
+      await untilNoAccountSwitchRuns(appProviderContainer);
+      // A switch that ended on another account reopens that account's composers through watchShown.
+      if (activeAccountId != shownAccountId) return;
+    }
     // The shown account only. A delegated snapshot waits until that mailbox is shown.
     if (activeAccountId == null || sessionCurrent == null) return;
 
@@ -918,8 +925,11 @@ class MailboxDashBoardController extends ReloadableController
   Future<void> injectFCMBindings(Session? session, AccountId? accountId) async {
     try {
       await super.injectFCMBindings(session, accountId);
-      await LocalNotificationManager.instance.recreateStreamController();
-      _registerLocalNotificationStreamListener();
+      // onInit already listens to an open stream, so only a closed one is reopened and listened to.
+      if (_notificationManager.localNotificationsController.isClosed) {
+        await _notificationManager.recreateStreamController();
+        _registerLocalNotificationStreamListener();
+      }
     } catch (e, st) {
       logError(
         'MailboxDashBoardController::injectFCMBindings():',
@@ -939,11 +949,18 @@ class MailboxDashBoardController extends ReloadableController
 
     unawaited(checkAndRestoreComposerOnMobile());
 
-    if (PlatformInfo.isAndroid && !_notificationManager.isNotificationClickedOnTerminate) {
-      _handleClickNotificationOnAndroidInTerminated();
-    } else {
+    if (!_openPendingAndroidNotificationTap()) {
       dispatchRoute(DashboardRoutes.thread);
     }
+  }
+
+  /// Opens the tap that started the app once, whichever path loads the session.
+  bool _openPendingAndroidNotificationTap() {
+    if (!PlatformInfo.isAndroid || _notificationManager.isNotificationClickedOnTerminate) {
+      return false;
+    }
+    _handleClickNotificationOnAndroidInTerminated();
+    return true;
   }
 
   Future<void> _cleanupEndedDelegations(
@@ -2033,6 +2050,7 @@ class MailboxDashBoardController extends ReloadableController
       _handleComposerCache();
     }
     _openPendingIOSNotificationTap();
+    _openPendingAndroidNotificationTap();
   }
 
   void _getRouteParameters() {

@@ -2363,6 +2363,7 @@ void main() {
           emailActionType: EmailActionType.restoreComposerFromPersistentCache,
           selectedIdentityId: myIdentity.id,
           identities: [bobIdentity],
+          accountId: AccountFixtures.aliceAccountId,
         );
         composerController?.composerArguments.value = arguments;
         composerController?.currentEmailActionType = arguments.emailActionType;
@@ -2385,6 +2386,34 @@ void main() {
             reason: 'my identity is not listed, so the first identity of the shown mailbox is taken');
       });
 
+      test('takes the first identity of my account WHEN the identity of my draft was deleted', () async {
+        final myOtherIdentity = Identity(
+          id: IdentityId(Id('my-other-identity')),
+          name: 'Alice',
+          email: 'alice.other@domain.tld',
+          mayDelete: true,
+        );
+        when(mockGetAllIdentitiesInteractor.execute(any, AccountFixtures.aliceAccountId)).thenAnswer(
+          (_) => Stream.value(Right(GetAllIdentitiesSuccess([myOtherIdentity], null))),
+        );
+        await composerController?.setupListIdentities(composerController!.composerArguments.value!);
+
+        await composerController?.setupSelectedIdentity();
+
+        expect(composerController?.identitySelected.value, myOtherIdentity);
+      });
+
+      test('SHOULD NOT take an identity WHEN the identities of my account failed to load', () async {
+        when(mockGetAllIdentitiesInteractor.execute(any, AccountFixtures.aliceAccountId)).thenAnswer(
+          (_) => Stream.value(Left(GetAllIdentitiesFailure(Exception('offline')))),
+        );
+        await composerController?.setupListIdentities(composerController!.composerArguments.value!);
+
+        await composerController?.setupSelectedIdentity();
+
+        expect(composerController?.identitySelected.value, isNull);
+      });
+
       test('SHOULD NOT save my draft into the delegated mailbox', () async {
         when(mockUploadController.attachmentsUploaded).thenReturn([]);
         when(mockComposerRepository.removeCollapsedExpandedSignatureEffect(
@@ -2395,6 +2424,71 @@ void main() {
 
         expect(request?.accountId, AccountFixtures.aliceAccountId,
             reason: 'the auto-save and the send use the shown account');
+      });
+
+      test('offers the identities of my account, not those of the shown mailbox', () async {
+        final myEditableIdentity = Identity(
+          id: myIdentity.id,
+          name: myIdentity.name,
+          email: myIdentity.email,
+          mayDelete: true,
+        );
+        when(mockGetAllIdentitiesInteractor.execute(any, AccountFixtures.aliceAccountId)).thenAnswer(
+          (_) => Stream.value(Right(GetAllIdentitiesSuccess([myEditableIdentity], null))),
+        );
+
+        await composerController?.setupListIdentities(composerController!.composerArguments.value!);
+
+        expect(composerController?.listFromIdentities, [myEditableIdentity]);
+      });
+
+      test('SHOULD NOT reload the identities WHEN the draft belongs to the shown mailbox', () async {
+        final arguments = composerController!.composerArguments.value!.copyWith(
+          accountId: DelegationFixtures.bobAccountId,
+        );
+        composerController?.composerArguments.value = arguments;
+
+        await composerController?.setupListIdentities(arguments);
+
+        expect(composerController?.listFromIdentities, [bobIdentity]);
+        verifyNever(mockGetAllIdentitiesInteractor.execute(any, any));
+      });
+
+      test('SHOULD NOT offer the server default identities of my account while a delegated mailbox is shown', () async {
+        mockMailboxDashBoardController.shownAccountCapabilitiesOverride = ShownAccountCapabilities.of(
+          ActiveAccount.delegated(DelegationFixtures.session(), DelegationFixtures.bobAccountId),
+        );
+        addTearDown(() => mockMailboxDashBoardController.shownAccountCapabilitiesOverride =
+            ShownAccountCapabilities.of(null));
+        composerController?.listFromIdentities.value = [];
+        when(mockGetAllIdentitiesInteractor.execute(any, AccountFixtures.aliceAccountId)).thenAnswer(
+          (_) => Stream.value(Right(GetAllIdentitiesSuccess([myIdentity], null))),
+        );
+
+        await composerController?.setupListIdentities(composerController!.composerArguments.value!);
+
+        expect(composerController?.listFromIdentities, isEmpty);
+      });
+
+      test('offers the server default identities of a delegated draft while my account is shown', () async {
+        mockMailboxDashBoardController.shownAccountIdOverride = null;
+        mockMailboxDashBoardController.shownAccountCapabilitiesOverride = ShownAccountCapabilities.of(
+          ActiveAccount.personal(DelegationFixtures.session()),
+        );
+        addTearDown(() => mockMailboxDashBoardController.shownAccountCapabilitiesOverride =
+            ShownAccountCapabilities.of(null));
+        final arguments = composerController!.composerArguments.value!.copyWith(
+          accountId: DelegationFixtures.bobAccountId,
+        );
+        composerController?.composerArguments.value = arguments;
+        composerController?.listFromIdentities.value = [];
+        when(mockGetAllIdentitiesInteractor.execute(any, DelegationFixtures.bobAccountId)).thenAnswer(
+          (_) => Stream.value(Right(GetAllIdentitiesSuccess([bobIdentity], null))),
+        );
+
+        await composerController?.setupListIdentities(arguments);
+
+        expect(composerController?.listFromIdentities, [bobIdentity]);
       });
     });
 

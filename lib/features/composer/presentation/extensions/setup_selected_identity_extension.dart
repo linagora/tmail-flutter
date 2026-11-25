@@ -25,11 +25,8 @@ extension SetupSelectedIdentityExtension on ComposerController {
       }
     }
 
-    if (listFromIdentities.isNotEmpty) {
-      final currentIdentity = _findIdentityById(
-        composerArguments.value?.selectedIdentityId,
-      ) ?? listFromIdentities.first;
-
+    final currentIdentity = _identityToSelect();
+    if (currentIdentity != null) {
       if (currentEmailActionType == EmailActionType.editDraft ||
           currentEmailActionType == EmailActionType.reopenComposerBrowser &&
               savedActionType == EmailActionType.editDraft) {
@@ -46,12 +43,8 @@ extension SetupSelectedIdentityExtension on ComposerController {
   }
 
   Future<void> setupSelectedIdentityWithoutApplySignature() async {
-    if (identitySelected.value == null && listFromIdentities.isNotEmpty) {
-      final currentIdentity = _findIdentityById(
-        composerArguments.value?.selectedIdentityId,
-      ) ?? listFromIdentities.first;
-
-      identitySelected.value = currentIdentity;
+    if (identitySelected.value == null) {
+      identitySelected.value = _identityToSelect();
     }
 
     onCompleteSetupComposer();
@@ -65,6 +58,15 @@ extension SetupSelectedIdentityExtension on ComposerController {
       identitySelected.value = currentIdentity;
     }
   }
+
+  Identity? _identityToSelect() =>
+      _findIdentityById(composerArguments.value?.selectedIdentityId) ?? _fallbackIdentity;
+
+  /// The shown mailbox's identities never stand in for the one a draft of another account names.
+  Identity? get _fallbackIdentity =>
+      isComposingOutsideShownAccount && fromIdentitiesAccountId != composerAccountId
+          ? null
+          : listFromIdentities.firstOrNull;
 
   Identity? _findIdentityById(IdentityId? identityId) {
     return listFromIdentities

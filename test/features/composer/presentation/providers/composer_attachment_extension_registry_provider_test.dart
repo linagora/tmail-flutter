@@ -22,6 +22,7 @@ import 'package:mockito/mockito.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/oidc/token_id.dart';
 import 'package:model/oidc/token_oidc.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/providers/composer_attachment_extension_registry_provider.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
@@ -44,6 +45,7 @@ import 'composer_attachment_extension_registry_provider_test.mocks.dart';
 @GenerateNiceMocks([
   MockSpec<AuthorizationInterceptors>(),
   MockSpec<MailboxDashBoardController>(),
+  MockSpec<ComposerController>(),
   MockSpec<ToastManager>(),
   MockSpec<AuthenticationClientBase>(),
   MockSpec<TokenOidcCacheManager>(),
@@ -305,13 +307,13 @@ void main() {
     test('is offered while my own account is shown and supports it', () {
       showAccount(sessionWhereBobHas({}), DelegationFixtures.aliceAccountId);
 
-      expect(readExtension().uploadFromUrlSupported(), isTrue);
+      expect(readExtension().uploadFromUrlSupported(null), isTrue);
     });
 
     test('SHOULD NOT be offered while a delegated account without upload-from-url is shown, even though mine has it', () {
       showAccount(sessionWhereBobHas({}), DelegationFixtures.bobAccountId);
 
-      expect(readExtension().uploadFromUrlSupported(), isFalse);
+      expect(readExtension().uploadFromUrlSupported(null), isFalse);
     });
 
     test('is offered while a delegated account that supports it is shown', () {
@@ -320,7 +322,18 @@ void main() {
         DelegationFixtures.bobAccountId,
       );
 
-      expect(readExtension().uploadFromUrlSupported(), isTrue);
+      expect(readExtension().uploadFromUrlSupported(null), isTrue);
+    });
+
+    test('follows the account of a restored draft of mine while a delegated account without it is shown', () {
+      showAccount(sessionWhereBobHas({}), DelegationFixtures.bobAccountId);
+      final composer = MockComposerController();
+      when(composer.onStart).thenReturn(InternalFinalCallback<void>(callback: () {}));
+      when(composer.onDelete).thenReturn(InternalFinalCallback<void>(callback: () {}));
+      when(composer.composerAccountId).thenReturn(DelegationFixtures.aliceAccountId);
+      Get.put<ComposerController>(composer, tag: 'composer-1');
+
+      expect(readExtension().uploadFromUrlSupported('composer-1'), isTrue);
     });
   });
 

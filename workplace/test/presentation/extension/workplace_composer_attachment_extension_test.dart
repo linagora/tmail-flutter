@@ -85,12 +85,12 @@ WorkplaceComposerAttachmentExtension _makeExtension(
   num? remainingAttachmentCapacityBytes,
   num? Function(String? composerId)? remainingAttachmentCapacityBytesGetter,
   OnDrivePickStateChanged? onPickState,
-  ValueGetter<bool>? uploadFromUrlSupported,
+  UploadFromUrlSupportedGetter? uploadFromUrlSupported,
   OidcRefreshTrigger? oidcRefreshTrigger,
 }) =>
     WorkplaceComposerAttachmentExtension(
       workplaceUri: notifier,
-      uploadFromUrlSupported: uploadFromUrlSupported ?? () => true,
+      uploadFromUrlSupported: uploadFromUrlSupported ?? (_) => true,
       oidcTokenGetter: oidcTokenGetter ?? () => oidcToken,
       oidcRefreshTrigger: oidcRefreshTrigger ?? () async => null,
       maxAttachmentSizeBytesGetter: () => maxAttachmentSizeBytes,
@@ -467,6 +467,39 @@ void main() {
         find.byType(DriveAttachmentContextMenuTile),
       );
       expect(tile.session.remainingAttachmentCapacityBytesGetter(), 12);
+      expect(seenId, _composerId);
+    });
+
+    testWidgets('upload-from-url getter receives the composerId', (tester) async {
+      final notifier = ValueNotifier<Uri?>(_platformUri);
+      String? seenId;
+
+      final ext = _makeExtension(
+        notifier,
+        uploadFromUrlSupported: (id) {
+          seenId = id;
+          return false;
+        },
+      );
+
+      await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(
+            builder: (ctx) => ext.buildContextMenuTile(
+              ctx,
+              imagePaths: imagePaths,
+              composerId: _composerId,
+            ),
+          ),
+        ),
+      ));
+
+      final tile = tester.widget<DriveAttachmentContextMenuTile>(
+        find.byType(DriveAttachmentContextMenuTile),
+      );
+      expect(tile.session.uploadFromUrlSupported(), isFalse);
       expect(seenId, _composerId);
     });
   });

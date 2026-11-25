@@ -19,6 +19,8 @@ const _personalAccountReaders = <String, int>{
   // AI Scribe endpoint and ecosystem: my own services. AI on the shown account is checked too.
   'lib/features/composer/presentation/extensions/ai_scribe/handle_ai_scribe_in_composer_extension.dart': 1,
   'lib/features/composer/presentation/extensions/setup_email_request_read_receipt_flag_extension.dart': 1,
+  // Composer identities: a draft of my account never offers its server default identities.
+  'lib/features/composer/presentation/extensions/setup_list_identities_extension.dart': 1,
   'lib/features/mailbox_dashboard/presentation/delegates/ecosystem_provider_listener_delegate.dart': 2,
   // Autocomplete bindings: registered once at start, for my own account. Queries use the shown one.
   'lib/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart': 1,

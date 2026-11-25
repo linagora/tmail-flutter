@@ -1,3 +1,4 @@
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -42,6 +43,8 @@ class ComposerArguments extends RouterArguments {
   final EmailId? savedEmailDraftId;
   final EmailId? savedEmailTemplateId;
   final MailboxId? savedDraftMailboxId;
+  /// The account a restored draft was saved in, `null` composes in the shown account.
+  final AccountId? accountId;
 
   ComposerArguments({
     this.emailActionType = EmailActionType.compose,
@@ -72,6 +75,7 @@ class ComposerArguments extends RouterArguments {
     this.savedEmailDraftId,
     this.savedEmailTemplateId,
     this.savedDraftMailboxId,
+    this.accountId,
   });
 
   factory ComposerArguments.fromSendingEmail(SendingEmail sendingEmail) =>
@@ -235,7 +239,10 @@ class ComposerArguments extends RouterArguments {
     ? SendingEmailActionType.edit
     : SendingEmailActionType.create;
 
-  factory ComposerArguments.fromComposerPersistentCache(ComposerPersistentCache cache) {
+  factory ComposerArguments.fromComposerPersistentCache(
+    ComposerPersistentCache cache, {
+    AccountId? accountId,
+  }) {
     final classified = cache.email?.toPresentationAttachments();
     return ComposerArguments(
       emailActionType: EmailActionType.restoreComposerFromPersistentCache,
@@ -252,6 +259,7 @@ class ComposerArguments extends RouterArguments {
       savedActionType: cache.actionType,
       savedEmailDraftId: cache.draftEmailId,
       savedEmailTemplateId: cache.templateEmailId,
+      accountId: accountId,
     );
   }
 
@@ -300,6 +308,7 @@ class ComposerArguments extends RouterArguments {
     savedEmailDraftId,
     sendingEmailActionType,
     savedDraftMailboxId,
+    accountId,
   ];
 
   ComposerArguments copyWith({
@@ -331,6 +340,7 @@ class ComposerArguments extends RouterArguments {
     EmailId? savedEmailDraftId,
     EmailId? savedEmailTemplateId,
     MailboxId? savedDraftMailboxId,
+    AccountId? accountId,
   }) {
     return ComposerArguments(
       emailActionType: emailActionType ?? this.emailActionType,
@@ -361,6 +371,7 @@ class ComposerArguments extends RouterArguments {
       savedEmailDraftId: savedEmailDraftId ?? this.savedEmailDraftId,
       savedEmailTemplateId: savedEmailTemplateId ?? this.savedEmailTemplateId,
       savedDraftMailboxId: savedDraftMailboxId ?? this.savedDraftMailboxId,
+      accountId: accountId ?? this.accountId,
     );
   }
 }

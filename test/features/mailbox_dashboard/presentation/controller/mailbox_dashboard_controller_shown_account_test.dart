@@ -15,6 +15,11 @@ import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/active_account.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/account_switch_result.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/model/account_switch_view.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
+import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
@@ -781,6 +786,76 @@ void main() {
         verifyNever(composerManager.addListComposer(any));
       },
     );
+
+    group('a composer cache of the switch target', () {
+      late _GatedLoadSwitchView view;
+      late Future<AccountSwitchResult> switching;
+      late FakeActiveAccountSource source;
+
+      setUp(() async {
+        PlatformInfo.isTestingForWeb = true;
+        when(getAllComposerCacheInteractor.execute(any, any)).thenAnswer(
+          (_) => Stream.value(Right(GetAllComposerCacheSuccess([
+            ComposerCache(composerId: 'kept', composerIndex: 0),
+          ]))),
+        );
+        when(mockTwakeAppManager.hasComposer).thenReturn(false);
+        source = ActiveAccountSourceFixtures.putShowing(DelegationFixtures.aliceAccountId);
+        Get.put(mailboxDashboardController);
+        mailboxDashboardController.sessionCurrent = DelegationFixtures.session();
+        clearInteractions(getAllComposerCacheInteractor);
+        clearInteractions(composerManager);
+        DelegationFixtures.turnDelegationOn(appProviderContainer);
+        appProviderContainer.read(activeAccountProvider.notifier).applySession(DelegationFixtures.session());
+        view = _GatedLoadSwitchView();
+        switching = appProviderContainer
+            .read(accountSwitchProvider.notifier)
+            .switchTo(DelegationFixtures.bobAccountId, view);
+        await pumpEventQueue();
+        source.show(
+          DelegationFixtures.bobAccountId,
+          ActiveAccount.delegated(DelegationFixtures.session(), DelegationFixtures.bobAccountId),
+        );
+      });
+
+      tearDown(() {
+        PlatformInfo.isTestingForWeb = false;
+        appProviderContainer.read(accountSwitchProvider.notifier).endSession();
+        appProviderContainer.invalidate(activeAccountProvider);
+        appProviderContainer.invalidate(localSettingsProvider);
+      });
+
+      test('reopens only once the switch has ended, so its composers cannot make it fall back', () async {
+        await pumpEventQueue();
+        verifyNever(getAllComposerCacheInteractor.execute(any, any));
+
+        view.load.complete();
+        expect(await switching, isA<AccountSwitched>());
+        await pumpEventQueue();
+
+        verify(getAllComposerCacheInteractor.execute(
+          DelegationFixtures.bobAccountId,
+          DelegationFixtures.session().username,
+        )).called(1);
+        verify(composerManager.addListComposer(any)).called(1);
+      });
+
+      test('SHOULD NOT reopen WHEN the switch falls back to my account', () async {
+        source.show(
+          DelegationFixtures.aliceAccountId,
+          ActiveAccount.personal(DelegationFixtures.session()),
+        );
+        view.load.completeError(StateError('folders failed'));
+        expect(await switching, isA<AccountSwitchFailed>());
+        await pumpEventQueue();
+
+        verifyNever(getAllComposerCacheInteractor.execute(DelegationFixtures.bobAccountId, any));
+        verify(getAllComposerCacheInteractor.execute(
+          DelegationFixtures.aliceAccountId,
+          DelegationFixtures.session().username,
+        )).called(1);
+      });
+    });
 
     ({ComposerSessionCacheDatasourceImpl datasource, FakeActiveAccountSource source})
         useRealWebComposerCache() {
@@ -1858,3 +1933,26 @@ void _showToastWithAction(MockAppToast appToast) => appToast.showToastMessage(
       backgroundColor: anyNamed('backgroundColor'),
       textColor: anyNamed('textColor'),
     );
+
+/// A switch view whose account load waits for [load].
+class _GatedLoadSwitchView implements AccountSwitchView {
+  final load = Completer<void>();
+
+  @override
+  bool get hasOpenComposer => false;
+
+  @override
+  void blockInput() {}
+
+  @override
+  void unblockInput() {}
+
+  @override
+  void clearSelectionAndSearch() {}
+
+  @override
+  Future<void> loadAccount(account, int switchAttemptId) => load.future;
+
+  @override
+  void catchUpAccount(account, int switchAttemptId) {}
+}

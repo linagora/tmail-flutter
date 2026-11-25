@@ -252,6 +252,23 @@ void main() {
       ]);
     });
 
+    test('when a composer opened during the load: shows my account again with a new attempt', () async {
+      final switching = switchNotifierOf().switchTo(bob, view);
+      view.hasOpenComposer = true;
+      view.loadings.single.complete();
+
+      expect(await switching, const AccountSwitchCancelled());
+      expect(shownAccountOf(), ActiveAccount.personal(session));
+      expect(switchStateOf(), const AccountSwitchIdle(lastAttemptId: 2));
+      expect(view.calls, [
+        'blockInput',
+        'clearSelectionAndSearch',
+        'loadAccount(bob-account-id, 1)',
+        'catchUpAccount(${alice.id.value}, 2)',
+        'unblockInput',
+      ]);
+    });
+
     test('when loadAccount throws before returning a future', () async {
       view.errorThrownByLoadAccount = StateError('cannot load');
 

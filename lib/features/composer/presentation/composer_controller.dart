@@ -164,6 +164,13 @@ class ComposerController extends BaseController
         AiScribeMixin
     implements BeforeReconnectHandler {
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
+
+  /// A restored draft composes, saves and sends in the account it was saved in.
+  AccountId? get composerAccountId =>
+      composerArguments.value?.accountId ?? mailboxDashBoardController.activeAccountId;
+
+  bool get isComposingOutsideShownAccount =>
+      composerAccountId != mailboxDashBoardController.activeAccountId;
   final networkConnectionController = Get.find<NetworkConnectionController>();
   final _beforeReconnectManager = Get.find<BeforeReconnectManager>();
 
@@ -187,6 +194,8 @@ class ComposerController extends BaseController
   final invalidRecipients = Rx<Set<String>>({});
   final identitySelected = Rxn<Identity>();
   final listFromIdentities = RxList<Identity>();
+  /// The account [listFromIdentities] was last loaded for.
+  AccountId? fromIdentitiesAccountId;
   final isEmailChanged = Rx<bool>(false);
   final isMarkAsImportant = Rx<bool>(false);
   final isContentHeightExceeded = Rx<bool>(false);
@@ -574,7 +583,7 @@ class ComposerController extends BaseController
   Future<CreateEmailRequest?> _generateCreateEmailRequestToSaveAsCache({String? htmlContent}) async {
     final arguments = composerArguments.value;
     final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.activeAccountId;
+    final accountId = composerAccountId;
 
     if (arguments == null || session == null || accountId == null) {
       log('ComposerController::_generateCreateEmailRequest: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
@@ -695,7 +704,7 @@ class ComposerController extends BaseController
   void _injectBinding() {
     injectAutoCompleteBindings(
       mailboxDashBoardController.sessionCurrent,
-      mailboxDashBoardController.activeAccountId,
+      composerAccountId,
     );
   }
 
@@ -751,7 +760,7 @@ class ComposerController extends BaseController
 
   void _getAllIdentities() {
     log('ComposerController::_getAllIdentities: Fetch again identity !');
-    final accountId = mailboxDashBoardController.activeAccountId;
+    final accountId = composerAccountId;
     final session = mailboxDashBoardController.sessionCurrent;
     if (accountId != null && session != null) {
       consumeState(_getAllIdentitiesInteractor.execute(session, accountId));
@@ -829,9 +838,9 @@ class ComposerController extends BaseController
   }
 
   /// A refused EmailSubmission leaves the created copy in Outbox, so a mailbox without send rights stops here.
-  bool get _isSubmissionAvailableOnShownAccount {
+  bool get _isSubmissionAvailableOnComposerAccount {
     final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.activeAccountId;
+    final accountId = composerAccountId;
     return session != null &&
         accountId != null &&
         CapabilityIdentifier.jmapSubmission.isSupported(session, accountId);
@@ -855,7 +864,7 @@ class ComposerController extends BaseController
 
     final appLocalizations = AppLocalizations.of(context);
 
-    if (!_isSubmissionAvailableOnShownAccount) {
+    if (!_isSubmissionAvailableOnComposerAccount) {
       MessageDialogActionManager().showConfirmDialogAction(
         context,
         appLocalizations.sendingNotAllowedFromThisMailbox,
@@ -1008,7 +1017,7 @@ class ComposerController extends BaseController
   Future<void> _prepareToSendMessages(BuildContext context) async {
     final arguments = composerArguments.value;
     final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.activeAccountId;
+    final accountId = composerAccountId;
 
     if (arguments == null || session == null || accountId == null) {
       log('ComposerController::_handleSendMessages: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
@@ -1204,7 +1213,7 @@ class ComposerController extends BaseController
       return DriveAttachmentTransferRunner.notStartedOutcome;
     }
     final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.activeAccountId;
+    final accountId = composerAccountId;
     final uploadUri = session?.getUploadFromUrlUri(
       accountId,
       jmapUrl: jmapUrl,
@@ -1357,9 +1366,9 @@ class ComposerController extends BaseController
 
   Future<List<EmailAddress>> getAutoCompleteSuggestion(String queryString, {int? limit}) async {
     log('ComposerController::getAutoCompleteSuggestion():queryString = $queryString | limit = $limit | $_contactSuggestionSource');
-    final shownAccountId = mailboxDashBoardController.activeAccountId;
+    final accountId = composerAccountId;
     final tmailContactsAvailable = mailboxDashBoardController.sessionCurrent
-        ?.supportsTMailContactAutocomplete(shownAccountId) == true;
+        ?.supportsTMailContactAutocomplete(accountId) == true;
     _getAllAutoCompleteInteractor = tmailContactsAvailable ? getBinding<GetAllAutoCompleteInteractor>() : null;
     _getAutoCompleteInteractor = tmailContactsAvailable ? getBinding<GetAutoCompleteInteractor>() : null;
     _getDeviceContactSuggestionsInteractor = getBinding<GetDeviceContactSuggestionsInteractor>();
@@ -1367,7 +1376,7 @@ class ComposerController extends BaseController
     final autoCompletePattern = AutoCompletePattern(
       word: queryString,
       limit: limit,
-      accountId: shownAccountId);
+      accountId: accountId);
 
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
       if (_getAllAutoCompleteInteractor != null) {
@@ -1476,7 +1485,7 @@ class ComposerController extends BaseController
 
   void uploadAttachmentsAction({required List<FileInfo> pickedFiles}) {
     final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.activeAccountId;
+    final accountId = composerAccountId;
     if (session != null && accountId != null) {
       try {
         final uploadUri = session.getUploadUri(accountId, jmapUrl: dynamicUrlInterceptors.jmapUrl);
@@ -1572,7 +1581,7 @@ class ComposerController extends BaseController
 
     final arguments = composerArguments.value;
     final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.activeAccountId;
+    final accountId = composerAccountId;
 
     if (arguments == null ||
         session == null ||
@@ -1648,7 +1657,7 @@ class ComposerController extends BaseController
   Future<void> handleClickSaveAsTemplateButton(BuildContext context) async {
     if (composerArguments.value == null ||
         mailboxDashBoardController.sessionCurrent == null ||
-        mailboxDashBoardController.activeAccountId == null
+        composerAccountId == null
     ) {
       log('ComposerController::handleClickSaveAsTemplateButton: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
       return;
@@ -2051,7 +2060,7 @@ class ComposerController extends BaseController
     } catch (e) {
       logWarning('ComposerController::_handleUploadInlineSuccess(): $e');
     }
-    final accountId = mailboxDashBoardController.activeAccountId;
+    final accountId = composerAccountId;
 
     if (baseDownloadUrl != null && accountId != null) {
       final imageUrl = uploadState.attachment.getDownloadUrl(baseDownloadUrl, accountId);
@@ -2473,7 +2482,7 @@ class ComposerController extends BaseController
   void _handleSaveMessageToDraft(BuildContext context) async {
     final arguments = composerArguments.value;
     final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.activeAccountId;
+    final accountId = composerAccountId;
 
     if (arguments == null ||
         session == null ||
@@ -2607,7 +2616,7 @@ class ComposerController extends BaseController
       child: SavingTemplateDialogView(
         createEmailRequest: CreateEmailRequest(
           session: mailboxDashBoardController.sessionCurrent!,
-          accountId: mailboxDashBoardController.activeAccountId!,
+          accountId: composerAccountId!,
           emailActionType: composerArguments.value!.emailActionType,
           ownEmailAddress: ownEmailAddress,
           subject: subjectEmail.value ?? '',
@@ -2720,7 +2729,7 @@ class ComposerController extends BaseController
   @override
   Future<void> onBeforeReconnect() async {
     if (!PlatformInfo.isWeb) return;
-    if (mailboxDashBoardController.activeAccountId != null &&
+    if (composerAccountId != null &&
         mailboxDashBoardController.sessionCurrent?.username != null
     ) {
       await _saveComposerSessionCache();

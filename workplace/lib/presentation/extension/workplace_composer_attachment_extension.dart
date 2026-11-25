@@ -24,6 +24,9 @@ import 'package:workplace/presentation/widget/drive_attachment_picker_button.dar
 export 'package:workplace/data/transport/workplace_access_mode_runner.dart'
     show OidcRefreshTrigger;
 
+/// Per-composer: the files land in the account that composer writes in.
+typedef UploadFromUrlSupportedGetter = bool Function(String? composerId);
+
 typedef OnDrivePickStateChanged =
     Future<void> Function(String? composerId, DrivePickState state);
 
@@ -31,7 +34,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   final ValueListenable<Uri?> workplaceUri;
 
   /// Read when the picker opens, so the JMAP capability is always current.
-  final ValueGetter<bool> uploadFromUrlSupported;
+  final UploadFromUrlSupportedGetter uploadFromUrlSupported;
   final String? Function() oidcTokenGetter;
 
   final OidcRefreshTrigger oidcRefreshTrigger;
@@ -144,7 +147,7 @@ class WorkplaceComposerAttachmentExtension implements ComposerAttachmentPlugin {
   }
 
   DrivePickerSession _sessionFor(Uri uri, String? composerId) => DrivePickerSession(
-        uploadFromUrlSupported: uploadFromUrlSupported,
+        uploadFromUrlSupported: () => uploadFromUrlSupported(composerId),
         maxAttachmentSizeBytesGetter: maxAttachmentSizeBytesGetter,
         remainingAttachmentCapacityBytesGetter: () =>
             remainingAttachmentCapacityBytesGetter(composerId),

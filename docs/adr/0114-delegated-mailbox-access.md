@@ -11,6 +11,7 @@ Updated: 2026-11-10
 Updated: 2026-11-12
 Updated: 2026-11-16
 Updated: 2026-11-20
+Updated: 2026-11-25
 
 ## Status
 
@@ -101,7 +102,7 @@ A test lists the remaining readers of `dashboard.accountId` and of the "me" sour
 - No database schema change or migration: cache keys already carry the account id (ADR-0027), so a delegated account's mailboxes and email lists are cached apart from mine.
 - No received email is stored for offline reading in a delegated account: `StoreOpenedEmailInteractor` (mobile) and the new-email download run for `mine` only.
 - Each mail in the send queue stays bound to the account it was written in.
-- A delegated draft (composer restore on web reload and Android) is restored only when that mailbox is shown, and is removed on logout. A start runs the switch to the remembered or URL account first, then restores the snapshot of the shown account. Drafts of `mine` restore as today.
+- A delegated draft (composer restore on web reload and Android) is restored only when that mailbox is shown, and is removed on logout. A start runs the switch to the remembered or URL account first, then restores the snapshot of the shown account. A restore that meets a running switch, such as the switch of a notification tap at start, waits for it to end. On Android it then restores the snapshot of the account the switch ends on, on web it reopens the snapshots only if that account is still shown. A switch whose load ends with a composer open falls back. A restored draft stays in the account it was saved in, even if another mailbox is shown later: it loads that account's identities, saves, sends and uploads Drive files there, and checks upload-from-url on it. Drafts of `mine` restore as today.
 - The cleanup of ended delegations is described under Revocation.
 
 ### Sync

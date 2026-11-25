@@ -29,7 +29,7 @@ extension ComposerPrintDraftExtension on ComposerController {
 
     if (composerArguments.value == null ||
         mailboxDashBoardController.sessionCurrent == null ||
-        mailboxDashBoardController.activeAccountId == null) {
+        composerAccountId == null) {
       log('ComposerPrintDraftExtension::printDraft: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
       printDraftButtonState = ButtonState.enabled;
       return;

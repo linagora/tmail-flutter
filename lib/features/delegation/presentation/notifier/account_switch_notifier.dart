@@ -138,10 +138,14 @@ class AccountSwitchNotifier extends _$AccountSwitchNotifier {
     if (cancellation.isCompleted || !_activeAccountNotifier.select(targetAccountId)) {
       return const AccountSwitchCancelled();
     }
-    return _cancelIfTargetLeft(
+    final result = _cancelIfTargetLeft(
       await _waitForShownAccount(view, targetAccountId, cancellation.future),
       targetAccountId,
     );
+    // A composer that opened during the load, like a draft restore at start, belongs to the previous account.
+    return result is AccountSwitched && view.hasOpenComposer
+        ? const AccountSwitchCancelled()
+        : result;
   }
 
   Future<AccountSwitchResult> _waitForShownAccount(
