@@ -1546,6 +1546,16 @@ void main() {
         CancelToken(),
       )).filePath;
 
+      // DownloadManager removes its staging directory only after the result is sent.
+      Future<List<String>> entriesAfterStagingCleanup(Directory directory) async {
+        final deadline = DateTime.now().add(const Duration(seconds: 5));
+        List<String> entries() => directory.listSync().map((entity) => entity.path).toList();
+        while (entries().any((path) => path.contains('/.download_')) && DateTime.now().isBefore(deadline)) {
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+        }
+        return entries();
+      }
+
       test(
         'SHOULD keep the content of each export\n'
         'WHEN two attachments that generate the same file name are exported at the same time',
@@ -1582,7 +1592,7 @@ void main() {
 
         expect(secondPath, firstPath);
         expect(File(secondPath).readAsBytesSync(), [1, 2, 3]);
-        expect(File(secondPath).parent.listSync().map((entity) => entity.path), [secondPath]);
+        expect(await entriesAfterStagingCleanup(File(secondPath).parent), [secondPath]);
       });
 
       test(
@@ -1605,7 +1615,7 @@ void main() {
         await expectLater(exportOnce(attachment), throwsA(isA<CommonDownloadFileException>()));
 
         expect(File(completedPath).readAsBytesSync(), [1, 2, 3]);
-        expect(File(completedPath).parent.listSync().map((entity) => entity.path), [completedPath]);
+        expect(await entriesAfterStagingCleanup(File(completedPath).parent), [completedPath]);
       });
 
       test(
