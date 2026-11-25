@@ -1,0 +1,7 @@
+text:
+  - StandardizeHtmlSanitizingTransformers(allowAttributes: [contenteditable])
+dom:
+  - ImageTransformer
+  - NormalizeLineHeightInStyleTransformer
+  - HideDraftSignatureTransformer
+  - SanitizeHyperLinkTagInHtmlTransformer(addsNewTabAttributes: false)

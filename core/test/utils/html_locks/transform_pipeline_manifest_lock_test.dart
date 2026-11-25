@@ -1,5 +1,6 @@
 @TestOn('vm')
 
+import 'package:core/presentation/utils/html_transformer/dom/sanitize_hyper_link_tag_in_html_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/utils/platform_info.dart';
@@ -21,6 +22,10 @@ void main() {
     if (transformer is StandardizeHtmlSanitizingTransformers) {
       final allowed = transformer.allowAttributes;
       return allowed == null ? name : '$name(allowAttributes: $allowed)';
+    }
+    if (transformer is SanitizeHyperLinkTagInHtmlTransformer &&
+        !transformer.addsNewTabAttributes) {
+      return '$name(addsNewTabAttributes: false)';
     }
     return name;
   }

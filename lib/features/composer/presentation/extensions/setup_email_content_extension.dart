@@ -32,7 +32,9 @@ extension SetupEmailContentExtension on ComposerController {
     if (_isEditDraftContentAction) {
       await _getEmailContent(
         arguments,
-        transformConfiguration: TransformConfiguration.forEditDraftsEmail(),
+        transformConfiguration: currentEmailActionType == EmailActionType.editAsNewEmail
+            ? TransformConfiguration.forEditAsNewEmail()
+            : TransformConfiguration.forEditDraftsEmail(),
         additionalProperties: Properties({IndividualHeaderIdentifier.identityHeader.value}),
       );
     } else if (currentEmailActionType == EmailActionType.editSendingEmail) {

@@ -8,7 +8,12 @@ import 'package:html/dom.dart';
 class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
   final _sanitizeUrl = SanitizeUrl();
 
-  SanitizeHyperLinkTagInHtmlTransformer();
+  /// Whether links also get `target="_blank"` and `rel="noreferrer"`. The
+  /// composer turns it off: it opens links itself, and the sanitizer reorders
+  /// these attributes, so a reopened draft would not round-trip unchanged.
+  final bool addsNewTabAttributes;
+
+  SanitizeHyperLinkTagInHtmlTransformer({this.addsNewTabAttributes = true});
 
   @override
   Future<void> process({
@@ -23,6 +28,7 @@ class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
 
       await Future.wait(elements.map((element) async {
         _sanitizeUrlResource(element);
+        if (!addsNewTabAttributes) return;
         _addBlankForTargetProperty(element);
         _addNoReferrerForRelProperty(element);
       }));
