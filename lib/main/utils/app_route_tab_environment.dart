@@ -31,7 +31,7 @@ class AppRouteTabEnvironment {
     }
   }
 
-  /// Returns false when the browser refused to open the tab.
+  /// Returns false only when opening throws. A blocked popup is not detected.
   bool openTabKeepingSession(String url) =>
       HtmlUtils.openNewWindowByUrl(url, isFullScreen: true);
 
