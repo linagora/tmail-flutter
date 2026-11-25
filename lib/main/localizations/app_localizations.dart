@@ -6417,4 +6417,60 @@ class AppLocalizations {
       name: 'couldNotRemoveYourAccess',
     );
   }
+
+  String get delegationByMe {
+    return Intl.message(
+      'By me',
+      name: 'delegationByMe',
+    );
+  }
+
+  String get delegationWithMe {
+    return Intl.message(
+      'With me',
+      name: 'delegationWithMe',
+    );
+  }
+
+  String get myDelegatesExplanation {
+    return Intl.message(
+      'Grant other people access to your email account. They will receive an email notification as soon as access has been granted.',
+      name: 'myDelegatesExplanation',
+    );
+  }
+
+  String get whoHasAccessToYourMailbox {
+    return Intl.message(
+      'Who has access to your mailbox',
+      name: 'whoHasAccessToYourMailbox',
+    );
+  }
+
+  String get noOneHasAccessYet {
+    return Intl.message(
+      'No one has access yet',
+      name: 'noOneHasAccessYet',
+    );
+  }
+
+  String get noOneHasAccessYetMessage {
+    return Intl.message(
+      'Add someone below to share access to your mailbox.',
+      name: 'noOneHasAccessYetMessage',
+    );
+  }
+
+  String get couldNotLoadDelegates {
+    return Intl.message(
+      "Couldn't load who has access to your mailbox",
+      name: 'couldNotLoadDelegates',
+    );
+  }
+
+  String get addDelegate {
+    return Intl.message(
+      'Add',
+      name: 'addDelegate',
+    );
+  }
 }
