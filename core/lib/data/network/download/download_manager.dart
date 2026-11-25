@@ -57,17 +57,18 @@ class DownloadManager {
                 }
               }).catchError((error) async {
                 await subscription.cancel();
-                await randomAccessFile.close();
+                await _closeFileAfterFailure(randomAccessFile);
                 streamController.sink.addError(CommonDownloadFileException(error.toString()));
                 await streamController.close();
                 await _deleteStagingDirectory(stagingDirectory);
               });
         }, onDone: () async {
-          await randomAccessFile.close();
           if (cancelToken != null && cancelToken.isCancelled) {
+            await _closeFileAfterFailure(randomAccessFile);
             streamController.sink.addError(CancelDownloadFileException(cancelToken.cancelError?.message));
           } else {
             try {
+              await randomAccessFile.close();
               await file.rename(tempFilePath);
               streamController.sink.add(DownloadedResponse(tempFilePath, mediaType: mediaType));
             } catch (error) {
@@ -77,7 +78,7 @@ class DownloadManager {
           await streamController.close();
           await _deleteStagingDirectory(stagingDirectory);
         }, onError: (error) async {
-          await randomAccessFile.close();
+          await _closeFileAfterFailure(randomAccessFile);
           streamController.sink.addError(CommonDownloadFileException(error.toString()));
           await streamController.close();
           await _deleteStagingDirectory(stagingDirectory);
@@ -93,6 +94,15 @@ class DownloadManager {
       }
     }
     return streamController.stream.first;
+  }
+
+  // The download already failed, so a close error must not stop that failure from being sent.
+  Future<void> _closeFileAfterFailure(RandomAccessFile randomAccessFile) async {
+    try {
+      await randomAccessFile.close();
+    } catch (error) {
+      logWarning('DownloadManager::_closeFileAfterFailure(): $error');
+    }
   }
 
   // Runs after the result is sent, so a leftover staging directory never blocks the download from settling.

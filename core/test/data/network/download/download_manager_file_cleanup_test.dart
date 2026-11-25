@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:core/data/network/download/download_client.dart';
 import 'package:core/data/network/download/download_manager.dart';
+import 'package:core/data/network/download/downloaded_response.dart';
 import 'package:core/domain/exceptions/download_file_exception.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -102,6 +103,61 @@ void main() {
       expect(randomAccessFile.isClosed, isTrue);
     });
   });
+
+  group('DownloadManager::downloadFile when closing the file fails', () {
+    Future<DownloadedResponse> downloadWith(ResponseBody body, RandomAccessFile randomAccessFile) {
+      final downloadManager = DownloadManager(_FakeDownloadClient(body));
+      return IOOverrides.runZoned(
+        () => downloadManager.downloadFile(
+          'https://example.com/download',
+          Future.value(temporaryRoot),
+          fileName,
+          'auth',
+        ),
+        createFile: (path) => _FakeFile(path, randomAccessFile),
+      );
+    }
+
+    test(
+      'SHOULD fail with a download error\n'
+      'WHEN writing a chunk fails and closing the file fails too',
+    () async {
+      final download = downloadWith(
+        bodyOfBytes([1, 2, 3]),
+        _CloseFailingRandomAccessFile(failWrites: true),
+      );
+
+      await expectLater(
+        download.timeout(settleTimeout),
+        throwsA(isA<CommonDownloadFileException>()),
+      );
+    });
+
+    test(
+      'SHOULD fail with a download error\n'
+      'WHEN the response stream fails and closing the file fails too',
+    () async {
+      final download = downloadWith(bodyThatFailsMidStream(), _CloseFailingRandomAccessFile());
+
+      await expectLater(
+        download.timeout(settleTimeout),
+        throwsA(isA<CommonDownloadFileException>()),
+      );
+    });
+
+    test(
+      'SHOULD fail with a download error instead of returning the file\n'
+      'WHEN every chunk is written but closing the file fails',
+    () async {
+      final download = downloadWith(bodyOfBytes([1, 2, 3]), _CloseFailingRandomAccessFile());
+
+      await expectLater(
+        download.timeout(settleTimeout),
+        throwsA(isA<CommonDownloadFileException>()),
+      );
+      expect(File('${temporaryRoot.path}/$fileName').existsSync(), isFalse);
+    });
+  });
 }
 
 class _FakeDownloadClient extends Fake implements DownloadClient {
@@ -177,4 +233,20 @@ class _WriteFailingRandomAccessFile extends Fake implements RandomAccessFile {
   void closeSync() {
     isClosed = true;
   }
+}
+
+/// Fails on close, as when the final flush hits a full disk, and optionally on every write too.
+class _CloseFailingRandomAccessFile extends Fake implements RandomAccessFile {
+  _CloseFailingRandomAccessFile({this.failWrites = false});
+
+  final bool failWrites;
+
+  @override
+  Future<RandomAccessFile> writeFrom(List<int> buffer, [int start = 0, int? end]) async {
+    if (failWrites) throw const FileSystemException('No space left on device');
+    return this;
+  }
+
+  @override
+  Future<void> close() async => throw const FileSystemException('No space left on device');
 }
