@@ -92,6 +92,26 @@ List<HtmlPipelineRow> htmlPipelineRegistry() => [
       ..._otherPipelines(),
     ];
 
+/// A raw-HTML composer pipeline whose transformers depend on the platform:
+/// one row for mobile (`-vm`), one for web (`-web`).
+List<HtmlPipelineRow> _perPlatformComposerRows(
+  String factoryName,
+  TransformConfiguration Function() create,
+) =>
+    [
+      for (final isWeb in [false, true])
+        HtmlPipelineRow(
+          name: '$factoryName-${isWeb ? 'web' : 'vm'}',
+          factoryName: factoryName,
+          create: create,
+          trust: HtmlPipelineTrust.raw,
+          wiring: HtmlPipelineWiring.sanitizes,
+          rules: const HtmlPipelineRules(composer: true),
+          setPlatform: () => PlatformInfo.isTestingForWeb = isWeb,
+          allowsContentEditable: true,
+        ),
+    ];
+
 /// Pipelines that feed the composer: replies, drafts and signatures.
 List<HtmlPipelineRow> _composerPipelines() => [
       const HtmlPipelineRow(
@@ -116,45 +136,13 @@ List<HtmlPipelineRow> _composerPipelines() => [
         wiring: HtmlPipelineWiring.sanitizes,
         rules: HtmlPipelineRules(displayOn: [DisplayViewer.drafts]),
       ),
-      HtmlPipelineRow(
-        name: 'forEditDraftsEmail-vm',
-        factoryName: 'forEditDraftsEmail',
-        create: TransformConfiguration.forEditDraftsEmail,
-        trust: HtmlPipelineTrust.raw,
-        wiring: HtmlPipelineWiring.sanitizes,
-        rules: const HtmlPipelineRules(composer: true),
-        setPlatform: () => PlatformInfo.isTestingForWeb = false,
-        allowsContentEditable: true,
+      ..._perPlatformComposerRows(
+        'forEditDraftsEmail',
+        TransformConfiguration.forEditDraftsEmail,
       ),
-      HtmlPipelineRow(
-        name: 'forEditDraftsEmail-web',
-        factoryName: 'forEditDraftsEmail',
-        create: TransformConfiguration.forEditDraftsEmail,
-        trust: HtmlPipelineTrust.raw,
-        wiring: HtmlPipelineWiring.sanitizes,
-        rules: const HtmlPipelineRules(composer: true),
-        setPlatform: () => PlatformInfo.isTestingForWeb = true,
-        allowsContentEditable: true,
-      ),
-      HtmlPipelineRow(
-        name: 'forEditAsNewEmail-vm',
-        factoryName: 'forEditAsNewEmail',
-        create: TransformConfiguration.forEditAsNewEmail,
-        trust: HtmlPipelineTrust.raw,
-        wiring: HtmlPipelineWiring.sanitizes,
-        rules: const HtmlPipelineRules(composer: true),
-        setPlatform: () => PlatformInfo.isTestingForWeb = false,
-        allowsContentEditable: true,
-      ),
-      HtmlPipelineRow(
-        name: 'forEditAsNewEmail-web',
-        factoryName: 'forEditAsNewEmail',
-        create: TransformConfiguration.forEditAsNewEmail,
-        trust: HtmlPipelineTrust.raw,
-        wiring: HtmlPipelineWiring.sanitizes,
-        rules: const HtmlPipelineRules(composer: true),
-        setPlatform: () => PlatformInfo.isTestingForWeb = true,
-        allowsContentEditable: true,
+      ..._perPlatformComposerRows(
+        'forEditAsNewEmail',
+        TransformConfiguration.forEditAsNewEmail,
       ),
       const HtmlPipelineRow(
         name: 'forSignatureIdentity',
