@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/features/caching/utils/sign_out_marker_storage.dar
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/presentation/tab_guard/tab_guard_browser.dart';
+import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 
 /// Web basic auth: once another tab signed out, this tab must stop using its
 /// copy of the login and leave. It never clears shared data (Hive, marker,
@@ -34,6 +35,10 @@ class BasicAuthTabGuard {
   static void _saveComposersIfDashboardExists() {
     if (Get.isRegistered<ComposerManager>()) {
       Get.find<ComposerManager>().saveAllReloadSnapshots();
+    }
+    // Drafts are saved, so the dashboard beforeunload must not ask to stay.
+    if (Get.isRegistered<TwakeAppManager>()) {
+      Get.find<TwakeAppManager>().setExecutingBeforeReconnect(true);
     }
   }
 
