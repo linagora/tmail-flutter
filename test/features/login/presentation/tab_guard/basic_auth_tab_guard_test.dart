@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/login/data/local/authentication_info_cach
 import 'package:tmail_ui_user/features/login/data/model/authentication_info_cache.dart';
 import 'package:tmail_ui_user/features/login/presentation/tab_guard/basic_auth_tab_guard.dart';
 import 'package:tmail_ui_user/features/login/presentation/tab_guard/tab_guard_browser.dart';
+import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 
 import '../../data/local/authentication_info_cache_test_doubles.dart';
 
@@ -266,6 +267,19 @@ void main() {
 
       expect(calls, ['save', 'login']);
     });
+  });
+
+  test('forApp: a kicked tab skips the dashboard leave prompt', () {
+    final twakeAppManager = TwakeAppManager()..setHasComposer(true);
+    Get.put<AuthenticationInfoCacheManager>(manager);
+    Get.put<TwakeAppManager>(twakeAppManager);
+    addTearDown(Get.reset);
+    final appGuard = BasicAuthTabGuard.forApp();
+    signOutElsewhere();
+
+    appGuard.checkAndLeaveIfRevoked();
+
+    expect(twakeAppManager.isExecutingBeforeReconnect, isTrue);
   });
 
   test('inert when not on web', () {
