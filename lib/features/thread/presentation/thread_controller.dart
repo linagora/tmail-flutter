@@ -645,8 +645,7 @@ class ThreadController extends BaseController
   void _handleErrorGetAllOrRefreshChangesEmail(Object error, StackTrace stackTrace) async {
     logWarning('ThreadController::_handleErrorGetAllOrRefreshChangesEmail():Error: $error', webConsoleEnabled: true);
     if (error is CannotCalculateChangesMethodResponseException) {
-      await cachingManager.clearAllEmailAndStateCache();
-      getAllEmailAction(forceEmailQuery: forceEmailQuery);
+      await _reloadFromClearedEmailCache();
     } else if (error is MethodLevelErrors) {
       if (currentOverlayContext != null && error.message != null) {
         appToast.showToastErrorMessage(
@@ -669,6 +668,11 @@ class ThreadController extends BaseController
         );
       }
     }
+  }
+
+  Future<void> _reloadFromClearedEmailCache() async {
+    await cachingManager.clearAllEmailAndStateCache();
+    getAllEmailAction(forceEmailQuery: forceEmailQuery);
   }
 
   void resetToOriginalValue() {
@@ -939,6 +943,15 @@ class ThreadController extends BaseController
       emailFilter: getEmailFilterForLoadMailbox(),
       collapseThreads: collapseThreads,
     ));
+
+    final failureException = refreshState.fold(
+      (failure) => failure is FeatureFailure ? failure.exception : null,
+      (_) => null,
+    );
+    // James answers cannotCalculateChanges as a Left; retrying the same state stays stuck.
+    if (failureException is CannotCalculateChangesMethodResponseException) {
+      await _reloadFromClearedEmailCache();
+    }
 
     refreshState.fold(
       (failure) {},
