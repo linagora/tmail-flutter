@@ -8,7 +8,7 @@ import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/account_switch_view_factory_provider.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/utils/account_switch_failure_toast.dart';
-import 'package:tmail_ui_user/features/delegation/presentation/utils/start_on_url_account.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/utils/start_on_account.dart';
 import 'package:tmail_ui_user/main/providers/app_toast_provider.dart';
 import 'package:tmail_ui_user/main/providers/settings/local_settings_notifier.dart';
 
@@ -35,7 +35,7 @@ Future<bool> showNotificationAccount({
   if (!context.mounted) return false;
 
   final returningToMine = targetAccountId == shown.personalAccountId;
-  showUrlAccountStartToast(
+  showAccountStartToast(
     context: context,
     appToast: container.read(appToastProvider),
     args: AccountSwitchFailureToastArgs(

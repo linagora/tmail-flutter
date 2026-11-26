@@ -149,6 +149,36 @@ void main() {
         expect(dashboard.composerOpenedOn, [mine]);
       });
 
+      group('restoring only a delegated draft at the end of a start', () {
+        setUp(() => appProviderContainer.read(composerCacheRepositoryProvider).saveComposerCache(
+              bob,
+              DelegationFixtures.session().username,
+              ComposerPersistentCache(
+                email: Email(subject: 'delegated draft'),
+                composerId: 'delegated-composer',
+                timestampMs: DateTime.now().millisecondsSinceEpoch,
+              ),
+            ));
+
+        tearDown(() => appProviderContainer
+            .read(composerCacheRepositoryProvider)
+            .removeAllComposerCache(bob, DelegationFixtures.session().username));
+
+        test('SHOULD NOT reopen my draft again on my mailbox', () async {
+          await dashboard.checkAndRestoreComposerOnMobile(onlyDelegated: true);
+
+          expect(dashboard.composerOpenedOn, isEmpty);
+        });
+
+        test('reopens the draft of the shown delegated mailbox', () async {
+          dashboard.activeAccountId = bob;
+
+          await dashboard.checkAndRestoreComposerOnMobile(onlyDelegated: true);
+
+          expect(dashboard.composerOpenedOn, [bob]);
+        });
+      });
+
       test('SHOULD NOT open my draft once the delegated mailbox of the tap is shown', () async {
         final restoring = dashboard.checkAndRestoreComposerOnMobile();
         // The tap's switch selects Bob while the restore reads its cache.

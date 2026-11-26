@@ -7,6 +7,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:mockito/annotations.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tmail_ui_user/features/delegation/data/datasource/last_shown_account_store_impl.dart';
+import 'package:tmail_ui_user/features/delegation/domain/repository/last_shown_account_store.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_email_cache_interactor.dart';
@@ -261,4 +265,32 @@ void main() {
       );
     });
   }
+
+  group('TwakeWelcomeController sign-in', () {
+    final alice = UserName(DelegationFixtures.aliceAddress);
+    final carol = UserName(DelegationFixtures.carolAddress);
+    late LastShownAccountStore store;
+
+    setUp(() async {
+      SharedPreferences.setMockInitialValues({});
+      store = LastShownAccountStoreImpl(await SharedPreferences.getInstance());
+      Get.put<LastShownAccountStore>(store);
+    });
+
+    testWidgets('forgets the last shown account of the signed-in user so the app starts on mine', (tester) async {
+      await store.save(alice, DelegationFixtures.bobAccountId);
+
+      await openDashboardAfterSessionRead(tester, buildWelcome(), DelegationFixtures.session(), fromCache: false);
+
+      expect(store.read(alice), isNull);
+    });
+
+    testWidgets('should keep the last shown account of another user', (tester) async {
+      await store.save(carol, DelegationFixtures.bobAccountId);
+
+      await openDashboardAfterSessionRead(tester, buildWelcome(), DelegationFixtures.session(), fromCache: false);
+
+      expect(store.read(carol), DelegationFixtures.bobAccountId);
+    });
+  });
 }

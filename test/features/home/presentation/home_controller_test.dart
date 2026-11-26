@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
 import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
 
 import '../../../fixtures/account_fixtures.dart';
+import '../../../fixtures/delegation_fixtures.dart';
 import '../../../fixtures/oidc_fixtures.dart';
 import '../../../fixtures/session_fixtures.dart';
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
@@ -19,17 +20,23 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/account/authentication_type.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_email_cache_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_url_cache_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_username_interactor.dart';
+import 'package:tmail_ui_user/features/delegation/data/datasource/last_shown_account_store_impl.dart';
+import 'package:tmail_ui_user/features/delegation/domain/repository/last_shown_account_store.dart';
+import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/update_authentication_account_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_on_browser_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
@@ -240,6 +247,54 @@ void main() {
       await switchFuture;
       expect(isDone, isTrue);
     });
+
+    group('last shown account', () {
+      final alice = SessionFixtures.aliceSession.username;
+      late LastShownAccountStore store;
+
+      setUp(() async {
+        SharedPreferences.setMockInitialValues({});
+        store = LastShownAccountStoreImpl(await SharedPreferences.getInstance());
+        Get.put<LastShownAccountStore>(store);
+        addTearDown(() => Get.delete<LastShownAccountStore>());
+        await store.save(alice, DelegationFixtures.bobAccountId);
+        when(mockUpdateAccountCacheInteractor.execute(
+          session: anyNamed('session'),
+          baseUrl: anyNamed('baseUrl'),
+        )).thenAnswer((invocation) => Stream.value(Right<Failure, Success>(UpdateAccountCacheSuccess(
+          session: invocation.namedArguments[#session] as Session,
+          apiUrl: 'https://domain.com/jmap',
+        ))));
+      });
+
+      test('is forgotten on a sign-in from a link so the app starts on mine', () async {
+        controller.handleSuccessViewState(GetStoredTokenOidcSuccess(
+          Uri.parse('https://domain.com/jmap'),
+          OIDCFixtures.tokenOidcNotExpiredYet,
+          OIDCFixtures.oidcConfiguration,
+          AccountFixtures.aliceAccount,
+        ));
+        await pumpEventQueue();
+        final switchFuture = deepLinksManager.onConfirmLogoutCallback!(deepLinksManager.link);
+        await pumpEventQueue();
+        deepLinksManager.onAutoSignInSuccessCallback!(AutoSignInViaDeepLinkSuccess(
+          OIDCFixtures.tokenOidcNotExpiredYet,
+          Uri.parse('https://domain.com/jmap'),
+          OIDCFixtures.oidcConfiguration,
+        ));
+        deepLinksManager.signIn.complete();
+        await switchFuture;
+        await pumpEventQueue();
+
+        expect(store.read(alice), isNull);
+      });
+
+      test('should be kept on a start with stored credentials', () async {
+        await controller.handleReloaded(SessionFixtures.aliceSession);
+
+        expect(store.read(alice), DelegationFixtures.bobAccountId);
+      });
+    });
   });
 }
 
@@ -254,6 +309,7 @@ class _SwitchRecordingDeepLinksManager extends DeepLinksManager {
   );
   final signIn = Completer<void>();
   OnDeepLinkConfirmLogoutCallback<OpenAppDeepLinkData>? onConfirmLogoutCallback;
+  OnAutoSignInViaDeepLinkSuccessCallback? onAutoSignInSuccessCallback;
   int autoSignInCalls = 0;
 
   @override
@@ -282,6 +338,7 @@ class _SwitchRecordingDeepLinksManager extends DeepLinksManager {
     required OnDeepLinkFailureCallback onFailureCallback,
   }) {
     autoSignInCalls++;
+    this.onAutoSignInSuccessCallback = onAutoSignInSuccessCallback;
     return signIn.future;
   }
 }

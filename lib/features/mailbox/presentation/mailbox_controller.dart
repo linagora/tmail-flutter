@@ -26,7 +26,8 @@ import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_draft
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/shown_account_load.dart';
-import 'package:tmail_ui_user/features/delegation/presentation/utils/start_on_url_account.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/utils/start_on_account.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/utils/start_on_remembered_account.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
@@ -92,10 +93,12 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_ema
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_needs_action_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_composer_restore_on_mobile_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_new_rule_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/restore_mailbox_email_list_after_search_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_message.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_queue_handler.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_bindings.dart';
@@ -110,6 +113,7 @@ import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
+import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class MailboxController extends BaseMailboxController
@@ -139,6 +143,7 @@ class MailboxController extends BaseMailboxController
 
   MailboxId? _newFolderId;
   NavigationRouter? _navigationRouter;
+  bool _hasReadRememberedAccount = false;
   WebSocketQueueHandler? _webSocketQueueHandler;
   Worker? isLabelsLoadedWorker;
   CancelShownAccountWatch? _cancelShownAccountWatch;
@@ -299,6 +304,7 @@ class MailboxController extends BaseMailboxController
           );
           mailboxDashBoardController.updateRefreshAllMailboxState(Left(RefreshAllMailboxFailure()));
           showRetryToast(failure);
+          _startOnceOnRememberedAccount(firstLoadFailed: true);
         }
       },
       (success) {
@@ -827,6 +833,7 @@ class MailboxController extends BaseMailboxController
     if (!PlatformInfo.isWeb || _navigationRouter == null) {
       _selectSelectedMailboxDefault();
       _replaceBrowserHistory();
+      _startOnceOnRememberedAccount();
       return;
     }
 
@@ -897,13 +904,40 @@ class MailboxController extends BaseMailboxController
     _clearNavigationRouter();
     final context = currentContext;
     final isShown = context != null &&
-        await startOnUrlAccount(context: context, urlAccountId: urlAccountId) &&
+        await startOnAccount(context: context, accountId: urlAccountId) &&
         activeAccountId == urlAccountId;
     if (isClosed) return;
     if (isShown) {
       _navigationRouter = router;
     }
     _handleDataFromNavigationRouter();
+  }
+
+  /// Read once the first mailbox load of the session ends, so a later reload or retry never switches accounts again.
+  void _startOnceOnRememberedAccount({bool firstLoadFailed = false}) {
+    if (!PlatformInfo.isMobile || _hasReadRememberedAccount) return;
+    _hasReadRememberedAccount = true;
+    final context = currentContext;
+    if (context != null && context.mounted) recordShownAccounts(context);
+    unawaited(_startOnRememberedAccount(firstLoadFailed));
+  }
+
+  Future<void> _startOnRememberedAccount(bool firstLoadFailed) async {
+    final launchedByNotification = PlatformInfo.isAndroid
+        ? await LocalNotificationManager.instance.wasAppLaunchedByNotification()
+        : await getBinding<IOSNotificationManager>()?.wasAppLaunchedByNotification() ?? false;
+    if (isClosed) return;
+    final context = currentContext;
+    if (context == null || !context.mounted) return;
+    await startOnRememberedAccount(
+      context,
+      launchedByNotification: launchedByNotification,
+      firstLoadFailed: firstLoadFailed,
+    );
+    // A notification tap restores the draft of the mailbox it shows.
+    if (launchedByNotification || isClosed) return;
+    // The remembered switch or the user's pick before the first load can end on a delegated mailbox.
+    await mailboxDashBoardController.checkAndRestoreComposerOnMobile(onlyDelegated: true);
   }
 
   void openEmailInsideMailboxFromLocationBar(

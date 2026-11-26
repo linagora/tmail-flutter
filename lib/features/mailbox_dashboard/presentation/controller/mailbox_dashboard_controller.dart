@@ -2568,6 +2568,8 @@ class MailboxDashBoardController extends ReloadableController
       if (!onForeground) dispatchRoute(DashboardRoutes.thread);
       return;
     }
+    // The session load restored mine before this cold-start switch ran.
+    if (!onForeground) unawaited(checkAndRestoreComposerOnMobile(onlyDelegated: true));
     final currentAccountId = activeAccountId;
     final session = sessionCurrent;
     if (currentAccountId != null && session != null) {
