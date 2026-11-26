@@ -40,6 +40,10 @@ class UiKeys {
   static const String myDelegatesList = 'my_delegates_list';
   static const String myDelegatesEmptyCard = 'my_delegates_empty_card';
   static const String myDelegatesAddButton = 'my_delegates_add_button';
+  static const String addDelegatesDialog = 'add_delegates_dialog';
+  static const String addDelegatesAddressField = 'add_delegates_address_field';
+  static const String addDelegatesSubmitButton = 'add_delegates_submit_button';
+  static const String addDelegatesCancelButton = 'add_delegates_cancel_button';
   static const String editEmailRuleButton = 'editEmailRuleButton';
   static const String moreEmailRuleButton = 'moreEmailRuleButton';
   static const String addActionButton = 'addActionButton';

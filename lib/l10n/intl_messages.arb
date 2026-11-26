@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-11-25T13:40:40.963597",
+  "@@last_modified": "2026-11-26T15:49:13.776001",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -6093,5 +6093,83 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "delegateMailboxAccount": "Delegate mailbox account",
+  "@delegateMailboxAccount": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addDelegatesExplanation": "Give others full access to your mailbox. They'll get an email notification.",
+  "@addDelegatesExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delegateEmailAddressLabel": "Email address",
+  "@delegateEmailAddressLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delegateEmailAddressHint": "name@company.com",
+  "@delegateEmailAddressHint": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "couldNotAddDelegates": "Couldn't add delegates",
+  "@couldNotAddDelegates": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "someDelegatesCouldNotBeAdded": "Some people couldn't be added. Remove them to continue.",
+  "@someDelegatesCouldNotBeAdded": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cannotDelegateToYourself": "You can't give access to yourself",
+  "@cannotDelegateToYourself": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "invalidDelegateEmailAddress": "Enter a valid email address",
+  "@invalidDelegateEmailAddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delegateHasBeenAdded": "{delegate} has been added",
+  "@delegateHasBeenAdded": {
+    "type": "text",
+    "placeholders_order": [
+      "delegate"
+    ],
+    "placeholders": {
+      "delegate": {}
+    }
+  },
+  "delegatesHaveBeenAdded": "{count} delegates have been added",
+  "@delegatesHaveBeenAdded": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "alreadyHasDelegateAccess": "{emailAddress} already has access",
+  "@alreadyHasDelegateAccess": {
+    "type": "text",
+    "placeholders_order": [
+      "emailAddress"
+    ],
+    "placeholders": {
+      "emailAddress": {}
+    }
   }
 }

@@ -147,4 +147,79 @@ void main() {
       await expectLater(load, completes);
     });
   });
+
+  group('show', () {
+    test('should list the given delegates without reading', () {
+      notifier().show([bob]);
+
+      expect(stateOf().value, [bob]);
+      expect(repository.getCalls, isEmpty);
+    });
+
+    test('should drop a read in flight so it cannot overwrite the shown list', () async {
+      final load = notifier().load(session);
+      await untilRepositoryCalled();
+
+      notifier().show([bob]);
+      repository.pendingGets.single.complete([carol]);
+      await load;
+
+      expect(stateOf().value, [bob]);
+    });
+
+    test('should let a read started after it replace the shown list', () async {
+      notifier().show([bob]);
+      final load = notifier().load(session);
+      await untilRepositoryCalled();
+      repository.pendingGets.single.complete([carol]);
+      await load;
+
+      expect(stateOf().value, [carol]);
+    });
+  });
+
+  group('lastUsernames', () {
+    test('should be empty before any list is shown', () {
+      expect(notifier().lastUsernames, isEmpty);
+    });
+
+    test('should give the usernames of a list read', () async {
+      final load = notifier().load(session);
+      await untilRepositoryCalled();
+      repository.pendingGets.single.complete([bob, carol]);
+      await load;
+
+      expect(notifier().lastUsernames, {DelegationFixtures.bobAddress, DelegationFixtures.carolAddress});
+    });
+
+    test('should give the usernames of a list shown', () {
+      notifier().show([bob]);
+
+      expect(notifier().lastUsernames, {DelegationFixtures.bobAddress});
+    });
+
+    test('should keep the last list while a reload runs and after it fails', () async {
+      notifier().show([bob]);
+      final reload = notifier().load(session);
+      await untilRepositoryCalled();
+
+      expect(stateOf(), isA<AsyncData<List<Delegate>>>());
+      expect(notifier().lastUsernames, {DelegationFixtures.bobAddress});
+
+      repository.pendingGets.single.completeError(Exception('boom'));
+      await reload;
+
+      expect(notifier().lastUsernames, {DelegationFixtures.bobAddress});
+    });
+
+    test('should not take the list of a stale read', () async {
+      final load = notifier().load(session);
+      await untilRepositoryCalled();
+      notifier().show([bob]);
+      repository.pendingGets.single.complete([carol]);
+      await load;
+
+      expect(notifier().lastUsernames, {DelegationFixtures.bobAddress});
+    });
+  });
 }

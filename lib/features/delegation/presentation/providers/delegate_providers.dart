@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/delegation/data/datasource/delegate_datasource.dart';
 import 'package:tmail_ui_user/features/delegation/data/datasource_impl/delegate_datasource_impl.dart';
 import 'package:tmail_ui_user/features/delegation/data/network/delegate_api.dart';
@@ -9,6 +10,7 @@ import 'package:tmail_ui_user/features/delegation/domain/repository/delegate_rep
 import 'package:tmail_ui_user/features/delegation/domain/usecases/add_delegates_interactor.dart';
 import 'package:tmail_ui_user/features/delegation/domain/usecases/get_delegates_interactor.dart';
 import 'package:tmail_ui_user/features/delegation/domain/usecases/remove_delegate_interactor.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 
 part 'delegate_providers.g.dart';
@@ -37,3 +39,7 @@ AddDelegatesInteractor addDelegatesInteractor(Ref ref) =>
 @riverpod
 RemoveDelegateInteractor removeDelegateInteractor(Ref ref) =>
     RemoveDelegateInteractor(ref.watch(delegateRepositoryProvider));
+
+/// Null when the server has no contact autocomplete, so the add dialog offers no suggestions.
+@riverpod
+GetAutoCompleteInteractor? delegateAutoCompleteInteractor(Ref ref) => getBinding<GetAutoCompleteInteractor>();

@@ -4,8 +4,10 @@ import 'package:tmail_ui_user/features/manage_account/presentation/delegation/de
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
+import 'abstract/abstract_add_delegates_robot.dart';
 import 'abstract/abstract_delegation_settings_assertion_robot.dart';
 import 'abstract/abstract_delegation_settings_robot.dart';
+import 'add_delegates_robot.dart';
 import 'delegation_settings_assertion_robot.dart';
 
 class DelegationSettingsRobot extends CoreRobot
@@ -13,8 +15,12 @@ class DelegationSettingsRobot extends CoreRobot
   @override
   final AbstractDelegationSettingsAssertionRobot assertion;
 
+  @override
+  final AbstractAddDelegatesRobot addDelegates;
+
   DelegationSettingsRobot(super.$, {AbstractDelegationSettingsAssertionRobot? assertionRobot})
-      : assertion = assertionRobot ?? DelegationSettingsAssertionRobot($);
+      : assertion = assertionRobot ?? DelegationSettingsAssertionRobot($),
+        addDelegates = AddDelegatesRobot($);
 
   @override
   Future<void> openDelegatedToMeTab() async {

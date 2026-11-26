@@ -5,10 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
+import 'package:model/autocomplete/auto_complete_pattern.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
+import 'package:tmail_ui_user/features/delegation/domain/model/add_delegates_result.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/my_delegates_notifier.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/providers/delegate_providers.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/widgets/account_switcher_avatar.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/delegation/add_delegates/add_delegates_dialog.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 /// "By me" tab of Settings › Delegation: my delegates, who can use my mailbox. See ADR-0115.
@@ -87,8 +94,11 @@ class _MyDelegatesSectionState extends ConsumerState<MyDelegatesSection> {
       illustration: _shareIllustration,
       title: l10n.noOneHasAccessYet,
       message: l10n.noOneHasAccessYetMessage,
-      // Disabled until the add dialog ships.
-      action: LinagoraEmptyCardAction(label: l10n.addDelegate, icon: Icons.add, onPressed: null),
+      action: LinagoraEmptyCardAction(
+        label: l10n.addDelegate,
+        icon: Icons.add,
+        onPressed: _openAddDialog,
+      ),
     );
   }
 
@@ -106,12 +116,49 @@ class _MyDelegatesSectionState extends ConsumerState<MyDelegatesSection> {
   }
 
   Widget _buildAddButton(AppLocalizations l10n) {
+    // Same button as the empty card's, since the app theme's primary is not the brand blue.
+    final tokens = LinagoraEmptyCardStyle.material();
     return LinagoraButton(
       key: const ValueKey(UiKeys.myDelegatesAddButton),
       label: l10n.addDelegate,
       icon: Icons.add,
-      // Disabled until the add dialog ships.
-      onPressed: null,
+      onPressed: _openAddDialog,
+      minimumHeight: tokens.actionHeight,
+      padding: tokens.actionButtonPadding,
+      iconSize: tokens.actionIconSize,
+      backgroundColor: tokens.actionBackgroundColor,
+      foregroundColor: tokens.actionForegroundColor,
+    );
+  }
+
+  void _openAddDialog() {
+    AddDelegatesDialog.show(AddDelegatesDialog(
+      session: widget.session,
+      loadSuggestions: _loadSuggestions,
+      onDelegatesAdded: _onDelegatesAdded,
+      onAddFailed: _load,
+    ));
+  }
+
+  void _onDelegatesAdded(AddDelegatesResult result) {
+    if (!mounted) return;
+    final delegates = result.delegates;
+    // A failed re-read leaves the list stale, so read it again.
+    if (delegates == null) return _load();
+    ref.read(myDelegatesProvider.notifier).show(delegates);
+  }
+
+  Future<List<EmailAddress>> _loadSuggestions(String query, {int? limit}) async {
+    final interactor = ref.read(delegateAutoCompleteInteractorProvider);
+    if (interactor == null) return [];
+    final result = await interactor.execute(AutoCompletePattern(
+      word: query,
+      limit: limit,
+      accountId: widget.session.accountId,
+    ));
+    return result.fold(
+      (_) => [],
+      (success) => success is GetAutoCompleteSuccess ? success.listEmailAddress : [],
     );
   }
 }

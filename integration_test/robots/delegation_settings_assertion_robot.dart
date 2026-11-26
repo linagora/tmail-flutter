@@ -24,7 +24,7 @@ class DelegationSettingsAssertionRobot extends CoreRobot
   Future<void> expectNoOneHasAccessToMyMailbox() async {
     final addButton = $(const ValueKey(UiKeys.myDelegatesEmptyCard)).$(LinagoraEmptyCard.actionKey);
     await addButton.waitUntilVisible();
-    expect($.tester.widget<LinagoraButton>(addButton).onPressed, isNull);
+    expect($.tester.widget<LinagoraButton>(addButton).onPressed, isNotNull);
   }
 
   @override
@@ -35,6 +35,6 @@ class DelegationSettingsAssertionRobot extends CoreRobot
     }
     final addButton = $(const ValueKey(UiKeys.myDelegatesAddButton));
     await addButton.waitUntilVisible();
-    expect($.tester.widget<LinagoraButton>(addButton).onPressed, isNull);
+    expect($.tester.widget<LinagoraButton>(addButton).onPressed, isNotNull);
   }
 }

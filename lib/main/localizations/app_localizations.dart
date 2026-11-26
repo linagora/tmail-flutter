@@ -6473,4 +6473,84 @@ class AppLocalizations {
       name: 'addDelegate',
     );
   }
+
+  String get delegateMailboxAccount {
+    return Intl.message(
+      'Delegate mailbox account',
+      name: 'delegateMailboxAccount',
+    );
+  }
+
+  String get addDelegatesExplanation {
+    return Intl.message(
+      "Give others full access to your mailbox. They'll get an email notification.",
+      name: 'addDelegatesExplanation',
+    );
+  }
+
+  String get delegateEmailAddressLabel {
+    return Intl.message(
+      'Email address',
+      name: 'delegateEmailAddressLabel',
+    );
+  }
+
+  String get delegateEmailAddressHint {
+    return Intl.message(
+      'name@company.com',
+      name: 'delegateEmailAddressHint',
+    );
+  }
+
+  String get couldNotAddDelegates {
+    return Intl.message(
+      "Couldn't add delegates",
+      name: 'couldNotAddDelegates',
+    );
+  }
+
+  String get someDelegatesCouldNotBeAdded {
+    return Intl.message(
+      "Some people couldn't be added. Remove them to continue.",
+      name: 'someDelegatesCouldNotBeAdded',
+    );
+  }
+
+  String get cannotDelegateToYourself {
+    return Intl.message(
+      "You can't give access to yourself",
+      name: 'cannotDelegateToYourself',
+    );
+  }
+
+  String get invalidDelegateEmailAddress {
+    return Intl.message(
+      'Enter a valid email address',
+      name: 'invalidDelegateEmailAddress',
+    );
+  }
+
+  String delegateHasBeenAdded(String delegate) {
+    return Intl.message(
+      '$delegate has been added',
+      name: 'delegateHasBeenAdded',
+      args: [delegate],
+    );
+  }
+
+  String delegatesHaveBeenAdded(int count) {
+    return Intl.message(
+      '$count delegates have been added',
+      name: 'delegatesHaveBeenAdded',
+      args: [count],
+    );
+  }
+
+  String alreadyHasDelegateAccess(String emailAddress) {
+    return Intl.message(
+      '$emailAddress already has access',
+      name: 'alreadyHasDelegateAccess',
+      args: [emailAddress],
+    );
+  }
 }

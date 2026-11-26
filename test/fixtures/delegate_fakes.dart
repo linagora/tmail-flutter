@@ -6,10 +6,12 @@ import 'package:tmail_ui_user/features/delegation/domain/model/add_delegates_res
 import 'package:tmail_ui_user/features/delegation/domain/model/remove_delegate_result.dart';
 import 'package:tmail_ui_user/features/delegation/domain/repository/delegate_repository.dart';
 
-/// Each read stays pending until the test completes it, so in-flight states can be checked.
+/// Each read and add stays pending until the test completes it, so in-flight states can be checked.
 class FakeDelegateRepository implements DelegateRepository {
   final List<AccountId> getCalls = [];
   final List<Completer<List<Delegate>>> pendingGets = [];
+  final List<Set<String>> addCalls = [];
+  final List<Completer<AddDelegatesResult>> pendingAdds = [];
 
   @override
   Future<List<Delegate>> getDelegates(AccountId accountId) {
@@ -20,8 +22,12 @@ class FakeDelegateRepository implements DelegateRepository {
   }
 
   @override
-  Future<AddDelegatesResult> addDelegates(AccountId accountId, Set<String> usernames) =>
-      throw UnimplementedError();
+  Future<AddDelegatesResult> addDelegates(AccountId accountId, Set<String> usernames) {
+    addCalls.add(usernames);
+    final add = Completer<AddDelegatesResult>();
+    pendingAdds.add(add);
+    return add.future;
+  }
 
   @override
   Future<RemoveDelegateResult> removeDelegate(AccountId accountId, Delegate delegate) =>
