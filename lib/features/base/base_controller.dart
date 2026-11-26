@@ -533,7 +533,15 @@ abstract class BaseController extends GetxController
     }
   }
 
+  // Web basic auth keeps one login copy per tab; a user sign out must invalidate the others.
+  void _revokeOtherTabsOnWebBasicAuth() {
+    if (PlatformInfo.isWeb && !isAuthenticatedWithOidc) {
+      cachingManager.revokeOtherTabs();
+    }
+  }
+
   Future<void> _handleLogoutAction(Session? session, AccountId? accountId) async {
+    _revokeOtherTabsOnWebBasicAuth();
     if (session == null || accountId == null) {
       await clearDataAndGoToLoginPage();
       return;
@@ -569,6 +577,7 @@ abstract class BaseController extends GetxController
   }) async {
     _LogoutToSignInOutcome outcome;
     try {
+      _revokeOtherTabsOnWebBasicAuth();
       await removeDelegatedComposerSnapshotsOnLogout(
         session: session,
         personalAccountId: accountId,

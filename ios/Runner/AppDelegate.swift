@@ -14,6 +14,8 @@ import flutter_local_notifications
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        excludeDocumentsFromBackup()
+
         if let payload = launchOptions?[.remoteNotification] as? [AnyHashable : Any] {
             currentNotificationTap = AppDelegate.notificationTap(of: payload)
         }
@@ -237,6 +239,18 @@ extension AppDelegate {
         )
     }
     
+    // Hive boxes (key + encrypted data), logs and exports live here; keep them out of iCloud/iTunes backups.
+    private func excludeDocumentsFromBackup() {
+        guard var url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+        var values = URLResourceValues()
+        values.isExcludedFromBackup = true
+        do {
+            try url.setResourceValues(values)
+        } catch {
+            NSLog("[AppDelegate] excludeDocumentsFromBackup failed: \(error)")
+        }
+    }
+
     private func updateApplicationStateInUserDefaults(_ appIsActive: Bool) {
         let appGroupId = (Bundle.main.object(forInfoDictionaryKey: "AppGroupId") as? String) ?? "group.\(Bundle.main.bundleIdentifier!)"
         let userDefaults = UserDefaults(suiteName: appGroupId)

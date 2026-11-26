@@ -22,6 +22,11 @@ class GetCredentialInteractor {
     try {
       final baseUrl = await credentialRepository.getBaseUrl();
       final authenticationInfo = await credentialRepository.getAuthenticationInfoStored();
+      // A failed overwrite or late migration can leave another account's login; drop it for every reader.
+      if (authenticationInfo.username != personalAccount.id) {
+        await credentialRepository.removeAuthenticationInfo();
+        return Left(GetCredentialFailure(NotFoundAuthenticationInfoCache()));
+      }
       if (isCredentialValid(baseUrl)) {
         return Right(GetCredentialViewState(
           baseUrl,

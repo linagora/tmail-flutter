@@ -34,12 +34,14 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:tmail_ui_user/main/utils/app_utils.dart';
+import 'package:tmail_ui_user/main/utils/app_route_tab_environment.dart';
 
 mixin EmailActionController {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   AccountId? get activeAccountId;
+  bool get isAuthenticatedWithOidc;
+  AppRouteTabEnvironment get tabEnvironment => const AppRouteTabEnvironment();
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
 
@@ -390,7 +392,10 @@ mixin EmailActionController {
   }
 
   void openEmailInNewTabAction(PresentationEmail email) {
-    AppUtils.launchLink(email.routeWebAsString);
+    tabEnvironment.openInNewTab(
+      email.routeWebAsString,
+      isBasicAuth: !isAuthenticatedWithOidc,
+    );
   }
 
   void archiveMessage(PresentationEmail email) {

@@ -258,6 +258,10 @@ void main() {
       expect(mockBaseController.validateUrgentException(const BadCredentialsException()), isTrue);
     });
 
+    test('should return false when exception is CredentialRevokedException', () {
+      expect(mockBaseController.validateUrgentException(const CredentialRevokedException()), isFalse);
+    });
+
     test('should return true when exception is ConnectionError', () {
       expect(mockBaseController.validateUrgentException(const ConnectionError()), isTrue);
     });
@@ -797,6 +801,32 @@ void main() {
 
       expect(mockBaseController.events, ['removeAllComposerCache', 'logout']);
     });
+
+    testWidgets('web basic logout revokes the other tabs, OIDC does not', (tester) async {
+      PlatformInfo.isTestingForWeb = true;
+      registerCacheRemoval();
+      await tester.pumpWidget(const SizedBox());
+      for (final (type, calls) in [
+        (AuthenticationType.basic, 1),
+        (AuthenticationType.oidc, 0),
+      ]) {
+        clearInteractions(mockCachingManager);
+        when(mockAuthorizationInterceptors.authenticationType).thenReturn(type);
+        when(mockLogoutOidcInteractor.execute()).thenAnswer((_) => const Stream.empty());
+
+        mockBaseController.logout(
+          tester.element(find.byType(SizedBox)),
+          SessionFixtures.aliceSession,
+          AccountFixtures.aliceAccountId,
+          'alice@example.com',
+        );
+        await tester.pumpAndSettle();
+
+        calls == 0
+            ? verifyNever(mockCachingManager.revokeOtherTabs())
+            : verify(mockCachingManager.revokeOtherTabs()).called(calls);
+      }
+    });
   });
 
   group('BaseController::logoutToSignInNewAccount', () {
@@ -871,6 +901,26 @@ void main() {
       onSuccessCallback: onSuccess,
       onFailureCallback: onFailure,
     );
+
+    test('web basic session: revokes the other tabs, OIDC does not', () async {
+      PlatformInfo.isTestingForWeb = true;
+      addTearDown(() => PlatformInfo.isTestingForWeb = false);
+      when(mockLogoutOidcInteractor.execute()).thenAnswer(
+        (_) => Stream.value(Right<Failure, Success>(LogoutOidcSuccess())));
+      for (final (type, calls) in [
+        (AuthenticationType.basic, 1),
+        (AuthenticationType.oidc, 0),
+      ]) {
+        clearInteractions(mockCachingManager);
+        when(mockAuthorizationInterceptors.authenticationType).thenReturn(type);
+
+        await logout(onSuccess: () {}, onFailure: ({exception}) => fail('$exception'));
+
+        calls == 0
+            ? verifyNever(mockCachingManager.revokeOtherTabs())
+            : verify(mockCachingManager.revokeOtherTabs()).called(calls);
+      }
+    });
 
     test('basic session: completes only after the success callback completed', () async {
       when(mockAuthorizationInterceptors.authenticationType).thenReturn(AuthenticationType.basic);

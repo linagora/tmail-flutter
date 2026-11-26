@@ -344,6 +344,9 @@ class ComposerController extends BaseController
   void registerReloadCacheAction(ComposerReloadCacheAction action) =>
       _reloadCacheAction = action;
 
+  /// Writes this composer's reload snapshot now, as beforeunload would.
+  void saveReloadSnapshot() => _reloadCacheAction?.call();
+
   @visibleForTesting
   set isEmailBodyLoaded(bool value) => _isEmailBodyLoaded = value;
 
@@ -510,7 +513,7 @@ class ComposerController extends BaseController
 
   @override
   Future<void> onBeforeUnloadBrowserListener(html.Event event) {
-    _reloadCacheAction?.call();
+    saveReloadSnapshot();
     return Future.value();
   }
 

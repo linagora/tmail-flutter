@@ -10,3 +10,24 @@ Categories: UX, UI, Product, Architecture, Infra, Tech.
 - Decided by: Benoit Tellier, after the twake-qa security review of twake-calendar-side-service (SEV-1, 2026-11-23); the pipeline of twake-contacts-frontend is the model.
 - Why: the agents are persistent and shared, so code of a pull request that runs before the check can read a credential bound later in the same build, or leave a process behind for a later one. A review is tied to a commit by GitHub, unlike a comment, so a commit pushed after the approval is not built until a member reviews it again.
 - Scope: `Jenkinsfile` and `JenkinsfileMobile`. The backend teardown in `post` runs only for an authorized build.
+
+## 2026-11-25, [Architecture] On web basic auth, a sign out in one tab invalidates the login copy of every other tab through a marker in localStorage
+
+- Decision: the basic-auth login of a tab lives in its sessionStorage next to a tag holding the sign-out marker (`basicAuthSignOutMarker` in localStorage) it was saved under. A user sign out replaces the marker. A tab whose tag no longer matches the marker rejects its requests, removes its own login copy and tag, and goes to the login page. Only the marker is read for this check, and the tab never clears shared data (Hive, marker, composer snapshots).
+- Decided by: Dat H. Pham, in linagora/tmail-flutter#5163.
+- Why: sessionStorage is per tab, so no other tab learns of a sign out, and the password stayed usable in the tabs left open. Another tab may already be signed in again, so a leaving tab must not touch shared data.
+- Scope: web basic auth only; OIDC and mobile are unchanged. `authentication_info_cache_manager.dart`, `sign_out_marker_storage.dart`, `basic_auth_tab_guard.dart` and the request interceptors.
+
+## 2026-11-25, [UX] A tab signed out from another tab keeps its open drafts
+
+- Decision: before a tab with a revoked login goes to the login page, it saves a reload snapshot of every open composer. It leaves without the browser leave prompt.
+- Decided by: Dat H. Pham, in linagora/tmail-flutter#5163.
+- Why: the user loses nothing typed, and the dashboard prompt cannot trap a tab that has already dropped its login.
+- Scope: `basic_auth_tab_guard.dart`, `composer_manager.dart`.
+
+## 2026-11-25, [UX] On web basic auth, a same-origin app route opened in a new tab inherits the login
+
+- Decision: same-origin app routes open in a new tab without `noopener`, so the tab inherits a copy of the sessionStorage login and does not ask for it again. Other links and print tabs open with `noopener`. A tab with an opener removes the composer and identity drafts it copied, then detaches the opener.
+- Decided by: Dat H. Pham, in linagora/tmail-flutter#5163.
+- Why: the new tab keeps working without a second sign in, and a draft stays owned by the one tab that created it.
+- Scope: `app_route_tab_environment.dart`, `html_utils.dart`, `child_tab_session_cleaner.dart`, `mailbox_action_handler_mixin.dart`, `email_action_controller.dart`.

@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/login/data/network/dns_lookup/dns_lookup_
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/login/data/utils/library_platform/app_auth_plugin/app_auth_plugin.dart';
+import 'package:tmail_ui_user/features/login/presentation/tab_guard/basic_auth_tab_guard.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
@@ -103,6 +104,7 @@ class NetworkBindings extends Bindings {
         Get.find<TokenOidcCacheManager>(),
         Get.find<AccountCacheManager>(),
         Get.find<IOSSharingManager>(),
+        isBasicLoginRevoked: isBasicLoginRevokedAndNotifyGuard,
     ));
     dio.interceptors.add(Get.find<DynamicUrlInterceptors>());
     dio.interceptors.add(Get.find<AuthorizationInterceptors>());

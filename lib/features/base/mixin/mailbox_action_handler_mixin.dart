@@ -20,14 +20,19 @@ import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_action
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:tmail_ui_user/main/utils/app_utils.dart';
+import 'package:tmail_ui_user/main/utils/app_route_tab_environment.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 
 mixin MailboxActionHandlerMixin {
   AccountId? get activeAccountId;
+  bool get isAuthenticatedWithOidc;
+  AppRouteTabEnvironment get tabEnvironment => const AppRouteTabEnvironment();
 
   void openMailboxInNewTabAction(PresentationMailbox mailbox) {
-    AppUtils.launchLink(mailbox.mailboxRouteWeb.toString());
+    tabEnvironment.openInNewTab(
+      mailbox.mailboxRouteWeb.toString(),
+      isBasicAuth: !isAuthenticatedWithOidc,
+    );
   }
 
   void markAsReadMailboxAction(
