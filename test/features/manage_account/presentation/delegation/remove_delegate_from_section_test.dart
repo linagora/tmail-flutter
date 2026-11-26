@@ -1,6 +1,9 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
+import 'package:core/presentation/views/loading/cupertino_loading_widget.dart';
 import 'package:delegation/model/delegate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -39,6 +42,7 @@ class _RecordingUrgentExceptionHandler implements UrgentExceptionHandler {
 
 void main() {
   final bob = Delegate(id: Id('bob-delegate'), username: DelegationFixtures.bobAddress);
+  final carol = Delegate(id: Id('carol-delegate'), username: DelegationFixtures.carolAddress);
   final l10n = AppLocalizations();
   const removeDialog = ValueKey(UiKeys.removeDelegateDialog);
   const submitButton = ValueKey(UiKeys.removeDelegateSubmitButton);
@@ -72,7 +76,7 @@ void main() {
 
   /// Shows Bob in By me, on a page pushed over the home page like Settings, opens his remove dialog and taps Remove
   /// access.
-  Future<void> tapRemoveBob(WidgetTester tester) async {
+  Future<void> tapRemoveBob(WidgetTester tester, {List<Delegate>? listed}) async {
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
@@ -97,7 +101,7 @@ void main() {
     );
     await tester.pump();
     await tester.runAsync(untilRepositoryCalled);
-    repository.pendingGets.last.complete([bob]);
+    repository.pendingGets.last.complete(listed ?? [bob]);
     await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(LinagoraPersonTile.actionKeyFor(bob.username)));
@@ -214,4 +218,42 @@ void main() {
       expect(find.byKey(emptyCard), findsOneWidget);
     },
   );
+
+  testRemove('should show a red progress button while the request runs', (tester) async {
+    await tapRemoveBob(tester);
+
+    final progressButton = find.ancestor(
+      of: find.descendant(of: find.byKey(removeDialog), matching: find.byType(CupertinoLoadingWidget)),
+      matching: find.byType(ConfirmDialogButton),
+    );
+    expect(progressButton, findsOneWidget);
+    expect(tester.widget<ConfirmDialogButton>(progressButton).backgroundColor, AppColor.redFF3347);
+
+    repository.pendingRemoves.last.complete(RemoveDelegateResult(removedDelegate: bob, delegates: const []));
+    await tester.pumpAndSettle();
+  });
+
+  testRemove('should close when the read after a failed remove lists the other delegates but not this one', (
+    tester,
+  ) async {
+    await tapRemoveBob(tester, listed: [bob, carol]);
+
+    await failRemove(tester, Exception('timeout'));
+    repository.pendingGets.last.complete([carol]);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(removeDialog), findsNothing);
+    expect(find.byKey(LinagoraPersonTile.actionKeyFor(carol.username)), findsOneWidget);
+  });
+
+  testRemove('should stay open when the read after a failed remove still lists the delegate', (tester) async {
+    await tapRemoveBob(tester, listed: [bob, carol]);
+
+    await failRemove(tester, Exception('boom'));
+    repository.pendingGets.last.complete([bob, carol]);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(removeDialog), findsOneWidget);
+    expect(tester.widget<ConfirmDialogButton>(find.byKey(submitButton)).onTapAction, isNotNull);
+  });
 }
