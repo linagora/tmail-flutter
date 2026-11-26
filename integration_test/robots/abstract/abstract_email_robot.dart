@@ -8,5 +8,7 @@ abstract class AbstractEmailRobot {
   AbstractEmailLabelRobot get label;
 
   Future<void> tapDownloadAllButton();
+  /// Opens the email more-actions menu and picks Edit as new.
+  Future<void> editAsNewEmail();
   Future<void> expectDownloadSaveDialogVisible();
 }

@@ -14,6 +14,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import '../../mocks/fake_file_picker.dart';
 import '../abstract/abstract_composer_code_view_robot.dart';
 import '../abstract/abstract_composer_editor_keyboard_robot.dart';
+import '../abstract/abstract_composer_editor_link_assertion_robot.dart';
 import '../abstract/abstract_composer_recipient_robot.dart';
 import '../abstract/abstract_composer_reload_robot.dart';
 import '../abstract/abstract_composer_robot.dart';
@@ -38,6 +39,9 @@ class MobileComposerRobot extends ComposerRobot implements AbstractComposerRobot
   @override
   final AbstractComposerSignatureRobot? signature;
 
+  @override
+  final AbstractComposerEditorLinkAssertionRobot? editorLinks;
+
   MobileComposerRobot(
     PatrolIntegrationTester $, {
     AbstractComposerRecipientRobot? recipientRobot,
@@ -45,6 +49,7 @@ class MobileComposerRobot extends ComposerRobot implements AbstractComposerRobot
     this.editorKeyboard,
     this.codeView,
     this.signature,
+    this.editorLinks,
   })  : recipient = recipientRobot ?? ComposerRecipientRobot($),
         super($);
 

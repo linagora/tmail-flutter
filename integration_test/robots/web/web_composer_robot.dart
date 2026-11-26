@@ -15,6 +15,7 @@ import 'web_composer_code_view_robot.dart';
 import 'web_composer_controller_finder.dart';
 import 'web_composer_editor_dom.dart';
 import 'web_composer_editor_keyboard_robot.dart';
+import 'web_composer_editor_link_assertion_robot.dart';
 import 'web_composer_recipient_robot.dart';
 import 'web_composer_reload_robot.dart';
 import 'web_composer_signature_assertion_robot.dart';
@@ -30,6 +31,7 @@ class WebComposerRobot extends MobileComposerRobot {
           editorKeyboard: WebComposerEditorKeyboardRobot($),
           codeView: WebComposerCodeViewRobot($),
           signature: WebComposerSignatureAssertionRobot($),
+          editorLinks: WebComposerEditorLinkAssertionRobot($),
         );
 
   @override
