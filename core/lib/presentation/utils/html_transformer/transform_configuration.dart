@@ -62,10 +62,13 @@ class TransformConfiguration {
 
   /// Raw server HTML (email body not loaded yet, e.g. a collapsed message in
   /// a thread) inserted into the same-origin composer editor: sanitize it.
+  /// Its links are the sender's, so they are cleaned as in the viewer: the
+  /// editor's link tooltip opens a relative href on the app origin.
   factory TransformConfiguration.forReplyForwardEmptyEmail() => TransformConfiguration(
     [
       ...TransformConfiguration.forReplyForwardEmail().domTransformers,
       const ImageTransformer(),
+      SanitizeHyperLinkTagInHtmlTransformer(rewritesKeptLinks: false),
     ],
     const [
       StandardizeHtmlSanitizingTransformers(allowAttributes: ['contenteditable']),
@@ -93,6 +96,20 @@ class TransformConfiguration {
       StandardizeHtmlSanitizingTransformers(allowAttributes: ['contenteditable']),
     ],
   );
+
+  /// "Edit as new" loads a received email into the composer: its links are
+  /// the sender's, so they are cleaned as in the viewer. The editor's link
+  /// tooltip opens a relative href on the app origin.
+  factory TransformConfiguration.forEditAsNewEmail() {
+    final editDrafts = TransformConfiguration.forEditDraftsEmail();
+    return TransformConfiguration(
+      [
+        ...editDrafts.domTransformers,
+        SanitizeHyperLinkTagInHtmlTransformer(rewritesKeptLinks: false),
+      ],
+      editDrafts.textTransformers,
+    );
+  }
 
   factory TransformConfiguration.forPreviewEmailOnWeb() => TransformConfiguration.create(
     customDomTransformers: [
@@ -200,7 +217,7 @@ class TransformConfiguration {
 
   /// Provides an easy option to customize a configuration.
   ///
-  /// Any specified [customDomTransformers] or [customTextTransformers] are being appended to the standard transformers.
+  /// Any specified [customDomTransformers] or [customTextTransformers] replace the standard transformers of that kind.
   static TransformConfiguration create({
     List<DomTransformer>? customDomTransformers,
     List<TextTransformer>? customTextTransformers

@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import 'abstract_composer_code_view_robot.dart';
 import 'abstract_composer_editor_keyboard_robot.dart';
+import 'abstract_composer_editor_link_assertion_robot.dart';
 import 'abstract_composer_recipient_robot.dart';
 import 'abstract_composer_reload_robot.dart';
 import 'abstract_composer_signature_robot.dart';
@@ -24,6 +25,9 @@ abstract class AbstractComposerRobot {
 
   /// Web only: identity signature checks in the editor iframe.
   AbstractComposerSignatureRobot? get signature;
+
+  /// Web only: link checks in the editor iframe.
+  AbstractComposerEditorLinkAssertionRobot? get editorLinks;
 
   Future<void> expectComposerViewVisible();
   /// Discards the draft if closing asks to keep it.

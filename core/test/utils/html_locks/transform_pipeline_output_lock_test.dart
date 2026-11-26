@@ -25,6 +25,13 @@ const _probe = '''
 <a href="javascript:alert(1)">js link</a>
 <a href="https://example.com/a?b=1">https link</a>
 <a href="mailto:someone@example.com">mail link</a>
+<a href="/mailto?uri=mailto%3Aattacker%40evil.test">relative link</a>
+<a href="x%3A/../../mailto?uri=x">encoded scheme link</a>
+<a href="https:/../mailto?uri=x">hostless https link</a>
+<a href="">empty href link</a>
+<a href="#part-2">fragment link</a>
+<a href="https://example.com/?q=a%26b%3Dc">encoded query link</a>
+<a href="www.example.net/w">www link</a>
 <p>bare url https://example.org/path here</p>
 <img src="cid:img-1" alt="cid image">
 <img src="https://example.com/i.png" style="max-width:600px" alt="remote image">

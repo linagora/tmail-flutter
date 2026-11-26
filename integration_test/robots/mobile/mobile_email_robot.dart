@@ -1,5 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:model/email/email_action_type.dart';
 import 'package:patrol/patrol.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 
 import '../../utils/test_timeouts.dart';
 import '../abstract/abstract_email_pdf_preview_robot.dart';
@@ -17,6 +20,12 @@ class MobileEmailRobot extends EmailRobot implements AbstractEmailRobot {
 
   @override
   final AbstractEmailPdfPreviewRobot pdfPreview;
+
+  @override
+  Future<void> editAsNewEmail() async {
+    await $(const ValueKey(UiKeys.emailDetailedMoreButton)).tap();
+    await $(ValueKey('${EmailActionType.editAsNewEmail.name}_action')).tap();
+  }
 
   @override
   Future<void> expectDownloadSaveDialogVisible() async {
