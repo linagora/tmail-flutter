@@ -4,7 +4,7 @@ import '../../scenarios/email_detailed/display_text_plain_email_with_quoted_url_
 
 void main() {
   TestBase().runPatrolTest(
-    description: 'Should keep a quoted URL inside the link of a text/plain email',
+    description: 'Should keep a quoted URL inside the link of a plain-text email',
     scenarioBuilder: ($, robots) =>
         DisplayTextPlainEmailWithQuotedUrlScenario($, robots),
     tags: [TestTags.android, TestTags.ios, TestTags.web],
