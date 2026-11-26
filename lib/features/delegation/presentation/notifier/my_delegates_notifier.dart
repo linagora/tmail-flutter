@@ -35,7 +35,7 @@ class MyDelegatesNotifier extends _$MyDelegatesNotifier with InteractorConsumer 
     ));
   }
 
-  /// Shows a list read elsewhere, such as the one an add request re-reads, and drops any older read in flight.
+  /// Shows a list read elsewhere, such as the one an add or remove request re-reads, and drops any older read in flight.
   void show(List<Delegate> delegates) {
     _latestLoadId++;
     _showList(delegates);

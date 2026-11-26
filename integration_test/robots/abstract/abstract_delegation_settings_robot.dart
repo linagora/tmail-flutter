@@ -11,4 +11,6 @@ abstract class AbstractDelegationSettingsRobot {
   Future<void> tapRemoveAccess(String ownerAddress);
 
   Future<void> confirmRemoveAccess();
+
+  Future<void> confirmRemoveDelegate();
 }

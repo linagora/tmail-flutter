@@ -15,9 +15,11 @@ import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/auto_complete_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/add_delegates_result.dart';
+import 'package:tmail_ui_user/features/delegation/domain/model/remove_delegate_result.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/delegate_providers.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/delegation/add_delegates/add_delegates_dialog.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/delegation/my_delegates_section.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/delegation/remove_delegate_dialog.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
@@ -133,7 +135,7 @@ void main() {
     expect(button.onPressed, isNotNull);
   });
 
-  testWidgets('should list every delegate without a row action and an enabled add button below', (tester) async {
+  testWidgets('should list every delegate with a remove action and an enabled add button below', (tester) async {
     await pumpSection(tester);
     await completeLoad(tester, [bob, carol]);
 
@@ -141,9 +143,10 @@ void main() {
     expect(find.byKey(emptyCard), findsNothing);
     expect(find.text(DelegationFixtures.bobAddress), findsOneWidget);
     expect(find.text(DelegationFixtures.carolAddress), findsOneWidget);
-    for (final tile in tester.widgetList<LinagoraPersonTile>(find.byType(LinagoraPersonTile))) {
-      expect(tile.action, isNull);
-    }
+    expect(
+      tester.widgetList<LinagoraPersonTile>(find.byType(LinagoraPersonTile)).map((tile) => tile.action?.tooltip),
+      [l10n.removeAccess, l10n.removeAccess],
+    );
     expect(tester.widget<LinagoraButton>(find.byKey(addButton)).onPressed, isNotNull);
   });
 
@@ -193,6 +196,59 @@ void main() {
         of: find.byKey(emptyCard),
         matching: find.byKey(LinagoraEmptyCard.actionKey),
       );
+
+  Future<RemoveDelegateDialog> openRemoveDialog(WidgetTester tester, Delegate delegate) async {
+    await tester.tap(find.byKey(LinagoraPersonTile.actionKeyFor(delegate.username)));
+    await tester.pumpAndSettle();
+    return tester.widget<RemoveDelegateDialog>(find.byType(RemoveDelegateDialog));
+  }
+
+  testWidgets('should open the remove dialog for the delegate of the tapped row', (tester) async {
+    await pumpSection(tester);
+    await completeLoad(tester, [bob, carol]);
+
+    final dialog = await openRemoveDialog(tester, carol);
+
+    expect(dialog.delegate, carol);
+    expect(repository.removeCalls, isEmpty);
+  });
+
+  testWidgets('should show the empty state the remove request re-read without reading it again', (tester) async {
+    await pumpSection(tester);
+    await completeLoad(tester, [bob]);
+    final dialog = await openRemoveDialog(tester, bob);
+
+    dialog.onDelegateRemoved(RemoveDelegateResult(removedDelegate: bob, delegates: const []));
+    await tester.pumpAndSettle();
+
+    expect(repository.getCalls, hasLength(1));
+    expect(find.byKey(emptyCard), findsOneWidget);
+    expect(find.byKey(list), findsNothing);
+  });
+
+  testWidgets('should read the list again when the remove request could not re-read it', (tester) async {
+    await pumpSection(tester);
+    await completeLoad(tester, [bob]);
+    final dialog = await openRemoveDialog(tester, bob);
+
+    dialog.onDelegateRemoved(RemoveDelegateResult(removedDelegate: bob));
+    await tester.pump();
+    await tester.runAsync(untilRepositoryCalled);
+
+    expect(repository.getCalls, hasLength(2));
+  });
+
+  testWidgets('should read the list again when the remove request fails', (tester) async {
+    await pumpSection(tester);
+    await completeLoad(tester, [bob]);
+    final dialog = await openRemoveDialog(tester, bob);
+
+    dialog.onRemoveFailed();
+    await tester.pump();
+    await tester.runAsync(untilRepositoryCalled);
+
+    expect(repository.getCalls, hasLength(2));
+  });
 
   Future<void> typeInDialog(WidgetTester tester, String address) async {
     await tester.enterText(

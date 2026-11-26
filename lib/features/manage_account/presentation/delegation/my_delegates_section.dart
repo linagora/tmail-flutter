@@ -11,11 +11,11 @@ import 'package:model/autocomplete/auto_complete_pattern.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
-import 'package:tmail_ui_user/features/delegation/domain/model/add_delegates_result.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/my_delegates_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/delegate_providers.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/widgets/account_switcher_avatar.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/delegation/add_delegates/add_delegates_dialog.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/delegation/remove_delegate_dialog.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 /// "By me" tab of Settings › Delegation: my delegates, who can use my mailbox. See ADR-0115.
@@ -70,7 +70,7 @@ class _MyDelegatesSectionState extends ConsumerState<MyDelegatesSection> {
                 if (value.isEmpty)
                   _buildEmptyCard(l10n)
                 else ...[
-                  _buildList(value),
+                  _buildList(l10n, value),
                   const SizedBox(height: 16),
                   _buildAddButton(l10n),
                 ],
@@ -102,7 +102,7 @@ class _MyDelegatesSectionState extends ConsumerState<MyDelegatesSection> {
     );
   }
 
-  Widget _buildList(List<Delegate> delegates) {
+  Widget _buildList(AppLocalizations l10n, List<Delegate> delegates) {
     return LinagoraTileGroup(
       key: const ValueKey(UiKeys.myDelegatesList),
       children: [
@@ -110,6 +110,11 @@ class _MyDelegatesSectionState extends ConsumerState<MyDelegatesSection> {
           LinagoraPersonTile(
             name: delegate.username,
             avatar: accountSwitcherAvatar(delegate.username, 40),
+            action: LinagoraPersonTileAction(
+              key: LinagoraPersonTile.actionKeyFor(delegate.username),
+              tooltip: l10n.removeAccess,
+              onPressed: () => _openRemoveDialog(delegate),
+            ),
           ),
       ],
     );
@@ -135,14 +140,23 @@ class _MyDelegatesSectionState extends ConsumerState<MyDelegatesSection> {
     AddDelegatesDialog.show(AddDelegatesDialog(
       session: widget.session,
       loadSuggestions: _loadSuggestions,
-      onDelegatesAdded: _onDelegatesAdded,
+      onDelegatesAdded: (result) => _showReread(result.delegates),
       onAddFailed: _load,
     ));
   }
 
-  void _onDelegatesAdded(AddDelegatesResult result) {
+  void _openRemoveDialog(Delegate delegate) {
+    RemoveDelegateDialog.show(RemoveDelegateDialog(
+      session: widget.session,
+      delegate: delegate,
+      onDelegateRemoved: (result) => _showReread(result.delegates),
+      onRemoveFailed: _load,
+    ));
+  }
+
+  /// Shows the list the add or remove request re-read.
+  void _showReread(List<Delegate>? delegates) {
     if (!mounted) return;
-    final delegates = result.delegates;
     // A failed re-read leaves the list stale, so read it again.
     if (delegates == null) return _load();
     ref.read(myDelegatesProvider.notifier).show(delegates);
