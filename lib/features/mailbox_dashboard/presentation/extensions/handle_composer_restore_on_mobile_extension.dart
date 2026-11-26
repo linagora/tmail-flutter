@@ -13,7 +13,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
 extension HandleComposerRestoreOnMobileExtension on MailboxDashBoardController {
-  /// [onlyDelegated] skips mine, whose draft the session load already restored.
+  /// Restores mine by default, the session load owns it. [onlyDelegated] restores the draft of
+  /// a delegated mailbox only, for the switch that shows it, so each draft opens once.
   Future<void> checkAndRestoreComposerOnMobile({bool onlyDelegated = false}) async {
     // The shown account only. Mine restores as today; a delegated snapshot waits
     // until that mailbox is shown, after the start switch (ADR-0114).
@@ -35,7 +36,8 @@ extension HandleComposerRestoreOnMobileExtension on MailboxDashBoardController {
     final shownAccountId = activeAccountId;
     final session = sessionCurrent;
     if (shownAccountId == null || session == null) return true;
-    if (onlyDelegated && shownAccountId == session.accountId) return true;
+    final mineShown = shownAccountId == session.accountId;
+    if (onlyDelegated == mineShown) return true;
 
     final cache = await _resolveRestorableCache(shownAccountId, session.username);
     if (activeAccountId != shownAccountId) return false;
