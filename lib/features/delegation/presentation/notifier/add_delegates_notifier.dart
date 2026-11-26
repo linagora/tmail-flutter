@@ -24,6 +24,8 @@ class AddDelegatesNotifier extends _$AddDelegatesNotifier with InteractorConsume
     required String ownUsername,
     required Set<String> delegateUsernames,
   }) {
+    // The request already holds its chips, so a chip picked now would never be sent.
+    if (state.isSubmitting) return DelegateAddressRefusal.submitting;
     final username = emailAddress.emailAddress.trim().toLowerCase();
     if (!GetUtils.isEmail(username) && !AppUtils.isEmailLocalhost(username)) {
       return DelegateAddressRefusal.invalid;

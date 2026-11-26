@@ -196,12 +196,12 @@ class AddDelegatesDialog extends ConsumerWidget {
         );
     final message = _refusalMessage(AppLocalizations.of(context), refusal, emailAddress);
     if (message != null) ref.read(appToastProvider).showToastErrorMessage(context, message);
-    return message == null;
+    return refusal == null || refusal == DelegateAddressRefusal.alreadyPicked;
   }
 
   String? _refusalMessage(AppLocalizations l10n, DelegateAddressRefusal? refusal, EmailAddress emailAddress) {
     return switch (refusal) {
-      null || DelegateAddressRefusal.alreadyPicked => null,
+      null || DelegateAddressRefusal.alreadyPicked || DelegateAddressRefusal.submitting => null,
       DelegateAddressRefusal.invalid => l10n.invalidDelegateEmailAddress,
       DelegateAddressRefusal.yourself => l10n.cannotDelegateToYourself,
       DelegateAddressRefusal.alreadyDelegate => l10n.alreadyHasDelegateAccess(emailAddress.emailAddress.trim()),

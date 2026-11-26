@@ -4,7 +4,7 @@ import 'package:model/extensions/email_address_extension.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/add_delegates_result.dart';
 
 /// Why a typed or picked address cannot become a delegate.
-enum DelegateAddressRefusal { invalid, yourself, alreadyDelegate, alreadyPicked }
+enum DelegateAddressRefusal { invalid, yourself, alreadyDelegate, alreadyPicked, submitting }
 
 /// An address picked in the add dialog. [isRejected] once the server refused it.
 class DelegateCandidate with EquatableMixin {

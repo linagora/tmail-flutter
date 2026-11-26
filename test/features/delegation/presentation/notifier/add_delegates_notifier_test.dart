@@ -181,6 +181,15 @@ void main() {
       expect(form().isSubmitting, isTrue);
     });
 
+    test('should refuse a pick while the request runs and keep only the chips it sends', () async {
+      unawaited(notifier().submit(session));
+      await _untilRepositoryCalled();
+
+      expect(pick(daveAddress), DelegateAddressRefusal.submitting);
+      expect(form().candidates.map((candidate) => candidate.username),
+          [DelegationFixtures.bobAddress, DelegationFixtures.carolAddress]);
+    });
+
     test('should send only one request on a repeat tap', () async {
       final first = notifier().submit(session);
       final repeat = await notifier().submit(session);
