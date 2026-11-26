@@ -671,9 +671,12 @@ class ThreadController extends BaseController
     }
   }
 
-  // Reloads through the search when one is running, so its results stay.
-  Future<void> _reloadFromClearedEmailCache() =>
-      refreshAllEmail(shouldClearCache: true);
+  // A web search owns the list; elsewhere the mailbox list reloads.
+  Future<void> _reloadFromClearedEmailCache() async {
+    if (_webSearchOwnsList) return refreshAllEmail(shouldClearCache: true);
+    await cachingManager.clearAllEmailAndStateCache();
+    getAllEmailAction(forceEmailQuery: forceEmailQuery);
+  }
 
   void resetToOriginalValue() {
     log('ThreadController::resetToOriginalValue');

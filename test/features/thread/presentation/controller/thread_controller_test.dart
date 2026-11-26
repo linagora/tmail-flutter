@@ -3445,6 +3445,26 @@ void main() {
       );
 
       testWidgets(
+        'WHEN a mobile search is running and the server cannot calculate changes '
+        'THEN the mailbox list is reloaded',
+        (tester) async {
+          when(mockSearchController.isSearchEmailRunning).thenReturn(true);
+          clearInteractions(mockGetEmailsInMailboxInteractor);
+          await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+          stubRefreshAnswers((_) => [
+                Left(RefreshChangesAllEmailFailure(
+                  CannotCalculateChangesMethodResponseException(),
+                )),
+              ]);
+
+          await pushEmailState(tester);
+
+          verify(mockCachingManager.clearAllEmailAndStateCache()).called(1);
+          verify(_fetchEmailsOf(mockGetEmailsInMailboxInteractor, any)).called(1);
+        },
+      );
+
+      testWidgets(
         'WHEN a stopped drain returns the cursor it was asked from '
         'THEN it is not requested again',
         (tester) async {
