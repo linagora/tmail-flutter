@@ -253,6 +253,20 @@ void main() {
         // The text URL must be linkified
         expect(result, contains('href="https://example.com"'));
       });
+
+      test('SHOULD keep the linkified text after a preceding sibling element', () async {
+        final result = await transform('<p><b>details</b> at www.a.bc now</p>');
+
+        expect(result, startsWith('<p><b>details</b> at <a '));
+        expect(result, endsWith('</a> now</p>'));
+      });
+
+      test('SHOULD keep the linkified text before a following sibling element', () async {
+        final result = await transform('<p>see www.a.bc <b>now</b></p>');
+
+        expect(result, startsWith('<p>see <a '));
+        expect(result, endsWith('</a> <b>now</b></p>'));
+      });
     });
 
     // -----------------------------------------------------------------------
@@ -589,6 +603,39 @@ void main() {
             reason: 'SanitizeHyperLinkTagInHtmlTransformer must be in the list');
         expect(autolinkIdx, lessThan(sanitizeIdx),
             reason: 'AutolinkTextNodeTransformer must come before SanitizeHyperLinkTagInHtmlTransformer');
+      });
+    });
+
+    group('Large text node', () {
+      test('SHOULD linkify a 100 KB run of email local-part characters in bounded time', () async {
+        final watch = Stopwatch()..start();
+
+        final result = await transform('<p>${'a' * 100000}</p><p>x@y.zz</p>');
+
+        expect(watch.elapsed, lessThan(const Duration(seconds: 5)));
+        expect(result, contains('href="mailto:x@y.zz"'));
+      });
+
+      test('SHOULD linkify 50000 URLs in one text node in bounded time and keep their order', () async {
+        final watch = Stopwatch()..start();
+
+        final result = await transform('<p>start ${'www.a.bc ' * 50000}end</p>');
+
+        expect(watch.elapsed, lessThan(const Duration(seconds: 2)));
+        expect('href="https://www.a.bc"'.allMatches(result), hasLength(50000));
+        expect(result, startsWith('<p>start <a '));
+        expect(result, endsWith('</a> end</p>'));
+      });
+
+      test('SHOULD linkify 50000 <br>-separated URL lines in bounded time and keep their order', () async {
+        final watch = Stopwatch()..start();
+
+        final result = await transform('<p>start<br>${'www.a.bc<br>' * 50000}end</p>');
+
+        expect(watch.elapsed, lessThan(const Duration(seconds: 2)));
+        expect('href="https://www.a.bc"'.allMatches(result), hasLength(50000));
+        expect(result, startsWith('<p>start<br><a '));
+        expect(result, endsWith('</a><br>end</p>'));
       });
     });
   });
