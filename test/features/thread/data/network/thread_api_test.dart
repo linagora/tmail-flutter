@@ -4,6 +4,7 @@ import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -933,6 +934,59 @@ void main() {
         expect(result.created, createdEmails);
         expect(result.updated, updatedEmails);
         expect(result.newStateChanges, newState);
+      });
+
+      test(
+          'should rethrow a method error other than cannotCalculateChanges '
+          'without asking again', () async {
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(200, {
+            "sessionState": sessionState.value,
+            "methodResponses": [
+              ["error", {"type": "serverFail"}, "c0"],
+              ["error", {"type": "invalidResultReference"}, "c1"],
+              ["error", {"type": "invalidResultReference"}, "c2"],
+            ],
+          }),
+          data: generateRequest(
+            propertiesCreated: defaultCreatedProperties,
+            propertiesUpdated: defaultUpdatedProperties,
+          ),
+          headers: dioAdapterHeaders,
+        );
+        // Only a request without maxChanges succeeds, so a second ask would hide the error.
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(
+            200,
+            generateResponse(
+              propertiesCreated: defaultCreatedProperties,
+              propertiesUpdated: defaultUpdatedProperties,
+            ),
+          ),
+          data: generateRequest(
+            propertiesCreated: defaultCreatedProperties,
+            propertiesUpdated: defaultUpdatedProperties,
+            maxChanges: null,
+          ),
+          headers: dioAdapterHeaders,
+        );
+
+        await expectLater(
+          threadApi.getChanges(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            sinceState,
+            propertiesCreated: defaultCreatedProperties,
+            propertiesUpdated: defaultUpdatedProperties,
+          ),
+          throwsA(isA<ErrorMethodResponseException>().having(
+            (e) => e.errorResponse,
+            'errorResponse',
+            isA<ServerFailMethodResponse>(),
+          )),
+        );
       });
 
       test(

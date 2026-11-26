@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
@@ -508,6 +510,39 @@ void main() {
             .toList();
         expect(sentMaxChanges, [30, null]);
         expect(result.newStateChanges, State('new'));
+      });
+
+      test('Should rethrow a method error other than cannotCalculateChanges without asking again', () async {
+        when(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).thenAnswer((_) async => {
+          "methodResponses": [
+            ["error", {"type": "serverFail"}, "c0"],
+            ["error", {"type": "invalidResultReference"}, "c1"],
+            ["error", {"type": "invalidResultReference"}, "c2"],
+          ],
+          "sessionState": "0"
+        });
+
+        await expectLater(
+          mailboxAPI.getChanges(
+            SessionFixtures.getAliceSessionWithMaxObjectsInGet(30),
+            accountId,
+            State('old'),
+          ),
+          throwsA(isA<ErrorMethodResponseException>().having(
+            (e) => e.errorResponse,
+            'errorResponse',
+            isA<ServerFailMethodResponse>(),
+          )),
+        );
+        verify(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).called(1);
       });
     });
 
