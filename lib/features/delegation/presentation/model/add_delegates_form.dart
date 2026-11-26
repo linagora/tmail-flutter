@@ -39,6 +39,11 @@ class AddDelegatesForm with EquatableMixin {
   bool get canGoNext =>
       candidates.isNotEmpty && candidates.every((candidate) => !candidate.isRejected);
 
+  /// Next picks the typed address first, so typed text alone is enough to press it.
+  bool get canPressNext =>
+      candidates.every((candidate) => !candidate.isRejected) &&
+      (candidates.isNotEmpty || pendingAddress.trim().isNotEmpty);
+
   AddDelegatesForm copyWith({
     List<DelegateCandidate>? candidates,
     AddDelegatesStep? step,

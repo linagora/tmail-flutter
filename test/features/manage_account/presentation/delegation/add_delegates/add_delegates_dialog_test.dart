@@ -166,7 +166,6 @@ void main() {
 
     expect(appToast.errorMessages, [l10n.cannotDelegateToYourself]);
     expect(tester.widget<TextField>(addressInput()).controller!.text, DelegationFixtures.aliceAddress);
-    expect(isEnabled(tester, UiKeys.addDelegatesNextButton), isFalse);
   });
 
   testWidgets('should refuse an existing delegate with a toast', (tester) async {
@@ -384,6 +383,24 @@ void main() {
       await tester.enterText(addressInput(), address);
       await tester.pumpAndSettle(const Duration(milliseconds: 200));
     }
+
+    testWidgets('should enable Next and be picked on it when no chip exists yet', (tester) async {
+      await openDialog(tester);
+      await typeWithoutEnter(tester, daveAddress);
+
+      expect(isEnabled(tester, UiKeys.addDelegatesNextButton), isTrue);
+      await goNext(tester);
+
+      expect(find.text(l10n.addDelegatesConfirmation), findsOneWidget);
+      expect(find.text(daveAddress), findsOneWidget);
+    });
+
+    testWidgets('should keep Next disabled for blank text', (tester) async {
+      await openDialog(tester);
+      await typeWithoutEnter(tester, '   ');
+
+      expect(isEnabled(tester, UiKeys.addDelegatesNextButton), isFalse);
+    });
 
     testWidgets('should be picked on Next and listed on the confirm step', (tester) async {
       await openDialog(tester);

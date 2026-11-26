@@ -188,7 +188,7 @@ class AddDelegatesDialog extends ConsumerWidget {
       positiveLabel: isPickStep ? l10n.next : l10n.addDelegate,
       negativeKey: const ValueKey(UiKeys.addDelegatesCancelButton),
       positiveKey: ValueKey(isPickStep ? UiKeys.addDelegatesNextButton : UiKeys.addDelegatesSubmitButton),
-      isPositiveActionEnabled: form.canGoNext && !form.isSubmitting,
+      isPositiveActionEnabled: form.canPressNext && !form.isSubmitting,
       isProgressing: form.isSubmitting,
       onNegativeAction: () {
         if (form.isSubmitting) return;
