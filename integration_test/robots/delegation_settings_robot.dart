@@ -1,5 +1,6 @@
 import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/delegation/delegation_settings_view.dart';
@@ -42,5 +43,15 @@ class DelegationSettingsRobot extends CoreRobot
   @override
   Future<void> confirmRemoveDelegate() async {
     await $(const ValueKey(UiKeys.removeDelegateSubmitButton)).tap();
+  }
+
+  @override
+  Future<void> cancelRemoveAccessWithMouse() async {
+    // A mouse click puts focus in traditional highlight mode, where the tab focus ring can show.
+    await $.tester.tap(
+      $(ConfirmDialogButton).$(AppLocalizations().cancel),
+      kind: PointerDeviceKind.mouse,
+    );
+    await $.pumpAndSettle();
   }
 }
