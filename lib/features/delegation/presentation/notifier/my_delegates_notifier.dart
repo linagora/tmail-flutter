@@ -17,7 +17,8 @@ class MyDelegatesNotifier extends _$MyDelegatesNotifier with InteractorConsumer 
 
   Future<void> load(Session session) async {
     final loadId = ++_latestLoadId;
-    state = const AsyncLoading();
+    // A reload keeps the current list on screen instead of a spinner.
+    if (!state.hasValue) state = const AsyncLoading();
     final interactor = ref.read(getDelegatesInteractorProvider);
     await consumeInteractor(InteractorConsumeRequest(
       run: () => interactor.execute(session).last,
