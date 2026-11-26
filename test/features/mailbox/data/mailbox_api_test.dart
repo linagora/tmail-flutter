@@ -442,6 +442,73 @@ void main() {
         final changesArgs = (sent['methodCalls'] as List).first[1] as Map<String, dynamic>;
         expect(changesArgs['maxChanges'], 30);
       });
+
+      test('Should ask again without maxChanges when the server cannot split a single change', () async {
+        var calls = 0;
+        when(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).thenAnswer((_) async {
+          calls++;
+          if (calls == 1) {
+            return {
+              "methodResponses": [
+                ["error", {"type": "cannotCalculateChanges"}, "c0"],
+                ["error", {"type": "invalidResultReference"}, "c1"],
+                ["error", {"type": "invalidResultReference"}, "c2"],
+              ],
+              "sessionState": "0"
+            };
+          }
+          return {
+            "methodResponses": [
+              [
+                "Mailbox/changes",
+                {
+                  "accountId": accountId.asString,
+                  "oldState": "old",
+                  "newState": "new",
+                  "hasMoreChanges": false,
+                  "created": [],
+                  "updated": [],
+                  "destroyed": [],
+                },
+                "c0"
+              ],
+              for (final callId in ['c1', 'c2'])
+                [
+                  "Mailbox/get",
+                  {
+                    "accountId": accountId.asString,
+                    "state": "new",
+                    "list": [],
+                    "notFound": [],
+                  },
+                  callId
+                ],
+            ],
+            "sessionState": "0"
+          };
+        });
+
+        final result = await mailboxAPI.getChanges(
+          SessionFixtures.getAliceSessionWithMaxObjectsInGet(30),
+          accountId,
+          State('old'),
+        );
+
+        final sent = verify(httpClient.post(
+          '',
+          data: captureAnyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).captured.cast<Map<String, dynamic>>();
+        final sentMaxChanges = sent
+            .map((request) => (request['methodCalls'] as List).first[1]['maxChanges'])
+            .toList();
+        expect(sentMaxChanges, [30, null]);
+        expect(result.newStateChanges, State('new'));
+      });
     });
 
     group('clearMailbox method test', () {
