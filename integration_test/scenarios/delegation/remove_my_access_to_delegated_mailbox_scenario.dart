@@ -18,6 +18,7 @@ class RemoveMyAccessToDelegatedMailboxScenario extends BaseTestScenario
 
     await robots.mailboxMenuRobot().openSetting();
     await settingsRobot.openSettingsDetail(AccountMenuItem.delegation);
+    await delegationRobot.openDelegatedToMeTab();
     await delegationRobot.assertion.expectDelegatedToMeListed(ownerAddress);
 
     await delegationRobot.tapRemoveAccess(ownerAddress);

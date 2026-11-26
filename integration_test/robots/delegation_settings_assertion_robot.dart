@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 
 import '../base/core_robot.dart';
@@ -16,5 +18,23 @@ class DelegationSettingsAssertionRobot extends CoreRobot
   @override
   Future<void> expectNothingDelegatedToMe() async {
     await $(const ValueKey(UiKeys.delegatedToMeEmptyCard)).waitUntilVisible();
+  }
+
+  @override
+  Future<void> expectNoOneHasAccessToMyMailbox() async {
+    final addButton = $(const ValueKey(UiKeys.myDelegatesEmptyCard)).$(LinagoraEmptyCard.actionKey);
+    await addButton.waitUntilVisible();
+    expect($.tester.widget<LinagoraButton>(addButton).onPressed, isNull);
+  }
+
+  @override
+  Future<void> expectMyDelegatesListed(List<String> delegateAddresses) async {
+    final list = $(const ValueKey(UiKeys.myDelegatesList));
+    for (final address in delegateAddresses) {
+      await list.$(address).waitUntilVisible();
+    }
+    final addButton = $(const ValueKey(UiKeys.myDelegatesAddButton));
+    await addButton.waitUntilVisible();
+    expect($.tester.widget<LinagoraButton>(addButton).onPressed, isNull);
   }
 }
