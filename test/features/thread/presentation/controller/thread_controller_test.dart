@@ -3445,6 +3445,38 @@ void main() {
       );
 
       testWidgets(
+        'WHEN a web search is running and the server cannot calculate changes '
+        'THEN the next push does not clear the cache again',
+        (tester) async {
+          PlatformInfo.isTestingForWeb = true;
+          addTearDown(() => PlatformInfo.isTestingForWeb = false);
+          when(mockSearchController.isSearchEmailRunning).thenReturn(true);
+          jmap.State? appliedState = jmap.State('old-state');
+          when(mockMailboxDashBoardController.currentEmailState)
+              .thenAnswer((_) => appliedState);
+          when(mockMailboxDashBoardController.setCurrentEmailState(any))
+              .thenAnswer((invocation) {
+            appliedState = invocation.positionalArguments.first as jmap.State?;
+          });
+          await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+          stubRefreshAnswers((_) => [
+                Left(RefreshChangesAllEmailFailure(
+                  CannotCalculateChangesMethodResponseException(),
+                )),
+              ]);
+
+          await pushEmailState(tester);
+          emailAction.value =
+              RefreshChangeEmailAction(newState: jmap.State('new-state-2'));
+          await tester.runAsync(
+            () => Future<void>.delayed(const Duration(milliseconds: 300)),
+          );
+
+          verify(mockCachingManager.clearAllEmailAndStateCache()).called(1);
+        },
+      );
+
+      testWidgets(
         'WHEN a mobile search is running and the server cannot calculate changes '
         'THEN the mailbox list is reloaded',
         (tester) async {

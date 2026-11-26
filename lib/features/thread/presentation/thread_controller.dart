@@ -673,7 +673,12 @@ class ThreadController extends BaseController
 
   // A web search owns the list; elsewhere the mailbox list reloads.
   Future<void> _reloadFromClearedEmailCache() async {
-    if (_webSearchOwnsList) return refreshAllEmail(shouldClearCache: true);
+    if (_webSearchOwnsList) {
+      await refreshAllEmail(shouldClearCache: true);
+      // Search never sets a state; the stale one would fail and clear again on each push.
+      mailboxDashBoardController.setCurrentEmailState(null);
+      return;
+    }
     await cachingManager.clearAllEmailAndStateCache();
     getAllEmailAction(forceEmailQuery: forceEmailQuery);
   }
