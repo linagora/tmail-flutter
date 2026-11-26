@@ -3443,6 +3443,28 @@ void main() {
           verifyNever(_fetchEmailsOf(mockGetEmailsInMailboxInteractor, any));
         },
       );
+
+      testWidgets(
+        'WHEN a stopped drain returns the cursor it was asked from '
+        'THEN it is not requested again',
+        (tester) async {
+          await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+          stubRefreshAnswers((_) => [
+                Right(RefreshChangesAllEmailSuccess(
+                  emailList: const [],
+                  currentEmailState: jmap.State('old-state'),
+                  emailChangeResponse: EmailChangeResponse(
+                    hasMoreChanges: true,
+                    newStateChanges: jmap.State('old-state'),
+                  ),
+                )),
+              ]);
+
+          await pushEmailState(tester);
+
+          verifyRefreshExecuted().called(1);
+        },
+      );
     });
   });
 }
