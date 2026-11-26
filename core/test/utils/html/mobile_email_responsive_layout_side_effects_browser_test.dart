@@ -1,5 +1,7 @@
 @TestOn('chrome')
 
+import 'dart:math';
+
 import 'package:flutter_test/flutter_test.dart';
 
 import 'mobile_email_responsive_layout_fixture.dart';
@@ -32,19 +34,20 @@ void main() {
 /// documents instead: quadrupling the element count must not cost far more
 /// than four times the work.
 ///
-/// Measured locally the ratio sits at 3.0-3.1 across runs, because a fixed
-/// per-pass overhead is amortised over the larger document. A quadratic scan
-/// puts it near 16, so the allowance below is wide enough never to flake and
-/// still far below what a regression would produce.
+/// The timing also covers the frame the pass runs in and the browser's own
+/// layout of the document. Locally the ratio sits at 3-4, but headless Chrome
+/// on CI lands at 9-10 on a single run. Each size keeps its fastest of several
+/// runs, since noise only adds time, and the allowance stays below the 16 a
+/// quadratic scan reaches even locally.
 void verifyLargeEmailStaysLinear() {
   const smallRows = 1000;
   const largeRows = smallRows * 4;
-  const maxGrowthFactor = 8;
+  const maxGrowthFactor = 12;
 
   test('reflows four times the elements in far less than four times the '
       'squared work', () async {
-    final small = await _settleLargeEmail(smallRows);
-    final large = await _settleLargeEmail(largeRows);
+    final small = await _fastestSettle(smallRows);
+    final large = await _fastestSettle(largeRows);
 
     expect(
       large / small,
@@ -55,6 +58,14 @@ void verifyLargeEmailStaysLinear() {
           'points at a scan that no longer grows linearly',
     );
   }, timeout: const Timeout(Duration(minutes: 2)));
+}
+
+Future<double> _fastestSettle(int rows, {int runs = 5}) async {
+  var fastest = double.infinity;
+  for (var run = 0; run < runs; run++) {
+    fastest = min(fastest, await _settleLargeEmail(rows));
+  }
+  return fastest;
 }
 
 /// Renders an email of [rows] rows, asserts it was actually reflowed, and
