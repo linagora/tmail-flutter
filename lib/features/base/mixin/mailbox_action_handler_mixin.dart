@@ -26,9 +26,10 @@ import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 mixin MailboxActionHandlerMixin {
   AccountId? get activeAccountId;
   bool get isAuthenticatedWithOidc;
+  AppRouteTabEnvironment get tabEnvironment => const AppRouteTabEnvironment();
 
   void openMailboxInNewTabAction(PresentationMailbox mailbox) {
-    const AppRouteTabEnvironment().openInNewTab(
+    tabEnvironment.openInNewTab(
       mailbox.mailboxRouteWeb.toString(),
       isBasicAuth: !isAuthenticatedWithOidc,
     );

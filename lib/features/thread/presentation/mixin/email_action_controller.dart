@@ -41,6 +41,7 @@ mixin EmailActionController {
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   AccountId? get activeAccountId;
   bool get isAuthenticatedWithOidc;
+  AppRouteTabEnvironment get tabEnvironment => const AppRouteTabEnvironment();
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
 
@@ -391,7 +392,7 @@ mixin EmailActionController {
   }
 
   void openEmailInNewTabAction(PresentationEmail email) {
-    const AppRouteTabEnvironment().openInNewTab(
+    tabEnvironment.openInNewTab(
       email.routeWebAsString,
       isBasicAuth: !isAuthenticatedWithOidc,
     );
