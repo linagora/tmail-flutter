@@ -3,7 +3,7 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
-    <application>
+    <application android:networkSecurityConfig="@xml/ci_network_security_config">
         <activity android:name="com.linagora.android.tmail.KeyboardTestActivity" android:exported="false" />
     </application>
 </manifest>
