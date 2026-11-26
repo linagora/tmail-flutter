@@ -65,7 +65,10 @@ class AddDelegatesIgnored extends AddDelegatesSubmission {
 
 /// The request failed, so its outcome on the server is unknown.
 class AddDelegatesFailed extends AddDelegatesSubmission {
-  const AddDelegatesFailed();
+  /// The urgent handler already showed the error, so the caller shows nothing more.
+  final bool wasRoutedAsUrgent;
+
+  const AddDelegatesFailed({this.wasRoutedAsUrgent = false});
 }
 
 class AddDelegatesSucceeded extends AddDelegatesSubmission {

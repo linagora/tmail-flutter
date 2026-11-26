@@ -212,7 +212,7 @@ class AddDelegatesDialog extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final toast = ref.read(appToastProvider);
     switch (await ref.read(addDelegatesProvider.notifier).submit(session)) {
-      case AddDelegatesIgnored():
+      case AddDelegatesIgnored() || AddDelegatesFailed(wasRoutedAsUrgent: true):
         return;
       case AddDelegatesFailed():
         onAddFailed();

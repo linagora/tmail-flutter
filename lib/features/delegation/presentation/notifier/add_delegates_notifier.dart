@@ -3,6 +3,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:tmail_ui_user/features/base/handle_urgent_exception.dart';
 import 'package:tmail_ui_user/features/base/interactor_consumer.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/add_delegates_result.dart';
 import 'package:tmail_ui_user/features/delegation/domain/state/add_delegates_state.dart';
@@ -61,6 +62,7 @@ class AddDelegatesNotifier extends _$AddDelegatesNotifier with InteractorConsume
     state = state.copyWith(isSubmitting: true);
 
     AddDelegatesResult? result;
+    var wasRoutedAsUrgent = false;
     await consumeInteractor(InteractorConsumeRequest(
       run: () => interactor.execute(session, usernames).last,
       // The dialog cannot close while this runs, and a created delegate must reach the caller anyway.
@@ -68,11 +70,13 @@ class AddDelegatesNotifier extends _$AddDelegatesNotifier with InteractorConsume
       onSuccess: (success) {
         if (success is AddDelegatesSuccess) result = success.result;
       },
-      onFailure: (_, __) {},
+      onFailure: (error, _) => wasRoutedAsUrgent = isUrgentException(error),
     ));
     final added = result;
     if (ref.mounted) state = _formAfter(added);
-    return added == null ? const AddDelegatesFailed() : AddDelegatesSucceeded(added);
+    return added == null
+        ? AddDelegatesFailed(wasRoutedAsUrgent: wasRoutedAsUrgent)
+        : AddDelegatesSucceeded(added);
   }
 
   AddDelegatesForm _formAfter(AddDelegatesResult? result) {

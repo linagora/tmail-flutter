@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/avatar/gradient_circle_avatar_icon.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
+import 'package:tmail_ui_user/features/base/urgent_exception_handler.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_input_tag_item.dart';
 import 'package:delegation/model/delegate.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -26,6 +28,19 @@ import 'package:tmail_ui_user/main/providers/app_toast_provider.dart';
 import '../../../../../fixtures/delegate_fakes.dart';
 import '../../../../../fixtures/delegation_fixtures.dart';
 import '../../../../../fixtures/recording_app_toast.dart';
+
+/// Stands for an error the app routes as urgent, such as a lost connection or expired credentials.
+class _UrgentError implements Exception {}
+
+class _RecordingUrgentExceptionHandler implements UrgentExceptionHandler {
+  final List<Exception?> routed = [];
+
+  @override
+  bool validateUrgentException(dynamic exception) => exception is _UrgentError;
+
+  @override
+  void handleUrgentException({Failure? failure, Exception? exception}) => routed.add(exception);
+}
 
 void main() {
   final l10n = AppLocalizations();
@@ -309,6 +324,23 @@ void main() {
     expect(appToast.errorMessages, [l10n.couldNotAddDelegates]);
     expect(dialog(), findsOneWidget);
     expect(find.byType(Chip), findsOneWidget);
+    expect(isEnabled(tester, UiKeys.addDelegatesSubmitButton), isTrue);
+  });
+
+  testWidgets('should leave the error to the urgent handler and not report a failed add when the request fails with an urgent error', (tester) async {
+    final urgentHandler = _RecordingUrgentExceptionHandler();
+    Get.put<UrgentExceptionHandler>(urgentHandler);
+    await openDialog(tester);
+    await typeAddress(tester, DelegationFixtures.bobAddress);
+
+    await tapAdd(tester);
+    repository.pendingAdds.last.completeError(_UrgentError());
+    await tester.pumpAndSettle();
+
+    expect(urgentHandler.routed, hasLength(1));
+    expect(failedAdds, 0);
+    expect(appToast.errorMessages, isEmpty);
+    expect(dialog(), findsOneWidget);
     expect(isEnabled(tester, UiKeys.addDelegatesSubmitButton), isTrue);
   });
 
