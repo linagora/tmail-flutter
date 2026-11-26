@@ -113,5 +113,22 @@ void main() {
       repository.pendingGets.single.complete([bob]);
       await expectLater(load, completes);
     });
+
+    test('should drop a read that finishes after the By me tab stops listening', () async {
+      final tabContainer = ProviderContainer(overrides: [
+        delegateRepositoryProvider.overrideWithValue(repository),
+      ]);
+      addTearDown(tabContainer.dispose);
+      final tab = tabContainer.listen(myDelegatesProvider, (_, __) {});
+      final load = tabContainer.read(myDelegatesProvider.notifier).load(session);
+      await untilRepositoryCalled();
+
+      tab.close();
+      await tabContainer.pump();
+      expect(tabContainer.exists(myDelegatesProvider), isFalse);
+
+      repository.pendingGets.single.complete([bob]);
+      await expectLater(load, completes);
+    });
   });
 }
