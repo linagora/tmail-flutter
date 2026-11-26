@@ -29,6 +29,7 @@ class DelegateAddressField extends StatefulWidget {
   final OnPickDelegateAddress onPick;
   final OnUnpickDelegate onUnpick;
   final OnDelegateAddressTyped onTyped;
+  final bool isEnabled;
 
   const DelegateAddressField({
     super.key,
@@ -37,6 +38,7 @@ class DelegateAddressField extends StatefulWidget {
     required this.onPick,
     required this.onUnpick,
     required this.onTyped,
+    this.isEnabled = true,
   });
 
   @override
@@ -54,6 +56,22 @@ class _DelegateAddressFieldState extends State<DelegateAddressField> {
   void initState() {
     super.initState();
     _textController.addListener(_reportTyped);
+  }
+
+  @override
+  void didUpdateWidget(covariant DelegateAddressField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Add picks the typed address from outside the field, so its text is cleared once it becomes a chip.
+    if (_isTypedTextIn(widget.candidates) && !_isTypedTextIn(oldWidget.candidates)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _isTypedTextIn(widget.candidates)) _tagEditorKey.currentState?.resetTextField();
+      });
+    }
+  }
+
+  bool _isTypedTextIn(List<DelegateCandidate> candidates) {
+    final typed = _textController.text.trim().toLowerCase();
+    return typed.isNotEmpty && candidates.any((candidate) => candidate.username.toLowerCase() == typed);
   }
 
   @override
@@ -104,6 +122,7 @@ class _DelegateAddressFieldState extends State<DelegateAddressField> {
         length: candidates.length,
         controller: _textController,
         focusNodeKeyboard: _focusNode,
+        enabled: widget.isEnabled,
         keyboardType: TextInputType.emailAddress,
         textInputAction: TextInputAction.done,
         cursorColor: AppColor.primaryMain,
@@ -133,6 +152,7 @@ class _DelegateAddressFieldState extends State<DelegateAddressField> {
           candidates[index].emailAddress,
           isTagFocused: _focusedTagIndex == index,
           hasError: candidates[index].isRejected,
+          isAvatarAlwaysShown: true,
           deleteContactCallbackAction: (_) => widget.onUnpick(candidates[index]),
         ),
         findSuggestions: (query) => _findSuggestions(query, limit: AppConfig.defaultLimitAutocomplete),

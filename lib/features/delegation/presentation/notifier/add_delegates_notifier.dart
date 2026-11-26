@@ -12,7 +12,7 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 part 'add_delegates_notifier.g.dart';
 
-/// The add delegates dialog: pick addresses, confirm, then one `Delegate/set`. See ADR-0115.
+/// The add delegates dialog: pick addresses, then one `Delegate/set`. See ADR-0115.
 @riverpod
 class AddDelegatesNotifier extends _$AddDelegatesNotifier with InteractorConsumer {
   @override
@@ -49,17 +49,11 @@ class AddDelegatesNotifier extends _$AddDelegatesNotifier with InteractorConsume
     if (text != state.pendingAddress) state = state.copyWith(pendingAddress: text);
   }
 
-  void next() {
-    if (state.canGoNext) state = state.copyWith(step: AddDelegatesStep.confirm, pendingAddress: '');
-  }
-
-  void back() {
-    if (!state.isSubmitting) state = state.copyWith(step: AddDelegatesStep.pick);
-  }
+  bool get _hasChipsToSend => state.candidates.isNotEmpty && state.canAdd;
 
   /// Sends one `Delegate/set` for every chip.
   Future<AddDelegatesSubmission> submit(Session session) async {
-    if (state.isSubmitting || !state.canGoNext) return const AddDelegatesIgnored();
+    if (state.isSubmitting || !_hasChipsToSend) return const AddDelegatesIgnored();
     final usernames = state.candidates.map((candidate) => candidate.username).toSet();
     final interactor = ref.read(addDelegatesInteractorProvider);
     state = state.copyWith(isSubmitting: true);
@@ -85,7 +79,7 @@ class AddDelegatesNotifier extends _$AddDelegatesNotifier with InteractorConsume
         .where((candidate) => result.rejectedUsernames.containsKey(candidate.username))
         .map((candidate) => DelegateCandidate(candidate.emailAddress, isRejected: true))
         .toList();
-    // Nothing rejected closes the dialog, so the confirm list stays while it fades out.
+    // Nothing rejected closes the dialog, so the chips stay while it fades out.
     if (rejected.isEmpty) return state.copyWith(isSubmitting: false);
     return AddDelegatesForm(candidates: rejected);
   }

@@ -126,7 +126,6 @@ void main() {
 
     test('should not remove a chip while submitting', () async {
       pick(DelegationFixtures.bobAddress);
-      notifier().next();
       unawaited(notifier().submit(session));
 
       notifier().unpick(form().candidates.single);
@@ -135,39 +134,41 @@ void main() {
     });
   });
 
-  group('next and back', () {
-    test('should not go next without a chip', () {
-      notifier().next();
-
-      expect(form().step, AddDelegatesStep.pick);
+  group('canAdd', () {
+    test('should be false without a chip or typed text', () {
+      expect(form().canAdd, isFalse);
     });
 
-    test('should go to confirm and back to pick', () {
+    test('should be false for blank typed text', () {
+      notifier().typeAddress('   ');
+
+      expect(form().canAdd, isFalse);
+    });
+
+    test('should be true for typed text alone', () {
+      notifier().typeAddress(DelegationFixtures.bobAddress);
+
+      expect(form().canAdd, isTrue);
+    });
+
+    test('should be true once a chip is picked', () {
       pick(DelegationFixtures.bobAddress);
 
-      notifier().next();
-      expect(form().step, AddDelegatesStep.confirm);
-
-      notifier().back();
-      expect(form().step, AddDelegatesStep.pick);
+      expect(form().canAdd, isTrue);
     });
+  });
 
-    test('should not go back while submitting', () {
-      pick(DelegationFixtures.bobAddress);
-      notifier().next();
-      unawaited(notifier().submit(session));
+  test('should ignore submit and send nothing without a chip, even with typed text', () async {
+    notifier().typeAddress(DelegationFixtures.bobAddress);
 
-      notifier().back();
-
-      expect(form().step, AddDelegatesStep.confirm);
-    });
+    expect(await notifier().submit(session), isA<AddDelegatesIgnored>());
+    expect(repository.addCalls, isEmpty);
   });
 
   group('submit', () {
     setUp(() {
       pick(DelegationFixtures.bobAddress);
       pick(DelegationFixtures.carolAddress);
-      notifier().next();
     });
 
     test('should send one request with every chip and mark the form submitting', () async {
@@ -194,7 +195,7 @@ void main() {
       expect(repository.addCalls, hasLength(1));
     });
 
-    test('should keep the confirm list when every address is added', () async {
+    test('should keep the chips when every address is added', () async {
       final expected = AddDelegatesResult(
         addedUsernames: [DelegationFixtures.bobAddress, DelegationFixtures.carolAddress],
         rejectedUsernames: const {},
@@ -209,11 +210,10 @@ void main() {
           DelegateCandidate(EmailAddress(null, DelegationFixtures.bobAddress)),
           DelegateCandidate(EmailAddress(null, DelegationFixtures.carolAddress)),
         ],
-        step: AddDelegatesStep.confirm,
       ));
     });
 
-    test('should keep only the rejected chips, marked, back on the pick step', () async {
+    test('should keep only the rejected chips, marked', () async {
       final result = await submitWith(() => AddDelegatesResult(
             addedUsernames: [DelegationFixtures.bobAddress],
             rejectedUsernames: {DelegationFixtures.carolAddress: SetError(SetError.invalidArguments)},
@@ -223,10 +223,10 @@ void main() {
       expect(form(), AddDelegatesForm(
         candidates: [DelegateCandidate(EmailAddress(null, DelegationFixtures.carolAddress), isRejected: true)],
       ));
-      expect(form().canGoNext, isFalse);
+      expect(form().canAdd, isFalse);
     });
 
-    test('should allow next again once the rejected chips are removed and a new one is picked', () async {
+    test('should allow Add again once the rejected chips are removed and a new one is picked', () async {
       await submitWith(() => AddDelegatesResult(
             addedUsernames: const [],
             rejectedUsernames: {DelegationFixtures.carolAddress: null, DelegationFixtures.bobAddress: null},
@@ -237,17 +237,16 @@ void main() {
       }
       pick(daveAddress);
 
-      expect(form().canGoNext, isTrue);
+      expect(form().canAdd, isTrue);
     });
 
-    test('should keep every chip on confirm and report a failure when the request fails', () async {
+    test('should keep every chip and report a failure when the request fails', () async {
       final submit = notifier().submit(session);
       await _untilRepositoryCalled();
       repository.pendingAdds.last.completeError(Exception('boom'));
 
       expect(await submit, isA<AddDelegatesFailed>());
       expect(form().isSubmitting, isFalse);
-      expect(form().step, AddDelegatesStep.confirm);
       expect(form().candidates.map((candidate) => candidate.username),
           [DelegationFixtures.bobAddress, DelegationFixtures.carolAddress]);
     });

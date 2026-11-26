@@ -27,11 +27,6 @@ class AddDelegatesRobot extends CoreRobot implements AbstractAddDelegatesRobot {
   }
 
   @override
-  Future<void> tapNext() async {
-    await $(const ValueKey(UiKeys.addDelegatesNextButton)).tap();
-  }
-
-  @override
   Future<void> tapSubmit() async {
     await $(const ValueKey(UiKeys.addDelegatesSubmitButton)).tap();
   }

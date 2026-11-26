@@ -1,7 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:flutter/gestures.dart';
+import 'package:core/presentation/views/avatar/gradient_circle_avatar_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -119,17 +119,6 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Future<void> goNext(WidgetTester tester) async {
-    await tester.tap(find.byKey(const ValueKey(UiKeys.addDelegatesNextButton)));
-    await tester.pumpAndSettle();
-    await tester.pump(kDoubleTapTimeout);
-  }
-
-  Future<void> pickBobAndConfirm(WidgetTester tester) async {
-    await typeAddress(tester, DelegationFixtures.bobAddress);
-    await goNext(tester);
-  }
-
   Future<void> tapAdd(WidgetTester tester) async {
     await tester.tap(find.byKey(const ValueKey(UiKeys.addDelegatesSubmitButton)));
     await tester.pump();
@@ -148,15 +137,15 @@ void main() {
   Finder tappableSuggestion(String name) =>
       find.ancestor(of: find.text(name), matching: find.byType(InkWell));
 
-  testWidgets('should keep Next disabled until a valid address is picked', (tester) async {
+  testWidgets('should keep Add disabled until an address is picked', (tester) async {
     await openDialog(tester);
 
-    expect(isEnabled(tester, UiKeys.addDelegatesNextButton), isFalse);
+    expect(isEnabled(tester, UiKeys.addDelegatesSubmitButton), isFalse);
 
     await typeAddress(tester, DelegationFixtures.bobAddress);
 
     expect(find.text(DelegationFixtures.bobAddress), findsWidgets);
-    expect(isEnabled(tester, UiKeys.addDelegatesNextButton), isTrue);
+    expect(isEnabled(tester, UiKeys.addDelegatesSubmitButton), isTrue);
   });
 
   testWidgets('should refuse my own address with a toast and keep the typed text', (tester) async {
@@ -187,19 +176,19 @@ void main() {
     expect(find.text('Carol'), findsNothing);
   });
 
-  testWidgets('should list the picked addresses on the confirm step', (tester) async {
+  testWidgets('should show a typed address as a chip with an avatar', (tester) async {
     await openDialog(tester);
 
-    await pickBobAndConfirm(tester);
+    await typeAddress(tester, DelegationFixtures.bobAddress);
 
-    expect(find.text(l10n.addDelegatesConfirmation), findsOneWidget);
-    expect(find.text(DelegationFixtures.bobAddress), findsOneWidget);
-    expect(find.byKey(const ValueKey(UiKeys.addDelegatesSubmitButton)), findsOneWidget);
+    final chip = tester.widget<Chip>(find.byType(Chip));
+    expect(chip.avatar, isA<GradientCircleAvatarIcon>());
+    expect(find.descendant(of: find.byType(Chip), matching: find.text(DelegationFixtures.bobAddress)), findsOneWidget);
   });
 
   testWidgets('should close, report the result and toast when every address is added', (tester) async {
     await openDialog(tester);
-    await pickBobAndConfirm(tester);
+    await typeAddress(tester, DelegationFixtures.bobAddress);
     final result = AddDelegatesResult(addedUsernames: [DelegationFixtures.bobAddress], rejectedUsernames: const {});
 
     await tapAdd(tester);
@@ -214,9 +203,9 @@ void main() {
     expect(dialog(), findsNothing);
   });
 
-  testWidgets('should not close nor go back while the request runs', (tester) async {
+  testWidgets('should not close while the request runs', (tester) async {
     await openDialog(tester);
-    await pickBobAndConfirm(tester);
+    await typeAddress(tester, DelegationFixtures.bobAddress);
 
     await tapAdd(tester);
     await tester.tap(find.byKey(const ValueKey(UiKeys.addDelegatesCancelButton)));
@@ -228,17 +217,30 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
 
     expect(dialog(), findsOneWidget);
-    expect(find.text(l10n.addDelegatesConfirmation), findsOneWidget);
+    expect(find.byType(Chip), findsOneWidget);
     expect(repository.addCalls, hasLength(1));
 
     await replyAdd(tester, AddDelegatesResult(addedUsernames: [DelegationFixtures.bobAddress], rejectedUsernames: const {}));
+  });
+
+  testWidgets('should lock the address field while the request runs and unlock it when it fails', (tester) async {
+    await openDialog(tester);
+    await typeAddress(tester, DelegationFixtures.bobAddress);
+    bool isFieldEnabled() => tester.widget<TextField>(addressInput()).enabled ?? true;
+    expect(isFieldEnabled(), isTrue);
+
+    await tapAdd(tester);
+    expect(isFieldEnabled(), isFalse);
+
+    repository.pendingAdds.last.completeError(Exception('boom'));
+    await tester.pumpAndSettle();
+    expect(isFieldEnabled(), isTrue);
   });
 
   testWidgets('should keep the rejected chip with an error and toast the added ones', (tester) async {
     await openDialog(tester);
     await typeAddress(tester, DelegationFixtures.bobAddress);
     await typeAddress(tester, 'dave@domain.tld');
-    await goNext(tester);
     final result = AddDelegatesResult(
       addedUsernames: [DelegationFixtures.bobAddress],
       rejectedUsernames: const {'dave@domain.tld': null},
@@ -255,14 +257,13 @@ void main() {
     expect(find.text(DelegationFixtures.bobAddress), findsNothing);
     final chipBorder = tester.widget<Chip>(find.byType(Chip)).shape as RoundedRectangleBorder;
     expect(chipBorder.side.color, AppColor.colorBorderEmailAddressInvalid);
-    expect(isEnabled(tester, UiKeys.addDelegatesNextButton), isFalse);
+    expect(isEnabled(tester, UiKeys.addDelegatesSubmitButton), isFalse);
   });
 
   testWidgets('should neither suggest nor accept a delegate added before a partial reject', (tester) async {
     await openDialog(tester);
     await typeAddress(tester, DelegationFixtures.bobAddress);
     await typeAddress(tester, 'dave@domain.tld');
-    await goNext(tester);
     await tapAdd(tester);
     await replyAdd(tester, AddDelegatesResult(
       addedUsernames: [DelegationFixtures.bobAddress],
@@ -283,7 +284,7 @@ void main() {
 
   testWidgets('should show no success toast when every address is rejected', (tester) async {
     await openDialog(tester);
-    await pickBobAndConfirm(tester);
+    await typeAddress(tester, DelegationFixtures.bobAddress);
 
     await tapAdd(tester);
     await replyAdd(tester, AddDelegatesResult(
@@ -295,9 +296,9 @@ void main() {
     expect(find.text(l10n.someDelegatesCouldNotBeAdded), findsOneWidget);
   });
 
-  testWidgets('should stay on confirm with an error toast when the request fails', (tester) async {
+  testWidgets('should stay open with the chips and an error toast when the request fails', (tester) async {
     await openDialog(tester);
-    await pickBobAndConfirm(tester);
+    await typeAddress(tester, DelegationFixtures.bobAddress);
 
     await tapAdd(tester);
     repository.pendingAdds.last.completeError(Exception('boom'));
@@ -307,19 +308,24 @@ void main() {
     expect(failedAdds, 1);
     expect(appToast.errorMessages, [l10n.couldNotAddDelegates]);
     expect(dialog(), findsOneWidget);
+    expect(find.byType(Chip), findsOneWidget);
     expect(isEnabled(tester, UiKeys.addDelegatesSubmitButton), isTrue);
   });
 
-  testWidgets('should pick a suggestion with its contact name and show it on the confirm step', (tester) async {
+  testWidgets('should pick a tapped suggestion with its contact name and send its address on Add', (tester) async {
     await openDialog(tester);
     await searchContacts(tester);
 
     await tester.tap(tappableSuggestion('Bob'));
     await tester.pumpAndSettle();
-    await goNext(tester);
+    await tapAdd(tester);
 
-    expect(find.text('Bob'), findsOneWidget);
-    expect(find.text(DelegationFixtures.bobAddress), findsOneWidget);
+    final chip = tester.widget<ContactInputTagItem>(find.byType(ContactInputTagItem));
+    expect(chip.contact, EmailAddress('Bob', DelegationFixtures.bobAddress));
+    expect(repository.addCalls, [
+      {DelegationFixtures.bobAddress},
+    ]);
+    await replyAdd(tester, AddDelegatesResult(addedUsernames: [DelegationFixtures.bobAddress], rejectedUsernames: const {}));
   });
 
   testWidgets('should pick the highlighted suggestion on Enter', (tester) async {
@@ -352,7 +358,7 @@ void main() {
     expect(tappableSuggestion('Bob'), findsNothing);
   });
 
-  testWidgets('should remove a chip with its close icon and disable Next', (tester) async {
+  testWidgets('should remove a chip with its close icon and disable Add', (tester) async {
     await openDialog(tester);
     await typeAddress(tester, DelegationFixtures.bobAddress);
 
@@ -360,20 +366,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(Chip), findsNothing);
-    expect(isEnabled(tester, UiKeys.addDelegatesNextButton), isFalse);
-  });
-
-  testWidgets('should go back from confirm to the pick step with the chips kept', (tester) async {
-    await openDialog(tester);
-    await pickBobAndConfirm(tester);
-
-    await tester.tap(find.byKey(const ValueKey(UiKeys.addDelegatesCancelButton)));
-    await tester.pumpAndSettle();
-
-    expect(dialog(), findsOneWidget);
-    expect(find.text(l10n.addDelegatesConfirmation), findsNothing);
-    expect(find.byType(Chip), findsOneWidget);
-    expect(isEnabled(tester, UiKeys.addDelegatesNextButton), isTrue);
+    expect(isEnabled(tester, UiKeys.addDelegatesSubmitButton), isFalse);
   });
 
   group('a typed address not yet a chip', () {
@@ -384,71 +377,90 @@ void main() {
       await tester.pumpAndSettle(const Duration(milliseconds: 200));
     }
 
-    testWidgets('should enable Next and be picked on it when no chip exists yet', (tester) async {
+    testWidgets('should enable Add and be sent on it when no chip exists yet', (tester) async {
       await openDialog(tester);
       await typeWithoutEnter(tester, daveAddress);
 
-      expect(isEnabled(tester, UiKeys.addDelegatesNextButton), isTrue);
-      await goNext(tester);
+      expect(isEnabled(tester, UiKeys.addDelegatesSubmitButton), isTrue);
+      await tapAdd(tester);
 
-      expect(find.text(l10n.addDelegatesConfirmation), findsOneWidget);
-      expect(find.text(daveAddress), findsOneWidget);
+      expect(repository.addCalls, [
+        {daveAddress},
+      ]);
+      await replyAdd(tester, AddDelegatesResult(addedUsernames: [daveAddress], rejectedUsernames: const {}));
     });
 
-    testWidgets('should keep Next disabled for blank text', (tester) async {
+    testWidgets('should become a chip with the field cleared when Add fails, and be sent once on a retry', (tester) async {
+      await openDialog(tester);
+      await typeWithoutEnter(tester, daveAddress);
+
+      await tapAdd(tester);
+      repository.pendingAdds.last.completeError(Exception('boom'));
+      await tester.pumpAndSettle();
+
+      expect(tester.widget<TextField>(addressInput()).controller!.text, isEmpty);
+      expect(tester.widget<ContactInputTagItem>(find.byType(ContactInputTagItem)).contact, EmailAddress(null, daveAddress));
+
+      await tapAdd(tester);
+      expect(repository.addCalls, [
+        {daveAddress},
+        {daveAddress},
+      ]);
+      await replyAdd(tester, AddDelegatesResult(addedUsernames: [daveAddress], rejectedUsernames: const {}));
+    });
+
+    testWidgets('should keep the text while typing an address that is already a chip', (tester) async {
+      await openDialog(tester);
+      await typeAddress(tester, daveAddress);
+
+      await typeWithoutEnter(tester, daveAddress);
+
+      expect(tester.widget<TextField>(addressInput()).controller!.text, daveAddress);
+    });
+
+    testWidgets('should keep Add disabled for blank text', (tester) async {
       await openDialog(tester);
       await typeWithoutEnter(tester, '   ');
 
-      expect(isEnabled(tester, UiKeys.addDelegatesNextButton), isFalse);
+      expect(isEnabled(tester, UiKeys.addDelegatesSubmitButton), isFalse);
     });
 
-    testWidgets('should be picked on Next and listed on the confirm step', (tester) async {
+    testWidgets('should be sent on Add with the chips', (tester) async {
       await openDialog(tester);
       await typeAddress(tester, DelegationFixtures.bobAddress);
       await typeWithoutEnter(tester, daveAddress);
 
-      await goNext(tester);
+      await tapAdd(tester);
 
-      expect(find.text(l10n.addDelegatesConfirmation), findsOneWidget);
-      expect(find.text(DelegationFixtures.bobAddress), findsOneWidget);
-      expect(find.text(daveAddress), findsOneWidget);
+      expect(repository.addCalls, [
+        {DelegationFixtures.bobAddress, daveAddress},
+      ]);
+      await replyAdd(tester, AddDelegatesResult(
+        addedUsernames: [DelegationFixtures.bobAddress, daveAddress],
+        rejectedUsernames: const {},
+      ));
     });
 
-    testWidgets('should keep the pick step, the text and toast the reason when refused on Next', (tester) async {
+    testWidgets('should send nothing, keep the text and toast the reason when refused on Add', (tester) async {
       await openDialog(tester);
       await typeAddress(tester, DelegationFixtures.bobAddress);
       await typeWithoutEnter(tester, DelegationFixtures.aliceAddress);
 
-      await goNext(tester);
+      await tapAdd(tester);
 
-      expect(find.text(l10n.addDelegatesConfirmation), findsNothing);
+      expect(repository.addCalls, isEmpty);
+      expect(dialog(), findsOneWidget);
       expect(appToast.errorMessages, [l10n.cannotDelegateToYourself]);
       expect(tester.widget<TextField>(addressInput()).controller!.text, DelegationFixtures.aliceAddress);
       expect(find.byType(Chip), findsOneWidget);
     });
 
-    testWidgets('should not come back after its chip is removed on the pick step', (tester) async {
-      await openDialog(tester);
-      await typeAddress(tester, DelegationFixtures.bobAddress);
-      await typeWithoutEnter(tester, daveAddress);
-      await goNext(tester);
-      await tester.tap(find.byKey(const ValueKey(UiKeys.addDelegatesCancelButton)));
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.descendant(of: find.byType(Chip), matching: find.byType(SvgPicture)).last);
-      await tester.pumpAndSettle();
-      await goNext(tester);
-
-      expect(find.text(DelegationFixtures.bobAddress), findsOneWidget);
-      expect(find.text(daveAddress), findsNothing);
-    });
   });
 
   testWidgets('should count the added delegates in the toast when several are added', (tester) async {
     await openDialog(tester);
     await typeAddress(tester, DelegationFixtures.bobAddress);
     await typeAddress(tester, 'dave@domain.tld');
-    await goNext(tester);
 
     await tapAdd(tester);
     await replyAdd(tester, AddDelegatesResult(
@@ -505,20 +517,16 @@ void main() {
     expect(decorator.decoration.floatingLabelStyle!.color, AppColor.steelGrayA540);
   });
 
-  testWidgets('should not send on a double click on Next', (tester) async {
+  testWidgets('should send one request on a double click on Add', (tester) async {
     await openDialog(tester);
     await typeAddress(tester, DelegationFixtures.bobAddress);
-    final next = tester.getCenter(find.byKey(const ValueKey(UiKeys.addDelegatesNextButton)));
+    final add = tester.getCenter(find.byKey(const ValueKey(UiKeys.addDelegatesSubmitButton)));
 
-    await tester.tapAt(next);
+    await tester.tapAt(add);
     await tester.pump(const Duration(milliseconds: 120));
-    await tester.tapAt(next);
-    await tester.pump(kDoubleTapTimeout);
+    await tester.tapAt(add);
+    await tester.pump();
 
-    expect(repository.addCalls, isEmpty);
-    expect(find.text(l10n.addDelegatesConfirmation), findsOneWidget);
-
-    await tapAdd(tester);
     expect(repository.addCalls, hasLength(1));
     await replyAdd(tester, AddDelegatesResult(addedUsernames: [DelegationFixtures.bobAddress], rejectedUsernames: const {}));
   });

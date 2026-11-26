@@ -3,7 +3,5 @@ abstract class AbstractAddDelegatesRobot {
 
   Future<void> enterDelegateAddress(String address);
 
-  Future<void> tapNext();
-
   Future<void> tapSubmit();
 }

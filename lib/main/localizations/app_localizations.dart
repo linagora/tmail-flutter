@@ -6488,13 +6488,6 @@ class AppLocalizations {
     );
   }
 
-  String get addDelegatesConfirmation {
-    return Intl.message(
-      'These people will get full access to your mailbox:',
-      name: 'addDelegatesConfirmation',
-    );
-  }
-
   String get delegateEmailAddressLabel {
     return Intl.message(
       'Email address',

@@ -20,6 +20,7 @@ class ContactInputTagItem extends StatelessWidget {
   final EmailAddress contact;
   final bool isTagFocused;
   final bool hasError;
+  final bool isAvatarAlwaysShown;
   final DeleteContactCallbackAction? deleteContactCallbackAction;
 
   const ContactInputTagItem(
@@ -28,6 +29,7 @@ class ContactInputTagItem extends StatelessWidget {
       Key? key,
       this.isTagFocused = false,
       this.hasError = false,
+      this.isAvatarAlwaysShown = false,
       this.deleteContactCallbackAction
     }
   ) : super(key: key);
@@ -38,7 +40,7 @@ class ContactInputTagItem extends StatelessWidget {
 
     final itemChild = Chip(
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      avatar: contact.displayName.isNotEmpty
+      avatar: isAvatarAlwaysShown || contact.displayName.isNotEmpty
         ? GradientCircleAvatarIcon(
             colors: contact.avatarColors,
             iconSize: 20,

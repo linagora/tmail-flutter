@@ -26,7 +26,6 @@ class AddDelegateScenario extends BaseTestScenario
 
     await delegationRobot.addDelegates.openFromEmptyCard();
     await delegationRobot.addDelegates.enterDelegateAddress(delegateAddress);
-    await delegationRobot.addDelegates.tapNext();
     await delegationRobot.addDelegates.tapSubmit();
 
     await delegationRobot.assertion.expectMyDelegatesListed([delegateAddress]);

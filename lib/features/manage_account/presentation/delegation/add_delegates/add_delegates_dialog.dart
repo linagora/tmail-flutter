@@ -1,11 +1,8 @@
-import 'dart:async';
-
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/dialog/modal_list_action_button_widget.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -19,7 +16,6 @@ import 'package:tmail_ui_user/features/delegation/domain/model/add_delegates_res
 import 'package:tmail_ui_user/features/delegation/presentation/model/add_delegates_form.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/add_delegates_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/my_delegates_notifier.dart';
-import 'package:tmail_ui_user/features/delegation/presentation/widgets/account_switcher_avatar.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/delegation/add_delegates/delegate_address_field.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/providers/app_toast_provider.dart';
@@ -28,7 +24,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 typedef OnDelegatesAdded = void Function(AddDelegatesResult result);
 
-/// Two steps: pick addresses as chips, then confirm and send one `Delegate/set`. See ADR-0115.
+/// Pick addresses as chips, then Add sends one `Delegate/set`. See ADR-0115.
 class AddDelegatesDialog extends ConsumerWidget {
   static final LinagoraDialogStyle _tokens = LinagoraDialogStyle.material();
   static const EdgeInsetsGeometry _headerPadding = EdgeInsetsDirectional.symmetric(horizontal: 32, vertical: 16);
@@ -75,9 +71,7 @@ class AddDelegatesDialog extends ConsumerWidget {
               Flexible(
                 child: SingleChildScrollView(
                   padding: _tokens.contentPadding,
-                  child: form.step == AddDelegatesStep.pick
-                      ? _buildPickStep(context, ref, l10n, form)
-                      : _buildConfirmStep(l10n, form),
+                  child: _buildContent(context, ref, l10n, form),
                 ),
               ),
               Divider(height: 1, color: _tokens.dividerColor),
@@ -115,7 +109,7 @@ class AddDelegatesDialog extends ConsumerWidget {
     );
   }
 
-  Widget _buildPickStep(
+  Widget _buildContent(
     BuildContext context,
     WidgetRef ref,
     AppLocalizations l10n,
@@ -133,6 +127,8 @@ class AddDelegatesDialog extends ConsumerWidget {
           onPick: (emailAddress) => _pick(context, ref, emailAddress),
           onUnpick: ref.read(addDelegatesProvider.notifier).unpick,
           onTyped: ref.read(addDelegatesProvider.notifier).typeAddress,
+          // A chip picked while the request runs would never be sent.
+          isEnabled: !form.isSubmitting,
         ),
         if (hasRejected)
           Padding(
@@ -146,30 +142,6 @@ class AddDelegatesDialog extends ConsumerWidget {
     );
   }
 
-  Widget _buildConfirmStep(AppLocalizations l10n, AddDelegatesForm form) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildExplanation(l10n.addDelegatesConfirmation),
-        SizedBox(height: _tokens.contentGap),
-        LinagoraTileGroup(
-          children: [
-            for (final candidate in form.candidates) _buildPersonTile(candidate.emailAddress),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPersonTile(EmailAddress emailAddress) {
-    final hasName = emailAddress.displayName.isNotEmpty && emailAddress.displayName != emailAddress.emailAddress;
-    return LinagoraPersonTile(
-      name: hasName ? emailAddress.displayName : emailAddress.emailAddress,
-      subtitle: hasName ? emailAddress.emailAddress : null,
-      avatar: accountSwitcherAvatar(emailAddress.emailAddress, 40),
-    );
-  }
-
   Widget _buildExplanation(String text) {
     return Text(text, style: _tokens.messageTextStyle);
   }
@@ -180,31 +152,28 @@ class AddDelegatesDialog extends ConsumerWidget {
     AppLocalizations l10n,
     AddDelegatesForm form,
   ) {
-    final notifier = ref.read(addDelegatesProvider.notifier);
-    final isPickStep = form.step == AddDelegatesStep.pick;
-    final footer = ModalListActionButtonWidget(
+    return ModalListActionButtonWidget(
       padding: _tokens.fixedFooterPadding,
-      negativeLabel: isPickStep ? l10n.cancel : l10n.back,
-      positiveLabel: isPickStep ? l10n.next : l10n.addDelegate,
+      negativeLabel: l10n.cancel,
+      positiveLabel: l10n.addDelegate,
       negativeKey: const ValueKey(UiKeys.addDelegatesCancelButton),
-      positiveKey: ValueKey(isPickStep ? UiKeys.addDelegatesNextButton : UiKeys.addDelegatesSubmitButton),
-      isPositiveActionEnabled: form.canPressNext && !form.isSubmitting,
+      positiveKey: const ValueKey(UiKeys.addDelegatesSubmitButton),
+      isPositiveActionEnabled: form.canAdd && !form.isSubmitting,
       isProgressing: form.isSubmitting,
       onNegativeAction: () {
-        if (form.isSubmitting) return;
-        isPickStep ? popBack() : notifier.back();
+        if (!form.isSubmitting) popBack();
       },
-      onPositiveAction: () => isPickStep ? _next(context, ref) : _submit(context, ref),
+      onPositiveAction: () => _add(context, ref),
     );
-    // Add takes the place of Next, so a double click on Next must not press it.
-    return isPickStep ? footer : _DoubleClickGuard(child: footer);
   }
 
-  /// A typed address not yet a chip is picked first, so Next never drops it. Refused, it stays to be fixed.
-  void _next(BuildContext context, WidgetRef ref) {
-    final pendingAddress = ref.read(addDelegatesProvider).pendingAddress.trim();
+  /// A typed address not yet a chip is picked first, so Add never drops it. Refused, it stays to be fixed.
+  void _add(BuildContext context, WidgetRef ref) {
+    final form = ref.read(addDelegatesProvider);
+    if (form.isSubmitting) return;
+    final pendingAddress = form.pendingAddress.trim();
     if (pendingAddress.isNotEmpty && !_pick(context, ref, EmailAddress(null, pendingAddress))) return;
-    ref.read(addDelegatesProvider.notifier).next();
+    _submit(context, ref);
   }
 
   Future<List<EmailAddress>> _loadAllowedSuggestions(WidgetRef ref, String query, {int? limit}) async {
@@ -267,34 +236,4 @@ class AddDelegatesDialog extends ConsumerWidget {
       final count => l10n.delegatesHaveBeenAdded(count),
     };
   }
-}
-
-/// Ignores taps for [kDoubleTapTimeout] after it appears.
-class _DoubleClickGuard extends StatefulWidget {
-  final Widget child;
-
-  const _DoubleClickGuard({required this.child});
-
-  @override
-  State<_DoubleClickGuard> createState() => _DoubleClickGuardState();
-}
-
-class _DoubleClickGuardState extends State<_DoubleClickGuard> {
-  late final Timer _armTimer;
-  bool _isArmed = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _armTimer = Timer(kDoubleTapTimeout, () => setState(() => _isArmed = true));
-  }
-
-  @override
-  void dispose() {
-    _armTimer.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => IgnorePointer(ignoring: !_isArmed, child: widget.child);
 }

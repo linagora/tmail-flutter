@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-11-25T15:24:04.556968",
+  "@@last_modified": "2026-11-26T15:49:13.776001",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -6102,12 +6102,6 @@
   },
   "addDelegatesExplanation": "Give others full access to your mailbox. They'll get an email notification.",
   "@addDelegatesExplanation": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "addDelegatesConfirmation": "These people will get full access to your mailbox:",
-  "@addDelegatesConfirmation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
