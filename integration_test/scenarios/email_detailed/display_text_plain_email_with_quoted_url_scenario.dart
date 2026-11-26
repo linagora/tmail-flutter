@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dar
 
 import '../../base/base_test_scenario.dart';
 import '../../utils/jmap/jmap_text_plain_email_provisioner.dart';
+import '../../utils/wait_for_condition.dart';
 import '../../utils/wait_for_mailbox_ready.dart';
 
 class DisplayTextPlainEmailWithQuotedUrlScenario extends BaseTestScenario {
@@ -26,7 +27,14 @@ class DisplayTextPlainEmailWithQuotedUrlScenario extends BaseTestScenario {
     );
 
     await robots.threadRobot().openEmailWithSubject(subject);
-    await $.pumpAndSettle(duration: const Duration(seconds: 3));
+    await waitForCondition(
+      () async {
+        await $.pump();
+        return find.byType(HtmlContentViewerOnWeb).evaluate().isNotEmpty ||
+            find.byType(HtmlContentViewer).evaluate().isNotEmpty;
+      },
+      reason: 'text/plain email viewer to be mounted',
+    );
 
     final html = _renderedHtml();
     final document = html_parser.parse(html).body!;
