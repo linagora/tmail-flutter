@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/utils/sign_out_marker_storage.dart';
+import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/model/authentication_info_cache.dart';
 import 'package:tmail_ui_user/features/login/presentation/tab_guard/basic_auth_tab_guard.dart';
@@ -37,6 +39,13 @@ class FakeTabGuardBrowser implements TabGuardBrowser {
 
   @override
   void replaceWithLoginPage() => calls.add('login');
+}
+
+class _FakeComposerManager extends ComposerManager {
+  int savedAll = 0;
+
+  @override
+  void saveAllReloadSnapshots() => savedAll++;
 }
 
 void main() {
@@ -280,6 +289,20 @@ void main() {
     appGuard.checkAndLeaveIfRevoked();
 
     expect(twakeAppManager.isExecutingBeforeReconnect, isTrue);
+  });
+
+  test('forApp: a kicked tab saves the open composers before it leaves', () {
+    Get.put(ResponsiveUtils());
+    final composerManager = _FakeComposerManager();
+    Get.put<ComposerManager>(composerManager);
+    Get.put<AuthenticationInfoCacheManager>(manager);
+    addTearDown(Get.reset);
+    final appGuard = BasicAuthTabGuard.forApp();
+    signOutElsewhere();
+
+    appGuard.checkAndLeaveIfRevoked();
+
+    expect(composerManager.savedAll, 1);
   });
 
   test('inert when not on web', () {

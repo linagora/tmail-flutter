@@ -85,6 +85,14 @@ void main() {
     expect(Get.isRegistered<ComposerController>(tag: '3'), isFalse);
   });
 
+  test('saveAllReloadSnapshots writes the snapshot of every open composer', () {
+    composerManager.saveAllReloadSnapshots();
+
+    verify(mockController1.saveReloadSnapshot()).called(1);
+    verify(mockController2.saveReloadSnapshot()).called(1);
+    verify(mockController3.saveReloadSnapshot()).called(1);
+  });
+
   // Only test for desktop with minWidth = 1200
   group('ComposerManager::arrangeComposerWhenComposerQueueChanged::', () {
     test('Should keep all hidden composers unchanged when screen width changes', () {
