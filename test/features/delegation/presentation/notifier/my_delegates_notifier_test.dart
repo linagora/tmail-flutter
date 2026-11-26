@@ -105,6 +105,22 @@ void main() {
       });
     }
 
+    test('should keep the current list while reading it again', () async {
+      final first = notifier().load(session);
+      await untilRepositoryCalled();
+      repository.pendingGets.single.complete([bob]);
+      await first;
+
+      final reload = notifier().load(session);
+      await untilRepositoryCalled();
+      expect(stateOf(), isA<AsyncData<List<Delegate>>>());
+      expect(stateOf().value, [bob]);
+
+      repository.pendingGets.last.complete([bob, carol]);
+      await reload;
+      expect(stateOf().value, [bob, carol]);
+    });
+
     test('should drop a read that finishes after dispose', () async {
       final load = notifier().load(session);
       await untilRepositoryCalled();
