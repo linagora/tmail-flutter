@@ -671,10 +671,9 @@ class ThreadController extends BaseController
     }
   }
 
-  Future<void> _reloadFromClearedEmailCache() async {
-    await cachingManager.clearAllEmailAndStateCache();
-    getAllEmailAction(forceEmailQuery: forceEmailQuery);
-  }
+  // Reloads through the search when one is running, so its results stay.
+  Future<void> _reloadFromClearedEmailCache() =>
+      refreshAllEmail(shouldClearCache: true);
 
   void resetToOriginalValue() {
     log('ThreadController::resetToOriginalValue');

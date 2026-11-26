@@ -3421,6 +3421,28 @@ void main() {
           verifyRefreshExecuted().called(2);
         },
       );
+
+      testWidgets(
+        'WHEN a web search is running and the server cannot calculate changes '
+        'THEN the mailbox list does not replace the search results',
+        (tester) async {
+          PlatformInfo.isTestingForWeb = true;
+          addTearDown(() => PlatformInfo.isTestingForWeb = false);
+          when(mockSearchController.isSearchEmailRunning).thenReturn(true);
+          clearInteractions(mockGetEmailsInMailboxInteractor);
+          await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+          stubRefreshAnswers((_) => [
+                Left(RefreshChangesAllEmailFailure(
+                  CannotCalculateChangesMethodResponseException(),
+                )),
+              ]);
+
+          await pushEmailState(tester);
+
+          verify(mockCachingManager.clearAllEmailAndStateCache()).called(1);
+          verifyNever(_fetchEmailsOf(mockGetEmailsInMailboxInteractor, any));
+        },
+      );
     });
   });
 }
