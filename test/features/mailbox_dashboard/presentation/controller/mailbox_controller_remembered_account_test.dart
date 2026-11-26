@@ -289,6 +289,14 @@ void main() {
           ));
     }
 
+    /// Each disk step of the composer cache read resumes only on a pump, so real waits and pumps alternate until it lands.
+    Future<void> settleRestore(WidgetTester tester, {bool Function()? until}) async {
+      for (var attempt = 0; attempt < 50 && !(until?.call() ?? false); attempt++) {
+        await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 20)));
+        await tester.pumpAndSettle();
+      }
+    }
+
     tearDown(() async {
       final cache = appProviderContainer.read(composerCacheRepositoryProvider);
       for (final accountId in [
@@ -304,8 +312,7 @@ void main() {
       await saveDraftOnPhone(tester, DelegationFixtures.bobAccountId);
 
       await start(tester);
-      await tester.runAsync(pumpEventQueue);
-      await tester.pumpAndSettle();
+      await settleRestore(tester, until: () => restoredComposer != null);
 
       expect(restoredComposer?.accountId, DelegationFixtures.bobAccountId);
     });
@@ -314,8 +321,7 @@ void main() {
       await saveDraftOnPhone(tester, DelegationFixtures.carolAccountId);
 
       await start(tester, pickedBeforeFirstLoad: DelegationFixtures.carolAccountId);
-      await tester.runAsync(pumpEventQueue);
-      await tester.pumpAndSettle();
+      await settleRestore(tester, until: () => restoredComposer != null);
 
       expect(switchNotifier.switchToCalls, isEmpty);
       expect(restoredComposer?.accountId, DelegationFixtures.carolAccountId);
@@ -326,8 +332,7 @@ void main() {
       await saveDraftOnPhone(tester, DelegationFixtures.aliceAccountId);
 
       await start(tester);
-      await tester.runAsync(pumpEventQueue);
-      await tester.pumpAndSettle();
+      await settleRestore(tester);
 
       expect(restoredComposer, isNull);
     });
@@ -338,8 +343,7 @@ void main() {
       await saveDraftOnPhone(tester, DelegationFixtures.carolAccountId);
 
       await start(tester, pickedBeforeFirstLoad: DelegationFixtures.carolAccountId);
-      await tester.runAsync(pumpEventQueue);
-      await tester.pumpAndSettle();
+      await settleRestore(tester);
 
       expect(restoredComposer, isNull);
     });
