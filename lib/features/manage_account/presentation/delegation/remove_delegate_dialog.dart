@@ -8,6 +8,7 @@ import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/remove_delegate_result.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/model/remove_delegate_submission.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/notifier/my_delegates_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/remove_delegate_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/widgets/account_switcher_avatar.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/delegation/delegation_dialog_frame.dart';
@@ -45,6 +46,7 @@ class RemoveDelegateDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final isRemoving = ref.watch(removeDelegateProvider);
+    ref.listen(myDelegatesProvider, (_, next) => _closeIfDelegateGone(context, ref, next.value));
 
     return DelegationDialogFrame(
       key: const ValueKey(UiKeys.removeDelegateDialog),
@@ -90,11 +92,22 @@ class RemoveDelegateDialog extends ConsumerWidget {
     );
   }
 
+  /// A failed remove may still have reached the server, so a list re-read without the delegate ends the dialog.
+  void _closeIfDelegateGone(BuildContext context, WidgetRef ref, List<Delegate>? delegates) {
+    if (delegates == null || ref.read(removeDelegateProvider)) return;
+    if (delegates.every((listed) => listed.id != delegate.id)) _close(context);
+  }
+
+  /// The re-read list may already have closed it.
+  void _close(BuildContext context) {
+    if (ModalRoute.of(context)?.isCurrent ?? false) popBack();
+  }
+
   Future<void> _submit(BuildContext context, WidgetRef ref) async {
     final l10n = AppLocalizations.of(context);
     final toast = ref.read(appToastProvider);
     switch (await ref.read(removeDelegateProvider.notifier).submit(session, delegate)) {
-      case RemoveDelegateIgnored():
+      case RemoveDelegateIgnored() || RemoveDelegateFailed(wasRoutedAsUrgent: true):
         return;
       case RemoveDelegateFailed():
         onRemoveFailed();
@@ -103,7 +116,7 @@ class RemoveDelegateDialog extends ConsumerWidget {
         onDelegateRemoved(result);
         if (!context.mounted) return;
         toast.showToastSuccessMessage(context, l10n.delegateHasBeenRemoved(delegate.username));
-        popBack();
+        _close(context);
     }
   }
 }

@@ -12,7 +12,10 @@ class RemoveDelegateIgnored extends RemoveDelegateSubmission {
 
 /// The request failed, so its outcome on the server is unknown.
 class RemoveDelegateFailed extends RemoveDelegateSubmission {
-  const RemoveDelegateFailed();
+  /// The urgent handler already showed the error, so the caller shows nothing more.
+  final bool wasRoutedAsUrgent;
+
+  const RemoveDelegateFailed({this.wasRoutedAsUrgent = false});
 }
 
 class RemoveDelegateSucceeded extends RemoveDelegateSubmission {

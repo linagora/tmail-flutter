@@ -1,6 +1,7 @@
 import 'package:delegation/model/delegate.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:tmail_ui_user/features/base/handle_urgent_exception.dart';
 import 'package:tmail_ui_user/features/base/interactor_consumer.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/remove_delegate_result.dart';
 import 'package:tmail_ui_user/features/delegation/domain/state/remove_delegate_state.dart';
@@ -21,6 +22,7 @@ class RemoveDelegateNotifier extends _$RemoveDelegateNotifier with InteractorCon
     state = true;
 
     RemoveDelegateResult? result;
+    var wasRoutedAsUrgent = false;
     await consumeInteractor(InteractorConsumeRequest(
       run: () => interactor.execute(session, delegate).last,
       // The dialog cannot close while this runs, and a removed delegate must reach the caller anyway.
@@ -28,10 +30,12 @@ class RemoveDelegateNotifier extends _$RemoveDelegateNotifier with InteractorCon
       onSuccess: (success) {
         if (success is RemoveDelegateSuccess) result = success.result;
       },
-      onFailure: (_, __) {},
+      onFailure: (error, _) => wasRoutedAsUrgent = isUrgentException(error),
     ));
     if (ref.mounted) state = false;
     final removed = result;
-    return removed == null ? const RemoveDelegateFailed() : RemoveDelegateSucceeded(removed);
+    return removed == null
+        ? RemoveDelegateFailed(wasRoutedAsUrgent: wasRoutedAsUrgent)
+        : RemoveDelegateSucceeded(removed);
   }
 }
