@@ -203,7 +203,7 @@ void main() {
       final reload = notifier().load(session);
       await untilRepositoryCalled();
 
-      expect(stateOf(), isA<AsyncLoading<List<Delegate>>>());
+      expect(stateOf(), isA<AsyncData<List<Delegate>>>());
       expect(notifier().lastUsernames, {DelegationFixtures.bobAddress});
 
       repository.pendingGets.single.completeError(Exception('boom'));
