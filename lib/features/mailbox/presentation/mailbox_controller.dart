@@ -929,13 +929,15 @@ class MailboxController extends BaseMailboxController
     if (isClosed) return;
     final context = currentContext;
     if (context == null || !context.mounted) return;
-    final accountShown = await startOnRememberedAccount(
+    await startOnRememberedAccount(
       context,
       launchedByNotification: launchedByNotification,
       firstLoadFailed: firstLoadFailed,
     );
-    // The composer snapshot of a delegated account waits for its mailbox to be shown.
-    if (accountShown && !isClosed) await mailboxDashBoardController.checkAndRestoreComposerOnMobile();
+    // A notification tap restores the draft of the mailbox it shows.
+    if (launchedByNotification || isClosed) return;
+    // The remembered switch or the user's pick before the first load can end on a delegated mailbox.
+    await mailboxDashBoardController.checkAndRestoreComposerOnMobile(onlyDelegated: true);
   }
 
   void openEmailInsideMailboxFromLocationBar(
