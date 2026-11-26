@@ -36,7 +36,7 @@ class TestBase {
     Map<String, String> envOverrides = const {},
     Timeout? timeout,
   }) {
-    patrolSetUp(() => _setup(description));
+    patrolSetUp(_setup);
 
     patrolTearDown(_tearDown);
 
@@ -99,10 +99,10 @@ class TestBase {
     };
   }
 
-  Future<void> _setup(String description) async {
+  Future<void> _setup() async {
     PlatformInfo.isIntegrationTesting = true;
     if (BackendResetClient.isEnabled) {
-      TestBackend.use(await BackendResetClient.lease(testName: description));
+      TestBackend.use(await BackendResetClient.lease());
     }
   }
 

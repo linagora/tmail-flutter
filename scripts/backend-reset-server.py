@@ -67,7 +67,6 @@ RUN_TIMEOUT             = float(os.environ.get("RUN_TIMEOUT", "300"))
 POOL_BOB_QUOTA_BYTES    = int(os.environ.get("POOL_BOB_QUOTA_BYTES", "50000000"))
 WORK_DIR                = os.environ.get("WORK_DIR", os.getcwd())
 POOL_LOG_DIR            = os.environ.get("POOL_LOG_DIR", os.getcwd())
-_devlog_lock            = threading.Lock()
 BACKUP_ZIP              = os.environ.get(
     "BACKUP_ZIP",
     os.path.join(WORK_DIR, "provisioning", "integration_test", "backup.zip")
@@ -389,13 +388,11 @@ class ResetHandler(http.server.BaseHTTPRequestHandler):
         self._reply(204)
 
     def _handle_lease(self):
-        test = str(self._read_json().get("test", ""))[:200]
         print(f"[reset-server] lease request at {time.monotonic():.3f}", flush=True)
         leased = self.pool.lease(LEASE_TIMEOUT)
         if leased is None:
             self._reply(503, b"no free backend")
             return
-        print(f"[reset-server] lease token={leased['token'][:8]} test={test!r}", flush=True)
         try:
             self._reply(200, json.dumps(leased).encode(), "application/json")
         except OSError:
@@ -403,34 +400,11 @@ class ResetHandler(http.server.BaseHTTPRequestHandler):
             self.pool.release(leased["token"])
 
     def _handle_release(self):
-        token = str(self._read_json().get("token", ""))
-        print(f"[reset-server] release token={token[:8]}", flush=True)
-        self.pool.release(token)
+        self.pool.release(str(self._read_json().get("token", "")))
         self._reply(202, b"ok")
 
-    def _handle_devlog(self):
-        shard = self.headers.get("X-Shard", "")
-        boot = self.headers.get("X-Boot-Id", "")
-        if not shard.isdigit() or not re.fullmatch(r"[0-9a-z-]{1,64}", boot):
-            self._reply(400, b"bad shard or boot id")
-            return
-        length = int(self.headers.get("Content-Length") or 0)
-        if length > 1024 * 1024:
-            self._reply(413)
-            return
-        body = self.rfile.read(length).decode("utf-8", "replace")
-        path = os.path.join(POOL_LOG_DIR, f"devlog-shard{int(shard)}.log")
-        with _devlog_lock, open(path, "a") as out:
-            for line in body.splitlines():
-                out.write(f"{boot[:8]} {line}\n")
-        self._reply(204)
-
     def do_POST(self):
-        routes = {
-            "/lease": self._handle_lease,
-            "/release": self._handle_release,
-            "/devlog": self._handle_devlog,
-        }
+        routes = {"/lease": self._handle_lease, "/release": self._handle_release}
         handler = routes.get(self.path)
         if handler is None:
             self._reply(404)
@@ -444,8 +418,6 @@ class ResetHandler(http.server.BaseHTTPRequestHandler):
             self._reply(500, str(exc).encode())
 
     def log_message(self, fmt, *args):
-        if getattr(self, "path", "") == "/devlog":
-            return
         print(f"[reset-server] {self.address_string()} - {fmt % args}", flush=True)
 
 

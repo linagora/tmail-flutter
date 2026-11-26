@@ -246,7 +246,7 @@ gcloud beta firebase test android run \
     --timeout 20m \
     --use-orchestrator \
     --num-uniform-shards="$FTL_SHARDS" \
-    --environment-variables "clearPackageData=true,resetServerUrl=$BORE_RESET_URL" \
+    --environment-variables clearPackageData=true \
     --no-record-video \
     --no-performance-metrics \
     --num-flaky-test-attempts=0 \

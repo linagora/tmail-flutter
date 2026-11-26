@@ -19,16 +19,12 @@ class BackendResetClient {
 
   /// Leases a backend; the server holds the request until one is free.
   static Future<TestBackend> lease({
-    required String testName,
     // Server answers by LEASE_TIMEOUT (150 s); stays under TestBase's 4 min test timeout.
     Duration timeout = const Duration(minutes: 3),
   }) async {
     final dio = _newDio(timeout);
     try {
-      final response = await dio.post<Map<String, dynamic>>(
-        '$_resetUrl/lease',
-        data: {'test': testName},
-      );
+      final response = await dio.post<Map<String, dynamic>>('$_resetUrl/lease');
       final data = response.data!;
       return TestBackend(
         url: data['url'] as String,

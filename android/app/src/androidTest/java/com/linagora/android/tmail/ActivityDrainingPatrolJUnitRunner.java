@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
-import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import androidx.test.runner.lifecycle.Stage;
 import java.util.ArrayList;
@@ -28,16 +27,6 @@ public class ActivityDrainingPatrolJUnitRunner extends PatrolJUnitRunner {
     };
 
     @Override
-    public void onStart() {
-        try {
-            DeviceLogForwarder.start(getUiAutomation(), InstrumentationRegistry.getArguments());
-        } catch (RuntimeException e) {
-            Log.w(TAG, "Device log forwarder did not start", e);
-        }
-        super.onStart();
-    }
-
-    @Override
     public void finish(int resultCode, Bundle results) {
         if (Looper.myLooper() != Looper.getMainLooper()) {
             try {
@@ -45,11 +34,6 @@ public class ActivityDrainingPatrolJUnitRunner extends PatrolJUnitRunner {
             } catch (RuntimeException e) {
                 Log.w(TAG, "Could not destroy activities before finish", e);
             }
-        }
-        try {
-            DeviceLogForwarder.stop();
-        } catch (RuntimeException e) {
-            Log.w(TAG, "Device log forwarder did not stop", e);
         }
         super.finish(resultCode, results);
     }
