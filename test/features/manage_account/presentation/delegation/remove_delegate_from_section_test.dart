@@ -11,6 +11,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/urgent_exception_handler.dart';
+import 'package:tmail_ui_user/features/delegation/domain/model/remove_delegate_result.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/delegate_providers.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/delegation/my_delegates_section.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -42,6 +43,7 @@ void main() {
   const removeDialog = ValueKey(UiKeys.removeDelegateDialog);
   const submitButton = ValueKey(UiKeys.removeDelegateSubmitButton);
   const emptyCard = ValueKey(UiKeys.myDelegatesEmptyCard);
+  const homePage = 'home';
 
   late ProviderContainer container;
   late FakeDelegateRepository repository;
@@ -68,13 +70,14 @@ void main() {
     Get.reset();
   });
 
-  /// Shows Bob in By me, opens his remove dialog and taps Remove access.
+  /// Shows Bob in By me, on a page pushed over the home page like Settings, opens his remove dialog and taps Remove
+  /// access.
   Future<void> tapRemoveBob(WidgetTester tester) async {
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
-        child: GetMaterialApp(
-          localizationsDelegates: const [
+        child: const GetMaterialApp(
+          localizationsDelegates: [
             AppLocalizationsDelegate(),
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
@@ -82,8 +85,14 @@ void main() {
           ],
           supportedLocales: LocalizationService.supportedLocales,
           locale: LocalizationService.defaultLocale,
-          home: Scaffold(body: MyDelegatesSection(session: DelegationFixtures.session())),
+          home: Scaffold(body: Text(homePage)),
         ),
+      ),
+    );
+    await tester.pump();
+    Navigator.of(tester.element(find.text(homePage))).push(
+      MaterialPageRoute<void>(
+        builder: (_) => Scaffold(body: MyDelegatesSection(session: DelegationFixtures.session())),
       ),
     );
     await tester.pump();
@@ -167,4 +176,42 @@ void main() {
     expect(find.byKey(emptyCard), findsOneWidget);
     expect(find.byKey(removeDialog), findsNothing);
   });
+
+  testRemove('should close only the remove dialog, not the page under it, when the delegate is removed', (
+    tester,
+  ) async {
+    await tapRemoveBob(tester);
+
+    repository.pendingRemoves.last.complete(RemoveDelegateResult(removedDelegate: bob, delegates: const []));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(removeDialog), findsNothing);
+    expect(find.byKey(emptyCard), findsOneWidget);
+    expect(appToast.successMessages, [l10n.delegateHasBeenRemoved(bob.username)]);
+  });
+
+  testRemove(
+    'should stay open while a retry runs, even when the read after the failed try no longer has the delegate',
+    (tester) async {
+      await tapRemoveBob(tester);
+      await failRemove(tester, Exception('timeout'));
+
+      await tester.tap(find.byKey(submitButton));
+      await tester.pump();
+      await tester.runAsync(untilRepositoryCalled);
+      repository.pendingGets.last.complete(const []);
+      // A closing route would finish within these frames, while the progress indicator never settles.
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+
+      expect(find.byKey(removeDialog), findsOneWidget);
+      expect(repository.removeCalls, hasLength(2));
+
+      repository.pendingRemoves.last.complete(RemoveDelegateResult(removedDelegate: bob, delegates: const []));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(removeDialog), findsNothing);
+      expect(find.byKey(emptyCard), findsOneWidget);
+    },
+  );
 }
