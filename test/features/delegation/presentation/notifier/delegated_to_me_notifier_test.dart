@@ -83,6 +83,84 @@ void main() {
     });
   });
 
+  group('load refreshes the switcher', () {
+    Future<List<Session>> loadReporting(List<DelegatedAccount> accounts) async {
+      final reloadedSessions = <Session>[];
+      final load = notifier().load(session, onSessionReloaded: reloadedSessions.add);
+      await untilRepositoryCalled();
+      repository.pendingLoads.last.complete(accounts);
+      await load;
+      return reloadedSessions;
+    }
+
+    for (final (listState, listed) in [
+      ('a mailbox the session does not list yet', [bobDelegation, carolDelegation]),
+      ('no longer a mailbox the session still lists', [bobDelegation]),
+    ]) {
+      test('should re-read the session when the list has $listState', () async {
+        session = DelegationFixtures.session(listsCarol: listed.length == 1);
+        container.read(activeAccountProvider.notifier).applySession(session);
+        final freshSession = DelegationFixtures.session(state: 'state-2', listsCarol: listed.length == 2);
+        getSessionInteractor.result = Right(GetSessionSuccess(freshSession));
+
+        final reloadedSessions = await loadReporting(listed);
+
+        expect(getSessionInteractor.calls, 1);
+        expect(container.read(activeAccountProvider)?.session, freshSession);
+        expect(reloadedSessions, [freshSession]);
+      });
+    }
+
+    test('should re-read the session when the list names as many mailboxes but another owner', () async {
+      session = DelegationFixtures.session(listsCarol: false);
+      container.read(activeAccountProvider.notifier).applySession(session);
+      final freshSession = DelegationFixtures.session(state: 'state-2', listsBob: false);
+      getSessionInteractor.result = Right(GetSessionSuccess(freshSession));
+
+      final reloadedSessions = await loadReporting([carolDelegation]);
+
+      expect(getSessionInteractor.calls, 1);
+      expect(reloadedSessions, [freshSession]);
+    });
+
+    test('should not re-read the session when the list matches it', () async {
+      final reloadedSessions = await loadReporting([bobDelegation, carolDelegation]);
+
+      expect(getSessionInteractor.calls, 0);
+      expect(reloadedSessions, isEmpty);
+    });
+
+    test('should not re-read the session without a caller to report it to', () async {
+      await loadWith([bobDelegation]);
+
+      expect(getSessionInteractor.calls, 0);
+    });
+
+    test('should not re-read the session when the list fails to load', () async {
+      final reloadedSessions = <Session>[];
+      final load = notifier().load(session, onSessionReloaded: reloadedSessions.add);
+      await untilRepositoryCalled();
+      repository.pendingLoads.last.completeError(Exception('boom'));
+      await load;
+
+      expect(getSessionInteractor.calls, 0);
+      expect(reloadedSessions, isEmpty);
+    });
+
+    test('should not re-read the session for a load a newer one replaced', () async {
+      final reloadedSessions = <Session>[];
+      final firstLoad = notifier().load(session, onSessionReloaded: reloadedSessions.add);
+      final secondLoad = notifier().load(session, onSessionReloaded: reloadedSessions.add);
+      await untilRepositoryCalled();
+      repository.pendingLoads[1].complete([bobDelegation, carolDelegation]);
+      await secondLoad;
+      repository.pendingLoads[0].complete([bobDelegation]);
+      await firstLoad;
+
+      expect(getSessionInteractor.calls, 0);
+    });
+  });
+
   group('remove', () {
     test('should drop the account and apply the fresh session to the switcher', () async {
       await loadWith([bobDelegation, carolDelegation]);

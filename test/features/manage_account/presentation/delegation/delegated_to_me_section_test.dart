@@ -39,7 +39,8 @@ void main() {
 
   setUp(() {
     repository = FakeDelegatedAccountRepository();
-    reReadSession = DelegationFixtures.session(listsBob: false);
+    // Lists only Bob, like the With me list most tests load.
+    reReadSession = DelegationFixtures.session(listsBob: false, listsCarol: false);
     reloadedSessions = [];
     getSessionInteractor = FakeGetSessionInteractor()..result = Right(GetSessionSuccess(reReadSession));
     appToast = RecordingAppToast();
@@ -50,7 +51,7 @@ void main() {
       delegatedAccountRepositoryProvider.overrideWithValue(repository),
       appToastProvider.overrideWithValue(appToast.toast),
     ]);
-    container.read(activeAccountProvider.notifier).applySession(DelegationFixtures.session());
+    container.read(activeAccountProvider.notifier).applySession(DelegationFixtures.session(listsCarol: false));
   });
 
   tearDown(() {
@@ -72,7 +73,7 @@ void main() {
         locale: LocalizationService.defaultLocale,
         home: Scaffold(
           body: DelegatedToMeSection(
-            session: DelegationFixtures.session(),
+            session: DelegationFixtures.session(listsCarol: false),
             onSessionReloaded: reloadedSessions.add,
           ),
         ),
@@ -96,6 +97,17 @@ void main() {
     ));
     await tester.pumpAndSettle();
   }
+
+  testWidgets('should refresh the switcher when the list names a mailbox the session does not list', (tester) async {
+    final freshSession = DelegationFixtures.session(state: 'state-2');
+    getSessionInteractor.result = Right(GetSessionSuccess(freshSession));
+    await pumpSection(tester);
+    await completeLoad(tester, [bobDelegation, DelegatedAccount(id: Id('carol-delegation'), username: DelegationFixtures.carolAddress)]);
+    await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+    await tester.pump();
+
+    expect(reloadedSessions, [freshSession]);
+  });
 
   testWidgets('should show a spinner while the list loads', (tester) async {
     await pumpSection(tester);
