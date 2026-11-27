@@ -128,4 +128,13 @@ abstract class AccountSwitcherAssertionRobot extends CoreRobot
       reason: 'could not open mailbox toast visible',
     );
   }
+
+  @override
+  Future<void> expectAccessEndedToast(String ownerAddress) async {
+    final message = AppLocalizations().delegatedMailboxAccessEnded(ownerAddress);
+    await waitForCondition(
+      () => $(message).evaluate().isNotEmpty,
+      reason: 'access ended toast visible',
+    );
+  }
 }

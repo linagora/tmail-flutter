@@ -1,5 +1,6 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/logging/app_logger_registry.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -9,6 +10,7 @@ import 'package:tmail_ui_user/features/base/interactor_consumer.dart';
 import 'package:tmail_ui_user/features/base/urgent_exception_handler.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 
+import '../../fixtures/capturing_log_handler.dart';
 import 'interactor_consumer_test.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<UrgentExceptionHandler>()])
@@ -332,6 +334,43 @@ void main() {
 
       expect(seenByFilter, same(exception));
       expectNeverRouted();
+    });
+  });
+  group('InteractorConsumer.consumeInteractor logging', () {
+    late CapturingLogHandler logHandler;
+
+    setUp(() {
+      logHandler = CapturingLogHandler();
+      AppLoggerRegistry.instance.registerHandler(logHandler);
+    });
+
+    tearDown(() => AppLoggerRegistry.instance.resetForTesting());
+
+    Future<void> consumeFailure(Exception exception) => consumer.consumeInteractor(
+          request(
+            run: () async => Left(_TestFailure(exception: exception)),
+            isStale: () => false,
+            onSuccess: (_) => fail('should not succeed'),
+            onFailure: (_, __) {},
+          ),
+        );
+
+    for (final exception in [const NoNetworkError(), const ConnectionError(), const ConnectionTimeout(), const SocketError()]) {
+      test('logs a ${exception.runtimeType} failure as a warning, never as an error', () async {
+        await consumeFailure(exception);
+
+        expect(logHandler.errorRecords, isEmpty);
+        expect(logHandler.warningRecords.map((record) => record.rawMessage), [
+          'InteractorConsumer::consumeInteractor: interactor failed on the network: ${exception.runtimeType}',
+        ]);
+      });
+    }
+
+    test('logs any other failure as an error', () async {
+      await consumeFailure(_UrgentException());
+
+      expect(logHandler.errorRecords.single.rawMessage, startsWith('InteractorConsumer::consumeInteractor: interactor failed |'));
+      expect(logHandler.warningRecords, isEmpty);
     });
   });
 }

@@ -6232,6 +6232,32 @@ class AppLocalizations {
     );
   }
 
+  String delegatedMailboxAccessEnded(String owner) {
+    return Intl.message(
+      'You no longer have access to the mailbox of $owner.',
+      name: 'delegatedMailboxAccessEnded',
+      args: [owner],
+    );
+  }
+
+  String endedDelegationComposersKept(int count) {
+    return Intl.plural(
+      count,
+      one: 'The message you were writing is open again in your mailbox.',
+      other: '$count messages you were writing are open again in your mailbox.',
+      name: 'endedDelegationComposersKept',
+      args: [count],
+    );
+  }
+
+  String endedDelegationAttachmentsNotKept(String names) {
+    return Intl.message(
+      'Their attachments stayed in the other mailbox: $names.',
+      name: 'endedDelegationAttachmentsNotKept',
+      args: [names],
+    );
+  }
+
   String get delegation {
     return Intl.message(
       'Delegation',

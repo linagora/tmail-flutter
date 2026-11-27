@@ -7,6 +7,8 @@ import 'package:tmail_ui_user/features/composer/presentation/model/create_email_
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/save_composer_cache_state.dart';
 
+typedef CacheWriteAllowed = bool Function();
+
 class SaveComposerCacheInteractor {
   final ComposerCacheRepository _composerCacheRepository;
   final ComposerRepository _composerRepository;
@@ -19,6 +21,7 @@ class SaveComposerCacheInteractor {
   Future<Either<Failure, Success>> execute({
     required CreateEmailRequest createEmailRequest,
     bool isPersistent = false,
+    CacheWriteAllowed? isWriteAllowed,
   }) async {
     try {
       final emailCreated = await _composerRepository.generateEmail(
@@ -26,6 +29,8 @@ class SaveComposerCacheInteractor {
         withIdentityHeader: true,
         isDraft: true,
       );
+      // Generating the email may upload inline images, so the caller can drop the write it no longer wants.
+      if (isWriteAllowed?.call() == false) return Right(SaveComposerCacheSkipped());
       final accountId = createEmailRequest.accountId;
       final userName = createEmailRequest.session.username;
       final composerCache = createEmailRequest.generateComposerCache(

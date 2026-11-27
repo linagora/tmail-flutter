@@ -26,6 +26,9 @@ class _FakeSwitchView implements AccountSwitchView {
   bool get hasOpenComposer => false;
 
   @override
+  Future<int> closeComposers() async => 0;
+
+  @override
   void blockInput() {}
 
   @override
@@ -52,8 +55,9 @@ class _RecordingSwitchNotifier extends AccountSwitchNotifier {
   @override
   Future<AccountSwitchResult> switchTo(
     AccountId targetAccountId,
-    AccountSwitchView view,
-  ) async {
+    AccountSwitchView view, {
+    bool closesOpenComposer = false,
+  }) async {
     switchToCalls.add(targetAccountId);
     return nextResult;
   }

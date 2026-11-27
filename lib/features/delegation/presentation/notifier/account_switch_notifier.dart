@@ -39,12 +39,14 @@ class AccountSwitchNotifier extends _$AccountSwitchNotifier {
 
   ActiveAccount? get _shownAccount => ref.read(activeAccountProvider);
 
+  /// [closesOpenComposer]: the caller closed the composers already, a mobile composer route closes with the dialogs.
   Future<AccountSwitchResult> switchTo(
     AccountId targetAccountId,
-    AccountSwitchView view,
-  ) async {
+    AccountSwitchView view, {
+    bool closesOpenComposer = false,
+  }) async {
     final previousAccount = _shownAccount;
-    final refusal = _findRefusal(previousAccount, targetAccountId, view);
+    final refusal = _findRefusal(previousAccount, targetAccountId, view, closesOpenComposer);
     if (refusal != null) return AccountSwitchRefused(refusal);
 
     _startAttempt(from: previousAccount!.accountId, to: targetAccountId);
@@ -52,7 +54,7 @@ class AccountSwitchNotifier extends _$AccountSwitchNotifier {
     try {
       final preparationFailure = _prepareView(view);
       final result = preparationFailure ??
-          await _showTarget(view, targetAccountId, cancellation);
+          await _showTarget(view, targetAccountId, cancellation, closesOpenComposer);
       if (state is AccountSwitchEndingSession) {
         return const AccountSwitchCancelled();
       }
@@ -100,9 +102,10 @@ class AccountSwitchNotifier extends _$AccountSwitchNotifier {
     ActiveAccount? shownAccount,
     AccountId targetAccountId,
     AccountSwitchView view,
+    bool closesOpenComposer,
   ) {
     if (state.isSwitching) return AccountSwitchRefusal.switchInProgress;
-    if (view.hasOpenComposer) return AccountSwitchRefusal.composerOpen;
+    if (!closesOpenComposer && view.hasOpenComposer) return AccountSwitchRefusal.composerOpen;
     if (shownAccount == null) return AccountSwitchRefusal.accountNotListed;
     if (shownAccount.accountId == targetAccountId) {
       return AccountSwitchRefusal.accountAlreadyShown;
@@ -134,6 +137,7 @@ class AccountSwitchNotifier extends _$AccountSwitchNotifier {
     AccountSwitchView view,
     AccountId targetAccountId,
     Completer<void> cancellation,
+    bool closesOpenComposer,
   ) async {
     if (cancellation.isCompleted || !_activeAccountNotifier.select(targetAccountId)) {
       return const AccountSwitchCancelled();
@@ -143,7 +147,8 @@ class AccountSwitchNotifier extends _$AccountSwitchNotifier {
       targetAccountId,
     );
     // A composer that opened during the load, like a draft restore at start, belongs to the previous account.
-    return result is AccountSwitched && view.hasOpenComposer
+    // A mobile composer the caller closed stays registered until its route is disposed.
+    return result is AccountSwitched && !closesOpenComposer && view.hasOpenComposer
         ? const AccountSwitchCancelled()
         : result;
   }

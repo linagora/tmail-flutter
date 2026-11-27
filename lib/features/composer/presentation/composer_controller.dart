@@ -22,6 +22,7 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -155,6 +156,7 @@ import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:workplace/presentation/model/drive_pick_state.dart';
 
 typedef ComposerReloadCacheAction = void Function();
+typedef MobileSnapshotOwner = ({AccountId accountId, UserName userName});
 
 class ComposerController extends BaseController
     with
@@ -308,6 +310,7 @@ class ComposerController extends BaseController
   Timer? periodicSnapshotTimer;
   Timer? inactiveGuardTimer;
   bool isRestoringFromCache = false;
+  MobileSnapshotOwner? unrestoredMobileSnapshotOwner;
 
   int? get savedEmailDraftHash => _savedEmailDraftHash;
 
@@ -1003,14 +1006,19 @@ class ComposerController extends BaseController
   bool _isEmptyEmailContentFailure(Failure failure) =>
     failure is GetEmailContentFailure && failure.exception is EmptyEmailContentException;
 
+  /// Unlike [getContentInEditor], a failed read throws instead of looking like an empty body.
+  Future<String> readContentInEditor() async {
+    final htmlTextEditor = PlatformInfo.isWeb
+      ? textEditorWeb
+      : await htmlEditorApi?.getText();
+    return htmlTextEditor?.isNotEmpty == true
+      ? htmlTextEditor!.removeEditorStartTag()
+      : '';
+  }
+
   Future<String> getContentInEditor() async {
     try {
-      final htmlTextEditor = PlatformInfo.isWeb
-        ? textEditorWeb
-        : await htmlEditorApi?.getText();
-      return htmlTextEditor?.isNotEmpty == true
-        ? htmlTextEditor!.removeEditorStartTag()
-        : '';
+      return await readContentInEditor();
     } catch (e) {
       logWarning('ComposerController::getContentInEditor:Exception = $e');
       return '';

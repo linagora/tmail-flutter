@@ -13,6 +13,7 @@ final _allowedIsDelegatedPaths = {
   'lib/features/push_notification/presentation/model/notification_owner.dart',
   // Picks the cursor fallback of a pushed account, no account is shown yet.
   'lib/features/push_notification/presentation/listener/email_change_listener.dart',
+  'lib/features/delegation/presentation/notifier/session_reload_notifier.dart',
 };
 
 final _lineComment = RegExp(r'^[ \t]*//.*$', multiLine: true);

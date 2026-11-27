@@ -22,6 +22,8 @@ class FakeAccountSwitchView implements AccountSwitchView {
   @override
   bool hasOpenComposer = false;
 
+  int openComposerCount = 0;
+
   final List<String> calls = [];
   final List<Completer<void>> loadings = [];
   Object? errorThrownByLoadAccount;
@@ -29,6 +31,14 @@ class FakeAccountSwitchView implements AccountSwitchView {
   Object? errorThrownByUnblockInput;
   ViewStepCallback? onBlockInput;
   ViewStepCallback? onClearSelectionAndSearch;
+
+  @override
+  Future<int> closeComposers() async {
+    calls.add('closeComposers');
+    final closedCount = openComposerCount;
+    openComposerCount = 0;
+    return closedCount;
+  }
 
   @override
   void blockInput() {
@@ -194,6 +204,17 @@ void main() {
       expect(view.calls, isEmpty);
       expect(shownAccountOf(), ActiveAccount.personal(session));
       expect(switchStateOf(), const AccountSwitchIdle());
+    });
+
+    test('is not refused for an open composer the caller closes, and the switch runs', () async {
+      view.hasOpenComposer = true;
+
+      final running = switchNotifierOf().switchTo(bob, view, closesOpenComposer: true);
+      view.loadings.single.complete();
+      final result = await running;
+
+      expect(result, const AccountSwitched());
+      expect(shownAccountOf()!.accountId, bob);
     });
 
     test('when the target account is already shown', () async {

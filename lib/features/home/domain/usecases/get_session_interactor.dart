@@ -12,13 +12,17 @@ class GetSessionInteractor {
 
   GetSessionInteractor(this.sessionRepository);
 
-  Stream<Either<Failure, Success>> execute({StateChange? stateChange}) async* {
+  /// [fallbackToCache] false keeps the remote failure, so an expired login still reaches the urgent handler on mobile.
+  Stream<Either<Failure, Success>> execute({
+    StateChange? stateChange,
+    bool fallbackToCache = true,
+  }) async* {
     try {
       yield Right<Failure, Success>(GetSessionLoading());
       final session = await sessionRepository.getSession();
       yield Right<Failure, Success>(GetSessionSuccess(session, stateChange: stateChange));
     } catch (e) {
-      if (PlatformInfo.isMobile) {
+      if (fallbackToCache && PlatformInfo.isMobile) {
         yield* _getStoredSessionFromCache(remoteException: e, stateChange: stateChange);
       } else {
         yield Left<Failure, Success>(GetSessionFailure(e));

@@ -21,7 +21,7 @@ class ComposerManager extends GetxController {
   final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
 
   void addComposer(ComposerArguments composerArguments) {
-    final id = DateTime.now().millisecondsSinceEpoch.toString();
+    final id = _newComposerId();
     log('ComposerManager::addComposer:Id = $id');
     ComposerBindings(composerId: id, composerArguments: composerArguments).dependencies();
 
@@ -29,6 +29,15 @@ class ComposerManager extends GetxController {
     composerIdsQueue.add(id);
 
     _arrangeComposerIfNeeded();
+  }
+
+  /// Composers opened in the same millisecond would otherwise share an id and replace each other.
+  String _newComposerId() {
+    var timestamp = DateTime.now().millisecondsSinceEpoch;
+    while (composers.containsKey('$timestamp')) {
+      timestamp++;
+    }
+    return '$timestamp';
   }
 
   void addListComposer(List<ComposerArguments> listArguments) {

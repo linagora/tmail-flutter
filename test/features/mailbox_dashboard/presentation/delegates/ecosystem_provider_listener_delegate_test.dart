@@ -113,6 +113,9 @@ final _ecosystemStateProvider =
 );
 
 void main() {
+  // The shared instance outlives each test's fake zone, so it is created in the real zone and awaited with runAsync.
+  setUpAll(() => SentryManager.instance);
+
   testWidgets(
     'dispatches shared ecosystem state and cleans up account listener',
     (tester) async {
@@ -227,7 +230,7 @@ void main() {
           'sentry': {'enabled': true, 'userOptInByDefault': false},
         }),
       );
-      await sentryManager.pendingLifecycleTransition;
+      await tester.runAsync(() => sentryManager.pendingLifecycleTransition);
 
       expect(sentryManager.isSentryReportingAllowed, isFalse);
 
@@ -236,12 +239,12 @@ void main() {
           'paywallUrlTemplate': 'https://domain.tld/premium',
         }),
       );
-      await sentryManager.pendingLifecycleTransition;
+      await tester.runAsync(() => sentryManager.pendingLifecycleTransition);
 
       expect(sentryManager.isSentryReportingAllowed, isFalse);
 
       registry.dispatchCleared();
-      await sentryManager.pendingLifecycleTransition;
+      await tester.runAsync(() => sentryManager.pendingLifecycleTransition);
 
       expect(sentryManager.isSentryReportingReady, isFalse);
       expect(dashboardController.setUpSentryCount, 0);

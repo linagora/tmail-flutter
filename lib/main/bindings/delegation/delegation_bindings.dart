@@ -1,6 +1,7 @@
 import 'package:core/utils/file_utils.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/account_not_found_reporter.dart';
 import 'package:tmail_ui_user/features/caching/clients/composer_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/email_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/fcm_cache_client.dart';
@@ -29,6 +30,7 @@ class DelegationBindings extends Bindings {
     Get.put<ActiveAccountWriter>(source, permanent: true);
     Get.put<ShownAccountLoadReporter>(source, permanent: true);
     Get.put<LastShownAccountStore>(LastShownAccountStoreImpl(Get.find<SharedPreferences>()), permanent: true);
+    Get.put<AccountNotFoundReporter>(RiverpodAccountNotFoundReporter(appProviderContainer), permanent: true);
     Get.lazyPut<EndedDelegationStore>(_endedDelegationStore, fenix: true);
     Get.lazyPut<CleanupEndedDelegationsInteractor>(
       () => CleanupEndedDelegationsInteractor(Get.find<EndedDelegationStore>()),

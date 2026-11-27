@@ -1,6 +1,7 @@
 # 86. Android Composer: Draft Loss When App Goes to Background
 
 Date: 2026-04-28
+Updated: 2026-11-18
 
 ## Status
 
@@ -181,7 +182,7 @@ ComposerController (GetX)  [Android only]
     │       │       └── notifier.restore(accountId, userName)
     │       │               └── ResolveComposerCacheForRestoreInteractor → ComposerPersistentCache?
     │       └── payload found? → api.setText(html) + updateLastKnownContent
-    │                          → clearComposerMobileSnapshot() (unawaited)
+    │                          → await _clearSnapshotOf(accountId, userName of the restored snapshot)
     │
     ├── _closeComposerAction() [mark clean — Android only]
     │       ├── await markCleanClose()  ← notifier.setCleanClose()

@@ -22,6 +22,9 @@ class DashboardAccountSwitchView implements AccountSwitchView {
   @override
   bool get hasOpenComposer => _dashboard.hasOpenComposer;
 
+  @override
+  Future<int> closeComposers() => _dashboard.closeComposers();
+
   /// A dialog, sheet, menu or page such as the destination picker sits above the blocked dashboard
   /// and still acts on the old account. A switch never starts while a composer is open.
   @override

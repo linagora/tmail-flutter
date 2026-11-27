@@ -2,9 +2,13 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
+import 'package:jmap_dart_client/jmap/core/error/error_type.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/method/method_response.dart';
 import 'package:jmap_dart_client/jmap/core/method/response/set_response.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -247,6 +251,62 @@ void main() {
               ),
             ),
           );
+        },
+      );
+
+      List<Object> errorInvocation(ErrorType type, String methodCallId) =>
+          ["error", {"type": type.value}, methodCallId];
+
+      Map<String, dynamic> responseWith(List<Object> query, List<Object> get) =>
+          {
+            "sessionState": sessionState.value,
+            "methodResponses": [query, get],
+          };
+
+      Future<MethodResponse?> errorThrownFor(Map<String, dynamic> response) async {
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(200, response),
+          data: generateRequest(filter: filter),
+        );
+        try {
+          await testMailApiMixin.fetchAllEmail(
+            session: SessionFixtures.aliceSession,
+            accountId: AccountFixtures.aliceAccountId,
+            httpClient: httpClient,
+            filter: filter,
+          );
+          return null;
+        } on ErrorMethodResponseException catch (exception) {
+          return exception.errorResponse;
+        }
+      }
+
+      test(
+        'should throw the Email/query error '
+        'when Email/get fails only because it references the failed Email/query',
+        () async {
+          final error = await errorThrownFor(responseWith(
+            errorInvocation(ErrorMethodResponse.accountNotFound, "c0"),
+            errorInvocation(ErrorMethodResponse.invalidResultReference, "c1"),
+          ));
+
+          expect(error, isA<AccountNotFoundMethodResponse>());
+        },
+      );
+
+      test(
+        'should throw the Email/get error '
+        'when only Email/get fails',
+        () async {
+          final queryInvocation =
+              (generateResponse(foundEmails: [], notFoundEmailIds: [])["methodResponses"] as List).first as List<Object>;
+          final error = await errorThrownFor(responseWith(
+            queryInvocation,
+            errorInvocation(ErrorMethodResponse.serverFail, "c1"),
+          ));
+
+          expect(error, isA<ServerFailMethodResponse>());
         },
       );
     });
