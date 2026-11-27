@@ -57,6 +57,28 @@ class BackendResetClient {
     }
   }
 
+  /// Sets the password of a seeded user of the leased backend, e.g. to make
+  /// the signed-in session fail with 401.
+  static Future<void> setPassword(
+    String user,
+    String password, {
+    Duration timeout = const Duration(seconds: 30),
+  }) async {
+    final token = TestBackend.current.token;
+    if (!isEnabled || token == null) {
+      throw StateError('setPassword needs a backend leased from the reset server');
+    }
+    final dio = _newDio(timeout);
+    try {
+      await dio.post(
+        '$_resetUrl/password',
+        data: {'token': token, 'user': user, 'password': password},
+      );
+    } finally {
+      dio.close();
+    }
+  }
+
   static Dio _newDio(Duration timeout) => Dio(
         BaseOptions(
           connectTimeout: timeout,

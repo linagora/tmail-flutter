@@ -6,6 +6,7 @@ The device (emulator, browser or Firebase Test Lab) reaches the host at the
 configured URL. Every test leases a backend, runs against it, and releases it:
   POST /lease    -> {token,url}; waits for a free backend
   POST /release  -> {token}; answers 202, the container is replaced in the background
+  POST /password -> {token,user,password}; sets the password of a seeded user of the leased backend
 
 Each slot is a tmail-backend container of backend-docker/docker-compose.pool.yaml, inside a
 network-holder container that lives for the whole run, provisioned
@@ -89,13 +90,13 @@ _stopped = False
 
 
 def _run(cmd: List[str], check: bool = False, env: Optional[dict] = None,
-         timeout: float = RUN_TIMEOUT) -> subprocess.CompletedProcess:
+         timeout: float = RUN_TIMEOUT, stdin: Optional[str] = None) -> subprocess.CompletedProcess:
     # A hung call raises TimeoutExpired, so Pool._reset retries then drops the slot.
     # Own session: killing only the docker CLI would leave its compose plugin running into the retry.
-    with subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=env,
-                          start_new_session=True) as proc:
+    with subprocess.Popen(cmd, stdin=None if stdin is None else subprocess.PIPE, stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE, text=True, env=env, start_new_session=True) as proc:
         try:
-            out, err = proc.communicate(timeout=timeout)
+            out, err = proc.communicate(input=stdin, timeout=timeout)
         except subprocess.TimeoutExpired:
             os.killpg(proc.pid, signal.SIGKILL)
             raise
@@ -120,8 +121,9 @@ def _webadmin_ok(port: int, method: str, path: str, data: Optional[str] = None, 
     cmd = ["curl", "-s", "-o", os.devnull, "-w", "%{http_code}", "-X", method,
            f"http://localhost:{port}{path}"]
     if data is not None:
-        cmd += ["-d", data, "-H", "Content-Type: application/json"]
-    code = _run(cmd).stdout.strip()
+        # The body goes through stdin so a client-supplied value never reaches the curl argv.
+        cmd += ["--data-binary", "@-", "-H", "Content-Type: application/json"]
+    code = _run(cmd, stdin=data).stdout.strip()
     if not code.isdigit() or int(code) not in ok:
         raise RuntimeError(f"{method} {path} answered {code or 'nothing'}")
 
@@ -299,6 +301,11 @@ class Pool:
                     return True
         return False
 
+    def leased_slot(self, token: str) -> Optional[int]:
+        with self._cond:
+            self._expire()
+            return next((n for n, t in self._token.items() if t == token), None)
+
     def _take(self, n: int) -> dict:
         token = uuid.uuid4().hex
         self._state[n] = "leased"
@@ -403,8 +410,25 @@ class ResetHandler(http.server.BaseHTTPRequestHandler):
         self.pool.release(str(self._read_json().get("token", "")))
         self._reply(202, b"ok")
 
+    def _handle_password(self):
+        body = self._read_json()
+        slot = self.pool.leased_slot(str(body.get("token", "")))
+        # The user lands in a WebAdmin path, so only seeded names are accepted.
+        user = next((u for u in _TEST_USERS if u == body.get("user")), None)
+        password = str(body.get("password") or "")
+        if slot is None:
+            self._reply(404, b"no backend leased with this token")
+            return
+        if user is None or not password:
+            self._reply(400, b"unknown user or empty password")
+            return
+        _webadmin_ok(POOL_WEBADMIN_BASE_PORT + slot, "PUT", f"/users/{user}@{_TEST_DOMAIN}?force",
+                     data=json.dumps({"password": password}))
+        self._reply(204)
+
     def do_POST(self):
-        routes = {"/lease": self._handle_lease, "/release": self._handle_release}
+        routes = {"/lease": self._handle_lease, "/release": self._handle_release,
+                  "/password": self._handle_password}
         handler = routes.get(self.path)
         if handler is None:
             self._reply(404)

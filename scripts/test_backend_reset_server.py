@@ -372,6 +372,45 @@ class HttpTest(unittest.TestCase):
         self.start()
         self.assertEqual(self.post("/release", b"{not json")[0], 400)
 
+    def password_request(self, token, user="bob", password="changed"):
+        return json.dumps({"token": token, "user": user, "password": password}).encode()
+
+    def test_password_change_hits_the_webadmin_of_the_leased_slot(self):
+        self.start()
+        token = json.loads(self.post("/lease")[1])["token"]
+        with mock.patch.object(server, "_webadmin_ok") as webadmin:
+            self.assertEqual(self.post("/password", self.password_request(token))[0], 204)
+        webadmin.assert_called_once_with(
+            server.POOL_WEBADMIN_BASE_PORT, "PUT", "/users/bob@example.com?force",
+            data=json.dumps({"password": "changed"}))
+
+    def test_password_change_without_a_lease_answers_404(self):
+        self.start()
+        with mock.patch.object(server, "_webadmin_ok") as webadmin:
+            self.assertEqual(self.post("/password", self.password_request("stale"))[0], 404)
+        webadmin.assert_not_called()
+
+    def test_password_change_of_an_unknown_user_answers_400(self):
+        self.start()
+        token = json.loads(self.post("/lease")[1])["token"]
+        with mock.patch.object(server, "_webadmin_ok") as webadmin:
+            self.assertEqual(self.post("/password", self.password_request(token, user="../domains"))[0], 400)
+            self.assertEqual(self.post("/password", self.password_request(token, password=""))[0], 400)
+        webadmin.assert_not_called()
+
+
+class WebadminTest(unittest.TestCase):
+    def test_run_feeds_stdin_to_the_command(self):
+        self.assertEqual(server._run(["cat"], stdin="body").stdout, "body")
+
+    def test_webadmin_body_goes_through_stdin_not_the_curl_argv(self):
+        with mock.patch.object(server, "_run", return_value=subprocess.CompletedProcess([], 0, "204", "")) as run:
+            server._webadmin_ok(8200, "PUT", "/users/bob@example.com?force", data='{"password": "-K/etc/x"}')
+        cmd = run.call_args.args[0]
+        self.assertNotIn('{"password": "-K/etc/x"}', cmd)
+        self.assertEqual(cmd[cmd.index("--data-binary") + 1], "@-")
+        self.assertEqual(run.call_args.kwargs["stdin"], '{"password": "-K/etc/x"}')
+
 
 class ComposeParityTest(unittest.TestCase):
     def test_pool_compose_uses_the_backend_image_of_the_main_compose(self):

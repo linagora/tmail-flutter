@@ -11,6 +11,10 @@ class LinagoraEcosystemHandlerRegistry {
 
   final List<LinagoraEcosystemHandler> _handlers = [];
 
+  /// The delegate that fed the registry last, so a disposed one cannot clear
+  /// what its replacement loaded.
+  Object? owner;
+
   LinagoraEcosystemHandlerRegistry(this.ref);
 
   bool get hasHandlers => _handlers.isNotEmpty;
