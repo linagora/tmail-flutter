@@ -39,6 +39,16 @@ void main() {
         expect(SignInEmailLink.tryParse(notEmailLink), isNull);
       });
     }
+
+    for (final invalidId in <String>[
+      '/dashboard?account=owner-account&context=',
+      '/dashboard?account=owner-account&id=bad.id',
+      '/dashboard?account=owner-account&labelId=bad.id',
+    ]) {
+      test('SHOULD NOT throw AND rejects "$invalidId"', () {
+        expect(() => SignInEmailLink.tryParse(invalidId), returnsNormally);
+      });
+    }
   });
 
   group('keepSignInEmailLink and takeSignInEmailLink', () {
@@ -94,6 +104,21 @@ void main() {
 
       expect(hasSignInEmailLink(), isFalse);
       expect(takeSignInEmailLink(), isNull);
+      expect(storage.sessionStorage.containsKey(SignInEmailLink.storageKey), isFalse);
+    });
+
+    test('SHOULD NOT throw WHEN the signed-out page has an invalid id, so the login redirect still runs', () {
+      expect(
+        () => keepSignInEmailLink('/dashboard', {'account': 'owner-account', 'context': ''}),
+        returnsNormally,
+      );
+      expect(storage.sessionStorage.containsKey(SignInEmailLink.storageKey), isFalse);
+    });
+
+    test('SHOULD NOT throw on a stored value with an invalid id AND removes it', () {
+      storage.save(SignInEmailLink.storageKey, '/dashboard?account=owner-account&labelId=bad.id');
+
+      expect(() => takeSignInEmailLink(), returnsNormally);
       expect(storage.sessionStorage.containsKey(SignInEmailLink.storageKey), isFalse);
     });
 
