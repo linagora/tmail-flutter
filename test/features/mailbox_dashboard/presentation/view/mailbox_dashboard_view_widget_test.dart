@@ -683,6 +683,44 @@ void main() {
       verify(getAllMailboxInteractor.execute(any, any)).called(1);
     });
 
+    testWidgets('MailboxController does not load the folders again when the internet is back after a failed load then a successful one',
+        (tester) async {
+      await tester.pumpWidget(const SizedBox());
+      addTearDown(() {
+        reset(getAllMailboxInteractor);
+        clearInteractions(treeBuilder);
+        clearInteractions(createDefaultMailboxInteractor);
+      });
+      when(getAllMailboxInteractor.execute(any, any)).thenAnswer(
+        (_) => Stream.value(Left(GetAllMailboxFailure(StateError('load failed')))),
+      );
+      mailboxController.refreshAllMailbox();
+      await tester.pump();
+      arrangeSidebarMenu();
+      when(
+        treeBuilder.generateMailboxTreeInUI(
+          allMailboxes: anyNamed('allMailboxes'),
+          currentCollection: anyNamed('currentCollection'),
+          mailboxIdSelected: anyNamed('mailboxIdSelected'),
+          mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
+        ),
+      ).thenAnswer((_) async => MailboxCollection.empty());
+      when(getAllMailboxInteractor.execute(any, any)).thenAnswer(
+        (_) => Stream.value(Right(GetAllMailboxSuccess(
+          mailboxList: const [],
+          currentMailboxState: null,
+        ))),
+      );
+      mailboxController.refreshAllMailbox();
+      await tester.pump();
+      clearInteractions(getAllMailboxInteractor);
+
+      internetRestored.add(null);
+      await tester.pump();
+
+      verifyNever(getAllMailboxInteractor.execute(any, any));
+    });
+
     testWidgets('MailboxController does not load the folders again when the internet is back and nothing failed',
         (tester) async {
       await tester.pumpWidget(const SizedBox());
