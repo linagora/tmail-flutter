@@ -324,6 +324,19 @@ void main() {
         const input = 'aa.aa#style="x"=\'<';
         expect(html_parser.parse(transform(input)).body!.text, input);
       });
+
+      test('a URL wrapped in double quotes links to the URL without the closing quote', () {
+        const cases = {
+          'Open "https://example.com/docs" now': 'https://example.com/docs',
+          'Open "https://example.com" now': 'https://example.com',
+          'Link: "https://example.com/a?b=1".': 'https://example.com/a?b=1',
+          'He said "see www.example.com/x"': 'https://www.example.com/x',
+        };
+        for (final entry in cases.entries) {
+          final link = html_parser.parse(transform(entry.key)).body!.querySelector('a')!;
+          expect(link.attributes['href'], entry.value, reason: entry.key);
+        }
+      });
     });
   });
 }
