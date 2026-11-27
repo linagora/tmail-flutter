@@ -1,10 +1,13 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:delegation/model/delegate.dart';
+import 'package:delegation/model/delegated_account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -46,23 +49,25 @@ void main() {
   tearDown(Get.reset);
 
   Future<void> pumpView(WidgetTester tester) async {
-    await tester.pumpWidget(ProviderScope(
-      overrides: [
-        delegateRepositoryProvider.overrideWithValue(delegateRepository),
-        delegatedAccountRepositoryProvider.overrideWithValue(delegatedAccountRepository),
-      ],
-      child: const GetMaterialApp(
-        localizationsDelegates: [
-          AppLocalizationsDelegate(),
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          delegateRepositoryProvider.overrideWithValue(delegateRepository),
+          delegatedAccountRepositoryProvider.overrideWithValue(delegatedAccountRepository),
         ],
-        supportedLocales: LocalizationService.supportedLocales,
-        locale: LocalizationService.defaultLocale,
-        home: Scaffold(body: DelegationSettingsView()),
+        child: const GetMaterialApp(
+          localizationsDelegates: [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: LocalizationService.supportedLocales,
+          locale: LocalizationService.defaultLocale,
+          home: Scaffold(body: DelegationSettingsView()),
+        ),
       ),
-    ));
+    );
     await tester.pump();
   }
 
@@ -107,4 +112,28 @@ void main() {
       expect(tabsCenter == width / 2, expectCentered);
     });
   }
+
+  testWidgets('should show one remove action for an address that is both my delegate and an owner delegating to me', (
+    tester,
+  ) async {
+    final bobAction = find.byKey(LinagoraPersonTile.actionKeyFor(DelegationFixtures.bobAddress));
+    await pumpView(tester);
+    await tester.runAsync(untilRepositoryCalled);
+    delegateRepository.pendingGets.last.complete([
+      Delegate(id: Id('bob-delegate'), username: DelegationFixtures.bobAddress),
+    ]);
+    await tester.pumpAndSettle();
+
+    expect(bobAction, findsOneWidget);
+
+    await openTab(tester, DelegationTab.withMe);
+    await tester.runAsync(untilRepositoryCalled);
+    delegatedAccountRepository.pendingLoads.last.complete([
+      DelegatedAccount(id: Id('bob-delegation'), username: DelegationFixtures.bobAddress),
+    ]);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MyDelegatesSection), findsNothing);
+    expect(bobAction, findsOneWidget);
+  });
 }

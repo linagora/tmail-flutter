@@ -6553,4 +6553,35 @@ class AppLocalizations {
       args: [emailAddress],
     );
   }
+
+  String get removeDelegateAccessTitle {
+    return Intl.message(
+      'Remove delegate access?',
+      name: 'removeDelegateAccessTitle',
+    );
+  }
+
+  String removeDelegateAccessMessage(String delegate) {
+    return Intl.message(
+      "$delegate will no longer be able to read or send emails from your mailbox.",
+      name: 'removeDelegateAccessMessage',
+      args: [delegate],
+    );
+  }
+
+  String delegateHasBeenRemoved(String delegate) {
+    return Intl.message(
+      '$delegate has been removed',
+      name: 'delegateHasBeenRemoved',
+      args: [delegate],
+    );
+  }
+
+  String couldNotRemoveDelegate(String delegate) {
+    return Intl.message(
+      "Couldn't remove $delegate",
+      name: 'couldNotRemoveDelegate',
+      args: [delegate],
+    );
+  }
 }

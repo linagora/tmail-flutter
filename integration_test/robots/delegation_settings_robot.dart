@@ -1,5 +1,7 @@
 import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
+import 'package:flutter/foundation.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/delegation/delegation_settings_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -35,5 +37,10 @@ class DelegationSettingsRobot extends CoreRobot
   @override
   Future<void> confirmRemoveAccess() async {
     await $(ConfirmDialogButton).$(AppLocalizations().removeAccess).tap();
+  }
+
+  @override
+  Future<void> confirmRemoveDelegate() async {
+    await $(const ValueKey(UiKeys.removeDelegateSubmitButton)).tap();
   }
 }

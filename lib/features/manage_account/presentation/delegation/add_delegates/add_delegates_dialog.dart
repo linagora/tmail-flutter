@@ -1,12 +1,9 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/dialog/modal_list_action_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
@@ -17,6 +14,7 @@ import 'package:tmail_ui_user/features/delegation/presentation/model/add_delegat
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/add_delegates_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/my_delegates_notifier.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/delegation/add_delegates/delegate_address_field.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/delegation/delegation_dialog_frame.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/providers/app_toast_provider.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
@@ -26,8 +24,7 @@ typedef OnDelegatesAdded = void Function(AddDelegatesResult result);
 
 /// Pick addresses as chips, then Add sends one `Delegate/set`. See ADR-0115.
 class AddDelegatesDialog extends ConsumerWidget {
-  static final LinagoraDialogStyle _tokens = LinagoraDialogStyle.material();
-  static const EdgeInsetsGeometry _headerPadding = EdgeInsetsDirectional.symmetric(horizontal: 32, vertical: 16);
+  static final LinagoraDialogStyle _tokens = DelegationDialogFrame.tokens;
 
   final Session session;
   final DelegateSuggestionLoader loadSuggestions;
@@ -53,59 +50,12 @@ class AddDelegatesDialog extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final form = ref.watch(addDelegatesProvider);
 
-    return PopScope(
-      canPop: !form.isSubmitting,
-      child: Dialog(
-        key: const ValueKey(UiKeys.addDelegatesDialog),
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
-        insetPadding: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(_tokens.surfaceRadius)),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: _tokens.maxWidth),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildHeader(l10n, form),
-              Flexible(
-                child: SingleChildScrollView(
-                  padding: _tokens.contentPadding,
-                  child: _buildContent(context, ref, l10n, form),
-                ),
-              ),
-              Divider(height: 1, color: _tokens.dividerColor),
-              _buildFooter(context, ref, l10n, form),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(AppLocalizations l10n, AddDelegatesForm form) {
-    return Padding(
-      padding: _headerPadding,
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              l10n.delegateMailboxAccount,
-              style: _tokens.titleTextStyle,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          IconButton(
-            tooltip: l10n.close,
-            padding: EdgeInsets.zero,
-            constraints: BoxConstraints.tight(Size.square(_tokens.iconButtonSize)),
-            style: const ButtonStyle(tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-            onPressed: form.isSubmitting ? null : popBack,
-            icon: SvgPicture.asset(Get.find<ImagePaths>().icCloseDialog, width: 24, height: 24),
-          ),
-        ],
-      ),
+    return DelegationDialogFrame(
+      key: const ValueKey(UiKeys.addDelegatesDialog),
+      title: l10n.delegateMailboxAccount,
+      isBusy: form.isSubmitting,
+      content: _buildContent(context, ref, l10n, form),
+      footer: _buildFooter(context, ref, l10n, form),
     );
   }
 

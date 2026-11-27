@@ -6171,5 +6171,41 @@
     "placeholders": {
       "emailAddress": {}
     }
+  },
+  "removeDelegateAccessTitle": "Remove delegate access?",
+  "@removeDelegateAccessTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "removeDelegateAccessMessage": "{delegate} will no longer be able to read or send emails from your mailbox.",
+  "@removeDelegateAccessMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "delegate"
+    ],
+    "placeholders": {
+      "delegate": {}
+    }
+  },
+  "delegateHasBeenRemoved": "{delegate} has been removed",
+  "@delegateHasBeenRemoved": {
+    "type": "text",
+    "placeholders_order": [
+      "delegate"
+    ],
+    "placeholders": {
+      "delegate": {}
+    }
+  },
+  "couldNotRemoveDelegate": "Couldn't remove {delegate}",
+  "@couldNotRemoveDelegate": {
+    "type": "text",
+    "placeholders_order": [
+      "delegate"
+    ],
+    "placeholders": {
+      "delegate": {}
+    }
   }
 }

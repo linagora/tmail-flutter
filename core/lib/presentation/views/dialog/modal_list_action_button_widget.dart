@@ -13,6 +13,7 @@ class ModalListActionButtonWidget extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final bool isPositiveActionEnabled;
   final bool isProgressing;
+  final Color positiveColor;
 
   const ModalListActionButtonWidget({
     super.key,
@@ -22,6 +23,7 @@ class ModalListActionButtonWidget extends StatelessWidget {
     required this.onNegativeAction,
     this.isPositiveActionEnabled = true,
     this.isProgressing = false,
+    this.positiveColor = AppColor.primaryMain,
     this.padding,
     this.positiveKey,
     this.negativeKey,
@@ -46,7 +48,7 @@ class ModalListActionButtonWidget extends StatelessWidget {
         key: positiveKey,
         label: positiveLabel,
         backgroundColor: isPositiveActionEnabled
-            ? AppColor.primaryMain
+            ? positiveColor
             : AppColor.profileMenuDivider.withValues(alpha: 0.12),
         textColor: isPositiveActionEnabled
             ? Colors.white
@@ -61,7 +63,7 @@ class ModalListActionButtonWidget extends StatelessWidget {
       child: ConfirmDialogButton(
         label: positiveLabel,
         padding: EdgeInsets.zero,
-        backgroundColor: AppColor.primaryMain,
+        backgroundColor: positiveColor,
         child: CupertinoLoadingWidget(
           color: Colors.white,
           semanticLabel: positiveLabel,
