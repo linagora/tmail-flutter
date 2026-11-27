@@ -66,10 +66,13 @@ void main() {
       });
     }
 
-    testWidgets('SHOULD NOT show the compact account switcher inside Twake Workplace', (tester) async {
+    testWidgets(
+      'SHOULD show the compact account switcher inside Twake Workplace, '
+      'whose header chip is only in the desktop layout',
+    (tester) async {
       await pumpAppBar(tester, isWeb: true, insideCozy: true);
 
-      expect(find.byKey(CompactAccountSwitcher.switcherKey), findsNothing);
+      expect(find.byKey(CompactAccountSwitcher.switcherKey), findsOneWidget);
     });
   });
 }
