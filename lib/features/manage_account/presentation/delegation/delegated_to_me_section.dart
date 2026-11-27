@@ -39,7 +39,7 @@ class _DelegatedToMeSectionState extends ConsumerState<DelegatedToMeSection> {
 
   void _load() {
     if (!mounted) return;
-    ref.read(delegatedToMeProvider.notifier).load(widget.session);
+    ref.read(delegatedToMeProvider.notifier).load(widget.session, onSessionReloaded: widget.onSessionReloaded);
   }
 
   @override

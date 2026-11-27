@@ -60,6 +60,10 @@ class JmapTestClient {
     return _connect(backendUrl, email, password);
   }
 
+  /// Signs in as another seeded user of the leased backend.
+  static Future<JmapTestClient> signedInAs(String email, String password) =>
+      _connect(TestBackend.current.url, email, password);
+
   static Future<JmapTestClient> _connect(
     String backendUrl,
     String email,

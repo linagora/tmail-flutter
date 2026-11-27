@@ -4,6 +4,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tmail_ui_user/features/base/interactor_consumer.dart';
+import 'package:tmail_ui_user/features/delegation/domain/extensions/session_delegation_extension.dart';
 import 'package:tmail_ui_user/features/delegation/domain/state/get_delegated_accounts_state.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/delegated_account_providers.dart';
@@ -26,20 +27,40 @@ class DelegatedToMeNotifier extends _$DelegatedToMeNotifier with InteractorConsu
   @override
   AsyncValue<List<DelegatedAccount>> build() => const AsyncLoading();
 
-  Future<void> load(Session session) async {
+  /// With [onSessionReloaded], a list that no longer matches the session re-reads it, so the switcher follows
+  /// a delegation granted or revoked while the app runs.
+  Future<void> load(Session session, {OnSessionReloaded? onSessionReloaded}) async {
     final loadId = ++_latestLoadId;
     state = const AsyncLoading();
     final interactor = ref.read(getDelegatedAccountsInteractorProvider);
+    final activeAccount = ref.read(activeAccountProvider.notifier);
+    List<DelegatedAccount>? loaded;
     await consumeInteractor(InteractorConsumeRequest(
       run: () => interactor.execute(session).last,
       isStale: () => !ref.mounted || loadId != _latestLoadId,
       onSuccess: (success) {
         if (success is GetDelegatedAccountsSuccess) {
+          loaded = success.delegatedAccounts;
           state = AsyncData(success.delegatedAccounts);
         }
       },
       onFailure: (error, stackTrace) => state = AsyncError(error, stackTrace),
     ));
+    if (onSessionReloaded == null || _isLoadReplaced(loadId)) return;
+    if (_sessionMissesChange(activeAccount, loaded)) {
+      // A newer load compares the list with the session again, so this re-read must not overwrite its outcome.
+      await _reloadSession(activeAccount, onSessionReloaded, isOriginReplaced: () => _isLoadReplaced(loadId));
+    }
+  }
+
+  bool _isLoadReplaced(int loadId) => loadId != _latestLoadId;
+
+  bool _sessionMissesChange(ActiveAccountNotifier activeAccount, List<DelegatedAccount>? accounts) {
+    final session = activeAccount.state?.session;
+    if (session == null || accounts == null) return false;
+    final sessionOwners = session.delegatedAccounts.map((entry) => entry.value.name.value).toSet();
+    return sessionOwners.length != accounts.length ||
+        accounts.any((account) => !sessionOwners.contains(account.username));
   }
 
   /// Removes my access, then re-reads the session so the switcher drops that mailbox.
@@ -84,12 +105,16 @@ class DelegatedToMeNotifier extends _$DelegatedToMeNotifier with InteractorConsu
     state = AsyncData(accounts.where((account) => account != delegatedAccount).toList());
   }
 
-  Future<void> _reloadSession(ActiveAccountNotifier activeAccount, OnSessionReloaded? onSessionReloaded) {
+  Future<void> _reloadSession(
+    ActiveAccountNotifier activeAccount,
+    OnSessionReloaded? onSessionReloaded, {
+    StaleGuard? isOriginReplaced,
+  }) {
     final reloadId = ++_latestReloadId;
     return consumeInteractor(InteractorConsumeRequest(
       run: () => _getSessionInteractor.execute().last,
       // Only the latest re-read applies: it started after every removal that completed before it.
-      isStale: () => reloadId != _latestReloadId,
+      isStale: () => reloadId != _latestReloadId || (isOriginReplaced?.call() ?? false),
       onSuccess: (success) {
         // A cached session still lists the removed mailbox.
         if (success is GetSessionSuccess &&

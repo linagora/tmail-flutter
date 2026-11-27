@@ -31,3 +31,10 @@ Categories: UX, UI, Product, Architecture, Infra, Tech.
 - Decided by: Dat H. Pham, in linagora/tmail-flutter#5163.
 - Why: the new tab keeps working without a second sign in, and a draft stays owned by the one tab that created it.
 - Scope: `app_route_tab_environment.dart`, `html_utils.dart`, `child_tab_session_cleaner.dart`, `mailbox_action_handler_mixin.dart`, `email_action_controller.dart`.
+
+## 2026-11-27, [Architecture] Settings › Delegation › With me re-reads the session when its list of owners differs from the session
+
+- Decision: when the With me list loads and names a different set of owners than the shown session's delegated accounts, the session is re-read once and handed to the dashboard, so the account switcher offers the same mailboxes as the list. A load that fails, or that a newer load replaced, triggers no re-read. Re-reading on resume and on `accountNotFound` stays with linagora/tmail-flutter#5162.
+- Decided by: Dat Vu, in linagora/tmail-flutter#5188.
+- Why: the session is read only at sign in, so a grant or a revoke made while the app runs reached the With me list but not the switcher, which then offered a mailbox the server refuses or hid one just granted.
+- Scope: `delegated_to_me_notifier.dart`, `delegated_to_me_section.dart`.
