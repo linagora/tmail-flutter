@@ -101,6 +101,16 @@ void main() {
     );
 
     test(
+      'SHOULD keep the closing quote of a double-quoted URL outside the link',
+      () {
+        expect(
+          filter.process('Open "https://example.com/docs" now'),
+          equals('Open &quot;<a href="https://example.com/docs" target="_blank" rel="noreferrer" style="white-space: nowrap; word-break: keep-all;">example.com&#47;docs</a>&quot; now'),
+        );
+      },
+    );
+
+    test(
       'SHOULD return empty string for empty input',
       () {
         expect(filter.process(''), equals(''));
