@@ -131,6 +131,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/state/get_server_setting_state.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
@@ -505,6 +506,50 @@ void main() {
     );
     expect(sentryManager.isSentryReportingAllowed, isFalse);
     await tester.pumpAndSettle();
+  });
+
+  group('launch Sentry choice from the server settings:', () {
+    setUp(() async {
+      PlatformInfo.isTestingForWeb = true;
+      await SentryManager.instance.clearSessionContext();
+    });
+
+    tearDown(() => PlatformInfo.isTestingForWeb = false);
+
+    testWidgets('marks the choice as read WHEN the request fails with a connection error', (tester) async {
+      await pumpLocalizedApp(tester);
+
+      mailboxDashboardController.onDataFailureViewState(
+        GetServerSettingFailure(const ConnectionError()),
+      );
+
+      expect(SentryManager.instance.isReportingConsentResolved, isTrue);
+    });
+
+    testWidgets('does not touch the choice WHEN the dashboard closed before the failure', (tester) async {
+      await pumpLocalizedApp(tester);
+      mailboxDashboardController.onDelete();
+
+      mailboxDashboardController.onDataFailureViewState(
+        GetServerSettingFailure(const ConnectionError()),
+      );
+
+      expect(SentryManager.instance.isReportingConsentResolved, isFalse);
+    });
+
+    testWidgets('does not apply the consent WHEN the dashboard closed before the answer', (tester) async {
+      await pumpLocalizedApp(tester);
+      final sentryManager = SentryManager.instance..setSentryReportingDefault(false);
+      addTearDown(() => sentryManager.setSentryReportingDefault(true));
+      mailboxDashboardController.onDelete();
+
+      mailboxDashboardController.handleSuccessViewState(
+        GetServerSettingSuccess(TMailServerSettingOptions(sentryUserOptIn: true)),
+      );
+
+      expect(sentryManager.isReportingConsentResolved, isFalse);
+      expect(sentryManager.isSentryReportingAllowed, isFalse);
+    });
   });
 
   // Kept before the groups that Get.put controllers without pumping a frame:

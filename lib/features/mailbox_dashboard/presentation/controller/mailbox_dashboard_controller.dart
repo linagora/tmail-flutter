@@ -614,6 +614,8 @@ class MailboxDashBoardController extends ReloadableController
         markStarAction: success.markStarAction,
       );
     } else if (success is GetServerSettingSuccess) {
+      // A retried request can answer after this dashboard closed: its result is not for the next session.
+      if (isClosed) return;
       isSenderImportantFlagEnabled.value = success.settingOption.isDisplaySenderPriority;
       setupAINeedsActionSetting(options: success.settingOption);
       initializeAppLanguage(success);
@@ -675,7 +677,6 @@ class MailboxDashBoardController extends ReloadableController
     } else if (failure is GetServerSettingFailure) {
       isSenderImportantFlagEnabled.value = true;
       setupAINeedsActionSetting();
-      applyUnreadableReportingConsent();
     } else if (failure is GetAllIdentitiesFailure) {
       _handleGetAllIdentitiesFailure();
     } else if (failure is ClearMailboxFailure) {
@@ -694,6 +695,15 @@ class MailboxDashBoardController extends ReloadableController
       subscribeLabelViewStateFailure(failure);
       super.handleFailureViewState(failure);
     }
+  }
+
+  @override
+  void onDataFailureViewState(Failure failure) {
+    // An urgent error (connection error) skips handleFailureViewState, the choice stays unreadable all the same.
+    if (failure is GetServerSettingFailure && !isClosed) {
+      applyUnreadableReportingConsent();
+    }
+    super.onDataFailureViewState(failure);
   }
 
   @override
