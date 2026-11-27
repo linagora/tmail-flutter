@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -29,6 +30,7 @@ import 'package:tmail_ui_user/main/providers/workplace/fqdn/workplace_fqdn_user_
 
 void main() {
   group('ecosystem request caching', _ecosystemCachingTests);
+  group('ecosystem transport retry', _ecosystemTransportRetryTests);
   group('ecosystem request lifecycle', _ecosystemLifecycleTests);
   group('ecosystem JMAP URL keying', _jmapUrlKeyingTests);
   group('ecosystem account isolation', _accountIsolationTests);
@@ -41,6 +43,109 @@ void main() {
   group('premium CTA missing dependencies', _missingDependenciesTests);
   group('premium CTA degraded inputs', _degradedInputTests);
   group('ecosystem state equality', _ecosystemStateEqualityTests);
+}
+
+void _ecosystemTransportRetryTests() {
+  test('loads the ecosystem again after a socket error', () async {
+    final expected = _ecosystem(_paywallTemplate);
+    var calls = 0;
+    final repository = _EcosystemRepository((_) async {
+      if (calls++ == 0) throw const SocketError();
+      return expected;
+    });
+    final container = _createContainer(
+      repository,
+      transportRetryDelays: const [Duration.zero],
+    );
+    _keepEcosystemAlive(container, _firstTarget);
+
+    expect(await _readEcosystem(container, _firstTarget), same(expected));
+    expect(repository.callCount, 2);
+  });
+
+  test('gives up once every transport retry failed', () async {
+    final repository =
+        _EcosystemRepository((_) async => throw const ConnectionError());
+    final container = _createContainer(
+      repository,
+      transportRetryDelays: const [Duration.zero, Duration.zero],
+    );
+    _keepEcosystemAlive(container, _firstTarget);
+
+    await expectLater(
+      _readEcosystem(container, _firstTarget),
+      throwsA(isA<Failure>()),
+    );
+    expect(repository.callCount, 3);
+  });
+
+  for (final offline in <Object>[const NoNetworkError(), const ConnectionTimeout()]) {
+    test('does not load the ecosystem again after ${offline.runtimeType}', () async {
+      final repository = _EcosystemRepository((_) async => throw offline);
+      final container = _createContainer(
+        repository,
+        transportRetryDelays: const [Duration.zero],
+      );
+      _keepEcosystemAlive(container, _firstTarget);
+
+      await expectLater(
+        _readEcosystem(container, _firstTarget),
+        throwsA(isA<Failure>()),
+      );
+      expect(repository.callCount, 1);
+    });
+  }
+
+  test('stops loading once the provider is disposed while it waits', () async {
+    final repository =
+        _EcosystemRepository((_) async => throw const SocketError());
+    final container = _createContainer(
+      repository,
+      transportRetryDelays: const [Duration(milliseconds: 50)],
+    );
+    _keepEcosystemAlive(container, _firstTarget);
+    final pending =
+        _readEcosystem(container, _firstTarget).then((_) {}, onError: (_) {});
+
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+    container.dispose();
+    await pending;
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+
+    expect(repository.callCount, 1);
+  });
+
+  test('ecosystem retry delays are empty on web and paced on mobile', () {
+    final mobile = ProviderContainer();
+    addTearDown(mobile.dispose);
+    expect(
+      mobile.read(ecosystemTransportRetryDelaysProvider),
+      const [Duration(seconds: 1), Duration(seconds: 4), Duration(seconds: 15)],
+    );
+
+    PlatformInfo.isTestingForWeb = true;
+    addTearDown(() => PlatformInfo.isTestingForWeb = false);
+    final web = ProviderContainer();
+    addTearDown(web.dispose);
+    expect(web.read(ecosystemTransportRetryDelaysProvider), isEmpty);
+  });
+
+  test('does not load the ecosystem again after a non-transport failure',
+      () async {
+    final repository =
+        _EcosystemRepository((_) async => throw StateError('rejected'));
+    final container = _createContainer(
+      repository,
+      transportRetryDelays: const [Duration.zero],
+    );
+    _keepEcosystemAlive(container, _firstTarget);
+
+    await expectLater(
+      _readEcosystem(container, _firstTarget),
+      throwsA(isA<Failure>()),
+    );
+    expect(repository.callCount, 1);
+  });
 }
 
 void _ecosystemCachingTests() {
@@ -731,8 +836,8 @@ void _ecosystemStateEqualityTests() {
     final ecosystem = _ecosystem(_paywallTemplate);
     expect(EcosystemAvailable(ecosystem).props, [ecosystem]);
     expect(
-      EcosystemLoading(),
-      isNot(EcosystemUnavailable(EcosystemUnavailableReason.missingAccount)),
+      const EcosystemLoading(),
+      isNot(const EcosystemUnavailable(EcosystemUnavailableReason.missingAccount)),
     );
   });
 }
@@ -816,12 +921,16 @@ ProviderContainer _createContainer(
   _EcosystemRepository repository, {
   GetLinagoraEcosystemInteractor? interactor,
   FutureOr<bool> insideCozy = true,
+  List<Duration> transportRetryDelays = const [],
 }) {
   final container = ProviderContainer(overrides: [
     getLinagoraEcosystemInteractorProvider.overrideWithValue(
       interactor ?? GetLinagoraEcosystemInteractor(repository),
     ),
     insideCozyProvider.overrideWith((ref) => insideCozy),
+    ecosystemTransportRetryDelaysProvider.overrideWithValue(
+      transportRetryDelays,
+    ),
   ]);
   addTearDown(container.dispose);
   return container;

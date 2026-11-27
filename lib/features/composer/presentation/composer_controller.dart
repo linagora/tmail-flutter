@@ -1550,6 +1550,12 @@ class ComposerController extends BaseController
     _savedEmailDraftHash = await _hashComposingEmail();
   }
 
+  /// True when the user changed the email since the saved hash was taken.
+  Future<bool> hasEditsSinceSavedDraftHash() async {
+    final saved = _savedEmailDraftHash;
+    return saved != null && saved != await _hashComposingEmail();
+  }
+
   Future<void> initEmailDraftHash() async {
     final currentDraftHash = await _hashComposingEmail();
 

@@ -487,6 +487,15 @@ void main() {
       );
 
       manager.setSentryReportingDefault(true);
+      await manager.initializeWithSentryConfig(SentryConfig(
+        dsn: 'https://public@example.com/1',
+        environment: 'test',
+        release: '1.0.0',
+        isAvailable: true,
+        isReportingAllowed: true,
+      ));
+      manager.resolveReportingConsent();
+      await manager.pendingLifecycleTransition;
       await manager.pendingScopeSync;
 
       manager.captureException('failure');

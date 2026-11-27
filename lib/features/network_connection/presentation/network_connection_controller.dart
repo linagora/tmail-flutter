@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
@@ -60,7 +61,7 @@ class NetworkConnectionController extends GetxController {
     }
 
     if (listConnectionResult[1] is InternetConnectionStatus) {
-      _setInternetConnectivityStatus(listConnectionResult[1] as InternetConnectionStatus);
+      setInternetConnectivityStatus(listConnectionResult[1] as InternetConnectionStatus);
     }
   }
 
@@ -78,7 +79,7 @@ class NetworkConnectionController extends GetxController {
     _internetSubscription = _internetConnectionChecker.onStatusChange.listen(
       (status) {
         log('NetworkConnectionController::_listenNetworkConnectionChanged()::onStatusChange: $status');
-        _setInternetConnectivityStatus(status);
+        setInternetConnectivityStatus(status);
       },
       onError: (error, stackTrace) {
         logWarning('NetworkConnectionController::_listenNetworkConnectionChanged()::onStatusChange:error: $error | stackTrace: $stackTrace');
@@ -90,12 +91,19 @@ class NetworkConnectionController extends GetxController {
     _connectivityResult.value = newConnectivityResult;
   }
 
-  void _setInternetConnectivityStatus(InternetConnectionStatus newStatus) {
+  @visibleForTesting
+  void setInternetConnectivityStatus(InternetConnectionStatus newStatus) {
     _internetConnectionStatus.value = newStatus;
   }
 
+  /// Emits each time the internet becomes reachable.
+  Stream<void> get onInternetRestored => _internetConnectionStatus.stream
+      .where((status) => status == InternetConnectionStatus.connected)
+      .map((_) {});
+
+  /// Not probed yet counts as available: the request's own error then decides.
   bool isNetworkConnectionAvailable() {
-    return _internetConnectionStatus.value == InternetConnectionStatus.connected;
+    return _internetConnectionStatus.value != InternetConnectionStatus.disconnected;
   }
 
   Future<bool> hasInternetConnection() {

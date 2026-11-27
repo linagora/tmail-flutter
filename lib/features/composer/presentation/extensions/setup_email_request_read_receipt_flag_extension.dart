@@ -41,8 +41,10 @@ extension SetupEmailRequestReadReceiptFlagExtension on ComposerController {
     final uiState = resultState.fold((failure) => failure, (success) => success);
 
     if (uiState is GetServerSettingSuccess) {
+      // Read before the flag changes the hash: text typed while the request waited must still prompt on close.
+      final hasEdits = await hasEditsSinceSavedDraftHash();
       hasRequestReadReceipt.value = uiState.settingOption.isAlwaysReadReceipts;
-      initEmailDraftHash();
+      if (!hasEdits) initEmailDraftHash();
     }
   }
 }

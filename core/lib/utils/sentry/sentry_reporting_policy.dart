@@ -17,6 +17,8 @@ class SentryReportingPolicy {
 
   bool get isSuspended => _isSuspended;
 
+  bool get isRefusedByUser => _userConsent == false;
+
   bool get shouldRun => !_isSuspended && isAllowed;
 
   void setConfigurationDefault(bool isAllowed) {

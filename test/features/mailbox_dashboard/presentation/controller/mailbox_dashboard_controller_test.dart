@@ -130,7 +130,9 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/exceptions/server_settings_exception.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/state/get_server_setting_state.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
@@ -505,6 +507,82 @@ void main() {
     );
     expect(sentryManager.isSentryReportingAllowed, isFalse);
     await tester.pumpAndSettle();
+  });
+
+  group('launch Sentry choice from the server settings:', () {
+    setUp(() {
+      PlatformInfo.isTestingForWeb = true;
+      // Its futures may be chained in an earlier test's fake zone: the reset itself is synchronous.
+      unawaited(SentryManager.instance.clearSessionContext());
+    });
+
+    tearDown(() => PlatformInfo.isTestingForWeb = false);
+
+    testWidgets('marks the choice as read WHEN the request fails with a connection error', (tester) async {
+      await pumpLocalizedApp(tester);
+
+      mailboxDashboardController.onDataFailureViewState(
+        GetServerSettingFailure(const ConnectionError()),
+      );
+
+      expect(SentryManager.instance.isReportingConsentResolved, isTrue);
+    });
+
+    for (final exception in const [
+      NotFoundServerSettingsException(),
+      NotFoundSettingOptionException(),
+    ]) {
+      testWidgets('keeps the launch reports WHEN the server has no stored settings (${exception.exceptionName})', (tester) async {
+        await pumpLocalizedApp(tester);
+        SentryManager.instance.captureMessage('launch error');
+        expect(SentryManager.instance.pendingReportCount, 1);
+
+        mailboxDashboardController.onDataFailureViewState(
+          GetServerSettingFailure(exception),
+        );
+
+        expect(SentryManager.instance.isReportingConsentResolved, isTrue);
+        expect(SentryManager.instance.pendingReportCount, 1);
+        // The kept report owns a five minute timer the test binding rejects.
+        SentryManager.instance.discardPendingReports();
+      });
+    }
+
+    testWidgets('drops the launch reports WHEN the choice cannot be read', (tester) async {
+      await pumpLocalizedApp(tester);
+      SentryManager.instance.captureMessage('launch error');
+
+      mailboxDashboardController.onDataFailureViewState(
+        GetServerSettingFailure(const ConnectionError()),
+      );
+
+      expect(SentryManager.instance.pendingReportCount, 0);
+    });
+
+    testWidgets('does not touch the choice WHEN the dashboard closed before the failure', (tester) async {
+      await pumpLocalizedApp(tester);
+      mailboxDashboardController.onDelete();
+
+      mailboxDashboardController.onDataFailureViewState(
+        GetServerSettingFailure(const ConnectionError()),
+      );
+
+      expect(SentryManager.instance.isReportingConsentResolved, isFalse);
+    });
+
+    testWidgets('does not apply the consent WHEN the dashboard closed before the answer', (tester) async {
+      await pumpLocalizedApp(tester);
+      final sentryManager = SentryManager.instance..setSentryReportingDefault(false);
+      addTearDown(() => sentryManager.setSentryReportingDefault(true));
+      mailboxDashboardController.onDelete();
+
+      mailboxDashboardController.handleSuccessViewState(
+        GetServerSettingSuccess(TMailServerSettingOptions(sentryUserOptIn: true)),
+      );
+
+      expect(sentryManager.isReportingConsentResolved, isFalse);
+      expect(sentryManager.isSentryReportingAllowed, isFalse);
+    });
   });
 
   // Kept before the groups that Get.put controllers without pumping a frame:

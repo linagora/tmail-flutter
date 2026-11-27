@@ -183,9 +183,12 @@ import '../../../../fixtures/widget_fixtures.dart';
 import 'mailbox_dashboard_view_widget_test.mocks.dart';
 
 mockControllerCallback() => InternalFinalCallback<void>(callback: () {});
+// MailboxController listens to it to reload the folders once the internet is back
+Stream<void> mockInternetRestored() => const Stream<void>.empty();
 const fallbackGenerators = {
   #onStart: mockControllerCallback,
   #onDelete: mockControllerCallback,
+  #onInternetRestored: mockInternetRestored,
 };
 
 class _TestEcosystemNotifier extends Notifier<LinagoraEcosystem?> {
@@ -314,6 +317,7 @@ void main() {
   final spamReportController = MockSpamReportController();
   final labelController = MockLabelController();
   final networkConnectionController = MockNetworkConnectionController();
+  var internetRestored = StreamController<void>.broadcast();
 
   final quickSearchEmailInteractor = MockQuickSearchEmailInteractor();
   final saveRecentSearchInteractor = MockSaveRecentSearchInteractor();
@@ -515,6 +519,11 @@ void main() {
       Get.put<LabelController>(labelController);
       // MailboxController listens to the label list once it is ready
       when(labelController.labels).thenReturn(RxList());
+      // One stream per test: a controller left from an earlier test must not hear this one.
+      internetRestored = StreamController<void>.broadcast();
+      addTearDown(internetRestored.close);
+      when(networkConnectionController.onInternetRestored)
+          .thenAnswer((_) => internetRestored.stream);
       Get.put<NetworkConnectionController>(networkConnectionController);
       Get.put<CachingManager>(cachingManager);
       Get.put<LanguageCacheManager>(languageCacheManager);
@@ -654,6 +663,76 @@ void main() {
 
       expect(mailboxController.accountId, DelegationFixtures.bobAccountId);
       verify(getAllMailboxInteractor.execute(any, DelegationFixtures.bobAccountId)).called(1);
+    });
+
+    testWidgets('MailboxController loads the folders again when the internet is back after a failed load',
+        (tester) async {
+      await tester.pumpWidget(const SizedBox());
+      // The mock is shared: the next test must not start with a failing load.
+      addTearDown(() => reset(getAllMailboxInteractor));
+      when(getAllMailboxInteractor.execute(any, any)).thenAnswer(
+        (_) => Stream.value(Left(GetAllMailboxFailure(StateError('load failed')))),
+      );
+      mailboxController.refreshAllMailbox();
+      await tester.pump();
+      clearInteractions(getAllMailboxInteractor);
+
+      internetRestored.add(null);
+      await tester.pump();
+
+      verify(getAllMailboxInteractor.execute(any, any)).called(1);
+    });
+
+    testWidgets('MailboxController does not load the folders again when the internet is back after a failed load then a successful one',
+        (tester) async {
+      await tester.pumpWidget(const SizedBox());
+      addTearDown(() {
+        reset(getAllMailboxInteractor);
+        clearInteractions(treeBuilder);
+        clearInteractions(createDefaultMailboxInteractor);
+      });
+      when(getAllMailboxInteractor.execute(any, any)).thenAnswer(
+        (_) => Stream.value(Left(GetAllMailboxFailure(StateError('load failed')))),
+      );
+      mailboxController.refreshAllMailbox();
+      await tester.pump();
+      arrangeSidebarMenu();
+      when(
+        treeBuilder.generateMailboxTreeInUI(
+          allMailboxes: anyNamed('allMailboxes'),
+          currentCollection: anyNamed('currentCollection'),
+          mailboxIdSelected: anyNamed('mailboxIdSelected'),
+          mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
+        ),
+      ).thenAnswer((_) async => MailboxCollection.empty());
+      when(getAllMailboxInteractor.execute(any, any)).thenAnswer(
+        (_) => Stream.value(Right(GetAllMailboxSuccess(
+          mailboxList: const [],
+          currentMailboxState: null,
+        ))),
+      );
+      mailboxController.refreshAllMailbox();
+      await tester.pump();
+      clearInteractions(getAllMailboxInteractor);
+
+      internetRestored.add(null);
+      await tester.pump();
+
+      verifyNever(getAllMailboxInteractor.execute(any, any));
+    });
+
+    testWidgets('MailboxController does not load the folders again when the internet is back and nothing failed',
+        (tester) async {
+      await tester.pumpWidget(const SizedBox());
+      when(getAllMailboxInteractor.execute(any, any)).thenAnswer((_) => const Stream.empty());
+      mailboxController.refreshAllMailbox();
+      await tester.pump();
+      clearInteractions(getAllMailboxInteractor);
+
+      internetRestored.add(null);
+      await tester.pump();
+
+      verifyNever(getAllMailboxInteractor.execute(any, any));
     });
 
     testWidgets('mailbox selection is hidden while email search is active',

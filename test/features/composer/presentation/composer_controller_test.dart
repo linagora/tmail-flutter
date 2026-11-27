@@ -4312,6 +4312,56 @@ void main() {
           expect(composerController!.hasRequestReadReceipt.value, isTrue);
         },
       );
+
+      void arrangeReadReceiptSetting() {
+        mockMailboxDashBoardController.shownAccountCapabilitiesOverride =
+            ShownAccountCapabilities.of(
+          ActiveAccount.personal(DelegationFixtures.session()),
+        );
+        when(mockGetServerSettingInteractor.execute(any)).thenAnswer(
+          (_) => Stream.fromIterable([
+            Right(GetServerSettingSuccess(
+              TMailServerSettingOptions(alwaysReadReceipts: true),
+            )),
+          ]),
+        );
+      }
+
+      test(
+        'SHOULD keep the saved draft hash '
+        'WHEN the user typed before the setting answered',
+        () async {
+          arrangeReadReceiptSetting();
+          await composerController!.initEmailDraftHash();
+          final savedHash = composerController!.savedEmailDraftHash;
+          composerController!.subjectEmail.value = 'typed while the request waited';
+
+          composerController!.setupEmailRequestReadReceiptFlag(
+            ComposerArguments(emailActionType: EmailActionType.compose),
+          );
+          await pumpEventQueue();
+
+          expect(composerController!.hasRequestReadReceipt.value, isTrue);
+          expect(composerController!.savedEmailDraftHash, savedHash);
+        },
+      );
+
+      test(
+        'SHOULD take the setting into the saved draft hash '
+        'WHEN the user typed nothing',
+        () async {
+          arrangeReadReceiptSetting();
+          await composerController!.initEmailDraftHash();
+          final savedHash = composerController!.savedEmailDraftHash;
+
+          composerController!.setupEmailRequestReadReceiptFlag(
+            ComposerArguments(emailActionType: EmailActionType.compose),
+          );
+          await pumpEventQueue();
+
+          expect(composerController!.savedEmailDraftHash, isNot(savedHash));
+        },
+      );
     });
 
     group('getAllIdentitiesAsSynchronize:', () {
