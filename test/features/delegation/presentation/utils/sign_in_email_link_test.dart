@@ -34,6 +34,11 @@ void main() {
       '//evil.example/dashboard?account=owner-account',
       'javascript:alert(1)',
       '/dashboard?account=%E0%A4%A',
+      '/dashboard?account=owner-account&context=',
+      '/dashboard?account=owner-account&id=',
+      '/dashboard?account=owner-account&labelId=',
+      '/dashboard?account=owner-account&id=bad.id',
+      '/dashboard?account=owner-account&labelId=bad.id',
     ]) {
       test('SHOULD NOT accept "$notEmailLink"', () {
         expect(SignInEmailLink.tryParse(notEmailLink), isNull);
@@ -120,6 +125,30 @@ void main() {
 
       expect(() => takeSignInEmailLink(), returnsNormally);
       expect(storage.sessionStorage.containsKey(SignInEmailLink.storageKey), isFalse);
+    });
+
+    test('SHOULD NOT take a link its filter refuses AND keeps it for a later take', () {
+      keepSignInEmailLink('/settings', {'type': 'delegation'});
+
+      expect(takeSignInEmailLink(accepts: (link) => !link.opensSettings), isNull);
+      expect(hasSignInEmailLink(), isTrue);
+      expect(takeSignInEmailLink(accepts: (link) => link.opensSettings)?.opensSettings, isTrue);
+      expect(hasSignInEmailLink(), isFalse);
+    });
+
+    test('WHEN the stored value is invalid THEN a filtered take still removes it', () {
+      storage.save(SignInEmailLink.storageKey, '/dashboard?account=owner-account&context=');
+
+      expect(takeSignInEmailLink(accepts: (_) => false), isNull);
+      expect(storage.sessionStorage.containsKey(SignInEmailLink.storageKey), isFalse);
+    });
+
+    test('WHEN a link is discarded THEN nothing is left to take', () {
+      keepSignInEmailLink('/dashboard', {'account': 'owner-account'});
+
+      discardSignInEmailLink();
+
+      expect(takeSignInEmailLink(), isNull);
     });
 
     test('SHOULD NOT keep or take a link on mobile', () {

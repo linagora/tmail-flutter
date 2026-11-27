@@ -945,11 +945,11 @@ class MailboxDashBoardController extends ReloadableController
     required bool fromCache,
   }) {
     log('MailboxDashBoardController::_handleSession:');
-    final signInEmailLink = takeSignInEmailLink();
-    if (signInEmailLink != null) _getRouteParameters(signInEmailLink);
+    final dashboardLink = _takeDashboardSignInEmailLink();
+    if (dashboardLink != null) _getRouteParameters(dashboardLink);
     _setUpComponentsFromSession(session);
     unawaited(_cleanupEndedDelegations(session, fromCache: fromCache));
-    _openSettingsOfSignInEmailLink(signInEmailLink);
+    _openSettingsOfSignInEmailLink();
 
     unawaited(checkAndRestoreComposerOnMobile());
 
@@ -1037,6 +1037,7 @@ class MailboxDashBoardController extends ReloadableController
 
   void _handleMailtoURL(MailtoArguments arguments) {
     log('MailboxDashBoardController::_handleMailtoURL:');
+    discardSignInEmailLink();
     routerParameters.value = arguments.toMapRouter();
     _handleSessionFromArguments(
       arguments.session,
@@ -2045,11 +2046,10 @@ class MailboxDashBoardController extends ReloadableController
     log('MailboxDashBoardController::handleReloaded():');
     SmartDialog.dismiss();
 
-    final signInEmailLink = takeSignInEmailLink();
-    _getRouteParameters(signInEmailLink);
+    _getRouteParameters(_takeDashboardSignInEmailLink());
     _setUpComponentsFromSession(session);
     unawaited(_cleanupEndedDelegations(session, fromCache: sessionLoadedFromCache));
-    _openSettingsOfSignInEmailLink(signInEmailLink);
+    _openSettingsOfSignInEmailLink();
     // Same shown accountId does not notify watchShown — refresh identities and web composer cache.
     _getAllIdentities();
     if (PlatformInfo.isWeb) {
@@ -2059,10 +2059,16 @@ class MailboxDashBoardController extends ReloadableController
     _openPendingAndroidNotificationTap();
   }
 
-  void _openSettingsOfSignInEmailLink(SignInEmailLink? link) {
+  SignInEmailLink? _takeDashboardSignInEmailLink() =>
+      takeSignInEmailLink(accepts: (link) => !link.opensSettings);
+
+  void _openSettingsOfSignInEmailLink() {
+    // A restored delegated account cannot open Settings, so the link waits for a load that shows mine.
+    final link = takeSignInEmailLink(
+      accepts: (link) => link.opensSettings && shownAccountCapabilities.canOpenSettings,
+    );
     // Without a session Settings loads like a page load, so it reads the link's `type=delegation`.
-    if (link == null || !link.opensSettings) return;
-    unawaited(_openSettings(link.uri.toString()));
+    if (link != null) unawaited(_openSettings(link.uri.toString()));
   }
 
   void _getRouteParameters(SignInEmailLink? signInEmailLink) {

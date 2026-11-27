@@ -545,6 +545,8 @@ abstract class BaseController extends GetxController
 
   Future<void> _handleLogoutAction(Session? session, AccountId? accountId) async {
     _revokeOtherTabsOnWebBasicAuth();
+    // A forced logout keeps the page for the same user, a sign out must not hand it to the next one on this tab.
+    discardSignInEmailLink();
     if (session == null || accountId == null) {
       await clearDataAndGoToLoginPage();
       return;

@@ -2,6 +2,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/exceptions/local_storage_exception.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -23,7 +24,12 @@ class SignInEmailLink {
     if (uri == null || _isAbsolute(uri)) return null;
     try {
       return _isEmailLink(uri) ? SignInEmailLink._(uri) : null;
-    } on FormatException {
+    } on FormatException catch (error) {
+      logWarning('SignInEmailLink::tryParse: invalid link: ${error.runtimeType}');
+      return null;
+    } on ArgumentError catch (error) {
+      // An empty id, context or labelId builds an empty Id, which throws.
+      logWarning('SignInEmailLink::tryParse: invalid link: ${error.runtimeType}');
       return null;
     }
   }
@@ -46,7 +52,16 @@ class SignInEmailLink {
 }
 
 /// Called when the app sends the user to the login page without a sign out: keeps the current page when it is an email link.
-void keepSignInEmailLinkOfCurrentPage() => keepSignInEmailLink(Get.currentRoute, Get.parameters);
+void keepSignInEmailLinkOfCurrentPage() {
+  final route = Uri.parse(Get.currentRoute).path;
+  final hasShownAccount = getBinding<ActiveAccountSource>()?.activeAccount != null;
+  // An account switch rewrites the location bar with replaceState, so Get.parameters can name a stale account.
+  // Before the first session nothing was switched, so the page is still the one opened.
+  final parameters = route == AppRoutes.dashboard && hasShownAccount
+      ? {RouteUtils.paramAccount: RouteUtils.shownDelegatedAccountId?.id.value}
+      : Get.parameters;
+  keepSignInEmailLink(route, parameters);
+}
 
 /// Keeps [route] when it is an email link, leaves any kept link otherwise.
 void keepSignInEmailLink(String route, Map<String, String?> parameters) {
@@ -69,19 +84,28 @@ void keepSignInEmailLink(String route, Map<String, String?> parameters) {
   }
 }
 
-bool hasSignInEmailLink() => _readSignInEmailLink(remove: false) != null;
+bool hasSignInEmailLink() => _readSignInEmailLink(remove: (_) => false) != null;
 
-/// Reads the kept link once: it is removed whether it is valid or not.
-SignInEmailLink? takeSignInEmailLink() => _readSignInEmailLink(remove: true);
+/// Called on a user sign out or a mailto launch: either ends the intent of a kept link.
+void discardSignInEmailLink() => takeSignInEmailLink();
 
-SignInEmailLink? _readSignInEmailLink({required bool remove}) {
+/// Reads the kept link once [accepts] it: an invalid value is removed at once, a valid one only when accepted.
+SignInEmailLink? takeSignInEmailLink({SignInEmailLinkFilter? accepts}) {
+  final link = _readSignInEmailLink(remove: (link) => link == null || accepts == null || accepts(link));
+  return link != null && (accepts == null || accepts(link)) ? link : null;
+}
+
+typedef SignInEmailLinkFilter = bool Function(SignInEmailLink link);
+typedef _RemovesSignInEmailLink = bool Function(SignInEmailLink? link);
+
+SignInEmailLink? _readSignInEmailLink({required _RemovesSignInEmailLink remove}) {
   if (!PlatformInfo.isWeb) return null;
   final storage = getBinding<SessionStorageManager>();
   if (storage == null) return null;
   try {
-    final stored = storage.get(SignInEmailLink.storageKey);
-    if (remove) storage.remove(SignInEmailLink.storageKey);
-    return SignInEmailLink.tryParse(stored);
+    final link = SignInEmailLink.tryParse(storage.get(SignInEmailLink.storageKey));
+    if (remove(link)) storage.remove(SignInEmailLink.storageKey);
+    return link;
   } on NotFoundDataWithThisKeyException {
     return null;
   }
