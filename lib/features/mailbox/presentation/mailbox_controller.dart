@@ -85,6 +85,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_collec
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/open_mailbox_view_event.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/utils/folder_reload_on_reconnect.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_action_reactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
@@ -98,6 +99,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/restore_mailbox_email_list_after_search_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
+import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
+  if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_message.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_queue_handler.dart';
@@ -151,6 +154,7 @@ class MailboxController extends BaseMailboxController
 
   final _openMailboxEventController = StreamController<OpenMailboxViewEvent>();
   StreamSubscription? _openMailboxEventStreamSubscription;
+  FolderReloadOnReconnect? _folderReloadOnReconnect;
   final mailboxListScrollController = ScrollController();
 
   PresentationMailbox? get selectedMailbox => mailboxDashBoardController.selectedMailbox.value;
@@ -195,6 +199,7 @@ class MailboxController extends BaseMailboxController
   void onInit() {
     _registerObxStreamListener();
     _initWebSocketQueueHandler();
+    _initFolderReloadOnReconnect();
     mailboxActionReactor = MailboxActionReactor(
       _moveFolderContentInteractor,
     );
@@ -214,8 +219,19 @@ class MailboxController extends BaseMailboxController
     super.onReady();
   }
 
+  void _initFolderReloadOnReconnect() {
+    final networkConnectionController = getBinding<NetworkConnectionController>();
+    if (networkConnectionController == null) return;
+    _folderReloadOnReconnect = FolderReloadOnReconnect(
+      networkConnectionController.onInternetRestored,
+      refreshAllMailbox,
+    );
+  }
+
   @override
   void onClose() {
+    _folderReloadOnReconnect?.dispose();
+    _folderReloadOnReconnect = null;
     _openMailboxEventStreamSubscription?.cancel();
     _openMailboxEventStreamSubscription = null;
     _openMailboxEventController.close();
@@ -298,6 +314,7 @@ class MailboxController extends BaseMailboxController
     viewState.value.fold(
       (failure) {
         if (failure is GetAllMailboxFailure) {
+          _folderReloadOnReconnect?.markLoadFailed();
           updateMailboxTree(
             mailboxCollection: updateMailboxCollection(currentMailboxCollection),
             isRefreshTrigger: false,
@@ -309,6 +326,7 @@ class MailboxController extends BaseMailboxController
       },
       (success) {
         if (success is GetAllMailboxSuccess) {
+          _folderReloadOnReconnect?.markLoaded();
           mailboxDashBoardController.updateRefreshAllMailboxState(Right(RefreshAllMailboxSuccess()));
           _handleCreateDefaultFolderIfMissing(mailboxDashBoardController.mapDefaultMailboxIdByRole);
           _handleDataFromNavigationRouter();

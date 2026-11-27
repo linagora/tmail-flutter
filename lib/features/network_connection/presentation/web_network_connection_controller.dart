@@ -69,6 +69,11 @@ class NetworkConnectionController extends GetxController {
     _connectivityResult.value = newConnectivityResult;
   }
 
+  /// Emits each time a connection is available.
+  Stream<void> get onInternetRestored => _connectivityResult.stream
+      .where((result) => result != null && result != ConnectivityResult.none)
+      .map((_) {});
+
   bool isNetworkConnectionAvailable() => _connectivityResult.value != ConnectivityResult.none;
 
   void _handleNetworkConnectionState() {
