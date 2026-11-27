@@ -60,6 +60,34 @@ void main() {
       expect(reloadCount, 0);
     });
 
+    test('Should reload once WHEN the internet came back before the first load failed', () async {
+      await restoreInternet();
+      expect(reloadCount, 0);
+
+      reloader.markLoadFailed();
+
+      expect(reloadCount, 1);
+    });
+
+    test('Should reload once WHEN the internet came back twice before the first load failed', () async {
+      await restoreInternet();
+      await restoreInternet();
+
+      reloader.markLoadFailed();
+      reloader.markLoadFailed();
+
+      expect(reloadCount, 1);
+    });
+
+    test('Should not reload WHEN the internet came back before the first load succeeded', () async {
+      await restoreInternet();
+
+      reloader.markLoaded();
+      reloader.markLoadFailed();
+
+      expect(reloadCount, 0);
+    });
+
     test('Should not reload WHEN it was disposed', () async {
       reloader.markLoadFailed();
       await reloader.dispose();
