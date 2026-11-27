@@ -26,14 +26,21 @@ abstract class AccountSwitcherAssertionRobot extends CoreRobot
   }
 
   @override
-  Future<void> expectNoLongerOffers(String ownerAddress) async {
+  Future<void> expectNoLongerOffers(String ownerAddress) =>
+      _waitSessionListing(ownerAddress, listed: false);
+
+  @override
+  Future<void> expectOffers(String ownerAddress) =>
+      _waitSessionListing(ownerAddress, listed: true);
+
+  Future<void> _waitSessionListing(String ownerAddress, {required bool listed}) async {
     await waitForCondition(
       () {
         final session = appContainer().read(activeAccountProvider)?.session;
         return session != null &&
-            session.delegatedAccounts.every((entry) => entry.value.name.value != ownerAddress);
+            session.delegatedAccounts.any((entry) => entry.value.name.value == ownerAddress) == listed;
       },
-      reason: 'session no longer lists $ownerAddress',
+      reason: 'session ${listed ? 'lists' : 'no longer lists'} $ownerAddress',
     );
   }
 

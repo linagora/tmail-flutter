@@ -35,6 +35,8 @@ class RefreshDelegatedToMeScenario extends BaseTestScenario
     await _openDelegatedToMe();
     await delegationRobot.assertion.expectDelegatedToMeListed(ownerAddress);
     await _closeSettings();
+    // The re-read runs after the list shows, and the avatar opens the switcher only once the session lists the owner.
+    await accountSwitcher.assertion.expectOffers(ownerAddress);
     await accountSwitcher.openMenu();
     await accountSwitcher.assertion.expectMenuShowsDelegated(ownerAddress);
     await accountSwitcher.selectAddressWhenMenuOpen(ownerAddress);
