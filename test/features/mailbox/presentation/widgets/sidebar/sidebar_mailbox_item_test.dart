@@ -68,6 +68,8 @@ void main() {
     _testKeepsActionRequiredMailboxOutOfDropTargets();
     _testForwardsMailboxContextMenuAnchor();
     _testForwardsMailboxLongPressOnMobile();
+    _testForwardsOnlyTouchLongPressOnWebDesktop();
+    _testForwardsMouseLongPressOnNative();
     _testKeepsDotsTriggerActiveUntilMenuCloses();
     _testUsesConfirmPopoverForClean();
     _testCleanPopoverUsesPrimaryConfirmInDarkRtl();
@@ -597,6 +599,70 @@ void _testForwardsMailboxLongPressOnMobile() {
     );
 
     expect(longPressedMailbox, same(mailboxNode));
+  });
+}
+
+void _testForwardsOnlyTouchLongPressOnWebDesktop() {
+  testWidgets('forwards touch and pen long presses on the web desktop layout, not a mouse one',
+      (tester) async {
+    PlatformInfo.isTestingForWeb = true;
+    addTearDown(() => PlatformInfo.isTestingForWeb = false);
+    var calls = 0;
+
+    await _pump(
+      tester,
+      SidebarMailboxItem(
+        mailboxNode: _mailboxNode(id: 'folder'),
+        imagePaths: _imagePaths,
+        isWebDesktop: true,
+        onLongPressMailboxNodeAction: (_) => calls++,
+      ),
+    );
+
+    Future<void> longPress(PointerDeviceKind kind) async {
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byType(LinagoraSidebarItem)),
+        kind: kind,
+      );
+      await tester.pump(const Duration(milliseconds: 600));
+      await gesture.up();
+      await tester.pump();
+    }
+
+    await longPress(PointerDeviceKind.mouse);
+    expect(calls, 0);
+
+    await longPress(PointerDeviceKind.touch);
+    expect(calls, 1);
+
+    await longPress(PointerDeviceKind.stylus);
+    expect(calls, 2);
+  });
+}
+
+void _testForwardsMouseLongPressOnNative() {
+  testWidgets('forwards a mouse long press on native platforms', (tester) async {
+    var calls = 0;
+
+    await _pump(
+      tester,
+      SidebarMailboxItem(
+        mailboxNode: _mailboxNode(id: 'folder'),
+        imagePaths: _imagePaths,
+        isWebDesktop: false,
+        onLongPressMailboxNodeAction: (_) => calls++,
+      ),
+    );
+
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.byType(LinagoraSidebarItem)),
+      kind: PointerDeviceKind.mouse,
+    );
+    await tester.pump(const Duration(milliseconds: 600));
+    await gesture.up();
+    await tester.pump();
+
+    expect(calls, 1);
   });
 }
 

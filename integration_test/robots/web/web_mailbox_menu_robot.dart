@@ -27,6 +27,10 @@ class WebMailboxNavigationRobot extends MailboxNavigationRobot {
       finder.$(const ValueKey(UiKeys.mailboxMoreActionButton)),
     );
   }
+
+  /// Real touch long press, as on a phone browser drawer.
+  Future<void> touchLongPressMailbox(PatrolFinder finder) =>
+      super.longPressMailbox(finder);
 }
 
 class WebMailboxMenuRobot extends MobileMailboxMenuRobot {

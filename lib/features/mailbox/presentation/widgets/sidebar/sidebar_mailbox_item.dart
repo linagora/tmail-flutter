@@ -1,3 +1,5 @@
+import 'dart:ui' show PointerDeviceKind;
+
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/platform_info.dart';
@@ -18,6 +20,10 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 typedef OnSidebarMailboxExpandAction = void Function(MailboxNode mailboxNode);
 
 enum _SidebarMailboxActionId { clean, more }
+
+// Mouse/trackpad users get the hover "⋮" menu instead.
+final _webLongPressDevices = PointerDeviceKind.values.toSet()
+  ..removeAll({PointerDeviceKind.mouse, PointerDeviceKind.trackpad});
 
 class SidebarMailboxItem extends StatelessWidget {
 
@@ -77,10 +83,7 @@ class SidebarMailboxItem extends StatelessWidget {
 
     return _withTreeIndent(
       context,
-      _withLongPress(
-        _withDropTarget(row, isWebDesktop),
-        isWebDesktop,
-      ),
+      _withLongPress(_withDropTarget(row, isWebDesktop)),
     );
   }
 
@@ -127,11 +130,11 @@ class SidebarMailboxItem extends StatelessWidget {
     );
   }
 
-  Widget _withLongPress(Widget child, bool isWebDesktop) {
-    if (onLongPressMailboxNodeAction == null || isWebDesktop) return child;
-    if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit) return child;
+  Widget _withLongPress(Widget child) {
+    if (onLongPressMailboxNodeAction == null) return child;
 
     return GestureDetector(
+      supportedDevices: PlatformInfo.isWeb ? _webLongPressDevices : null,
       onLongPress: () => onLongPressMailboxNodeAction?.call(mailboxNode),
       child: child,
     );
