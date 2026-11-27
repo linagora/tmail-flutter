@@ -6,6 +6,7 @@ import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -711,6 +712,7 @@ void main() {
       Map<String, dynamic> generateRequest({
         Properties? propertiesCreated,
         Properties? propertiesUpdated,
+        int? maxChanges = 128,
       }) =>
           {
             "using": [
@@ -724,6 +726,7 @@ void main() {
                 {
                   "accountId": AccountFixtures.aliceAccountId.asString,
                   "sinceState": sinceState.value,
+                  if (maxChanges != null) "maxChanges": maxChanges,
                 },
                 "c0"
               ],
@@ -863,6 +866,169 @@ void main() {
               updatedProperties: defaultUpdatedProperties,
             ),
           ),
+        );
+      });
+
+      test(
+          'should cap maxChanges by the session maxObjectsInGet '
+          'when the server allows fewer ids per get than the default page', () async {
+        // arrange
+        final limitedSession = SessionFixtures.getAliceSessionWithMaxObjectsInGet(30);
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(
+            200,
+            generateResponse(
+              propertiesCreated: defaultCreatedProperties,
+              propertiesUpdated: defaultUpdatedProperties,
+            ),
+          ),
+          data: generateRequest(
+            propertiesCreated: defaultCreatedProperties,
+            propertiesUpdated: defaultUpdatedProperties,
+            maxChanges: 30,
+          ),
+          headers: dioAdapterHeaders,
+        );
+
+        // act
+        final result = await threadApi.getChanges(
+          limitedSession,
+          AccountFixtures.aliceAccountId,
+          sinceState,
+          propertiesCreated: defaultCreatedProperties,
+          propertiesUpdated: defaultUpdatedProperties,
+        );
+
+        // assert
+        expect(result.created, createdEmails);
+      });
+
+      test(
+          'should ask again without maxChanges '
+          'when the server cannot split a single change into pages of maxChanges', () async {
+        // arrange
+        // James keeps one Email/set as one change. With maxChanges 128 it
+        // rejects a change of 129 to 256 emails, which it served before the
+        // cap. Without maxChanges it applies its own limit of 256 again.
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(
+            200,
+            {
+              "sessionState": sessionState.value,
+              "methodResponses": [
+                [
+                  "error",
+                  {
+                    "type": "cannotCalculateChanges",
+                    "description": "Too many changes: the change collector limit 128 is exceeded by a single change",
+                  },
+                  "c0"
+                ],
+                [
+                  "error",
+                  {"type": "invalidResultReference"},
+                  "c1"
+                ],
+                [
+                  "error",
+                  {"type": "invalidResultReference"},
+                  "c2"
+                ],
+              ],
+            },
+          ),
+          data: generateRequest(
+            propertiesCreated: defaultCreatedProperties,
+            propertiesUpdated: defaultUpdatedProperties,
+          ),
+          headers: dioAdapterHeaders,
+        );
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(
+            200,
+            generateResponse(
+              propertiesCreated: defaultCreatedProperties,
+              propertiesUpdated: defaultUpdatedProperties,
+            ),
+          ),
+          data: generateRequest(
+            propertiesCreated: defaultCreatedProperties,
+            propertiesUpdated: defaultUpdatedProperties,
+            maxChanges: null,
+          ),
+          headers: dioAdapterHeaders,
+        );
+
+        // act
+        final result = await threadApi.getChanges(
+          SessionFixtures.aliceSession,
+          AccountFixtures.aliceAccountId,
+          sinceState,
+          propertiesCreated: defaultCreatedProperties,
+          propertiesUpdated: defaultUpdatedProperties,
+        );
+
+        // assert
+        // An incremental sync, not a cannotCalculateChanges that clears the
+        // whole email cache and reloads the list.
+        expect(result.created, createdEmails);
+        expect(result.updated, updatedEmails);
+        expect(result.newStateChanges, newState);
+      });
+
+      test(
+          'should rethrow a method error other than cannotCalculateChanges '
+          'without asking again', () async {
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(200, {
+            "sessionState": sessionState.value,
+            "methodResponses": [
+              ["error", {"type": "serverFail"}, "c0"],
+              ["error", {"type": "invalidResultReference"}, "c1"],
+              ["error", {"type": "invalidResultReference"}, "c2"],
+            ],
+          }),
+          data: generateRequest(
+            propertiesCreated: defaultCreatedProperties,
+            propertiesUpdated: defaultUpdatedProperties,
+          ),
+          headers: dioAdapterHeaders,
+        );
+        // Only a request without maxChanges succeeds, so a second ask would hide the error.
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(
+            200,
+            generateResponse(
+              propertiesCreated: defaultCreatedProperties,
+              propertiesUpdated: defaultUpdatedProperties,
+            ),
+          ),
+          data: generateRequest(
+            propertiesCreated: defaultCreatedProperties,
+            propertiesUpdated: defaultUpdatedProperties,
+            maxChanges: null,
+          ),
+          headers: dioAdapterHeaders,
+        );
+
+        await expectLater(
+          threadApi.getChanges(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            sinceState,
+            propertiesCreated: defaultCreatedProperties,
+            propertiesUpdated: defaultUpdatedProperties,
+          ),
+          throwsA(isA<ErrorMethodResponseException>().having(
+            (e) => e.errorResponse,
+            'errorResponse',
+            isA<ServerFailMethodResponse>(),
+          )),
         );
       });
 

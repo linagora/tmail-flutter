@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/request/reference_path.dart';
@@ -21,6 +23,7 @@ import 'package:jmap_dart_client/jmap/mail/email/get/get_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/query/query_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/query/query_email_response.dart';
 import 'package:model/extensions/list_id_extension.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
@@ -165,11 +168,39 @@ class ThreadAPI with HandleSetErrorMixin, SessionMixin, MailAPIMixin {
       Properties? propertiesUpdated
     }
   ) async {
+    try {
+      return await _requestChanges(
+        session,
+        ChangesEmailMethod(accountId, sinceState, maxChanges: session.getMaxChanges(accountId)),
+        propertiesCreated: propertiesCreated,
+        propertiesUpdated: propertiesUpdated,
+      );
+    } on ErrorMethodResponseException catch (e) {
+      // James cannot split one change over maxChanges; its own limit may still fit it.
+      if (e.errorResponse is! CannotCalculateChangesMethodResponse) rethrow;
+      logWarning('ThreadAPI::getChanges: cannotCalculateChanges with maxChanges, retry without it');
+      return _requestChanges(
+        session,
+        ChangesEmailMethod(accountId, sinceState),
+        propertiesCreated: propertiesCreated,
+        propertiesUpdated: propertiesUpdated,
+      );
+    }
+  }
+
+  Future<EmailChangeResponse> _requestChanges(
+    Session session,
+    ChangesEmailMethod changesEmailMethod,
+    {
+      Properties? propertiesCreated,
+      Properties? propertiesUpdated
+    }
+  ) async {
+    final accountId = changesEmailMethod.accountId;
+    final sinceState = changesEmailMethod.sinceState;
     final processingInvocation = ProcessingInvocation();
 
     final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
-
-    final changesEmailMethod = ChangesEmailMethod(accountId, sinceState, maxChanges: UnsignedInt(128));
 
     final changesEmailInvocation = jmapRequestBuilder.invocation(changesEmailMethod);
 

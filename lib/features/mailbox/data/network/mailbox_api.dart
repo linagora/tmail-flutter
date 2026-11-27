@@ -10,6 +10,8 @@ import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/patch_object.dart';
@@ -96,11 +98,33 @@ class MailboxAPI with HandleSetErrorMixin, SessionMixin, MailAPIMixin {
   }
 
   Future<MailboxChangeResponse> getChanges(Session session, AccountId accountId, State sinceState, {Properties? properties}) async {
+    try {
+      return await _requestChanges(
+        session,
+        ChangesMailboxMethod(accountId, sinceState, maxChanges: session.getMaxChanges(accountId)),
+        properties: properties,
+      );
+    } on ErrorMethodResponseException catch (e) {
+      // James cannot split one change over maxChanges; its own limit may still fit it.
+      if (e.errorResponse is! CannotCalculateChangesMethodResponse) rethrow;
+      logWarning('MailboxAPI::getChanges: cannotCalculateChanges with maxChanges, retry without it');
+      return _requestChanges(
+        session,
+        ChangesMailboxMethod(accountId, sinceState),
+        properties: properties,
+      );
+    }
+  }
+
+  Future<MailboxChangeResponse> _requestChanges(
+    Session session,
+    ChangesMailboxMethod changesMailboxMethod,
+    {Properties? properties}
+  ) async {
+    final accountId = changesMailboxMethod.accountId;
     final processingInvocation = ProcessingInvocation();
 
     final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
-
-    final changesMailboxMethod = ChangesMailboxMethod(accountId, sinceState, maxChanges: UnsignedInt(128));
 
     final changesMailboxInvocation = jmapRequestBuilder.invocation(changesMailboxMethod);
 

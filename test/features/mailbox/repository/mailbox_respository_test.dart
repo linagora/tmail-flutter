@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/core/error/error_type.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -10,6 +11,8 @@ import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
+import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
+import 'package:tmail_ui_user/features/mailbox/data/model/state_cache.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/mailbox_exception.dart';
@@ -229,6 +232,54 @@ void main() {
           state: StateFixtures.newMailboxState
         ))
       );
+    });
+  });
+
+  group('[refresh] method test', () {
+    late MockMailboxDataSource networkDataSource;
+    late MockMailboxCacheDataSourceImpl localDataSource;
+    late MockStateDataSource refreshStateDataSource;
+    late MailboxRepository refreshRepository;
+
+    setUp(() {
+      networkDataSource = MockMailboxDataSource();
+      localDataSource = MockMailboxCacheDataSourceImpl();
+      refreshStateDataSource = MockStateDataSource();
+      refreshRepository = MailboxRepositoryImpl(
+        {
+          DataSourceType.network: networkDataSource,
+          DataSourceType.local: localDataSource
+        },
+        refreshStateDataSource);
+    });
+
+    test(
+        'refresh SHOULD save the Mailbox/changes cursor, not the Mailbox/get state, \n'
+        'WHEN the next changes page fails',
+    () async {
+      when(localDataSource.getAllMailboxCache(accountIdFixture, userNameFixture))
+        .thenAnswer((_) async => [MailboxFixtures.mailboxA]);
+
+      var call = 0;
+      when(networkDataSource.getChanges(any, any, any, properties: anyNamed('properties')))
+        .thenAnswer((_) async {
+          call++;
+          if (call > 1) throw Exception('network down');
+          return MailboxChangeResponse(
+            created: [MailboxFixtures.mailboxB],
+            newStateChanges: State('S1'),
+            newStateMailbox: State('S-latest'),
+            hasMoreChanges: true);
+        });
+
+      await expectLater(
+        refreshRepository.refresh(sessionFixture, accountIdFixture, State('S0')),
+        emitsError(isA<Exception>()));
+
+      final saved = verify(refreshStateDataSource.saveState(any, any, captureAny))
+        .captured
+        .single as StateCache;
+      expect(saved, StateCache(StateType.mailbox, 'S1'));
     });
   });
 

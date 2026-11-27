@@ -143,6 +143,7 @@ class ThreadController extends BaseController
   @visibleForTesting
   bool isListEmailScrollViewJumping = false;
   WebSocketQueueHandler? _webSocketQueueHandler;
+  jmap.State? _stoppedDrainCursor;
   FocusNode? keyboardFocusNode;
   StreamController<MailListShortcutActionViewEvent>? shortcutActionEventController;
   StreamSubscription<MailListShortcutActionViewEvent>? shortcutActionEventSubscription;
@@ -645,8 +646,7 @@ class ThreadController extends BaseController
   void _handleErrorGetAllOrRefreshChangesEmail(Object error, StackTrace stackTrace) async {
     logWarning('ThreadController::_handleErrorGetAllOrRefreshChangesEmail():Error: $error', webConsoleEnabled: true);
     if (error is CannotCalculateChangesMethodResponseException) {
-      await cachingManager.clearAllEmailAndStateCache();
-      getAllEmailAction(forceEmailQuery: forceEmailQuery);
+      await _reloadFromClearedEmailCache();
     } else if (error is MethodLevelErrors) {
       if (currentOverlayContext != null && error.message != null) {
         appToast.showToastErrorMessage(
@@ -669,6 +669,18 @@ class ThreadController extends BaseController
         );
       }
     }
+  }
+
+  // A web search owns the list; elsewhere the mailbox list reloads.
+  Future<void> _reloadFromClearedEmailCache() async {
+    if (_webSearchOwnsList) {
+      await refreshAllEmail(shouldClearCache: true);
+      // Search never sets a state; the stale one would fail and clear again on each push.
+      mailboxDashBoardController.setCurrentEmailState(null);
+      return;
+    }
+    await cachingManager.clearAllEmailAndStateCache();
+    getAllEmailAction(forceEmailQuery: forceEmailQuery);
   }
 
   void resetToOriginalValue() {
@@ -917,7 +929,26 @@ class ThreadController extends BaseController
         _webSocketQueueHandler?.removeMessagesUpToCurrent(
             mailboxDashBoardController.currentEmailState!.value);
       }
+      _continueStoppedDrain();
     }
+  }
+
+  jmap.State? _advancedCursorWithMoreChanges(
+    EmailChangeResponse? response,
+    jmap.State? requestedState,
+  ) {
+    if (response == null || !response.hasMoreChanges) return null;
+    final cursor = response.newStateChanges;
+    // A cursor that did not move would request the same page forever.
+    if (cursor == null || cursor == requestedState) return null;
+    return cursor;
+  }
+
+  void _continueStoppedDrain() {
+    final cursor = _stoppedDrainCursor;
+    _stoppedDrainCursor = null;
+    if (cursor == null) return;
+    _webSocketQueueHandler?.enqueue(WebSocketMessage(newState: cursor));
   }
 
   Future<Either<Failure, Success>> _refreshChangeListEmailCache({bool collapseThreads = false}) async {
@@ -940,6 +971,15 @@ class ThreadController extends BaseController
       collapseThreads: collapseThreads,
     ));
 
+    final failureException = refreshState.fold(
+      (failure) => failure is FeatureFailure ? failure.exception : null,
+      (_) => null,
+    );
+    // James answers cannotCalculateChanges as a Left; retrying the same state stays stuck.
+    if (failureException is CannotCalculateChangesMethodResponseException) {
+      await _reloadFromClearedEmailCache();
+    }
+
     refreshState.fold(
       (failure) {},
       (success) {
@@ -961,6 +1001,7 @@ class ThreadController extends BaseController
     final holdLoadMore = _folderLoadMore.paging.pagesByPosition;
     if (holdLoadMore) _holdLoadMoreForRefresh();
     try {
+      final requestedState = mailboxDashBoardController.currentEmailState;
       final refreshViewState = await _refreshChangeListEmailCache(
         collapseThreads: collapseThreads,
       );
@@ -976,6 +1017,10 @@ class ThreadController extends BaseController
 
       if (refreshState is RefreshChangesAllEmailSuccess) {
         _refreshChangesAllEmailSuccess(refreshState);
+        _stoppedDrainCursor = _advancedCursorWithMoreChanges(
+          refreshState.emailChangeResponse,
+          requestedState,
+        );
       } else if (refreshState != null) {
         onDataFailureViewState(refreshState);
       }

@@ -415,7 +415,12 @@ class ThreadRepositoryImpl extends ThreadRepository {
         'CountEmailNetwork = ${networkEmailResponse.emailList?.length}, '
         'EmailStateNetwork = ${networkEmailResponse.state?.value}, ',
       );
-      yield networkEmailResponse.copyWith(emailChangeResponse: emailChangeResponse);
+      // A stopped drain must not let the list state skip changes not yet applied.
+      final isDrainStopped = emailChangeResponse?.hasMoreChanges == true;
+      yield networkEmailResponse.copyWith(
+        state: isDrainStopped ? newEmailResponse.state : null,
+        emailChangeResponse: emailChangeResponse,
+      );
     } else {
       logTrace(
         'ThreadRepositoryImpl::refreshChanges():'
@@ -566,8 +571,10 @@ class ThreadRepositoryImpl extends ThreadRepository {
           newUpdated: newEmailUpdated,
           newDestroyed: emailChangeResponse.destroyed);
 
-      if (emailChangeResponse.newStateEmail != null) {
-        await _updateState(accountId, session.username, emailChangeResponse.newStateEmail!);
+      // Resume from the /changes cursor reached; Email/get state may be ahead of applied pages.
+      final newState = emailChangeResponse.newStateChanges ?? emailChangeResponse.newStateEmail;
+      if (newState != null) {
+        await _updateState(accountId, session.username, newState);
       }
     }
 

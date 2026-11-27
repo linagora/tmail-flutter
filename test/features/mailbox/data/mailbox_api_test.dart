@@ -1,7 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -388,6 +391,158 @@ void main() {
           () => mailboxAPI.setRoleDefaultMailbox(session, accountId, listMailbox),
           throwsA(isA<Exception>()),
         );
+      });
+    });
+
+    group('getChanges::', () {
+      test('Should send maxChanges capped by the session maxObjectsInGet', () async {
+        when(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).thenAnswer((_) async => {
+          "methodResponses": [
+            [
+              "Mailbox/changes",
+              {
+                "accountId": accountId.asString,
+                "oldState": "old",
+                "newState": "new",
+                "hasMoreChanges": false,
+                "created": [],
+                "updated": [],
+                "destroyed": [],
+              },
+              "c0"
+            ],
+            for (final callId in ['c1', 'c2'])
+              [
+                "Mailbox/get",
+                {
+                  "accountId": accountId.asString,
+                  "state": "new",
+                  "list": [],
+                  "notFound": [],
+                },
+                callId
+              ],
+          ],
+          "sessionState": "0"
+        });
+
+        await mailboxAPI.getChanges(
+          SessionFixtures.getAliceSessionWithMaxObjectsInGet(30),
+          accountId,
+          State('old'),
+        );
+
+        final sent = verify(httpClient.post(
+          '',
+          data: captureAnyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).captured.single as Map<String, dynamic>;
+        final changesArgs = (sent['methodCalls'] as List).first[1] as Map<String, dynamic>;
+        expect(changesArgs['maxChanges'], 30);
+      });
+
+      test('Should ask again without maxChanges when the server cannot split a single change', () async {
+        var calls = 0;
+        when(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).thenAnswer((_) async {
+          calls++;
+          if (calls == 1) {
+            return {
+              "methodResponses": [
+                ["error", {"type": "cannotCalculateChanges"}, "c0"],
+                ["error", {"type": "invalidResultReference"}, "c1"],
+                ["error", {"type": "invalidResultReference"}, "c2"],
+              ],
+              "sessionState": "0"
+            };
+          }
+          return {
+            "methodResponses": [
+              [
+                "Mailbox/changes",
+                {
+                  "accountId": accountId.asString,
+                  "oldState": "old",
+                  "newState": "new",
+                  "hasMoreChanges": false,
+                  "created": [],
+                  "updated": [],
+                  "destroyed": [],
+                },
+                "c0"
+              ],
+              for (final callId in ['c1', 'c2'])
+                [
+                  "Mailbox/get",
+                  {
+                    "accountId": accountId.asString,
+                    "state": "new",
+                    "list": [],
+                    "notFound": [],
+                  },
+                  callId
+                ],
+            ],
+            "sessionState": "0"
+          };
+        });
+
+        final result = await mailboxAPI.getChanges(
+          SessionFixtures.getAliceSessionWithMaxObjectsInGet(30),
+          accountId,
+          State('old'),
+        );
+
+        final sent = verify(httpClient.post(
+          '',
+          data: captureAnyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).captured.cast<Map<String, dynamic>>();
+        final sentMaxChanges = sent
+            .map((request) => (request['methodCalls'] as List).first[1]['maxChanges'])
+            .toList();
+        expect(sentMaxChanges, [30, null]);
+        expect(result.newStateChanges, State('new'));
+      });
+
+      test('Should rethrow a method error other than cannotCalculateChanges without asking again', () async {
+        when(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).thenAnswer((_) async => {
+          "methodResponses": [
+            ["error", {"type": "serverFail"}, "c0"],
+            ["error", {"type": "invalidResultReference"}, "c1"],
+            ["error", {"type": "invalidResultReference"}, "c2"],
+          ],
+          "sessionState": "0"
+        });
+
+        await expectLater(
+          mailboxAPI.getChanges(
+            SessionFixtures.getAliceSessionWithMaxObjectsInGet(30),
+            accountId,
+            State('old'),
+          ),
+          throwsA(isA<ErrorMethodResponseException>().having(
+            (e) => e.errorResponse,
+            'errorResponse',
+            isA<ServerFailMethodResponse>(),
+          )),
+        );
+        verify(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).called(1);
       });
     });
 

@@ -471,4 +471,35 @@ void main() {
       expect(emailAddress, 'bob@example.com');
     });
   });
+
+  group('getMaxChanges:', () {
+    Session sessionWithCore(CoreCapability? core) => Session(
+      {if (core != null) CapabilityIdentifier.jmapCore: core},
+      {accountId: Account(AccountName('me@example.com'), true, false, {})},
+      {}, UserName('me@example.com'), Uri(), Uri(), Uri(), Uri(), State(''));
+
+    test('should cap at 128 when the server allows more ids per get', () {
+      final session = sessionWithCore(CoreCapability(maxObjectsInGet: UnsignedInt(500)));
+
+      expect(session.getMaxChanges(accountId), UnsignedInt(128));
+    });
+
+    test('should follow maxObjectsInGet when it is below 128', () {
+      final session = sessionWithCore(CoreCapability(maxObjectsInGet: UnsignedInt(30)));
+
+      expect(session.getMaxChanges(accountId), UnsignedInt(30));
+    });
+
+    test('should use 128 when maxObjectsInGet is 0', () {
+      final session = sessionWithCore(CoreCapability(maxObjectsInGet: UnsignedInt(0)));
+
+      expect(session.getMaxChanges(accountId), UnsignedInt(128));
+    });
+
+    test('should use 128 when the core capability is missing', () {
+      final session = sessionWithCore(null);
+
+      expect(session.getMaxChanges(accountId), UnsignedInt(128));
+    });
+  });
 }

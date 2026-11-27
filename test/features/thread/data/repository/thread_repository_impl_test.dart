@@ -7,6 +7,8 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
+import 'package:tmail_ui_user/features/mailbox/data/model/state_cache.dart';
+import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/data/repository/thread_repository_impl.dart';
@@ -456,6 +458,34 @@ void main() {
         created: anyNamed('created'),
       ));
       verify(stateDataSource.saveState(any, any, any));
+    });
+
+    test('when the changes drain stops while the server still has more changes '
+         'should save the changes cursor, not the latest Email/get state', () async {
+      // Arrange: the drain stopped after page 100 of 157. Email/changes says
+      // it read up to S100; the Email/get in the same request reports the
+      // server's latest state S157.
+      final localEmails = List.generate(
+          ThreadConstants.defaultLimit.value as int,
+          (index) => Email(id: EmailId(Id('local_$index'))));
+      stubLocalEmailCache(localEmails);
+      stubLocalState('S0');
+      stubGetAllEmailChanges(EmailChangeResponse(
+        hasMoreChanges: true,
+        created: [Email(id: EmailId(Id('page_100_email')))],
+        newStateChanges: State('S100'),
+        newStateEmail: State('S157'),
+      ));
+
+      // Act
+      await getAllEmailWithLatestChanges();
+
+      // Assert: saving S157 would make the next sync start after page 157 and
+      // skip pages 101..157 for good.
+      final savedState = verify(stateDataSource.saveState(any, any, captureAny))
+          .captured
+          .single as StateCache;
+      expect(savedState, StateCache(StateType.email, 'S100'));
     });
 
     test('when local has mail in cache but network errors '
@@ -1487,6 +1517,64 @@ void main() {
         expect(result.emailList, networkEmails);
       },
     );
+
+    for (final drainStopped in [true, false]) {
+      test(
+        'SHOULD emit ${drainStopped ? 'the reached changes cursor' : 'the network state'}\n'
+        'WHEN collapseThreads is true and the changes drain '
+        '${drainStopped ? 'stopped' : 'completed'}',
+        () async {
+          when(localDataSource.getAllEmailCache(
+            any,
+            any,
+            filterOption: anyNamed('filterOption'),
+            inMailboxId: anyNamed('inMailboxId'),
+            limit: anyNamed('limit'),
+            sort: anyNamed('sort'),
+          )).thenAnswer((_) async => []);
+
+          when(refreshChangesStateDataSource.getState(any, any, any))
+              .thenAnswer((_) async => State('S100'));
+
+          when(networkDataSource.getAllEmailChanges(
+            any,
+            any,
+            any,
+            propertiesCreated: anyNamed('propertiesCreated'),
+            propertiesUpdated: anyNamed('propertiesUpdated'),
+          )).thenAnswer((_) async => EmailChangeResponse(
+                hasMoreChanges: drainStopped,
+                newStateChanges: State('S100'),
+                newStateEmail: State('S157'),
+              ));
+
+          when(networkDataSource.getAllEmail(
+            any,
+            any,
+            limit: anyNamed('limit'),
+            position: anyNamed('position'),
+            sort: anyNamed('sort'),
+            filter: anyNamed('filter'),
+            properties: anyNamed('properties'),
+            collapseThreads: anyNamed('collapseThreads'),
+          )).thenAnswer((_) async => EmailsResponse(
+                emailList: [Email(id: EmailId(Id('e1')))],
+                state: State('S157'),
+              ));
+
+          final result = await refreshChangesThreadRepository
+              .refreshChanges(
+                SessionFixtures.aliceSession,
+                AccountFixtures.aliceAccountId,
+                State('S0'),
+                collapseThreads: true,
+              )
+              .first;
+
+          expect(result.state, State(drainStopped ? 'S100' : 'S157'));
+        },
+      );
+    }
 
     tearDown(() {
       reset(networkDataSource);

@@ -47,6 +47,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/s
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart';
+import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -3281,6 +3282,241 @@ void main() {
         expect(state.isRight(), isTrue);
         expect(state.getOrElse(() => LoadingState()), UIState.idle);
       });
+    });
+
+    group('websocket email refresh:', () {
+      late Rxn<EmailUIAction> emailAction;
+      late ThreadController refreshController;
+
+      void stubDashboardForRefresh() {
+        emailAction = Rxn<EmailUIAction>();
+        when(mockMailboxDashBoardController.sessionCurrent)
+            .thenReturn(SessionFixtures.aliceSession);
+        when(mockMailboxDashBoardController.accountId)
+            .thenReturn(Rxn(AccountFixtures.aliceAccountId));
+        when(mockMailboxDashBoardController.currentEmailState)
+            .thenReturn(jmap.State('old-state'));
+        when(mockMailboxDashBoardController.selectedMailbox)
+            .thenReturn(Rxn(null));
+        when(mockMailboxDashBoardController.searchController)
+            .thenReturn(mockSearchController);
+        when(mockMailboxDashBoardController.emailUIAction)
+            .thenReturn(emailAction);
+        when(mockMailboxDashBoardController.dashBoardAction)
+            .thenReturn(Rxn(null));
+        when(mockMailboxDashBoardController.viewState)
+            .thenReturn(Rx(Right(UIState.idle)));
+        when(mockMailboxDashBoardController.filterMessageOption)
+            .thenReturn(Rx(FilterMessageOption.all));
+        when(mockMailboxDashBoardController.mapMailboxById).thenReturn({});
+        when(mockMailboxDashBoardController.trashSpamMailboxIds)
+            .thenReturn(null);
+        when(mockMailboxDashBoardController.emailsInCurrentMailbox)
+            .thenReturn(RxList<PresentationEmail>());
+        when(mockMailboxDashBoardController.currentSelectMode)
+            .thenReturn(Rx(SelectMode.INACTIVE));
+        when(mockMailboxDashBoardController.listEmailSelected)
+            .thenReturn(RxList([]));
+        when(mockSearchController.isSearchEmailRunning).thenReturn(false);
+      }
+
+      void stubRefreshAnswers(
+        List<Either<Failure, Success>> Function(int call) answerFor,
+      ) {
+        var call = 0;
+        when(mockRefreshChangesEmailsInMailboxInteractor.execute(
+          any,
+          any,
+          any,
+          sort: anyNamed('sort'),
+          limit: anyNamed('limit'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          emailFilter: anyNamed('emailFilter'),
+          collapseThreads: anyNamed('collapseThreads'),
+        )).thenAnswer((_) => Stream.fromIterable(answerFor(++call)));
+      }
+
+      VerificationResult verifyRefreshExecuted() =>
+          verify(mockRefreshChangesEmailsInMailboxInteractor.execute(
+            any,
+            any,
+            any,
+            sort: anyNamed('sort'),
+            limit: anyNamed('limit'),
+            propertiesCreated: anyNamed('propertiesCreated'),
+            propertiesUpdated: anyNamed('propertiesUpdated'),
+            emailFilter: anyNamed('emailFilter'),
+            collapseThreads: anyNamed('collapseThreads'),
+          ));
+
+      Future<void> pushEmailState(WidgetTester tester) async {
+        refreshController.onInit();
+        emailAction.value =
+            RefreshChangeEmailAction(newState: jmap.State('new-state'));
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 300)),
+        );
+      }
+
+      setUp(() {
+        clearInteractions(mockCachingManager);
+        clearInteractions(mockRefreshChangesEmailsInMailboxInteractor);
+        stubDashboardForRefresh();
+        refreshController = ThreadController(
+          mockGetEmailsInMailboxInteractor,
+          mockRefreshChangesEmailsInMailboxInteractor,
+          mockLoadMoreEmailsInMailboxInteractor,
+          mockGetEmailByIdInteractor,
+          mockCleanAndGetEmailsInMailboxInteractor,
+        );
+        addTearDown(refreshController.onClose);
+      });
+
+      // The dashboard mock is shared by the whole file: later groups expect no email state.
+      tearDown(() {
+        when(mockMailboxDashBoardController.currentEmailState).thenReturn(null);
+      });
+
+      testWidgets(
+        'WHEN the server cannot calculate the email changes since the current state '
+        'THEN the email cache is cleared so the list reloads instead of staying stuck',
+        (tester) async {
+          // James answers cannotCalculateChanges when one change touches more
+          // ids than maxChanges; every later push retries the same state.
+          await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+          stubRefreshAnswers((_) => [
+                Left(RefreshChangesAllEmailFailure(
+                  CannotCalculateChangesMethodResponseException(),
+                )),
+              ]);
+
+          await pushEmailState(tester);
+
+          verifyRefreshExecuted().called(1);
+          verify(mockCachingManager.clearAllEmailAndStateCache()).called(1);
+        },
+      );
+
+      testWidgets(
+        'WHEN a refresh stops while the server still has more email changes '
+        'THEN the next page is requested without waiting for another push',
+        (tester) async {
+          // The last push of a burst carries the final state: if the drain
+          // stops early, no later push comes to read the remaining pages.
+          await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+          stubRefreshAnswers((call) => [
+                Right(RefreshChangesAllEmailSuccess(
+                  emailList: const [],
+                  currentEmailState: jmap.State('cursor-$call'),
+                  emailChangeResponse: EmailChangeResponse(
+                    hasMoreChanges: call == 1,
+                    newStateChanges: jmap.State('cursor-$call'),
+                  ),
+                )),
+              ]);
+
+          await pushEmailState(tester);
+
+          verifyRefreshExecuted().called(2);
+        },
+      );
+
+      testWidgets(
+        'WHEN a web search is running and the server cannot calculate changes '
+        'THEN the mailbox list does not replace the search results',
+        (tester) async {
+          PlatformInfo.isTestingForWeb = true;
+          addTearDown(() => PlatformInfo.isTestingForWeb = false);
+          when(mockSearchController.isSearchEmailRunning).thenReturn(true);
+          clearInteractions(mockGetEmailsInMailboxInteractor);
+          await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+          stubRefreshAnswers((_) => [
+                Left(RefreshChangesAllEmailFailure(
+                  CannotCalculateChangesMethodResponseException(),
+                )),
+              ]);
+
+          await pushEmailState(tester);
+
+          verify(mockCachingManager.clearAllEmailAndStateCache()).called(1);
+          verifyNever(_fetchEmailsOf(mockGetEmailsInMailboxInteractor, any));
+        },
+      );
+
+      testWidgets(
+        'WHEN a web search is running and the server cannot calculate changes '
+        'THEN the next push does not clear the cache again',
+        (tester) async {
+          PlatformInfo.isTestingForWeb = true;
+          addTearDown(() => PlatformInfo.isTestingForWeb = false);
+          when(mockSearchController.isSearchEmailRunning).thenReturn(true);
+          jmap.State? appliedState = jmap.State('old-state');
+          when(mockMailboxDashBoardController.currentEmailState)
+              .thenAnswer((_) => appliedState);
+          when(mockMailboxDashBoardController.setCurrentEmailState(any))
+              .thenAnswer((invocation) {
+            appliedState = invocation.positionalArguments.first as jmap.State?;
+          });
+          await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+          stubRefreshAnswers((_) => [
+                Left(RefreshChangesAllEmailFailure(
+                  CannotCalculateChangesMethodResponseException(),
+                )),
+              ]);
+
+          await pushEmailState(tester);
+          emailAction.value =
+              RefreshChangeEmailAction(newState: jmap.State('new-state-2'));
+          await tester.runAsync(
+            () => Future<void>.delayed(const Duration(milliseconds: 300)),
+          );
+
+          verify(mockCachingManager.clearAllEmailAndStateCache()).called(1);
+        },
+      );
+
+      testWidgets(
+        'WHEN a mobile search is running and the server cannot calculate changes '
+        'THEN the mailbox list is reloaded',
+        (tester) async {
+          when(mockSearchController.isSearchEmailRunning).thenReturn(true);
+          clearInteractions(mockGetEmailsInMailboxInteractor);
+          await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+          stubRefreshAnswers((_) => [
+                Left(RefreshChangesAllEmailFailure(
+                  CannotCalculateChangesMethodResponseException(),
+                )),
+              ]);
+
+          await pushEmailState(tester);
+
+          verify(mockCachingManager.clearAllEmailAndStateCache()).called(1);
+          verify(_fetchEmailsOf(mockGetEmailsInMailboxInteractor, any)).called(1);
+        },
+      );
+
+      testWidgets(
+        'WHEN a stopped drain returns the cursor it was asked from '
+        'THEN it is not requested again',
+        (tester) async {
+          await tester.pumpWidget(const GetMaterialApp(home: SizedBox.shrink()));
+          stubRefreshAnswers((_) => [
+                Right(RefreshChangesAllEmailSuccess(
+                  emailList: const [],
+                  currentEmailState: jmap.State('old-state'),
+                  emailChangeResponse: EmailChangeResponse(
+                    hasMoreChanges: true,
+                    newStateChanges: jmap.State('old-state'),
+                  ),
+                )),
+              ]);
+
+          await pushEmailState(tester);
+
+          verifyRefreshExecuted().called(1);
+        },
+      );
     });
   });
 }

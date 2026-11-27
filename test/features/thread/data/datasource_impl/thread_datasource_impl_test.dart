@@ -149,6 +149,30 @@ void main() {
       verifyGetChanges().called(maxIterations);
     });
 
+    test('at the iteration cap returns the cursor it reached, still flagged '
+         'as having more changes, next to the latest Email/get state', () async {
+      var call = 0;
+      stubGetChanges((_) async {
+        call++;
+        return EmailChangeResponse(
+          hasMoreChanges: true,
+          created: emails('p$call', 1),
+          newStateChanges: State('s$call'),
+          // Email/get reports the server's current state on every page.
+          newStateEmail: State('latest'),
+        );
+      });
+
+      final result = await drain();
+
+      // The caller must resume from s100. Resuming from "latest" would skip
+      // every change the drain did not read.
+      expect(result?.hasMoreChanges, isTrue);
+      expect(result?.newStateChanges, State('s$maxIterations'));
+      expect(result?.newStateEmail, State('latest'));
+      expect(result?.created?.length, maxIterations);
+    });
+
     test('routes API errors through the exception thrower', () async {
       final error = Exception('boom');
       when(threadAPI.getChanges(any, any, any,
