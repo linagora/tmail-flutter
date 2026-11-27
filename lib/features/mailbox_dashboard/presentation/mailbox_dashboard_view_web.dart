@@ -41,6 +41,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/em
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/mark_mailbox_as_read_loading_banner.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/dashboard_navigation_bar.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/shown_account_capabilities_provider.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/widgets/viewing_owner_banner.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/profile_setting/cozy_profile_setting_icon.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
@@ -470,7 +471,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         }
         return child!;
       }, child: Obx(() {
-        if (controller.selectedMailbox.value?.isTrashPersonal == true) {
+        if (controller.selectedMailbox.value?.isTrashPersonal == true &&
+            MailboxUtils.isDeletedMessageVaultSupported(controller.sessionCurrent, controller.activeAccountId)) {
           return TMailButtonWidget.fromIcon(
             key: const Key(UiKeys.recoverDeletedMessagesButton),
             icon: controller.imagePaths.icRecoverDeletedMessages,

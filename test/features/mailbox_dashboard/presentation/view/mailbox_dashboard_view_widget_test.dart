@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/default_close_button_widget.dart';
+import 'package:email_recovery/email_recovery/capability_deleted_messages_vault.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/platform_info.dart';
@@ -1007,12 +1008,21 @@ void main() {
         WidgetFixtures.resetResponsive(tester);
       });
 
-      for (final (accountState, canOpenSettings, expected) in [
-        ('my own account is shown', true, findsOneWidget),
-        ('a delegated account is shown', false, findsNothing),
+      for (final (accountState, canOpenSettings, hasVault, expected) in [
+        ('my own account with the deleted messages vault is shown', true, true, findsOneWidget),
+        ('my own account without the deleted messages vault is shown', true, false, findsNothing),
+        ('a delegated account is shown', false, true, findsNothing),
       ]) {
         testWidgets('Trash ${expected == findsNothing ? 'does not offer' : 'offers'} recover deleted messages while $accountState',
             (tester) async {
+          mailboxDashboardController.sessionCurrent = hasVault
+              ? DelegationFixtures.sessionWithBobCapabilities(
+                  const {},
+                  myExtraCapabilities: {capabilityDeletedMessagesVault},
+                )
+              : DelegationFixtures.session();
+          (mailboxDashboardController.activeAccountSource as FakeActiveAccountSource)
+              .show(DelegationFixtures.aliceAccountId);
           mailboxDashboardController.selectedMailbox.value = PresentationMailbox(
             MailboxId(Id('trash')),
             role: PresentationMailbox.roleTrash,
