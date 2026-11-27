@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -8,6 +11,7 @@ import 'package:server_settings/server_settings/tmail_server_settings.dart';
 import 'package:tmail_ui_user/features/server_settings/data/datasource_impl/remote_server_settings_data_source_impl.dart';
 import 'package:tmail_ui_user/features/server_settings/data/network/server_settings_api.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/exceptions/server_settings_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 
 import '../../../../fixtures/session_fixtures.dart';
@@ -51,6 +55,39 @@ void main() {
         expect(
           () => remoteServerSettingsDataSource.getServerSettings(accountId),
           throwsA(const TypeMatcher<NotFoundServerSettingsException>()));
+      });
+      DioException resetByPeer() => DioException(
+        requestOptions: RequestOptions(path: '/jmap'),
+        type: DioExceptionType.unknown,
+        error: const SocketException('Connection reset by peer'),
+      );
+
+      test('should send the request again once when the first one fails on a socket error', () async {
+        var calls = 0;
+        when(serverSettingsAPI.getServerSettings(any)).thenAnswer((_) async {
+          if (calls++ == 0) throw resetByPeer();
+          return serverSettings;
+        });
+
+        final result = await remoteServerSettingsDataSource.getServerSettings(accountId);
+
+        expect(result, serverSettings);
+        expect(calls, 2);
+      });
+
+      test('should send the request only twice when every attempt fails on a socket error', () async {
+        var calls = 0;
+        when(serverSettingsAPI.getServerSettings(any)).thenAnswer((_) async {
+          calls++;
+          throw resetByPeer();
+        });
+
+        await expectLater(
+          remoteServerSettingsDataSource.getServerSettings(accountId),
+          throwsA(isA<SocketError>()),
+        );
+
+        expect(calls, 2);
       });
     });
 

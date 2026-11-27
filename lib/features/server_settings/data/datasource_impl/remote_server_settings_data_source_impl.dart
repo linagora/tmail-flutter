@@ -3,6 +3,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:server_settings/server_settings/tmail_server_settings.dart';
 import 'package:tmail_ui_user/features/server_settings/data/datasource/server_settings_data_source.dart';
 import 'package:tmail_ui_user/features/server_settings/data/network/server_settings_api.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/retry_read_once_on_transport_error.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class RemoteServerSettingsDataSourceImpl implements ServerSettingsDataSource {
@@ -15,9 +16,9 @@ class RemoteServerSettingsDataSourceImpl implements ServerSettingsDataSource {
 
   @override
   Future<TMailServerSettings> getServerSettings(AccountId accountId) {
-    return Future.sync(() async {
+    return retryReadOnceOnTransportError(() => Future.sync(() async {
       return await _serverSettingsAPI.getServerSettings(accountId);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError(_exceptionThrower.throwException));
   }
 
   @override
