@@ -59,12 +59,7 @@ class DelegationDialogFrame extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: Text(
-              title,
-              style: tokens.titleTextStyle,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+            child: Text(title, style: tokens.titleTextStyle),
           ),
           IconButton(
             tooltip: l10n.close,

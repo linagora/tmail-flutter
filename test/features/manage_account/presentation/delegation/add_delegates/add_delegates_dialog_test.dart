@@ -504,7 +504,7 @@ void main() {
     expect(dialog(), findsNothing);
   });
 
-  testWidgets('should lay out the dialog with an 8 radius, 32 side insets and the explanation 96 below the top', (tester) async {
+  testWidgets('should lay out the dialog with an 8 radius, 32 side insets and the explanation 40 below a 16-inset header', (tester) async {
     await openDialog(tester);
 
     final surface = find.descendant(of: dialog(), matching: find.byType(Material)).first;
@@ -516,8 +516,11 @@ void main() {
     expect(shape.borderRadius, BorderRadius.circular(8));
     expect(titleRect.left - surfaceRect.left, 32);
     expect(explanationRect.left - surfaceRect.left, 32);
-    // 16 + 40 header row + 16, then 24 content inset.
-    expect(explanationRect.top - surfaceRect.top, 96);
+    // The title may wrap, so the header row grows from its 40 minimum: 16 above it, 16 below it, then 24 content inset.
+    final headerRect = tester.getRect(find.ancestor(of: find.text(l10n.delegateMailboxAccount), matching: find.byType(Row)).first);
+    expect(headerRect.top - surfaceRect.top, 16);
+    expect(headerRect.height, greaterThanOrEqualTo(40));
+    expect(explanationRect.top - headerRect.bottom, 40);
   });
 
   testWidgets('should outline the focused address field and its label in the brand blue', (tester) async {
