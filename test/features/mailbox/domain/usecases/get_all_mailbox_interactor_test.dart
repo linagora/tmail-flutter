@@ -185,6 +185,19 @@ void main() {
         );
       });
 
+      test('Should report the failure '
+          'WHEN the request throws while it is built', () async {
+        when(mailboxRepository.getAllMailbox(
+          SessionFixtures.aliceSession,
+          AccountFixtures.aliceAccountId,
+          properties: anyNamed('properties'),
+        )).thenThrow(StateError('boom'));
+
+        await executeInteractor();
+
+        expect(logHandler.errorRecords.single.exception, isA<StateError>());
+      });
+
       test('Should not report the failure '
           'WHEN the device has no network', () async {
         stubGetAllMailbox(Stream<MailboxResponse>.error(const NoNetworkError()));
