@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/base/extensions/handle_company_server_log
 import 'package:tmail_ui_user/features/base/mixin/logout_mixin.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/cleanup_ended_delegations.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/delegation_session_cleanup.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/providers/search_session_reset.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
@@ -713,6 +714,8 @@ abstract class BaseController extends GetxController
     }
     // Also covers a logout without context, where endDelegationSession never runs.
     getBinding<ActiveAccountWriter>()?.clear();
+    // App-wide, so a search left open by a forced sign-out would stop the next session from loading Inbox and show its results.
+    endSearchSession(appProviderContainer);
     await _clearSentryForSessionEnd();
     try {
       // Read before clear() flips it to none.

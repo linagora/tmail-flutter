@@ -245,6 +245,14 @@ void main() {
     );
   });
 
+  test('dispose closes a search left open', () {
+    enableSearch();
+
+    coordinator.dispose();
+
+    expect(container.read(searchViewStateProvider).isSearchActive, isFalse);
+  });
+
   test('dispose ends the executor session so no stale search replays next session',
       () {
     final executor = _RecordingExecutor(ProviderContainer());

@@ -111,14 +111,13 @@ class DashboardSearchCoordinator {
   /// [appProviderContainer] is a process-lifetime singleton (ADR-0092), so these
   /// keepAlive providers keep their state across logout; without this reset the
   /// next account's session would inherit the previous filter and cached results
-  /// (#4490/#4590). [resetSearchResultSession] clears the results and the
-  /// executor's replay marker; the committed filter is reset here.
+  /// (#4490/#4590). [endSearchSession] clears the view state, the results, the
+  /// executor's replay marker and the committed filter.
   void dispose() {
     _viewStateSubscription?.close();
     _viewStateSubscription = null;
     _filterSubscription?.close();
     _filterSubscription = null;
-    resetSearchResultSession(_container);
-    _container.invalidate(searchFilterProvider);
+    endSearchSession(_container);
   }
 }

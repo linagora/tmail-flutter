@@ -112,6 +112,31 @@ final _ecosystemStateProvider =
   _EcosystemStateNotifier.new,
 );
 
+class _ClearCountNotifier extends Notifier<int> {
+  @override
+  int build() => 0;
+
+  void increment() => state++;
+}
+
+final _clearCountProvider = NotifierProvider<_ClearCountNotifier, int>(
+  _ClearCountNotifier.new,
+);
+
+/// Updates a watched provider on clear, like the Drive attachment handler.
+class _ProviderUpdatingEcosystemHandler implements LinagoraEcosystemHandler {
+  _ProviderUpdatingEcosystemHandler(this._container);
+
+  final ProviderContainer Function() _container;
+
+  @override
+  void onEcosystemLoaded(LinagoraEcosystem ecosystem) {}
+
+  @override
+  void onEcosystemCleared() =>
+      _container().read(_clearCountProvider.notifier).increment();
+}
+
 void main() {
   testWidgets(
     'dispatches shared ecosystem state and cleans up account listener',
@@ -145,18 +170,67 @@ void main() {
       expect(recordingHandler.clearedCount, 2);
       expect(recordingHandler.loaded, [ecosystem, ecosystem]);
 
-      // Disposal clears the shared registry so the ecosystem of this session
-      // cannot leak into the next one...
+      // Disposing the whole scope disposes the registry too, so nothing is
+      // cleared or dispatched after it.
       await tester.pumpWidget(const SizedBox());
-
-      expect(recordingHandler.clearedCount, 3);
-
-      // ...and nothing is dispatched after disposal.
       dashboardController.testAccountId.value = AccountId(Id('third'));
       await tester.pump();
 
-      expect(recordingHandler.clearedCount, 3);
+      expect(recordingHandler.clearedCount, 2);
       expect(recordingHandler.loaded, [ecosystem, ecosystem]);
+    },
+  );
+
+  testWidgets(
+    'clears handlers that update providers when the dashboard leaves while the app stays',
+    (tester) async {
+      Get.testMode = true;
+      addTearDown(Get.reset);
+      final dashboardController = _DashboardController();
+      dashboardController.testAccountId.value = AccountId(Id('first'));
+      Get.put<MailboxDashBoardController>(dashboardController);
+      final showDashboard = ValueNotifier(true);
+      addTearDown(showDashboard.dispose);
+      late ProviderContainer container;
+      final handler = _ProviderUpdatingEcosystemHandler(() => container);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            linagoraEcosystemHandlerRegistryProvider.overrideWith(
+              (ref) => LinagoraEcosystemHandlerRegistry(ref)..register(handler),
+            ),
+            activeEcosystemProvider
+                .overrideWith((ref, _) => ref.watch(_ecosystemStateProvider)),
+          ],
+          child: MaterialApp(
+            home: Consumer(
+              builder: (context, ref, _) {
+                container = ProviderScope.containerOf(context);
+                ref.watch(_clearCountProvider);
+                return ValueListenableBuilder<bool>(
+                  valueListenable: showDashboard,
+                  builder: (_, show, __) => show
+                      ? const MailboxDashboardProviderListenerWidget(
+                          delegateFactories: [
+                            EcosystemProviderListenerDelegate.new,
+                          ],
+                          child: SizedBox(),
+                        )
+                      : const SizedBox(),
+                );
+              },
+            ),
+          ),
+        ),
+      );
+      final clearedWhileShown = container.read(_clearCountProvider);
+
+      showDashboard.value = false;
+      await tester.pump();
+
+      expect(tester.takeException(), isNull);
+      expect(container.read(_clearCountProvider), clearedWhileShown + 1);
     },
   );
 

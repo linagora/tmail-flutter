@@ -130,7 +130,12 @@ class EcosystemProviderListenerDelegate
     _subscription = null;
     // The registry outlives this delegate, so the ecosystem it was fed must not
     // outlive the session that produced it.
-    _registry?.dispatchCleared();
+    final registry = _registry;
     _registry = null;
+    if (registry == null) return;
+    // Handlers update providers, which Riverpod forbids while the widget tree unmounts.
+    Future.microtask(() {
+      if (registry.ref.mounted) registry.dispatchCleared();
+    });
   }
 }
