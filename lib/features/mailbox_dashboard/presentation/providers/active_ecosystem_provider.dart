@@ -78,8 +78,10 @@ Future<LinagoraEcosystem> loadEcosystem(
   return _EcosystemLoader(ref).load(interactor, jmapUrl);
 }
 
-bool _isTransportFailure(Object error) =>
-    (error is FeatureFailure ? error.exception : error) is NetworkException;
+bool _isTransportFailure(Object error) {
+  final exception = error is FeatureFailure ? error.exception : error;
+  return exception is SocketError || exception is ConnectionError;
+}
 
 EcosystemState resolveActiveEcosystem(
   Ref ref,

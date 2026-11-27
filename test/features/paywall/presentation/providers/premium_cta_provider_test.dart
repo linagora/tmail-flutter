@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -76,6 +77,57 @@ void _ecosystemTransportRetryTests() {
       throwsA(isA<Failure>()),
     );
     expect(repository.callCount, 3);
+  });
+
+  for (final offline in <Object>[const NoNetworkError(), const ConnectionTimeout()]) {
+    test('does not load the ecosystem again after ${offline.runtimeType}', () async {
+      final repository = _EcosystemRepository((_) async => throw offline);
+      final container = _createContainer(
+        repository,
+        transportRetryDelays: const [Duration.zero],
+      );
+      _keepEcosystemAlive(container, _firstTarget);
+
+      await expectLater(
+        _readEcosystem(container, _firstTarget),
+        throwsA(isA<Failure>()),
+      );
+      expect(repository.callCount, 1);
+    });
+  }
+
+  test('stops loading once the provider is disposed while it waits', () async {
+    final repository =
+        _EcosystemRepository((_) async => throw const SocketError());
+    final container = _createContainer(
+      repository,
+      transportRetryDelays: const [Duration(milliseconds: 50)],
+    );
+    _keepEcosystemAlive(container, _firstTarget);
+    final pending =
+        _readEcosystem(container, _firstTarget).then((_) {}, onError: (_) {});
+
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+    container.dispose();
+    await pending;
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+
+    expect(repository.callCount, 1);
+  });
+
+  test('ecosystem retry delays are empty on web and paced on mobile', () {
+    final mobile = ProviderContainer();
+    addTearDown(mobile.dispose);
+    expect(
+      mobile.read(ecosystemTransportRetryDelaysProvider),
+      const [Duration(seconds: 1), Duration(seconds: 4), Duration(seconds: 15)],
+    );
+
+    PlatformInfo.isTestingForWeb = true;
+    addTearDown(() => PlatformInfo.isTestingForWeb = false);
+    final web = ProviderContainer();
+    addTearDown(web.dispose);
+    expect(web.read(ecosystemTransportRetryDelaysProvider), isEmpty);
   });
 
   test('does not load the ecosystem again after a non-transport failure',
