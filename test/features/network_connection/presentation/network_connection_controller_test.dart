@@ -37,4 +37,26 @@ void main() {
       expect(restoredCount, 0);
     });
   });
+
+  group('NetworkConnectionController.isNetworkConnectionAvailable', () {
+    late NetworkConnectionController controller;
+
+    setUp(() => controller = NetworkConnectionController(Connectivity()));
+
+    test('Should be available WHEN the internet was not probed yet', () {
+      expect(controller.isNetworkConnectionAvailable(), isTrue);
+    });
+
+    test('Should be available WHEN the internet is connected', () {
+      controller.setInternetConnectivityStatus(InternetConnectionStatus.connected);
+
+      expect(controller.isNetworkConnectionAvailable(), isTrue);
+    });
+
+    test('Should not be available WHEN the internet is disconnected', () {
+      controller.setInternetConnectivityStatus(InternetConnectionStatus.disconnected);
+
+      expect(controller.isNetworkConnectionAvailable(), isFalse);
+    });
+  });
 }

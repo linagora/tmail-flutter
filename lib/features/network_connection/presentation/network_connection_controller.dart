@@ -101,8 +101,9 @@ class NetworkConnectionController extends GetxController {
       .where((status) => status == InternetConnectionStatus.connected)
       .map((_) {});
 
+  /// Not probed yet counts as available: the request's own error then decides.
   bool isNetworkConnectionAvailable() {
-    return _internetConnectionStatus.value == InternetConnectionStatus.connected;
+    return _internetConnectionStatus.value != InternetConnectionStatus.disconnected;
   }
 
   Future<bool> hasInternetConnection() {

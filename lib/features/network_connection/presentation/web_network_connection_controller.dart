@@ -48,7 +48,7 @@ class NetworkConnectionController extends GetxController {
   void _getCurrentNetworkConnectionState() async {
     final connectionResult = await _connectivity.checkConnectivity();
     log('NetworkConnectionController::_getCurrentNetworkConnectionState():connectionResult: $connectionResult');
-    _setNetworkConnectivityState(connectionResult);
+    setNetworkConnectivityState(connectionResult);
     _handleNetworkConnectionState();
   }
 
@@ -56,7 +56,7 @@ class NetworkConnectionController extends GetxController {
     _subscription = _connectivity.onConnectivityChanged.listen(
       (result) {
         log('NetworkConnectionController::_listenNetworkConnectionChanged()::onConnectivityChanged: $result');
-        _setNetworkConnectivityState(result);
+        setNetworkConnectivityState(result);
         _handleNetworkConnectionState();
       },
       onError: (error, stackTrace) {
@@ -65,7 +65,8 @@ class NetworkConnectionController extends GetxController {
     );
   }
 
-  void _setNetworkConnectivityState(ConnectivityResult newConnectivityResult) {
+  @visibleForTesting
+  void setNetworkConnectivityState(ConnectivityResult newConnectivityResult) {
     _connectivityResult.value = newConnectivityResult;
   }
 
