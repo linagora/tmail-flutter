@@ -125,10 +125,9 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
     SentryBreadcrumbAdder? addBreadcrumb,
     SentrySdkInitializer? initializeSentrySdk,
     SentrySdkCloser? closeSentrySdk,
-    bool isSentryAvailable = true,
+    this._isSentryAvailable = true,
     DateTime Function()? now,
-  })  : _isSentryAvailable = isSentryAvailable,
-        _now = now ?? DateTime.now,
+  })  : _now = now ?? DateTime.now,
         _userScopeCoordinator = SentryUserScopeCoordinator(
           synchronizeScope: synchronizeScope,
         ),

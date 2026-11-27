@@ -836,8 +836,8 @@ void _ecosystemStateEqualityTests() {
     final ecosystem = _ecosystem(_paywallTemplate);
     expect(EcosystemAvailable(ecosystem).props, [ecosystem]);
     expect(
-      EcosystemLoading(),
-      isNot(EcosystemUnavailable(EcosystemUnavailableReason.missingAccount)),
+      const EcosystemLoading(),
+      isNot(const EcosystemUnavailable(EcosystemUnavailableReason.missingAccount)),
     );
   });
 }

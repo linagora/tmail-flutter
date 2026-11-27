@@ -54,12 +54,11 @@ class _FakeSentryRuntime extends FcmSentryRuntime {
   _FakeSentryRuntime({
     this.onInitialize,
     this.onSetReportingConsent,
-    bool isAvailable = false,
-  }) : _isAvailable = isAvailable;
+  });
 
   final Future<void> Function()? onInitialize;
   final Future<void> Function(bool? consent)? onSetReportingConsent;
-  bool _isAvailable;
+  bool _isAvailable = false;
   final consents = <bool?>[];
   final initializedConfigs = <SentryConfig>[];
   final users = <SentryUser>[];
