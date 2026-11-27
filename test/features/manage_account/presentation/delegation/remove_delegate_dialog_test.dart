@@ -4,6 +4,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
 import 'package:delegation/model/delegate.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -106,6 +107,21 @@ void main() {
     );
     expect(tester.widget<ConfirmDialogButton>(find.byKey(submitButton)).backgroundColor, AppColor.redFF3347);
     expect(repository.removeCalls, isEmpty);
+  });
+
+  testWidgets('should show the whole title on a phone width with a larger font size', (tester) async {
+    tester.view.physicalSize = const Size(360, 800);
+    tester.view.devicePixelRatio = 1;
+    tester.platformDispatcher.textScaleFactorTestValue = 2.0;
+    addTearDown(tester.view.reset);
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+    await openDialog(tester);
+
+    final title = tester.renderObject<RenderParagraph>(find.text(l10n.removeDelegateAccessTitle));
+    expect(title.didExceedMaxLines, isFalse);
+    expect(title.size.height, greaterThanOrEqualTo(title.getMaxIntrinsicHeight(title.size.width)));
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('should close without a request on Cancel', (tester) async {
