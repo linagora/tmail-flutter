@@ -183,9 +183,12 @@ import '../../../../fixtures/widget_fixtures.dart';
 import 'mailbox_dashboard_view_widget_test.mocks.dart';
 
 mockControllerCallback() => InternalFinalCallback<void>(callback: () {});
+// MailboxController listens to it to reload the folders once the internet is back
+Stream<void> mockInternetRestored() => const Stream<void>.empty();
 const fallbackGenerators = {
   #onStart: mockControllerCallback,
   #onDelete: mockControllerCallback,
+  #onInternetRestored: mockInternetRestored,
 };
 
 class _TestEcosystemNotifier extends Notifier<LinagoraEcosystem?> {
