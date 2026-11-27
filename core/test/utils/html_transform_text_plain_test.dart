@@ -5,6 +5,7 @@ import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:html/parser.dart' as html_parser;
 import 'package:mockito/annotations.dart';
 
 import '../../../test/fixtures/text_plain_email_corpus.dart';
@@ -303,6 +304,38 @@ void main() {
 
         expect('href="mailto:x@y.zz"'.allMatches(result), hasLength(6250));
         expect('href="https://www.a.bc"'.allMatches(result), hasLength(6250));
+      });
+    });
+
+    group('Quotes in autolinked URLs', () {
+      test('a quote in an autolinked URL does not inject attributes into the link', () {
+        const input = 'aa.aa#"style="x"';
+        final out = transform(input);
+        final link = html_parser.parse(out).body!.querySelector('a')!;
+        expect(link.attributes['style'], 'white-space: nowrap; word-break: keep-all;');
+        expect(
+          link.attributes.keys.map((k) => k.toString()).toSet(),
+          everyElement(isIn({'href', 'target', 'rel', 'style'})),
+        );
+        expect(html_parser.parse(out).body!.text, input);
+      });
+
+      test('a single quote in an autolinked URL does not swallow the link text', () {
+        const input = 'aa.aa#style="x"=\'<';
+        expect(html_parser.parse(transform(input)).body!.text, input);
+      });
+
+      test('a URL wrapped in double quotes links to the URL without the closing quote', () {
+        const cases = {
+          'Open "https://example.com/docs" now': 'https://example.com/docs',
+          'Open "https://example.com" now': 'https://example.com',
+          'Link: "https://example.com/a?b=1".': 'https://example.com/a?b=1',
+          'He said "see www.example.com/x"': 'https://www.example.com/x',
+        };
+        for (final entry in cases.entries) {
+          final link = html_parser.parse(transform(entry.key)).body!.querySelector('a')!;
+          expect(link.attributes['href'], entry.value, reason: entry.key);
+        }
       });
     });
   });

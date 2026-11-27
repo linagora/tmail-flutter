@@ -22,6 +22,10 @@ class SanitizeAutolinkFilter {
     const LinearTimeUrlLinkifier(),
   ];
 
+  // The href is always double-quoted, so attribute mode is enough.
+  static const _attributeEscape = HtmlEscape(HtmlEscapeMode.attribute);
+  static const _quote = '"';
+
   SanitizeAutolinkFilter(this.htmlEscape);
 
   String process(String inputText) {
@@ -48,18 +52,40 @@ class SanitizeAutolinkFilter {
       } else if (element is EmailElement) {
         buffer.write(_buildEmailLinkTag(mailToLink: element.url, value: element.text));
       } else if (element is UrlElement) {
-        buffer.write(_buildUrlLinkTag(urlLink: element.url, value: element.text));
+        _writeUrl(buffer, element);
       }
     }
 
     return buffer.toString();
   }
 
+  // The loose URL pattern takes the closing quote of "https://…"; a lone trailing quote is never part of the URL.
+  void _writeUrl(StringBuffer buffer, UrlElement element) {
+    final origin = element.originText;
+    final endsWithLoneQuote = origin.length > 1 &&
+        origin.indexOf(_quote) == origin.length - 1 &&
+        element.url.endsWith(_quote) &&
+        element.text.endsWith(_quote);
+    if (!endsWithLoneQuote) {
+      buffer.write(_buildUrlLinkTag(urlLink: element.url, value: element.text));
+      return;
+    }
+    buffer.write(_buildUrlLinkTag(
+      urlLink: element.url.substring(0, element.url.length - 1),
+      value: element.text.substring(0, element.text.length - 1),
+    ));
+    buffer.write(htmlEscape.convert(_quote));
+  }
+
   String _buildUrlLinkTag({required String urlLink, required String value}) {
-    return '<a href="$urlLink" target="_blank" rel="noreferrer" style="white-space: nowrap; word-break: keep-all;">$value</a>';
+    final href = _attributeEscape.convert(urlLink);
+    final text = htmlEscape.convert(value);
+    return '<a href="$href" target="_blank" rel="noreferrer" style="white-space: nowrap; word-break: keep-all;">$text</a>';
   }
 
   String _buildEmailLinkTag({required String mailToLink, required String value}) {
-    return '<a href="$mailToLink" style="white-space: nowrap; word-break: keep-all;">$value</a>';
+    final href = _attributeEscape.convert(mailToLink);
+    final text = htmlEscape.convert(value);
+    return '<a href="$href" style="white-space: nowrap; word-break: keep-all;">$text</a>';
   }
 }
