@@ -210,6 +210,7 @@ import 'package:tmail_ui_user/features/sending_queue/domain/usecases/get_all_sen
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/store_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/update_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_arguments.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/exceptions/server_settings_exception.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/state/get_server_setting_state.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
@@ -705,9 +706,20 @@ class MailboxDashBoardController extends ReloadableController
   void onDataFailureViewState(Failure failure) {
     // An urgent error (connection error) skips handleFailureViewState, the choice stays unreadable all the same.
     if (failure is GetServerSettingFailure && !isClosed) {
-      applyUnreadableReportingConsent();
+      _handleGetServerSettingFailureConsent(failure);
     }
     super.onDataFailureViewState(failure);
+  }
+
+  void _handleGetServerSettingFailureConsent(GetServerSettingFailure failure) {
+    final exception = failure.exception;
+    // The server answered with no stored settings: no choice, same as a missing sentryUserOptIn.
+    if (exception is NotFoundServerSettingsException ||
+        exception is NotFoundSettingOptionException) {
+      applySentryReportingConsent(_sentryEcosystem, null);
+    } else {
+      applyUnreadableReportingConsent();
+    }
   }
 
   @override

@@ -130,6 +130,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/exceptions/server_settings_exception.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/state/get_server_setting_state.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
@@ -525,6 +526,37 @@ void main() {
       );
 
       expect(SentryManager.instance.isReportingConsentResolved, isTrue);
+    });
+
+    for (final exception in const [
+      NotFoundServerSettingsException(),
+      NotFoundSettingOptionException(),
+    ]) {
+      testWidgets('keeps the launch reports WHEN the server has no stored settings (${exception.exceptionName})', (tester) async {
+        await pumpLocalizedApp(tester);
+        SentryManager.instance.captureMessage('launch error');
+        expect(SentryManager.instance.pendingReportCount, 1);
+
+        mailboxDashboardController.onDataFailureViewState(
+          GetServerSettingFailure(exception),
+        );
+
+        expect(SentryManager.instance.isReportingConsentResolved, isTrue);
+        expect(SentryManager.instance.pendingReportCount, 1);
+        // The kept report owns a five minute timer the test binding rejects.
+        SentryManager.instance.discardPendingReports();
+      });
+    }
+
+    testWidgets('drops the launch reports WHEN the choice cannot be read', (tester) async {
+      await pumpLocalizedApp(tester);
+      SentryManager.instance.captureMessage('launch error');
+
+      mailboxDashboardController.onDataFailureViewState(
+        GetServerSettingFailure(const ConnectionError()),
+      );
+
+      expect(SentryManager.instance.pendingReportCount, 0);
     });
 
     testWidgets('does not touch the choice WHEN the dashboard closed before the failure', (tester) async {
