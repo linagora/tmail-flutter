@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/utils/sign_in_email_link.dart';
 
+import '../../../../fixtures/sign_in_email_link_fixtures.dart';
+
 void main() {
   group('SignInEmailLink.tryParse', () {
     test('WHEN the link opens a dashboard account THEN the dashboard starts on its parameters', () {
@@ -74,11 +76,10 @@ void main() {
     test('WHEN a signed-out page is an email link THEN it is taken once after sign-in', () {
       keepSignInEmailLink('/dashboard?account=owner-account', {'account': 'owner-account'});
 
-      expect(hasSignInEmailLink(), isTrue);
-      expect(hasSignInEmailLink(), isTrue, reason: 'has does not consume the link');
+      expect(isSignInEmailLinkKept(), isTrue);
       expect(takeSignInEmailLink()?.dashboardParameters, {'account': 'owner-account'});
       expect(takeSignInEmailLink(), isNull);
-      expect(hasSignInEmailLink(), isFalse);
+      expect(isSignInEmailLinkKept(), isFalse);
     });
 
     test('WHEN the settings link is kept THEN the stored link drops null parameters', () {
@@ -99,7 +100,6 @@ void main() {
     test('SHOULD NOT open a tampered stored value AND removes it', () {
       storage.save(SignInEmailLink.storageKey, 'https://evil.example/dashboard?account=owner-account');
 
-      expect(hasSignInEmailLink(), isFalse);
       expect(takeSignInEmailLink(), isNull);
       expect(storage.sessionStorage.containsKey(SignInEmailLink.storageKey), isFalse);
     });
@@ -107,7 +107,6 @@ void main() {
     test('SHOULD NOT throw on a malformed stored value AND removes it', () {
       storage.save(SignInEmailLink.storageKey, '/dashboard?account=%E0%A4%A');
 
-      expect(hasSignInEmailLink(), isFalse);
       expect(takeSignInEmailLink(), isNull);
       expect(storage.sessionStorage.containsKey(SignInEmailLink.storageKey), isFalse);
     });
@@ -131,9 +130,9 @@ void main() {
       keepSignInEmailLink('/settings', {'type': 'delegation'});
 
       expect(takeSignInEmailLink(accepts: (link) => !link.opensSettings), isNull);
-      expect(hasSignInEmailLink(), isTrue);
+      expect(isSignInEmailLinkKept(), isTrue);
       expect(takeSignInEmailLink(accepts: (link) => link.opensSettings)?.opensSettings, isTrue);
-      expect(hasSignInEmailLink(), isFalse);
+      expect(isSignInEmailLinkKept(), isFalse);
     });
 
     test('WHEN the stored value is invalid THEN a filtered take still removes it', () {

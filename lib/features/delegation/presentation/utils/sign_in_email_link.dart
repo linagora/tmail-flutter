@@ -84,8 +84,6 @@ void keepSignInEmailLink(String route, Map<String, String?> parameters) {
   }
 }
 
-bool hasSignInEmailLink() => _readSignInEmailLink(remove: (_) => false) != null;
-
 /// Called on a user sign out or a mailto launch: either ends the intent of a kept link.
 void discardSignInEmailLink() => takeSignInEmailLink();
 

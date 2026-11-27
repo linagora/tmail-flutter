@@ -15,6 +15,7 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 import '../../../../fixtures/active_account_source_fixtures.dart';
 import '../../../../fixtures/delegation_fixtures.dart';
+import '../../../../fixtures/sign_in_email_link_fixtures.dart';
 import 'mailbox_dashboard_controller_test_harness.dart';
 
 void main() {
@@ -83,7 +84,7 @@ void main() {
         await tester.pump();
 
         expect(
-          hasSignInEmailLink() || Get.currentRoute.startsWith(AppRoutes.settings),
+          isSignInEmailLinkKept() || Get.currentRoute.startsWith(AppRoutes.settings),
           isTrue,
           reason: 'the link is taken first, then _openSettings returns on canOpenSettings',
         );

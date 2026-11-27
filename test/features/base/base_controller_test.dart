@@ -65,6 +65,7 @@ import '../../fixtures/account_fixtures.dart';
 import '../../fixtures/active_account_source_fixtures.dart';
 import '../../fixtures/delegation_fixtures.dart';
 import '../../fixtures/session_fixtures.dart';
+import '../../fixtures/sign_in_email_link_fixtures.dart';
 import 'base_controller_test.mocks.dart';
 
 class MockBaseController extends BaseController {
@@ -1054,14 +1055,14 @@ void main() {
     // intent, or the next user signing in on this tab is sent to the previous user's delegated mailbox.
     testWidgets('a user sign out SHOULD drop the link kept by an earlier forced logout', (tester) async {
       keepSignInEmailLink('/dashboard', {'account': 'alice-delegated-account'});
-      expect(hasSignInEmailLink(), isTrue);
+      expect(isSignInEmailLinkKept(), isTrue);
       await tester.pumpWidget(const SizedBox());
 
       mockBaseController.logout(tester.element(find.byType(SizedBox)), null, null, 'bob@example.com');
       await tester.pumpAndSettle();
 
       expect(mockBaseController.logoutCalls, 1);
-      expect(hasSignInEmailLink(), isFalse, reason: 'the next user to sign in on this tab takes it');
+      expect(isSignInEmailLinkKept(), isFalse, reason: 'the next user to sign in on this tab takes it');
     });
   });
 }

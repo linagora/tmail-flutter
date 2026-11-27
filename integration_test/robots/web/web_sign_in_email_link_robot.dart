@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/utils/sign_in_email_link.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_view_web.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -19,10 +20,13 @@ class WebSignInEmailLinkRobot extends CoreRobot {
     );
     Get.offAllNamed(link);
     await waitForCondition(
-      () => hasSignInEmailLink() && _isOnLoginPage,
+      () => _isLinkKept && _isOnLoginPage,
       reason: 'the pasted link is kept and the app asks to sign in',
     );
   }
+
+  bool get _isLinkKept =>
+      Get.find<SessionStorageManager>().sessionStorage.containsKey(SignInEmailLink.storageKey);
 
   bool get _isOnLoginPage =>
       Get.currentRoute.startsWith(AppRoutes.login) && $(LoginView).exists;

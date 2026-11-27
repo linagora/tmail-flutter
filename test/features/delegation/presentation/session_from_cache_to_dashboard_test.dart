@@ -62,6 +62,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../fixtures/delegation_fixtures.dart';
 import '../../../fixtures/route_arguments_recorder.dart';
+import '../../../fixtures/sign_in_email_link_fixtures.dart';
 import 'session_from_cache_to_dashboard_test.mocks.dart';
 
 @GenerateNiceMocks([
@@ -333,7 +334,7 @@ void main() {
         sessionStorage.save(SignInEmailLink.storageKey, '/dashboard?account=owner-account');
 
         expect(await argumentsAfterSignIn(tester), isA<DashboardSessionArguments>());
-        expect(hasSignInEmailLink(), isTrue, reason: 'the dashboard takes the link once its session loads');
+        expect(isSignInEmailLinkKept(), isTrue, reason: 'the dashboard takes the link once its session loads');
       },
     );
 
