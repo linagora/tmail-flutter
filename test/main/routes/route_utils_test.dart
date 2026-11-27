@@ -483,6 +483,53 @@ void main() {
       expect(router.accountId, DelegationFixtures.bobAccountId);
     });
 
+    group('targets of a start URL', () {
+      Map<String, String> targets() => {
+        RouteUtils.paramType: DashboardType.search.name,
+        RouteUtils.paramContext: 'owner-inbox',
+        RouteUtils.paramID: 'owner-email',
+        RouteUtils.paramQuery: 'owner query',
+      };
+
+      test('drops the folder, email and query of a malformed account, so the URL opens my Inbox', () {
+        final router = RouteUtils.parsingRouteParametersToNavigationRouter({
+          ...targets(),
+          RouteUtils.paramAccount: 'a!b',
+        });
+
+        expect(router.accountId, isNull);
+        expect(router.mailboxId, isNull);
+        expect(router.emailId, isNull);
+        expect(router.searchQuery, isNull);
+      });
+
+      test('drops the label of a malformed account', () {
+        final router = RouteUtils.parsingRouteParametersToNavigationRouter({
+          RouteUtils.paramLabelId: 'owner-label',
+          RouteUtils.paramAccount: 'a!b',
+        });
+
+        expect(router.labelId, isNull);
+      });
+
+      for (final (urlState, accountParameter) in [
+        ('names a valid account', {RouteUtils.paramAccount: DelegationFixtures.bobAccountId.id.value}),
+        ('names no account', <String, String>{}),
+        ('has an empty account', {RouteUtils.paramAccount: ''}),
+      ]) {
+        test('keeps the folder, email and query of a URL that $urlState', () {
+          final router = RouteUtils.parsingRouteParametersToNavigationRouter({
+            ...targets(),
+            ...accountParameter,
+          });
+
+          expect(router.mailboxId, MailboxId(Id('owner-inbox')));
+          expect(router.emailId, EmailId(Id('owner-email')));
+          expect(router.searchQuery, SearchQuery('owner query'));
+        });
+      }
+    });
+
     test('parses no account from a URL without it or with it empty', () {
       expect(RouteUtils.parseAccountId({}), isNull);
       expect(RouteUtils.parseAccountId({RouteUtils.paramAccount: ''}), isNull);

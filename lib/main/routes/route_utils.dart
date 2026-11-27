@@ -220,11 +220,14 @@ abstract class RouteUtils {
     cc = _emailAddressesFromMailtoAddress(mailtoCc);
     bcc = _emailAddressesFromMailtoAddress(mailtoBcc);
     log('RouteUtils::parsingRouteParametersToNavigationRouter:listEmailAddress = $listEmailAddress');
+    final accountId = parseAccountId(parameters);
+    // A malformed account names another mailbox than mine, so its targets are dropped like an unlisted account's.
+    final keepsTargets = accountId != null || !_hasAccountParameter(parameters);
     return NavigationRouter(
-      emailId: emailId,
-      mailboxId: mailboxId,
-      labelId: labelId,
-      searchQuery: searchQuery,
+      emailId: keepsTargets ? emailId : null,
+      mailboxId: keepsTargets ? mailboxId : null,
+      labelId: keepsTargets ? labelId : null,
+      searchQuery: keepsTargets ? searchQuery : null,
       dashboardType: dashboardType,
       routeName: routeName,
       listEmailAddress: listEmailAddress,
@@ -233,8 +236,13 @@ abstract class RouteUtils {
       subject: subject,
       body: body,
       accountMenuItem: settingType,
-      accountId: parseAccountId(parameters),
+      accountId: accountId,
     );
+  }
+
+  static bool _hasAccountParameter(Map<String, dynamic> parameters) {
+    final accountParam = parameters[paramAccount];
+    return accountParam is String && accountParam.isNotEmpty;
   }
 
   static AccountId? parseAccountId(Map<String, dynamic> parameters) {
