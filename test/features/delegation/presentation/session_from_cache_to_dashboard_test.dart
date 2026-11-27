@@ -2,6 +2,8 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/platform_info.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -13,10 +15,14 @@ import 'package:tmail_ui_user/features/delegation/data/datasource/last_shown_acc
 import 'package:tmail_ui_user/features/delegation/domain/repository/last_shown_account_store.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/utils/sign_in_email_link.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_email_cache_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_url_cache_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_username_interactor.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
@@ -293,4 +299,93 @@ void main() {
       expect(store.read(carol), DelegationFixtures.bobAccountId);
     });
   });
+
+  group('LoginController web sign-in with a kept email link', () {
+    late SessionStorageManager sessionStorage;
+
+    setUp(() {
+      PlatformInfo.isTestingForWeb = true;
+      sessionStorage = Get.put(SessionStorageManager());
+    });
+
+    tearDown(() {
+      sessionStorage.remove(SignInEmailLink.storageKey);
+      PlatformInfo.isTestingForWeb = false;
+    });
+
+    Future<Object?> argumentsAfterSignIn(WidgetTester tester) async {
+      final recorder = await RouteArgumentsRecorder.pump(tester, AppRoutes.dashboard);
+      final session = DelegationFixtures.session();
+      final controller = buildLogin()
+        ..handleSuccessViewState(GetSessionSuccess(session, fromCache: false))
+        ..handleSuccessViewState(
+          UpdateAccountCacheSuccess(session: session, apiUrl: 'https://example.com/jmap'),
+        );
+      await tester.pumpAndSettle();
+      expect(controller.isClosed, isFalse);
+      return recorder.arguments;
+    }
+
+    testWidgets(
+      'WHEN an email link was kept before the login\n'
+      'THEN the dashboard still gets the session and the link is left for it to take',
+      (tester) async {
+        sessionStorage.save(SignInEmailLink.storageKey, '/dashboard?account=owner-account');
+
+        expect(await argumentsAfterSignIn(tester), isA<DashboardSessionArguments>());
+        expect(hasSignInEmailLink(), isTrue, reason: 'the dashboard takes the link once its session loads');
+      },
+    );
+
+    testWidgets(
+      'WHEN a page opened from an email link finds no signed-in user\n'
+      'THEN the link is kept for after the login',
+      (tester) async {
+        await tester.pumpWidget(GetMaterialApp(
+          initialRoute: '${AppRoutes.dashboard}?account=owner-account',
+          getPages: [
+            for (final route in [AppRoutes.dashboard, AppRoutes.login])
+              GetPage(name: route, page: () => const SizedBox.shrink()),
+          ],
+        ));
+        addTearDown(() => Get.routing.current = '');
+
+        buildLogin().handleFailureViewState(GetCredentialFailure(Exception('no credential')));
+        await tester.pumpAndSettle();
+
+        expect(takeSignInEmailLink()?.dashboardParameters, {'account': 'owner-account'});
+      },
+    );
+
+    testWidgets(
+      'WHEN a page opened from an email link finds an expired login\n'
+      'THEN the link is kept for after the login',
+      (tester) async {
+        await tester.pumpWidget(GetMaterialApp(
+          initialRoute: '${AppRoutes.settings}?type=delegation',
+          getPages: [
+            for (final route in [AppRoutes.settings, AppRoutes.login])
+              GetPage(name: route, page: () => const SizedBox.shrink()),
+          ],
+        ));
+        addTearDown(() => Get.routing.current = '');
+
+        _SignedOutPageController().handleFailureViewState(GetSessionFailure(RefreshTokenFailedException()));
+        await tester.pumpAndSettle();
+
+        expect(takeSignInEmailLink()?.opensSettings, isTrue);
+      },
+    );
+
+    testWidgets(
+      'WHEN no email link was kept\n'
+      'THEN the dashboard gets the session',
+      (tester) async {
+        expect(await argumentsAfterSignIn(tester), isA<DashboardSessionArguments>());
+      },
+    );
+  });
 }
+
+/// A page such as the dashboard, which leaves a dead session to [ReloadableController].
+class _SignedOutPageController extends ReloadableController {}
