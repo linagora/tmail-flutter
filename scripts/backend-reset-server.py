@@ -90,13 +90,13 @@ _stopped = False
 
 
 def _run(cmd: List[str], check: bool = False, env: Optional[dict] = None,
-         timeout: float = RUN_TIMEOUT) -> subprocess.CompletedProcess:
+         timeout: float = RUN_TIMEOUT, stdin: Optional[str] = None) -> subprocess.CompletedProcess:
     # A hung call raises TimeoutExpired, so Pool._reset retries then drops the slot.
     # Own session: killing only the docker CLI would leave its compose plugin running into the retry.
-    with subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=env,
-                          start_new_session=True) as proc:
+    with subprocess.Popen(cmd, stdin=None if stdin is None else subprocess.PIPE, stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE, text=True, env=env, start_new_session=True) as proc:
         try:
-            out, err = proc.communicate(timeout=timeout)
+            out, err = proc.communicate(input=stdin, timeout=timeout)
         except subprocess.TimeoutExpired:
             os.killpg(proc.pid, signal.SIGKILL)
             raise
@@ -121,8 +121,9 @@ def _webadmin_ok(port: int, method: str, path: str, data: Optional[str] = None, 
     cmd = ["curl", "-s", "-o", os.devnull, "-w", "%{http_code}", "-X", method,
            f"http://localhost:{port}{path}"]
     if data is not None:
-        cmd += ["-d", data, "-H", "Content-Type: application/json"]
-    code = _run(cmd).stdout.strip()
+        # The body goes through stdin so a client-supplied value never reaches the curl argv.
+        cmd += ["--data-binary", "@-", "-H", "Content-Type: application/json"]
+    code = _run(cmd, stdin=data).stdout.strip()
     if not code.isdigit() or int(code) not in ok:
         raise RuntimeError(f"{method} {path} answered {code or 'nothing'}")
 
@@ -412,13 +413,13 @@ class ResetHandler(http.server.BaseHTTPRequestHandler):
     def _handle_password(self):
         body = self._read_json()
         slot = self.pool.leased_slot(str(body.get("token", "")))
-        user = body.get("user")
+        # The user lands in a WebAdmin path, so only seeded names are accepted.
+        user = next((u for u in _TEST_USERS if u == body.get("user")), None)
         password = str(body.get("password") or "")
         if slot is None:
             self._reply(404, b"no backend leased with this token")
             return
-        # The user lands in a WebAdmin path, so only seeded names are accepted.
-        if user not in _TEST_USERS or not password:
+        if user is None or not password:
             self._reply(400, b"unknown user or empty password")
             return
         _webadmin_ok(POOL_WEBADMIN_BASE_PORT + slot, "PUT", f"/users/{user}@{_TEST_DOMAIN}?force",

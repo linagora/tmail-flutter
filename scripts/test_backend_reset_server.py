@@ -399,6 +399,19 @@ class HttpTest(unittest.TestCase):
         webadmin.assert_not_called()
 
 
+class WebadminTest(unittest.TestCase):
+    def test_run_feeds_stdin_to_the_command(self):
+        self.assertEqual(server._run(["cat"], stdin="body").stdout, "body")
+
+    def test_webadmin_body_goes_through_stdin_not_the_curl_argv(self):
+        with mock.patch.object(server, "_run", return_value=subprocess.CompletedProcess([], 0, "204", "")) as run:
+            server._webadmin_ok(8200, "PUT", "/users/bob@example.com?force", data='{"password": "-K/etc/x"}')
+        cmd = run.call_args.args[0]
+        self.assertNotIn('{"password": "-K/etc/x"}', cmd)
+        self.assertEqual(cmd[cmd.index("--data-binary") + 1], "@-")
+        self.assertEqual(run.call_args.kwargs["stdin"], '{"password": "-K/etc/x"}')
+
+
 class ComposeParityTest(unittest.TestCase):
     def test_pool_compose_uses_the_backend_image_of_the_main_compose(self):
         def image(name):

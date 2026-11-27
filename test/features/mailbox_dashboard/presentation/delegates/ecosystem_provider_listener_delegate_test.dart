@@ -235,6 +235,57 @@ void main() {
   );
 
   testWidgets(
+    'keeps the ecosystem a replacement dashboard loaded in the frame that disposed the previous one',
+    (tester) async {
+      Get.testMode = true;
+      addTearDown(Get.reset);
+      final dashboardController = _DashboardController();
+      dashboardController.testAccountId.value = AccountId(Id('first'));
+      Get.put<MailboxDashBoardController>(dashboardController);
+      final generation = ValueNotifier(0);
+      addTearDown(generation.dispose);
+      final handler = _RecordingEcosystemHandler();
+      final ecosystem = LinagoraEcosystem.deserialize({
+        'paywallUrlTemplate': 'https://domain.tld/premium',
+      });
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            linagoraEcosystemHandlerRegistryProvider.overrideWith(
+              (ref) => LinagoraEcosystemHandlerRegistry(ref)..register(handler),
+            ),
+            activeEcosystemProvider
+                .overrideWith((ref, _) => EcosystemAvailable(ecosystem)),
+          ],
+          child: MaterialApp(
+            home: ValueListenableBuilder<int>(
+              valueListenable: generation,
+              builder: (_, value, __) => MailboxDashboardProviderListenerWidget(
+                key: ValueKey(value),
+                delegateFactories: const [
+                  EcosystemProviderListenerDelegate.new,
+                ],
+                child: const SizedBox(),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      final clearedBeforeReplacement = handler.clearedCount;
+
+      generation.value++;
+      await tester.pump();
+      await tester.pump();
+
+      // Only the replacement's own clear-then-load runs, the stale clear is skipped.
+      expect(handler.clearedCount, clearedBeforeReplacement + 1);
+      expect(handler.loaded, [ecosystem, ecosystem]);
+    },
+  );
+
+  testWidgets(
     'ecosystem handlers resolve the current dashboard controller',
     (tester) async {
       Get.testMode = true;

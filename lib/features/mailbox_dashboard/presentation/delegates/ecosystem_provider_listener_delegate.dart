@@ -30,6 +30,7 @@ class EcosystemProviderListenerDelegate
     if (dashboardController == null) return;
     final registry = ref.read(linagoraEcosystemHandlerRegistryProvider);
     _registry = registry;
+    registry.owner = this;
 
     _registerHandlers(registry);
     _accountIdWorker = ever(
@@ -135,7 +136,9 @@ class EcosystemProviderListenerDelegate
     if (registry == null) return;
     // Handlers update providers, which Riverpod forbids while the widget tree unmounts.
     Future.microtask(() {
-      if (registry.ref.mounted) registry.dispatchCleared();
+      if (registry.ref.mounted && identical(registry.owner, this)) {
+        registry.dispatchCleared();
+      }
     });
   }
 }
