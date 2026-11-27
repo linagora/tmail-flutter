@@ -26,6 +26,12 @@ void applySentryReportingConsent(
   SentryManager.instance.resolveReportingConsent();
 }
 
+/// The user's choice cannot be read: the kept reports must not leave.
+void applyUnreadableReportingConsent() {
+  SentryManager.instance.discardPendingReports();
+  SentryManager.instance.resolveReportingConsent();
+}
+
 class SentryEcosystem implements SentrySessionCleanup {
   final SentryConfigurationCacheManager? _cacheManager;
   final IOSSharingManager? _iosSharingManager;

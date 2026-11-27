@@ -165,6 +165,53 @@ void main() {
     debugDefaultTargetPlatformOverride = null;
   });
 
+  group('launch reports kept until the user choice is read', () {
+    setUp(() async {
+      await sentryManager.clearSessionContext();
+    });
+
+    test('applySentryReportingConsent marks the user choice as read', () {
+      applySentryReportingConsent(null, null);
+
+      expect(sentryManager.isReportingConsentResolved, isTrue);
+    });
+
+    test('applySentryReportingConsent marks the user choice as read with an ecosystem', () {
+      final ecosystem = SentryEcosystem(null, null, initializeSentry: (_) async {});
+
+      applySentryReportingConsent(ecosystem, true);
+
+      expect(sentryManager.isReportingConsentResolved, isTrue);
+    });
+
+    test('applyUnreadableReportingConsent resolves the choice and drops kept reports', () {
+      sentryManager.captureMessage('raised at launch');
+      expect(sentryManager.pendingReportCount, 1);
+
+      applyUnreadableReportingConsent();
+
+      expect(sentryManager.isReportingConsentResolved, isTrue);
+      expect(sentryManager.pendingReportCount, 0);
+    });
+
+    test('setUp with an invalid configuration drops kept reports', () async {
+      sentryManager.captureMessage('raised at launch');
+      expect(sentryManager.pendingReportCount, 1);
+      final ecosystem = SentryEcosystem(
+        _FakeCacheManager(
+          configuration: _configuration(isReportingAllowed: false),
+          user: _user('account-a'),
+        ),
+        null,
+        initializeSentry: (_) async {},
+      );
+
+      await ecosystem.setUp(SentryConfigLinagoraEcosystem(enabled: false));
+
+      expect(sentryManager.pendingReportCount, 0);
+    });
+  });
+
   test('persists the latest consent when it changes while Sentry initializes', () async {
     final optedInByDefaultConfig = SentryConfigLinagoraEcosystem(
       enabled: true,

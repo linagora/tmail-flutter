@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:core/utils/sentry/sentry_config.dart';
+import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:tmail_ui_user/features/caching/entries/sentry_configuration_cache.dart';
@@ -125,6 +126,14 @@ SentryUserCache _user(String id) => SentryUserCache(
     );
 
 void main() {
+  test('FcmSentryRuntime marks the cached choice as read', () async {
+    await SentryManager.instance.clearSessionContext();
+
+    await const FcmSentryRuntime().setReportingConsent(true);
+
+    expect(SentryManager.instance.isReportingConsentResolved, isTrue);
+  });
+
   test('background isolate does not initialize Sentry without consent', () async {
     final cacheManager = _FakeCacheManager(configuration: _configuration(
       isAvailable: true,

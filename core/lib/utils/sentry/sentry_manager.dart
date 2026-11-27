@@ -231,6 +231,9 @@ class SentryManager implements SentryReporter, SentryReportingConsent {
   @visibleForTesting
   bool get isReportingConsentResolved => _isConsentResolved;
 
+  @visibleForTesting
+  int get pendingReportCount => _pendingReports.length;
+
   /// Drops the kept reports without sending them, e.g. when the instance
   /// turns Sentry off or the user's choice cannot be read.
   void discardPendingReports() {
