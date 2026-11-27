@@ -301,6 +301,17 @@ void main() {
       expect(Get.currentRoute, AppRoutes.unknownRoutePage);
       expect(selectedMailboxId(), isNull);
     });
+
+    testWidgets('naming a malformed account opens my Inbox, never the unknown page', (tester) async {
+      await startOn(tester, {
+        RouteUtils.paramContext: 'missing-folder',
+        RouteUtils.paramAccount: 'a!b',
+      });
+
+      expect(switchNotifier.switchToCalls, isEmpty);
+      expect(Get.currentRoute, isNot(AppRoutes.unknownRoutePage));
+      expect(selectedMailboxId(), MailboxFixtures.inboxMailbox.id!.id.value);
+    });
   });
 
   group('a web start URL whose label is missing:', () {
