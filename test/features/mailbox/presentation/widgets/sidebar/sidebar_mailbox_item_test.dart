@@ -603,7 +603,7 @@ void _testForwardsMailboxLongPressOnMobile() {
 }
 
 void _testForwardsOnlyTouchLongPressOnWebDesktop() {
-  testWidgets('forwards a touch long press on the web desktop layout, not a mouse one',
+  testWidgets('forwards touch and pen long presses on the web desktop layout, not a mouse one',
       (tester) async {
     PlatformInfo.isTestingForWeb = true;
     addTearDown(() => PlatformInfo.isTestingForWeb = false);
@@ -634,6 +634,9 @@ void _testForwardsOnlyTouchLongPressOnWebDesktop() {
 
     await longPress(PointerDeviceKind.touch);
     expect(calls, 1);
+
+    await longPress(PointerDeviceKind.stylus);
+    expect(calls, 2);
   });
 }
 

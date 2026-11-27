@@ -21,6 +21,10 @@ typedef OnSidebarMailboxExpandAction = void Function(MailboxNode mailboxNode);
 
 enum _SidebarMailboxActionId { clean, more }
 
+// Mouse/trackpad users get the hover "⋮" menu instead.
+final _webLongPressDevices = PointerDeviceKind.values.toSet()
+  ..removeAll({PointerDeviceKind.mouse, PointerDeviceKind.trackpad});
+
 class SidebarMailboxItem extends StatelessWidget {
 
   final MailboxNode mailboxNode;
@@ -129,9 +133,8 @@ class SidebarMailboxItem extends StatelessWidget {
   Widget _withLongPress(Widget child) {
     if (onLongPressMailboxNodeAction == null) return child;
 
-    // Web: touch only, mouse users get the hover "⋮" menu instead.
     return GestureDetector(
-      supportedDevices: PlatformInfo.isWeb ? {PointerDeviceKind.touch} : null,
+      supportedDevices: PlatformInfo.isWeb ? _webLongPressDevices : null,
       onLongPress: () => onLongPressMailboxNodeAction?.call(mailboxNode),
       child: child,
     );
