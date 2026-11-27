@@ -42,16 +42,31 @@ class WebMailboxMenuRobot extends MobileMailboxMenuRobot {
         );
 
   @override
-  Future<void> openSetting() async {
+  Future<void> openSetting() => _tapAvatarMenuItem(
+        AppLocalizations().manage_account,
+        ProfileSettingActionType.manageAccount,
+      );
+
+  @override
+  Future<void> tapSignOut() => _tapAvatarMenuItem(
+        AppLocalizations().sign_out,
+        ProfileSettingActionType.signOut,
+      );
+
+  @override
+  Future<void> confirmSignOut() async {
+    // Web: sign out runs at once, there is no confirm dialog.
+  }
+
+  Future<void> _tapAvatarMenuItem(String label, ProfileSettingActionType action) async {
     await $(const ValueKey(UiKeys.userAvatar)).tap();
-    // With delegation on, the avatar opens the account switcher menu, whose footer has the Manage row.
-    final switcherManageRow = $(const ValueKey(UiKeys.accountSwitcherMenu))
-        .$(AppLocalizations().manage_account);
-    final profileManageItem = $(ValueKey(ProfileSettingActionType.manageAccount.name));
+    // With delegation on, the avatar opens the account switcher menu, whose footer has the row.
+    final switcherRow = $(const ValueKey(UiKeys.accountSwitcherMenu)).$(label);
+    final profileItem = $(ValueKey(action.name));
     await waitForCondition(
-      () => switcherManageRow.exists || profileManageItem.exists,
-      reason: 'avatar menu shows Manage account',
+      () => switcherRow.exists || profileItem.exists,
+      reason: 'avatar menu shows $label',
     );
-    await (switcherManageRow.exists ? switcherManageRow : profileManageItem).tap();
+    await (switcherRow.exists ? switcherRow : profileItem).tap();
   }
 }

@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/base/extensions/discard_web_composers_on_
 import 'package:tmail_ui_user/features/base/extensions/handle_company_server_login_info_extension.dart';
 import 'package:tmail_ui_user/features/base/mixin/logout_mixin.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/cleanup_ended_delegations.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/utils/sign_in_email_link.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/providers/delegation_session_cleanup.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
@@ -229,6 +230,7 @@ abstract class BaseController extends GetxController
       extras: {'auth_error_type': reason},
       webConsoleEnabled: true,
     );
+    keepSignInEmailLinkOfCurrentPage();
     clearDataAndGoToLoginPage();
   }
 
@@ -299,6 +301,7 @@ abstract class BaseController extends GetxController
       extras: {'auth_error_type': reason},
       webConsoleEnabled: true,
     );
+    keepSignInEmailLinkOfCurrentPage();
     clearDataAndGoToLoginPage();
   }
 
@@ -542,6 +545,8 @@ abstract class BaseController extends GetxController
 
   Future<void> _handleLogoutAction(Session? session, AccountId? accountId) async {
     _revokeOtherTabsOnWebBasicAuth();
+    // A forced logout keeps the page for the same user, a sign out must not hand it to the next one on this tab.
+    discardSignInEmailLink();
     if (session == null || accountId == null) {
       await clearDataAndGoToLoginPage();
       return;

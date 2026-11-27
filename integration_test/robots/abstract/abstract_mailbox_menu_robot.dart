@@ -12,6 +12,8 @@ abstract class AbstractMailboxMenuRobot {
   PatrolFinder labelItemByName(String name);
   Future<void> pullToRefresh();
   Future<void> openSetting();
+  Future<void> tapSignOut();
+  Future<void> confirmSignOut();
 
   AbstractMailboxNavigationRobot get navigation;
   AbstractMailboxFolderRobot get folder;

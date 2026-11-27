@@ -63,6 +63,7 @@ import 'package:tmail_ui_user/features/delegation/presentation/cleanup_ended_del
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_reader.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/utils/show_notification_account.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/utils/sign_in_email_link.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/utils/until_no_account_switch_runs.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
@@ -944,8 +945,11 @@ class MailboxDashBoardController extends ReloadableController
     required bool fromCache,
   }) {
     log('MailboxDashBoardController::_handleSession:');
+    final dashboardLink = _takeDashboardSignInEmailLink();
+    if (dashboardLink != null) _getRouteParameters(dashboardLink);
     _setUpComponentsFromSession(session);
     unawaited(_cleanupEndedDelegations(session, fromCache: fromCache));
+    _openSettingsOfSignInEmailLink();
 
     unawaited(checkAndRestoreComposerOnMobile());
 
@@ -1033,6 +1037,7 @@ class MailboxDashBoardController extends ReloadableController
 
   void _handleMailtoURL(MailtoArguments arguments) {
     log('MailboxDashBoardController::_handleMailtoURL:');
+    discardSignInEmailLink();
     routerParameters.value = arguments.toMapRouter();
     _handleSessionFromArguments(
       arguments.session,
@@ -2041,9 +2046,10 @@ class MailboxDashBoardController extends ReloadableController
     log('MailboxDashBoardController::handleReloaded():');
     SmartDialog.dismiss();
 
-    _getRouteParameters();
+    _getRouteParameters(_takeDashboardSignInEmailLink());
     _setUpComponentsFromSession(session);
     unawaited(_cleanupEndedDelegations(session, fromCache: sessionLoadedFromCache));
+    _openSettingsOfSignInEmailLink();
     // Same shown accountId does not notify watchShown — refresh identities and web composer cache.
     _getAllIdentities();
     if (PlatformInfo.isWeb) {
@@ -2053,8 +2059,20 @@ class MailboxDashBoardController extends ReloadableController
     _openPendingAndroidNotificationTap();
   }
 
-  void _getRouteParameters() {
-    final parameters = Get.parameters;
+  SignInEmailLink? _takeDashboardSignInEmailLink() =>
+      takeSignInEmailLink(accepts: (link) => !link.opensSettings);
+
+  void _openSettingsOfSignInEmailLink() {
+    // A restored delegated account cannot open Settings, so the link waits for a load that shows mine.
+    final link = takeSignInEmailLink(
+      accepts: (link) => link.opensSettings && shownAccountCapabilities.canOpenSettings,
+    );
+    // Without a session Settings loads like a page load, so it reads the link's `type=delegation`.
+    if (link != null) unawaited(_openSettings(link.uri.toString()));
+  }
+
+  void _getRouteParameters(SignInEmailLink? signInEmailLink) {
+    final parameters = signInEmailLink?.dashboardParameters ?? Get.parameters;
     log('MailboxDashBoardController::_getRouteParameters(): parameters: $parameters');
     routerParameters.value = parameters;
   }
@@ -2164,17 +2182,16 @@ class MailboxDashBoardController extends ReloadableController
     emailUIAction.value = EmailUIAction.idle;
   }
 
-  void goToSettings() async {
+  void goToSettings() => _openSettings(
+        AppRoutes.settings,
+        arguments: ManageAccountArguments(sessionCurrent, previousUri: RouteUtils.baseUri),
+      );
+
+  Future<void> _openSettings(String route, {ManageAccountArguments? arguments}) async {
     if (!shownAccountCapabilities.canOpenSettings) return;
     closeMailboxMenuDrawer();
     BackButtonInterceptor.removeByName(AppRoutes.dashboard);
-    final result = await push(
-      AppRoutes.settings,
-      arguments: ManageAccountArguments(
-        sessionCurrent,
-        previousUri: RouteUtils.baseUri,
-      ),
-    );
+    final result = await push(route, arguments: arguments);
 
     BackButtonInterceptor.add(onBackButtonInterceptor, name: AppRoutes.dashboard);
 

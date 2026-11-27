@@ -106,11 +106,13 @@ class MailboxMenuRobot extends CoreRobot implements AbstractMailboxMenuRobot {
     return inboxCount;
   }
 
+  @override
   Future<void> tapSignOut() async {
     await $.scrollUntilVisible(finder: $(_l10n.sign_out));
     await $(_l10n.sign_out).tap();
   }
 
+  @override
   Future<void> confirmSignOut() async {
     await $(_l10n.yesLogout).tap();
   }

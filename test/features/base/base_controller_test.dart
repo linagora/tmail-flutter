@@ -33,6 +33,8 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/base/sentry_session_cleanup.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/utils/sign_in_email_link.dart';
 import 'package:tmail_ui_user/features/delegation/domain/model/ended_delegation_cleanup.dart';
 import 'package:tmail_ui_user/features/delegation/domain/repository/ended_delegation_store.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
@@ -63,6 +65,7 @@ import '../../fixtures/account_fixtures.dart';
 import '../../fixtures/active_account_source_fixtures.dart';
 import '../../fixtures/delegation_fixtures.dart';
 import '../../fixtures/session_fixtures.dart';
+import '../../fixtures/sign_in_email_link_fixtures.dart';
 import 'base_controller_test.mocks.dart';
 
 class MockBaseController extends BaseController {
@@ -1030,6 +1033,36 @@ void main() {
       recovery.complete();
       await logoutFuture;
       expect(isDone, isTrue);
+    });
+  });
+
+  group('BaseController::logout with a kept sign-in email link', () {
+    late SessionStorageManager sessionStorage;
+
+    setUp(() {
+      mockBaseController.resetState();
+      PlatformInfo.isTestingForWeb = true;
+      when(mockAuthorizationInterceptors.authenticationType).thenReturn(AuthenticationType.basic);
+      sessionStorage = Get.put(SessionStorageManager());
+      addTearDown(() {
+        sessionStorage.remove(SignInEmailLink.storageKey);
+        PlatformInfo.isTestingForWeb = false;
+        Get.delete<SessionStorageManager>(force: true);
+      });
+    });
+
+    // A forced logout keeps the page so the same user lands back on it; a user sign out ends that
+    // intent, or the next user signing in on this tab is sent to the previous user's delegated mailbox.
+    testWidgets('a user sign out SHOULD drop the link kept by an earlier forced logout', (tester) async {
+      keepSignInEmailLink('/dashboard', {'account': 'alice-delegated-account'});
+      expect(isSignInEmailLinkKept(), isTrue);
+      await tester.pumpWidget(const SizedBox());
+
+      mockBaseController.logout(tester.element(find.byType(SizedBox)), null, null, 'bob@example.com');
+      await tester.pumpAndSettle();
+
+      expect(mockBaseController.logoutCalls, 1);
+      expect(isSignInEmailLinkKept(), isFalse, reason: 'the next user to sign in on this tab takes it');
     });
   });
 }

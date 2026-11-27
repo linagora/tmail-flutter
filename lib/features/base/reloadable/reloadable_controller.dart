@@ -11,6 +11,7 @@ import 'package:model/account/password.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/delegation/presentation/utils/sign_in_email_link.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
@@ -45,6 +46,7 @@ abstract class ReloadableController extends BaseController {
   void handleFailureViewState(Failure failure) {
     if (isNotSignedIn(failure)) {
       logWarning('$runtimeType::handleFailureViewState():Failure = $failure');
+      keepSignInEmailLinkOfCurrentPage();
       goToLogin();
     } else if (failure is GetSessionFailure) {
       logWarning('$runtimeType::handleFailureViewState():Failure = $failure');
@@ -179,6 +181,7 @@ abstract class ReloadableController extends BaseController {
         extras: {'auth_error_type': authErrorType},
         webConsoleEnabled: true,
       );
+      keepSignInEmailLinkOfCurrentPage();
       clearDataAndGoToLoginPage();
     } else {
       logWarning(
