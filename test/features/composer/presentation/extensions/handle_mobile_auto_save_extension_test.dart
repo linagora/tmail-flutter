@@ -147,6 +147,7 @@ void main() {
     when(dashboard.activeAccountId).thenAnswer((_) => shownAccountId);
     when(dashboard.sessionCurrent).thenReturn(session);
     when(composerController.mailboxDashBoardController).thenReturn(dashboard);
+    when(composerController.composerAccountId).thenAnswer((_) => shownAccountId);
     when(composerController.autoSaveComposerId).thenReturn(composerId);
   });
 

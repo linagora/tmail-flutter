@@ -155,6 +155,7 @@ void main() {
       final composerController = MockComposerController();
       when(composerController.autoSaveComposerId).thenReturn('composer-1');
       when(composerController.mailboxDashBoardController).thenReturn(dashboard);
+      when(composerController.composerAccountId).thenAnswer((_) => dashboard.activeAccountId);
       Get.put<ComposerController>(composerController);
       addTearDown(() => Get.delete<ComposerController>(force: true));
       return composerController;

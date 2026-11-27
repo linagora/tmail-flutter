@@ -35,6 +35,9 @@ class _GatedSwitchView implements AccountSwitchView {
   bool hasOpenComposer = false;
 
   @override
+  Future<int> closeComposers() async => 0;
+
+  @override
   void blockInput() {}
 
   @override

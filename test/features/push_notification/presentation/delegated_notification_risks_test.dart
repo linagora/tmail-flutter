@@ -138,6 +138,9 @@ class _FakeSwitchView implements AccountSwitchView {
   bool get hasOpenComposer => false;
 
   @override
+  Future<int> closeComposers() async => 0;
+
+  @override
   void blockInput() {}
 
   @override
