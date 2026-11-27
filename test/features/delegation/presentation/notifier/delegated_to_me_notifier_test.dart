@@ -159,6 +159,26 @@ void main() {
 
       expect(getSessionInteractor.calls, 0);
     });
+
+    test('should not apply the re-read of a load a newer one replaced', () async {
+      getSessionInteractor.holdsReads = true;
+      final reloadedSessions = <Session>[];
+      final firstLoad = notifier().load(session, onSessionReloaded: reloadedSessions.add);
+      await untilRepositoryCalled();
+      repository.pendingLoads[0].complete([bobDelegation]);
+      await untilRepositoryCalled();
+      final secondLoad = notifier().load(session, onSessionReloaded: reloadedSessions.add);
+      await untilRepositoryCalled();
+      repository.pendingLoads[1].complete([bobDelegation, carolDelegation]);
+      await secondLoad;
+      getSessionInteractor.pendingReads.single.complete(
+        Right(GetSessionSuccess(DelegationFixtures.session(state: 'state-2', listsCarol: false))),
+      );
+      await firstLoad;
+
+      expect(container.read(activeAccountProvider)?.session, session);
+      expect(reloadedSessions, isEmpty);
+    });
   });
 
   group('remove', () {
