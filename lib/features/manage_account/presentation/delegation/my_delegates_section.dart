@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:model/autocomplete/auto_complete_pattern.dart';
 import 'package:model/extensions/session_extension.dart';
+import 'package:tmail_ui_user/features/base/widget/circle_loading_widget.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/my_delegates_notifier.dart';
@@ -81,7 +82,7 @@ class _MyDelegatesSectionState extends ConsumerState<MyDelegatesSection> {
                   action: LinagoraEmptyCardAction(label: l10n.retry, onPressed: _load),
                 ),
               ],
-            _ => [const Center(child: CircularProgressIndicator())],
+            _ => [const Center(child: CircleLoadingWidget())],
           },
         ],
       ),
