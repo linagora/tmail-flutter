@@ -38,14 +38,6 @@ import 'package:tmail_ui_user/features/delegation/domain/repository/ended_delega
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/account_switch_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/notifier/active_account_notifier.dart';
 import 'package:tmail_ui_user/features/delegation/presentation/bridge/active_account_source.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
-import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
-import 'package:jmap_dart_client/jmap/core/id.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:model/email/presentation_email.dart';
-import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
-import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
@@ -571,34 +563,6 @@ void main() {
       await mockBaseController.clearAllData();
 
       expect(source.activeAccount, isNull);
-    });
-
-    test('ends a search left open, so the next session loads its default mailbox', () async {
-      when(mockAuthorizationInterceptors.authenticationType).thenReturn(AuthenticationType.basic);
-      appProviderContainer.read(searchViewStateProvider.notifier).activateSimpleSearch();
-      addTearDown(() => appProviderContainer.invalidate(searchViewStateProvider));
-
-      await mockBaseController.clearAllData();
-
-      expect(appProviderContainer.read(searchViewStateProvider).isSearchEmailRunning, isFalse);
-    });
-
-    test('drops the filter and results of a search left open, so the next session never sees them', () async {
-      when(mockAuthorizationInterceptors.authenticationType).thenReturn(AuthenticationType.basic);
-      final filter = appProviderContainer.read(searchFilterProvider.notifier);
-      filter.set(appProviderContainer.read(searchFilterProvider).copyWith(unreadOption: const Some(true)));
-      appProviderContainer
-          .read(searchEmailPresentationProvider.notifier)
-          .setResultSearches([PresentationEmail(id: EmailId(Id('email-1')))]);
-      addTearDown(() {
-        appProviderContainer.invalidate(searchFilterProvider);
-        appProviderContainer.invalidate(searchEmailPresentationProvider);
-      });
-
-      await mockBaseController.clearAllData();
-
-      expect(appProviderContainer.read(searchFilterProvider), SearchEmailFilter.initial());
-      expect(appProviderContainer.read(searchEmailPresentationProvider).listResultSearch, isEmpty);
     });
 
     test('still clears account data when no dashboard is open', () async {

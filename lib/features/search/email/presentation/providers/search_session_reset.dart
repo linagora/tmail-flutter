@@ -1,7 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/notifier/search_view_state_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/domain/notifier/search_email_notifier.dart';
-import 'package:tmail_ui_user/features/search/email/domain/notifier/search_filter_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/notifier/search_email_presentation_notifier.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/providers/search_executor_provider.dart';
 
@@ -17,12 +15,4 @@ void resetSearchResultSession(ProviderContainer container) {
   container.read(searchExecutorServiceProvider).resetSession();
   container.invalidate(searchEmailProvider);
   container.invalidate(searchEmailPresentationProvider);
-}
-
-/// Ends the whole search of a signed-in session (view state, results and
-/// filter), as these keepAlive providers outlive a sign-out.
-void endSearchSession(ProviderContainer container) {
-  container.invalidate(searchViewStateProvider);
-  resetSearchResultSession(container);
-  container.invalidate(searchFilterProvider);
 }
