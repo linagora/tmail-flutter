@@ -15,25 +15,29 @@ class _Probe {
   _Probe({
     Duration scopeSyncDelay = Duration.zero,
     DateTime Function()? now,
+    bool isSentryAvailable = false,
   }) {
     manager = SentryManager.forTesting(
       now: now,
-      isSentryAvailable: false,
+      isSentryAvailable: isSentryAvailable,
       synchronizeScope: (_, {required clearBreadcrumbs}) =>
           Future<void>.delayed(scopeSyncDelay),
       initializeSentrySdk: ({appRunner, sentryConfig}) async => true,
       closeSentrySdk: () async {},
-      captureException: (exception, stackTrace, message, extras, level) async {
+      captureException: (exception, stackTrace, message, sentExtras, level) async {
         sent.add('$exception');
+        extras.add(sentExtras ?? const {});
       },
-      captureMessage: (message, level, extras) async {
+      captureMessage: (message, level, sentExtras) async {
         sent.add(message);
+        extras.add(sentExtras ?? const {});
       },
     );
   }
 
   late final SentryManager manager;
   final sent = <String>[];
+  final extras = <Map<String, dynamic>>[];
 
   /// What SentryEcosystem.setUp does once the ecosystem answers.
   Future<void> receiveConfiguration({required bool reportingAllowed}) async {
@@ -244,5 +248,65 @@ void main() {
     await probe.receiveConfigurationAndConsent(reportingAllowed: true);
 
     expect(probe.sent, ['session failed']);
+  });
+
+  test('sends them when the choice is resolved without a consent change', () async {
+    final probe = _Probe();
+
+    probe.manager.captureException('session failed');
+    await probe.receiveConfiguration(reportingAllowed: true);
+    expect(probe.sent, isEmpty);
+
+    probe.manager.resolveReportingConsent();
+    await probe._settle();
+
+    expect(probe.sent, ['session failed']);
+  });
+
+  test('an expiry timer left from a discarded batch does not drop the next one', () {
+    late List<String> sent;
+    fakeAsync((async) {
+      final probe = _Probe();
+
+      probe.manager.captureException('first');
+      async.elapse(const Duration(minutes: 4));
+      probe.manager.discardPendingReports();
+      probe.manager.captureException('second');
+      async.elapse(const Duration(minutes: 2));
+      probe.receiveConfigurationAndConsent(reportingAllowed: true);
+      async.elapse(const Duration(seconds: 1));
+
+      sent = probe.sent;
+    });
+
+    expect(sent, ['second']);
+  });
+
+  test('holds a message of a running SDK until the user choice is read', () async {
+    final probe = _Probe(isSentryAvailable: true);
+
+    await probe.receiveConfiguration(reportingAllowed: true);
+    probe.manager.captureMessage('before the user choice');
+
+    expect(probe.sent, isEmpty);
+
+    await probe.receiveConsent(false);
+
+    expect(probe.sent, isEmpty);
+  });
+
+  test('sends the caller extras and the raise time with a kept error and a kept message',
+      () async {
+    final probe = _Probe();
+
+    probe.manager.captureException('session failed', extras: {'screen': 'launch'});
+    probe.manager.captureMessage('folders failed', extras: {'screen': 'folders'});
+    await probe.receiveConfigurationAndConsent(reportingAllowed: true);
+
+    expect(probe.extras, hasLength(2));
+    expect(probe.extras[0]['screen'], 'launch');
+    expect(probe.extras[0], contains('raised_before_reporting_started_at'));
+    expect(probe.extras[1]['screen'], 'folders');
+    expect(probe.extras[1], contains('raised_before_reporting_started_at'));
   });
 }
