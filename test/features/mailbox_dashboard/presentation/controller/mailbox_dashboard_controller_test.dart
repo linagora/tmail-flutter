@@ -509,9 +509,10 @@ void main() {
   });
 
   group('launch Sentry choice from the server settings:', () {
-    setUp(() async {
+    setUp(() {
       PlatformInfo.isTestingForWeb = true;
-      await SentryManager.instance.clearSessionContext();
+      // Its futures may be chained in an earlier test's fake zone: the reset itself is synchronous.
+      unawaited(SentryManager.instance.clearSessionContext());
     });
 
     tearDown(() => PlatformInfo.isTestingForWeb = false);
