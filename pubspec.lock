@@ -1489,8 +1489,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "fix/segmented-tabs-focus-ring-after-dialog"
-      resolved-ref: b1390a8348cb6cd83b301e568121912f40c023e9
+      ref: master
+      resolved-ref: e354a80f4a0a81052872104e5f4480b664004587
       url: "https://github.com/linagora/linagora-design-flutter.git"
     source: git
     version: "0.4.3"

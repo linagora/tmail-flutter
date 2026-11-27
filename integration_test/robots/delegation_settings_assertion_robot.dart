@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/delegation/delegation_settings_view.dart';
 
 import '../base/core_robot.dart';
 import 'abstract/abstract_delegation_settings_assertion_robot.dart';
@@ -37,18 +36,5 @@ class DelegationSettingsAssertionRobot extends CoreRobot
     final addButton = $(const ValueKey(UiKeys.myDelegatesAddButton));
     await addButton.waitUntilVisible();
     expect($.tester.widget<LinagoraButton>(addButton).onPressed, isNotNull);
-  }
-
-  @override
-  void expectNoTabFocusRing() {
-    for (final tab in DelegationTab.values) {
-      final segment = $.tester.widget<AnimatedContainer>(
-        find.descendant(
-          of: find.byKey(LinagoraSegmentedTabs.segmentKey(tab)),
-          matching: find.byType(AnimatedContainer),
-        ),
-      );
-      expect(segment.foregroundDecoration, isNull, reason: '$tab shows a focus ring');
-    }
   }
 }

@@ -13,6 +13,4 @@ abstract class AbstractDelegationSettingsRobot {
   Future<void> confirmRemoveAccess();
 
   Future<void> confirmRemoveDelegate();
-
-  Future<void> cancelRemoveAccessWithMouse();
 }

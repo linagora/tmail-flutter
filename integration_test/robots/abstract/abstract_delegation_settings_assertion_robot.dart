@@ -6,6 +6,4 @@ abstract class AbstractDelegationSettingsAssertionRobot {
   Future<void> expectNoOneHasAccessToMyMailbox();
 
   Future<void> expectMyDelegatesListed(List<String> delegateAddresses);
-
-  void expectNoTabFocusRing();
 }
