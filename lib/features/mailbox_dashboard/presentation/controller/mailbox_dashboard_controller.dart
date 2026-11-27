@@ -614,12 +614,7 @@ class MailboxDashBoardController extends ReloadableController
         markStarAction: success.markStarAction,
       );
     } else if (success is GetServerSettingSuccess) {
-      // A retried request can answer after this dashboard closed: its result is not for the next session.
-      if (isClosed) return;
-      isSenderImportantFlagEnabled.value = success.settingOption.isDisplaySenderPriority;
-      setupAINeedsActionSetting(options: success.settingOption);
-      initializeAppLanguage(success);
-      applySentryReportingConsent(_sentryEcosystem, success.settingOption.sentryUserOptIn);
+      _handleGetServerSettingSuccess(success);
     } else if (success is ClearMailboxSuccess) {
       clearMailboxSuccess(success);
     } else if (success is CreateNewRuleFilterSuccess) {
@@ -644,6 +639,15 @@ class MailboxDashBoardController extends ReloadableController
       subscribeLabelViewStateSuccess(success);
       super.handleSuccessViewState(success);
     }
+  }
+
+  void _handleGetServerSettingSuccess(GetServerSettingSuccess success) {
+    // A retried request can answer after this dashboard closed: its result is not for the next session.
+    if (isClosed) return;
+    isSenderImportantFlagEnabled.value = success.settingOption.isDisplaySenderPriority;
+    setupAINeedsActionSetting(options: success.settingOption);
+    initializeAppLanguage(success);
+    applySentryReportingConsent(_sentryEcosystem, success.settingOption.sentryUserOptIn);
   }
 
   @override
